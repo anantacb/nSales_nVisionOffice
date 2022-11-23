@@ -1,5 +1,5 @@
 <script setup>
-import {useTemplateStore} from "@/stores/template";
+import { useTemplateStore } from "@/stores/template";
 
 import BaseLayout from "@/layouts/BaseLayout.vue";
 
@@ -8,18 +8,16 @@ const store = useTemplateStore();
 
 // Set default elements for this layout
 store.setLayout({
-    header: true,
-    sidebar: true,
-    sideOverlay: true,
-    footer: true,
+  header: false,
+  sidebar: false,
+  sideOverlay: false,
+  footer: false,
 });
 
 // Set various template options for this layout variation
-store.headerStyle({mode: "dark"});
-store.mainContent({mode: "full"});
-store.darkMode({mode: "on"});
+store.mainContent({ mode: "full" });
 </script>
 
 <template>
-    <BaseLayout/>
+  <BaseLayout />
 </template>

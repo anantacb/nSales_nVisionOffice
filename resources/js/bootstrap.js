@@ -1,6 +1,4 @@
 import _ from 'lodash';
-window._ = _;
-
 import 'bootstrap';
 
 /**
@@ -8,11 +6,43 @@ import 'bootstrap';
  * to our Laravel back-end. This library automatically handles sending the
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
-
 import axios from 'axios';
+import {useAuthStore} from "@/stores/auth.js";
+import router from "@/router";
+
+window._ = _;
+
 window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+window.axios.interceptors.request.use((config) => {
+    const authStore = useAuthStore();
+    if (authStore.getToken()) {
+        config.headers.Authorization = `Bearer ${authStore.getToken()}`;
+    }
+    return config;
+});
+
+window.axios.interceptors.response.use(
+    res => res,
+    error => {
+        console.log(error);
+        if (error.response.status === 401) {
+            const authStore = useAuthStore();
+            authStore.logout();
+            router.push({name: 'login'})
+            //window.location.href = '/login';
+        }
+
+        /*if (error.response.status === 403) {
+            window.location.href = '/403';
+        }*/
+
+        return Promise.reject(error);
+
+    });
+
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

@@ -109,7 +109,7 @@ onMounted(() => {
         ></div>
         <!-- END Page Overlay -->
 
-        <!-- Side Overlay -->x
+        <!-- Side Overlay -->
         <BaseSideOverlay v-if="store.layout.sideOverlay">
             <template #header>
                 <slot name="side-overlay-header"></slot>

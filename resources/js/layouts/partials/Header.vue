@@ -1,17 +1,30 @@
 <script setup>
-import {ref, onMounted, onUnmounted} from "vue";
-import {useRouter} from "vue-router";
+import {onMounted, onUnmounted, ref} from "vue";
 import {useTemplateStore} from "@/stores/template";
+import {useAuthStore} from "@/stores/auth";
+import User from "@/models/User";
+import router from "@/router";
 
 // Grab example data
-import notifications from "@/data/notifications";
+//import notifications from "@/data/notifications";
 
 // Main store and Router
 const store = useTemplateStore();
-const router = useRouter();
+const authStore = useAuthStore();
 
 // Reactive variables
 const baseSearchTerm = ref("");
+
+async function logout() {
+    try {
+        await User.logout();
+        authStore.logout();
+        //window.location = "/login";
+        await router.push({name: 'login'});
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 // On form search submit functionality
 function onSubmitSearch() {
@@ -120,7 +133,7 @@ onUnmounted(() => {
                                         src="/assets/media/avatars/avatar10.jpg"
                                         style="width: 21px"
                                     />
-                                    <span class="d-none d-sm-inline-block ms-2">John</span>
+                                    <span class="d-none d-sm-inline-block ms-2">{{ authStore.user.Name }}</span>
                                     <i
                                         class="fa fa-fw fa-angle-down d-none d-sm-inline-block opacity-50 ms-1 mt-1"
                                     ></i>
@@ -137,121 +150,122 @@ onUnmounted(() => {
                                             class="img-avatar img-avatar48 img-avatar-thumb"
                                             src="/assets/media/avatars/avatar10.jpg"
                                         />
-                                        <p class="mt-2 mb-0 fw-medium">John Smith</p>
-                                        <p class="mb-0 text-muted fs-sm fw-medium">Web Developer</p>
+                                        <p class="mt-2 mb-0 fw-medium">{{ authStore.user.Email }}</p>
+                                        <p class="mb-0 text-muted fs-sm fw-medium">{{authStore.user.Initials}}</p>
                                     </div>
                                     <div class="p-2">
-                                        <a
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            href="javascript:void(0)"
-                                        >
-                                            <span class="fs-sm fw-medium">Inbox</span>
-                                            <span class="badge rounded-pill bg-primary ms-2">3</span>
-                                        </a>
-                                        <RouterLink
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            to=""
-                                        >
-                                            <span class="fs-sm fw-medium">Profile</span>
-                                            <span class="badge rounded-pill bg-primary ms-2">1</span>
-                                        </RouterLink>
-                                        <a
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            href="javascript:void(0)"
-                                        >
-                                            <span class="fs-sm fw-medium">Settings</span>
-                                        </a>
+                                        <!--                                        <a
+                                                                                    class="dropdown-item d-flex align-items-center justify-content-between"
+                                                                                    href="javascript:void(0)"
+                                                                                >
+                                                                                    <span class="fs-sm fw-medium">Inbox</span>
+                                                                                    <span class="badge rounded-pill bg-primary ms-2">3</span>
+                                                                                </a>
+                                                                                <RouterLink
+                                                                                    class="dropdown-item d-flex align-items-center justify-content-between"
+                                                                                    to=""
+                                                                                >
+                                                                                    <span class="fs-sm fw-medium">Profile</span>
+                                                                                    <span class="badge rounded-pill bg-primary ms-2">1</span>
+                                                                                </RouterLink>
+                                                                                <a
+                                                                                    class="dropdown-item d-flex align-items-center justify-content-between"
+                                                                                    href="javascript:void(0)"
+                                                                                >
+                                                                                    <span class="fs-sm fw-medium">Settings</span>
+                                                                                </a>-->
                                     </div>
                                     <div class="dropdown-divider m-0" role="separator"></div>
                                     <div class="p-2">
-                                        <RouterLink
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            to=""
-                                        >
-                                            <span class="fs-sm fw-medium">Lock Account</span>
-                                        </RouterLink>
-                                        <RouterLink
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            to="">
+                                        <!--                                        <RouterLink
+                                                                                    class="dropdown-item d-flex align-items-center justify-content-between"
+                                                                                    to=""
+                                                                                >
+                                                                                    <span class="fs-sm fw-medium">Lock Account</span>
+                                                                                </RouterLink>-->
+
+                                        <button class="dropdown-item d-flex align-items-center justify-content-between"
+                                                type="button"
+                                                @click="logout">
                                             <span class="fs-sm fw-medium">Log Out</span>
-                                        </RouterLink>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                             <!-- END User Dropdown -->
 
                             <!-- Notifications Dropdown -->
-                            <div class="dropdown d-inline-block ms-2">
-                                <button
-                                    id="page-header-notifications-dropdown"
-                                    aria-expanded="false"
-                                    aria-haspopup="true"
-                                    class="btn btn-sm btn-alt-secondary"
-                                    data-bs-toggle="dropdown"
-                                    type="button"
-                                >
-                                    <i class="fa fa-fw fa-bell"></i>
-                                    <span v-if="notifications.length > 0" class="text-primary"
-                                    >•</span
-                                    >
-                                </button>
-                                <div
-                                    aria-labelledby="page-header-notifications-dropdown"
-                                    class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 border-0 fs-sm"
-                                >
-                                    <div
-                                        class="p-2 bg-body-light border-bottom text-center rounded-top"
-                                    >
-                                        <h5 class="dropdown-header text-uppercase">
-                                            Notifications
-                                        </h5>
-                                    </div>
-                                    <ul class="nav-items mb-0">
-                                        <li
-                                            v-for="(notification, index) in notifications"
-                                            :key="`notification-${index}`"
-                                        >
-                                            <a
-                                                :href="`${notification.href}`"
-                                                class="text-dark d-flex py-2"
-                                            >
-                                                <div class="flex-shrink-0 me-2 ms-3">
-                                                    <i :class="`${notification.icon}`"></i>
-                                                </div>
-                                                <div class="flex-grow-1 pe-2">
-                                                    <div class="fw-semibold">
-                                                        {{ notification.title }}
-                                                    </div>
-                                                    <span class="fw-medium text-muted">
-                            {{ notification.time }}
-                          </span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li v-if="!notifications.length" class="p-2">
-                                            <div
-                                                class="alert alert-light d-flex align-items-center space-x-2 mb-0"
-                                                role="alert"
-                                            >
-                                                <i class="fa fa-exclamation-triangle opacity-50"></i>
-                                                <p class="mb-0">No new ones!</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <div
-                                        v-if="notifications.length > 0"
-                                        class="p-2 border-top text-center"
-                                    >
-                                        <a
-                                            class="d-inline-block fw-medium"
-                                            href="javascript:void(0)"
-                                        >
-                                            <i class="fa fa-fw fa-arrow-down me-1 opacity-50"></i>
-                                            Load More..
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                            <!--                            <div class="dropdown d-inline-block ms-2">
+                                                            <button
+                                                                id="page-header-notifications-dropdown"
+                                                                aria-expanded="false"
+                                                                aria-haspopup="true"
+                                                                class="btn btn-sm btn-alt-secondary"
+                                                                data-bs-toggle="dropdown"
+                                                                type="button"
+                                                            >
+                                                                <i class="fa fa-fw fa-bell"></i>
+                                                                <span v-if="notifications.length > 0" class="text-primary"
+                                                                >•</span
+                                                                >
+                                                            </button>
+                                                            <div
+                                                                aria-labelledby="page-header-notifications-dropdown"
+                                                                class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 border-0 fs-sm"
+                                                            >
+                                                                <div
+                                                                    class="p-2 bg-body-light border-bottom text-center rounded-top"
+                                                                >
+                                                                    <h5 class="dropdown-header text-uppercase">
+                                                                        Notifications
+                                                                    </h5>
+                                                                </div>
+                                                                <ul class="nav-items mb-0">
+                                                                    <li
+                                                                        v-for="(notification, index) in notifications"
+                                                                        :key="`notification-${index}`"
+                                                                    >
+                                                                        <a
+                                                                            :href="`${notification.href}`"
+                                                                            class="text-dark d-flex py-2"
+                                                                        >
+                                                                            <div class="flex-shrink-0 me-2 ms-3">
+                                                                                <i :class="`${notification.icon}`"></i>
+                                                                            </div>
+                                                                            <div class="flex-grow-1 pe-2">
+                                                                                <div class="fw-semibold">
+                                                                                    {{ notification.title }}
+                                                                                </div>
+                                                                                <span class="fw-medium text-muted">
+                                                        {{ notification.time }}
+                                                      </span>
+                                                                            </div>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li v-if="!notifications.length" class="p-2">
+                                                                        <div
+                                                                            class="alert alert-light d-flex align-items-center space-x-2 mb-0"
+                                                                            role="alert"
+                                                                        >
+                                                                            <i class="fa fa-exclamation-triangle opacity-50"></i>
+                                                                            <p class="mb-0">No new ones!</p>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                                <div
+                                                                    v-if="notifications.length > 0"
+                                                                    class="p-2 border-top text-center"
+                                                                >
+                                                                    <a
+                                                                        class="d-inline-block fw-medium"
+                                                                        href="javascript:void(0)"
+                                                                    >
+                                                                        <i class="fa fa-fw fa-arrow-down me-1 opacity-50"></i>
+                                                                        Load More..
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>-->
                             <!-- END Notifications Dropdown -->
 
                             <!-- Toggle Side Overlay -->

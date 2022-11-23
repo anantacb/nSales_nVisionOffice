@@ -3,10 +3,10 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">{{ heading }}</div>
+                    <div class="card-header">Example Component</div>
 
                     <div class="card-body">
-                        {{ greeting }}
+                        I'm an example component.
                     </div>
                 </div>
             </div>
@@ -15,20 +15,9 @@
 </template>
 
 <script>
-import {ref} from "vue";
-
-export default {
-    props: {
-        heading: {
-            type: String,
-            required: true
-        }
-    },
-    setup(props) {
-        const greeting = ref('Hello there')
-        return {
-            greeting
+    export default {
+        mounted() {
+            console.log('Component mounted.')
         }
     }
-}
 </script>
