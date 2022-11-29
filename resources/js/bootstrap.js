@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import 'bootstrap';
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -27,22 +26,13 @@ window.axios.interceptors.request.use((config) => {
 window.axios.interceptors.response.use(
     res => res,
     error => {
-        console.log(error);
         if (error.response.status === 401) {
             const authStore = useAuthStore();
             authStore.logout();
             router.push({name: 'login'})
-            //window.location.href = '/login';
         }
-
-        /*if (error.response.status === 403) {
-            window.location.href = '/403';
-        }*/
-
         return Promise.reject(error);
-
     });
-
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

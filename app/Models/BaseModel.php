@@ -11,7 +11,7 @@ abstract class BaseModel extends Model
     protected $primaryKey = "Id";
     protected $guarded = [];
     protected $casts = [
-        'InsertTime' => 'datetime',
-        'UpdateTime' => 'datetime'
+        'InsertTime' => 'datetime:Y-m-d H:i:s',
+        'UpdateTime' => 'datetime:Y-m-d H:i:s'
     ];
 }

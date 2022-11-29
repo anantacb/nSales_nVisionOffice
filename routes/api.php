@@ -30,5 +30,5 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 });
 
 Route::middleware(['auth:api'])->group(function () {
-    Route::get('/tables', [TableController::class, 'getTables']);
+    Route::post('/tables', [TableController::class, 'getTables']);
 });

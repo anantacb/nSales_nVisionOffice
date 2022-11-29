@@ -27,9 +27,7 @@
 </noscript>
 
 <div id="app">
-    <example-component heading="Header"></example-component>
 </div>
-
 
 </body>
 
