@@ -5,9 +5,11 @@ import LayoutBackend from "@/layouts/variations/Backend.vue";
 import LayoutSimple from "@/layouts/variations/Simple.vue";
 import {useAuthStore} from "@/stores/auth";
 
-const Home = () => import("@/views/Home.vue");
-const Tables = () => import("@/views/database/Tables/Tables.vue");
 const Login = () => import("@/views/auth/Login.vue");
+const Home = () => import("@/views/Home.vue");
+
+const Tables = () => import("@/views/database/Tables/Tables.vue");
+const CreateTable = () => import("@/views/database/Tables/CreateTable.vue");
 
 const routes = [
     {
@@ -26,6 +28,14 @@ const routes = [
                 path: "tables",
                 name: "tables",
                 component: Tables,
+                meta: {
+                    authenticated: true
+                }
+            },
+            {
+                path: "tables/create",
+                name: "create-table",
+                component: CreateTable,
                 meta: {
                     authenticated: true
                 }

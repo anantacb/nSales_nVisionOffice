@@ -18,6 +18,7 @@ class User extends Authenticatable implements JWTSubject
     public const UPDATED_AT = 'UpdateTime';
     protected $table = 'User';
     protected $primaryKey = 'Id';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -51,7 +52,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'InsertTime' => 'datetime:Y-m-d',
+        'UpdateTime' => 'datetime:Y-m-d',
     ];
 
     /**

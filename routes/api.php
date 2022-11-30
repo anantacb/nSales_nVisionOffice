@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -30,5 +32,12 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 });
 
 Route::middleware(['auth:api'])->group(function () {
+    // Tables
     Route::post('/tables', [TableController::class, 'getTables']);
+
+    // Modules
+    Route::post('/modules/all', [ModuleController::class, 'getAllModules']);
+
+    // Companies
+    Route::post('/companies/all', [CompanyController::class, 'getAllCompanies']);
 });

@@ -469,7 +469,6 @@ abstract class BaseRepository
     }
 
     /**
-     *
      * @return Collection
      */
     public function all()
@@ -545,11 +544,11 @@ abstract class BaseRepository
      * @return Collection
      */
     public function getByAttributes(
-        array $attributes,
-              $relations = [],
-              $selectColumns = '',
-              $order_by = '',
-              $order_desc = false
+        array        $attributes,
+        array|string $relations = [],
+        array|string $selectColumns = '',
+        string       $order_by = '',
+        bool         $order_desc = false
     )
     {
         $model = $this->getModel();

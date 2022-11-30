@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\Company\CompanyService;
+use App\Services\Company\CompanyServiceInterface;
+use App\Services\Module\ModuleService;
+use App\Services\Module\ModuleServiceInterface;
 use App\Services\Table\TableService;
 use App\Services\Table\TableServiceInterface;
 use App\Services\User\UserService;
@@ -29,5 +33,7 @@ class ServiceServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserServiceInterface::class, UserService::class);
         $this->app->bind(TableServiceInterface::class, TableService::class);
+        $this->app->bind(ModuleServiceInterface::class, ModuleService::class);
+        $this->app->bind(CompanyServiceInterface::class, CompanyService::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Repositories\Eloquent\Office\Company;
 
 use App\Models\Office\Company;
 use App\Models\Office\Setting;
+use App\Repositories\Eloquent\Base\BaseRepository;
 use Illuminate\Support\Facades\DB;
 
 

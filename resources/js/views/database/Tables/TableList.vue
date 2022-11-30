@@ -91,7 +91,6 @@ function getTables() {
             paginationData.value = data.pagination;
         })
         .catch(err => {
-            console.log(err);
         });
 }
 
@@ -111,54 +110,4 @@ function getTables() {
         @search="search"
         @sortBy="sortBy"
     ></DataGrid>
-    <!--    <div class="table-responsive">
-            <table class="table table-bordered table-striped table-vcenter">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Version</th>
-                    <th>Client Sync</th>
-                    <th>Company</th>
-                    <th>Disabled</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="table in tables">
-                    <td>
-                        {{ table.Name }}
-                    </td>
-                    <td class="fw-semibold fs-sm">
-                        {{ table.Type }}
-                    </td>
-                    <td class="fs-sm">
-                        {{ table.Version }}
-                    </td>
-                    <td>
-                        {{ table.ClientSync }}
-                    </td>
-                    <td>
-                                <span v-for="company in table.companies"
-                                      class="fs-xs fw-semibold d-inline-block py-1 px-3 rounded-pill bg-success-light text-success">
-                                    {{ company }}
-                                </span>
-                    </td>
-                    <td>
-                        {{ table.Disabled ? 'Yes' : 'No' }}
-                    </td>
-                    <td class="text-center">
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-alt-secondary" type="button">
-                                <i class="fa fa-fw fa-pencil-alt"></i>
-                            </button>
-                            <button class="btn btn-sm btn-alt-secondary" type="button">
-                                <i class="fa fa-fw fa-times"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>-->
 </template>
