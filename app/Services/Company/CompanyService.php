@@ -20,4 +20,14 @@ class CompanyService implements CompanyServiceInterface
         $companies = $this->companyRepository->getByAttributes([], '', ['Id', 'Name', 'CompanyName'], 'Name');
         return new ServiceDto("Companies retrieved!!!", 200, $companies);
     }
+
+    public function getModuleEnabledCompanies(Request $request): ServiceDto
+    {
+        $companies = $this->companyRepository->getByAttributes([], '', ['Id', 'Name', 'CompanyName'], 'Name', false, [
+            [
+                "relation" => "modules", "column" => "Module.Id", "operator" => "=", "values" => $request->get("moduleId")
+            ]
+        ]);
+        return new ServiceDto("Companies retrieved!!!", 200, $companies);
+    }
 }

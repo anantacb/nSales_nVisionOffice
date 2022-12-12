@@ -34,10 +34,14 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     // Tables
     Route::post('/tables', [TableController::class, 'getTables']);
+    Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
+    Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
+    Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
 
     // Modules
     Route::post('/modules/all', [ModuleController::class, 'getAllModules']);
 
     // Companies
     Route::post('/companies/all', [CompanyController::class, 'getAllCompanies']);
+    Route::post('/companies/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
 });

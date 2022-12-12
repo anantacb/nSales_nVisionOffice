@@ -28,6 +28,14 @@ const props = defineProps({
         default() {
             return false;
         }
+    },
+    selectClass: {
+        type: String,
+        required: false
+    },
+    optionClass: {
+        type: String,
+        required: false
     }
 });
 
@@ -36,9 +44,10 @@ defineEmits(['update:modelValue']);
 </script>
 
 <template>
-    <select :id="id" :name="name" :required="required" class="form-select"
+    <select :id="id" :class="selectClass" :name="name" :required="required" class="form-select"
             @change="$emit('update:modelValue', $event.target.value)">
-        <option v-for="option in options" :selected="modelValue === option.value" :value="option.value">
+        <option v-for="option in options" :class="optionClass" :selected="modelValue === option.value"
+                :value="option.value">
             {{ option.label }}
         </option>
     </select>

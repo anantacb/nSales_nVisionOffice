@@ -2,6 +2,7 @@
 import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useTemplateStore} from "@/stores/template";
+import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue"
 
 import User from "@/models/User";
 
@@ -58,9 +59,6 @@ async function login() {
     } catch (exception) {
         login_error_message.value = exception.response.data.message;
     }
-
-    // Go to dashboard
-    //router.push({name: "backend-pages-auth"});
 }
 </script>
 
@@ -115,12 +113,8 @@ async function login() {
                                             type="text"
                                             @blur="v$.email.$touch"
                                         />
-                                        <div
-                                            v-if="v$.email.$errors.length"
-                                            class="invalid-feedback animated fadeIn"
-                                        >
-                                            Please enter your username
-                                        </div>
+                                        <InputErrorMessages v-if="v$.email.$errors.length"
+                                                            :error-messages="[`Please enter your Email`]"></InputErrorMessages>
                                     </div>
                                     <div class="mb-4">
                                         <input
@@ -133,12 +127,8 @@ async function login() {
                                             type="password"
                                             @blur="v$.password.$touch"
                                         />
-                                        <div
-                                            v-if="v$.password.$errors.length"
-                                            class="invalid-feedback animated fadeIn"
-                                        >
-                                            Please enter your password
-                                        </div>
+                                        <InputErrorMessages v-if="v$.password.$errors.length"
+                                                            :error-messages="[`Please enter your Password`]"></InputErrorMessages>
                                     </div>
                                     <div class="mb-4">
                                         <div class="form-check">

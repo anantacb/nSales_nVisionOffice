@@ -10,4 +10,9 @@ class Company extends BaseModel
     use HasFactory;
 
     protected $table = 'Company';
+
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class, CompanyModule::class, 'CompanyId', 'ModuleId');
+    }
 }

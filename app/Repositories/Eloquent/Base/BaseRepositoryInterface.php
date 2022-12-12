@@ -2,8 +2,9 @@
 
 namespace App\Repositories\Eloquent\Base;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+
 
 interface BaseRepositoryInterface
 {
@@ -87,6 +88,12 @@ interface BaseRepositoryInterface
      * @param array|string $selectColumns
      * @param string $order_by
      * @param boolean $order_desc
+     * @param array $filter_by_relations
+     * [
+     *      [
+     *          "relation" => "string", "column" => "column_name", "operator" => "=,!=,...", "values" => "string | array"
+     *      ]
+     * ],
      * @return Collection
      */
     public function getByAttributes(
@@ -94,7 +101,8 @@ interface BaseRepositoryInterface
         array|string $relations = [],
         array|string $selectColumns = '',
         string       $order_by = '',
-        bool $order_desc = false
+        bool         $order_desc = false,
+        array        $filter_by_relations = []
     );
 
     /**

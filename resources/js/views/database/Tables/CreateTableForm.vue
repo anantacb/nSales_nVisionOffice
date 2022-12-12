@@ -3,9 +3,17 @@
 import {onMounted, ref} from "vue";
 
 import Select from "@/components/ui/FormElements/Select.vue";
+import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import VueSelect from 'vue-select';
+
 import Module from "@/models/Module";
 import Company from "@/models/Company";
+import Table from "@/models/Table";
+import {useTemplateStore} from "@/stores/template";
+
+const store = useTemplateStore();
+
+const emit = defineEmits(['showPreview']);
 
 const typeOptions = [
     {
@@ -88,42 +96,65 @@ let loading = ref({
     companiesDropDown: false
 });
 
+let errors = ref({});
+
 onMounted(() => {
     getAllModules();
-    getAllCompanies();
+    getModuleEnabledCompanies();
 });
 
-function getAllModules() {
+async function getAllModules() {
     loading.value.moduleDropDown = true;
-    Module.getAllModules()
-        .then((data) => {
-            modules.value = data.data;
-            loading.value.moduleDropDown = true;
-        })
-        .catch((err) => {
-
-        });
+    let data = await Module.getAllModules();
+    modules.value = data.data;
+    loading.value.moduleDropDown = false;
 }
 
-function getAllCompanies() {
+async function getModuleEnabledCompanies() {
+    console.log(module.value);
+    if (!module.value) {
+        companies.value = [];
+        return;
+    }
     loading.value.companiesDropDown = true;
-    Company.getAllCompanies()
-        .then((data) => {
-            companies.value = data.data;
-            loading.value.companiesDropDown = true;
-        })
-        .catch((err) => {
-        });
+    //let data = await Company.getAllCompanies();
+    let data = await Company.getModuleEnabledCompanies(module.value);
+    companies.value = data.data;
+    loading.value.companiesDropDown = false;
 }
 
-function submit() {
-
+async function submit() {
+    store.pageLoader({mode: "on"});
+    let formData = {
+        name: name.value,
+        type: type.value,
+        database: database.value,
+        module: module.value,
+        selectedCompanies: selectedCompanies.value,
+        disabled: disabled.value,
+        clientSync: clientSync.value,
+        autoNumbering: autoNumbering.value,
+        enableTruncate: enableTruncate.value,
+        sqlTruncate: sqlTruncate.value,
+        sqlSeed: sqlSeed.value,
+        note: note.value
+    };
+    try {
+        let {data} = await Table.getCreatePreviewSql(formData);
+        emit("showPreview", data.data, formData);
+    } catch (err) {
+        if (err.response.status === 422) {
+            errors.value = err.response.data.errors;
+        }
+        console.log(errors);
+    }
+    store.pageLoader({mode: "off"});
 }
 
 </script>
 
 <template>
-    <form class="space-y-4" @sumbit.prevent>
+    <form class="space-y-4" @submit.prevent="submit">
         <div class="row">
             <div class="col-lg-6 space-y-3">
                 <!-- Form Horizontal - Default Style -->
@@ -133,8 +164,11 @@ function submit() {
                         Name
                     </label>
                     <div class="col-sm-8">
-                        <input id="Name" v-model="name" class="form-control" name="Name" placeholder="Name" required
+                        <input id="Name" v-model="name" :class="{'is-invalid': errors.name}"
+                               class="form-control" name="Name" placeholder="Name"
+                               required
                                type="text"/>
+                        <InputErrorMessages v-if="errors.name" :errorMessages="errors.name"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -142,7 +176,10 @@ function submit() {
                         Type
                     </label>
                     <div class="col-sm-8">
-                        <Select id="Type" v-model="type" :options="typeOptions" :required="true" name="Type"/>
+                        <Select id="Type" v-model="type" :options="typeOptions"
+                                :required="true"
+                                :select-class="errors.type ? `is-invalid` : ``" name="Type"/>
+                        <InputErrorMessages v-if="errors.type" :errorMessages="errors.type"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -150,8 +187,11 @@ function submit() {
                         Database
                     </label>
                     <div class="col-sm-8">
-                        <Select id="Database" v-model="database" :options="databaseOptions" :required="true"
+                        <Select id="Database" v-model="database" :options="databaseOptions"
+                                :required="true" :select-class="errors.database ? `is-invalid` : ``"
                                 name="Database"/>
+                        <InputErrorMessages v-if="errors.database"
+                                            :errorMessages="errors.database"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -161,16 +201,29 @@ function submit() {
                     <div class="col-sm-8">
                         <VueSelect
                             v-model="module"
+                            :class="{'is-invalid': errors.module}"
                             :clearable="false"
                             :get-option-label="module => module.Name"
+                            :input-required="true"
                             :inputId="`Module`"
                             :inputName="`Module`"
                             :loading="loading.moduleDropDown"
                             :options="modules"
                             :reduce="module => module.Id"
                             :searchable="true"
-                            placeholder="Choose a value.."
-                            required></VueSelect>
+                            placeholder="Select Module"
+                            @option:selected="getModuleEnabledCompanies"
+                        >
+                            <template #search="{attributes, events}">
+                                <input
+                                    :required="!module"
+                                    class="vs__search"
+                                    v-bind="attributes"
+                                    v-on="events"
+                                />
+                            </template>
+                        </VueSelect>
+                        <InputErrorMessages v-if="errors.module" :errorMessages="errors.module"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -180,6 +233,7 @@ function submit() {
                     <div class="col-sm-8">
                         <VueSelect
                             v-model="selectedCompanies"
+                            :class="{'is-invalid': errors.selectedCompanies}"
                             :clearable="true"
                             :get-option-label="company => company.Name"
                             :inputId="`Companies`"
@@ -188,8 +242,10 @@ function submit() {
                             :reduce="company => company.Id"
                             :searchable="true"
                             multiple
-                            placeholder="Choose a value.."
-                            required></VueSelect>
+                            placeholder="Select Companies">
+                        </VueSelect>
+                        <InputErrorMessages v-if="errors.selectedCompanies"
+                                            :errorMessages="errors.selectedCompanies"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -198,7 +254,10 @@ function submit() {
                     </label>
                     <div class="col-sm-8">
                         <Select id="Disabled" v-model="disabled" :options="booleanOptions" :required="true"
+                                :select-class="errors.disabled ? `is-invalid` : ``"
                                 name="Disabled"/>
+                        <InputErrorMessages v-if="errors.disabled"
+                                            :errorMessages="errors.disabled"></InputErrorMessages>
                     </div>
                 </div>
                 <!-- END Form Horizontal - Default Style -->
@@ -211,8 +270,11 @@ function submit() {
                         Client Sync
                     </label>
                     <div class="col-sm-8">
-                        <Select id="ClientSync" v-model="clientSync" :options="clientSyncOptions" :required="false"
+                        <Select id="ClientSync" v-model="clientSync" :options="clientSyncOptions"
+                                :required="false" :select-class="errors.clientSync ? `is-invalid` : ``"
                                 name="ClientSync"/>
+                        <InputErrorMessages v-if="errors.clientSync"
+                                            :errorMessages="errors.clientSync"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -220,8 +282,10 @@ function submit() {
                         Auto Numbering
                     </label>
                     <div class="col-sm-8">
-                        <Select id="AutoNumbering" v-model="autoNumbering" :options="booleanOptions"
-                                :required="true" name="AutoNumbering"/>
+                        <Select id="AutoNumbering" v-model="autoNumbering" :options="booleanOptions" :required="true"
+                                :select-class="errors.autoNumbering ? `is-invalid` : ``" name="AutoNumbering"/>
+                        <InputErrorMessages v-if="errors.autoNumbering"
+                                            :errorMessages="errors.autoNumbering"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
@@ -229,7 +293,10 @@ function submit() {
                         Enable Truncate:
                     </label>
                     <div class="col-sm-8">
-                        <Select v-model="enableTruncate" :options="booleanOptions" :required="true"/>
+                        <Select v-model="enableTruncate" :options="booleanOptions" :required="true"
+                                :select-class="errors.enableTruncate ? `is-invalid` : ``"/>
+                        <InputErrorMessages v-if="errors.enableTruncate"
+                                            :errorMessages="errors.enableTruncate"></InputErrorMessages>
                     </div>
                 </div>
 
@@ -242,18 +309,24 @@ function submit() {
                         Sql Truncate
                     </label>
                     <div class="col-sm-8">
-                        <textarea v-model="sqlTruncate" class="form-control" placeholder=""></textarea>
+                        <textarea v-model="sqlTruncate" :class="{'is-invalid': errors.sqlTruncate}" class="form-control"
+                                  placeholder=""></textarea>
+                        <InputErrorMessages v-if="errors.sqlTruncate"
+                                            :errorMessages="errors.sqlTruncate"></InputErrorMessages>
                     </div>
                 </div>
 
             </div>
+
             <div class="col-lg-6 space-y-3 mt-3">
                 <div class="row">
                     <label class="col-sm-4 col-form-label" for="SqlSeed">
                         Sql Seed
                     </label>
                     <div class="col-sm-8">
-                        <textarea id="SqlSeed" v-model="sqlSeed" class="form-control" placeholder=""></textarea>
+                        <textarea id="SqlSeed" v-model="sqlSeed" :class="{'is-invalid': errors.sqlSeed}"
+                                  class="form-control" placeholder=""></textarea>
+                        <InputErrorMessages v-if="errors.sqlSeed" :errorMessages="errors.sqlSeed"></InputErrorMessages>
                     </div>
                 </div>
 
@@ -265,7 +338,9 @@ function submit() {
                         Note
                     </label>
                     <div class="col-sm-8">
-                        <textarea id="Note" v-model="note" class="form-control"></textarea>
+                        <textarea id="Note" v-model="note" :class="{'is-invalid': errors.note}"
+                                  class="form-control"></textarea>
+                        <InputErrorMessages v-if="errors.note" :errorMessages="errors.note"></InputErrorMessages>
                     </div>
                 </div>
             </div>
@@ -276,6 +351,3 @@ function submit() {
         </div>
     </form>
 </template>
-
-<style lang="scss">
-</style>

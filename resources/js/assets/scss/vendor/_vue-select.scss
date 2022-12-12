@@ -9,50 +9,54 @@
 
 // Custom styles
 .vs__dropdown-option--highlight {
-  background: $primary;
+    background: $primary;
 }
 
 .vs__dropdown-toggle {
-  padding: 2px 4px 6px;
+    padding: 2px 4px 6px;
+}
+
+.is-invalid .vs__dropdown-toggle {
+    border-color: #dc2626;
 }
 
 .vs__dropdown-toggle,
 .vs__dropdown-menu {
-  border-color: $input-border-color;
+    border-color: $input-border-color;
 }
 
 .vs__selected {
-  background: $body-bg;
-  border-color: $body-bg;
+    background: $body-bg;
+    border-color: $body-bg;
 }
 
 .vs__search::placeholder {
-  color: $input-placeholder-color;
-  opacity: 1;
+    color: $input-placeholder-color;
+    opacity: 1;
 }
 
 .vs__clear {
-  margin-right: 10px;
-  margin-top: -4px;
+    margin-right: 10px;
+    margin-top: -4px;
 }
 
 .vs__clear,
 .vs__deselect {
-  fill: $danger;
+    fill: $danger;
 }
 
 .vs__deselect {
-  margin-left: 6px;
+    margin-left: 6px;
 }
 
 .vs__open-indicator {
-  fill: $gray-500;
+    fill: $gray-500;
 }
 
 .vs--open .vs__open-indicator {
-  transform: scaleY(-1);
+    transform: scaleY(-1);
 }
 
 .vs__dropdown-option--selected {
-  opacity: 0.5;
+    opacity: 0.5;
 }

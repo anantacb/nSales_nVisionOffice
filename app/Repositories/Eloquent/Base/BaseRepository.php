@@ -29,7 +29,7 @@ abstract class BaseRepository
      * Returns paginated data.
      * Request Validated by PaginatedDataRequest
      * $request[
-     *    "search_columns" => string | array,
+     *    "selected_columns" => string | array,
      *    "relations" => [["name" => string, "columns" => null | array]],
      *    "filters" => [["column"=>"column_name", "operator" => "=,!=,...", "values" => string | array]],
      *    "filter_by_relation" => [["relation"=>string, "column"=>"column_name", "operator" => "=,!=,...", "values" => string | array]],
@@ -76,19 +76,7 @@ abstract class BaseRepository
         // Filter by relation
         if (isset($request["filter_by_relation"]) && count($request["filter_by_relation"]) > 0) {
             foreach ($request["filter_by_relation"] as $filter) {
-                $query = $query->whereHas($filter["relation"], function ($query) use ($filter) {
-                    if ($filter["values"]) {
-                        if (is_array($filter["values"])) {
-                            if ($filter["operator"] === "!=") {
-                                return $query->whereNotIn($filter["column"], $filter["values"]);
-                            } else {
-                                return $query->whereIn($filter["column"], $filter["values"]);
-                            }
-                        } else {
-                            return $query->where($filter["column"], $filter["operator"], $filter["values"]);
-                        }
-                    }
-                });
+                $query = $this->getWhereHas($query, $filter);
             }
         }
 
@@ -125,6 +113,29 @@ abstract class BaseRepository
         }
 
         return $query->get();
+    }
+
+    /**
+     * @param mixed $model
+     * @param $relation
+     * @return mixed
+     */
+    private function getWhereHas(mixed $model, $relation): mixed
+    {
+        $model = $model->whereHas($relation["relation"], function ($query) use ($relation) {
+            if ($relation["values"]) {
+                if (is_array($relation["values"])) {
+                    if ($relation["operator"] === "!=") {
+                        return $query->whereNotIn($relation["column"], $relation["values"]);
+                    } else {
+                        return $query->whereIn($relation["column"], $relation["values"]);
+                    }
+                } else {
+                    return $query->where($relation["column"], $relation["operator"], $relation["values"]);
+                }
+            }
+        });
+        return $model;
     }
 
     /**
@@ -178,16 +189,6 @@ abstract class BaseRepository
         return $this->model->find($id)->delete();
     }
 
-    /**
-     * @param Model $model
-     * @return bool|null
-     * @throws Exception
-     */
-    public function delete(Model $model)
-    {
-        return $model->delete();
-    }
-
     /*
      *  get total count with conditions
      *  conditions in array, with key, operator and value
@@ -197,6 +198,16 @@ abstract class BaseRepository
              ]
           ]
      */
+
+    /**
+     * @param Model $model
+     * @return bool|null
+     * @throws Exception
+     */
+    public function delete(Model $model)
+    {
+        return $model->delete();
+    }
 
     public function totalCount(array $where = [])
     {
@@ -213,7 +224,6 @@ abstract class BaseRepository
     {
         return $this->model->where($attribute, $operator, $value)->get();
     }
-
 
     /**
      * @param array $attributes [['column' => '','operand' => '','value' => ''|array]]
@@ -541,6 +551,12 @@ abstract class BaseRepository
      * @param array|string $selectColumns
      * @param string $order_by
      * @param boolean $order_desc
+     * @param array $filter_by_relations
+     * [
+     *      [
+     *          "relation" => "string", "column" => "column_name", "operator" => "=,!=,...", "values" => "string | array"
+     *      ]
+     * ],
      * @return Collection
      */
     public function getByAttributes(
@@ -548,7 +564,8 @@ abstract class BaseRepository
         array|string $relations = [],
         array|string $selectColumns = '',
         string       $order_by = '',
-        bool         $order_desc = false
+        bool         $order_desc = false,
+        array        $filter_by_relations = []
     )
     {
         $model = $this->getModel();
@@ -559,6 +576,12 @@ abstract class BaseRepository
 
         if ($selectColumns) {
             $model = $model->select($selectColumns);
+        }
+
+        if (isset($filter_by_relations) && count($filter_by_relations) > 0) {
+            foreach ($filter_by_relations as $filter_by_relation) {
+                $model = $this->getWhereHas($model, $filter_by_relation);
+            }
         }
 
         foreach ($attributes as $attribute) {
@@ -572,6 +595,7 @@ abstract class BaseRepository
                 $model = $model->where($attribute['column'], $attribute['operand'], $attribute['value']);
             }
         }
+
 
         if ($order_by) {
             if ($order_desc) {
