@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PaginatedDataRequest;
 use App\Http\Requests\Table\CreateTable;
+use App\Http\Requests\Table\DeleteTable;
 use App\Services\Table\TableServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
@@ -45,4 +46,11 @@ class TableController extends Controller
         $response = $this->service->createTableSaveWithoutExecuting($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
+
+    public function delete(DeleteTable $request): JsonResponse
+    {
+        $response = $this->service->deleteTable($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
 }

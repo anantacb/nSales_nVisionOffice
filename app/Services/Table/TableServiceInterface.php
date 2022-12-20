@@ -14,4 +14,6 @@ interface TableServiceInterface
     public function createTableSaveAndExecute(Request $request): ServiceDto;
 
     public function createTableSaveWithoutExecuting(Request $request): ServiceDto;
+
+    public function deleteTable(Request $request): ServiceDto;
 }

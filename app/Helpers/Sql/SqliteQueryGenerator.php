@@ -8,28 +8,30 @@ class SqliteQueryGenerator
      * @param string $tableName
      * @param array $columnDefinitions
      * [
-     *      'column' => 'Id',
-     *      'type' => 'int',
-     *      'size' => 11,
+     *      'name' => 'Id',
+     *      'data_type' => 'int',
+     *      'length' => 11,
      *      'auto_increment' => true,
      *      'nullable' => false,
      *      'default' => null,
-     *      'primary_key' => true
-     * ],
+     *      'primary_key' => true,
+     *      'unique_key' => false,
+     *      'sort_order' => 10
+     * ]
      * @return string
      */
     public static function getCreateTableSql(
         string $tableName,
         array  $columnDefinitions): string
     {
-        $sql = "DROP TABLE IF EXISTS `$tableName`;
-                CREATE TABLE IF NOT EXISTS `$tableName` (";
+        $sql = "DROP TABLE IF EXISTS `$tableName`;";
+        $sql .= "CREATE TABLE IF NOT EXISTS `$tableName` (";
 
         $columnStrings = [];
         foreach ($columnDefinitions as $column) {
-            $dataTypeString = self::getDataTypeString($column['type'], $column['size']);
+            $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
 
-            $columnString = "`" . $column['column'] . "`" . " " . $dataTypeString . " ";
+            $columnString = "`" . $column['name'] . "`" . " " . $dataTypeString . " ";
 
             if ($column['auto_increment']) {
                 $columnString .= "AUTO_INCREMENT ";

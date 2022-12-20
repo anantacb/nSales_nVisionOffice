@@ -11,7 +11,7 @@ import Company from "@/models/Company";
 import Table from "@/models/Table";
 import {useTemplateStore} from "@/stores/template";
 
-const store = useTemplateStore();
+const templateStore = useTemplateStore();
 
 const emit = defineEmits(['showPreview']);
 
@@ -111,20 +111,18 @@ async function getAllModules() {
 }
 
 async function getModuleEnabledCompanies() {
-    console.log(module.value);
     if (!module.value) {
         companies.value = [];
         return;
     }
     loading.value.companiesDropDown = true;
-    //let data = await Company.getAllCompanies();
     let data = await Company.getModuleEnabledCompanies(module.value);
     companies.value = data.data;
     loading.value.companiesDropDown = false;
 }
 
 async function submit() {
-    store.pageLoader({mode: "on"});
+    templateStore.pageLoader({mode: "on"});
     let formData = {
         name: name.value,
         type: type.value,
@@ -146,9 +144,8 @@ async function submit() {
         if (err.response.status === 422) {
             errors.value = err.response.data.errors;
         }
-        console.log(errors);
     }
-    store.pageLoader({mode: "off"});
+    templateStore.pageLoader({mode: "off"});
 }
 
 </script>

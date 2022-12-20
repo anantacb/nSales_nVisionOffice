@@ -38,7 +38,23 @@ export default class Table {
 
     static createTableSaveWithoutExecuting(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-save-without-executing', {...formData})
+            axios.post('/api/create-table-save-without-executing', {
+                ...formData
+            })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static delete(tableId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/delete-table', {
+                tableId: tableId
+            })
                 .then((data) => {
                     resolve(data);
                 })

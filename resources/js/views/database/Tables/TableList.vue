@@ -2,6 +2,11 @@
 import {onMounted, ref} from 'vue';
 import DataGrid from "@/components/ui/DataGrid/DataGrid.vue";
 import Table from "@/models/Table";
+import PopOverButton from "@/components/ui/PopOvers/PopOverButton.vue";
+import Swal from 'sweetalert2';
+import {useNotificationStore} from "@/stores/notification";
+
+const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let tableFields = [
@@ -84,14 +89,35 @@ function search(query) {
     getTables();
 }
 
-function getTables() {
-    Table.getTables(request.value)
-        .then(({data}) => {
-            tableData.value = data.data;
-            paginationData.value = data.pagination;
-        })
-        .catch(err => {
-        });
+async function getTables() {
+    let {data} = await Table.getTables(request.value);
+    tableData.value = data.data;
+    paginationData.value = data.pagination;
+}
+
+function deleteTable(table, index) {
+    Swal.fire({
+        title: 'Are you sure? Delete table?',
+        html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
+        input: 'text',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        confirmButtonColor: 'red',
+        showLoaderOnConfirm: true,
+        preConfirm: (text) => {
+            return text === `Confirm`;
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            let {data} = await Table.delete(table.Id);
+            tableData.value.splice(index, 1);
+            notificationStore.showNotification(data.message);
+        }
+    })
 }
 
 </script>
@@ -109,5 +135,27 @@ function getTables() {
         @paginate="goToPage"
         @search="search"
         @sortBy="sortBy"
-    ></DataGrid>
+    >
+        <template v-slot:body-Action="props">
+            <PopOverButton
+                btnClass="btn rounded-pill btn-alt-primary me-1"
+                content="Manage Table Fields"
+                iconClass="fa fa-table-cells"
+                @click="$router.push(`table/table-fields/${props.data.Id}`)"
+            ></PopOverButton>
+            <PopOverButton
+                btnClass="btn rounded-pill btn-alt-info me-1"
+                content="Manage Table Indices"
+                iconClass="fa fa-table-cells-large"
+                @click="$router.push(`table/table-fields/${props.data.Id}`)"
+            ></PopOverButton>
+            <router-link :to="`/table/${props.data.Id}`" class="btn rounded-pill btn-alt-warning me-1">
+                <i class="fa fa-pen-alt"></i>
+            </router-link>
+            <button class="btn rounded-pill btn-alt-danger me-1" type="button"
+                    @click="deleteTable(props.data, props.index)">
+                <i class="fa fa-trash-alt"></i>
+            </button>
+        </template>
+    </DataGrid>
 </template>

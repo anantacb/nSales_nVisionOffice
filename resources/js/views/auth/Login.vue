@@ -11,8 +11,8 @@ import useVuelidate from "@vuelidate/core";
 import {required} from "@vuelidate/validators";
 import {useAuthStore} from "@/stores/auth";
 
-// Main store and Router
-const store = useTemplateStore();
+// Main templateStore and Router
+const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 
 const router = useRouter();
@@ -161,8 +161,8 @@ async function login() {
                 </div>
             </div>
             <div class="fs-sm text-muted text-center">
-                <strong>{{ store.app.name + " " + store.app.version }}</strong> &copy;
-                {{ store.app.copyright }}
+                <strong>{{ templateStore.app.name + " " + templateStore.app.version }}</strong> &copy;
+                {{ templateStore.app.copyright }}
             </div>
         </div>
     </div>

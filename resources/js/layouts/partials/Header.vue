@@ -19,10 +19,8 @@ async function logout() {
     try {
         await User.logout();
         authStore.logout();
-        //window.location = "/login";
         await router.push({name: 'login'});
     } catch (error) {
-        console.log(error);
     }
 }
 
@@ -151,7 +149,7 @@ onUnmounted(() => {
                                             src="/assets/media/avatars/avatar10.jpg"
                                         />
                                         <p class="mt-2 mb-0 fw-medium">{{ authStore.user.Email }}</p>
-                                        <p class="mb-0 text-muted fs-sm fw-medium">{{authStore.user.Initials}}</p>
+                                        <p class="mb-0 text-muted fs-sm fw-medium">{{ authStore.user.Initials }}</p>
                                     </div>
                                     <div class="p-2">
                                         <!--                                        <a

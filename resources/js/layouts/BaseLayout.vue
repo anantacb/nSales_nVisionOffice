@@ -1,5 +1,6 @@
 <script setup>
-import {computed, onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
+import {useNotificationStore} from "@/stores/notification";
 import {useTemplateStore} from "@/stores/template";
 
 // Import all layout partials
@@ -7,6 +8,7 @@ import BaseHeader from "@/layouts/partials/Header.vue";
 import BaseSidebar from "@/layouts/partials/Sidebar.vue";
 import BaseSideOverlay from "@/layouts/partials/SideOverlay.vue";
 import BaseFooter from "@/layouts/partials/Footer.vue";
+import Notification from "@/components/ui/Notification/Notification.vue";
 
 // Component properties
 defineProps({
@@ -17,68 +19,70 @@ defineProps({
     },
 });
 
-// Main store
-const store = useTemplateStore();
+// Main templateStore
+const templateStore = useTemplateStore();
 
 // Set default color theme
-store.setColorTheme({
-    theme: store.settings.colorTheme,
+templateStore.setColorTheme({
+    theme: templateStore.settings.colorTheme,
 });
 
-// Render main classes based on store options
+// Render main classes based on templateStore options
 const classContainer = computed(() => {
     return {
-        "sidebar-r": store.layout.sidebar && !store.settings.sidebarLeft,
-        "sidebar-mini": store.layout.sidebar && store.settings.sidebarMini,
-        "sidebar-o": store.layout.sidebar && store.settings.sidebarVisibleDesktop,
-        "sidebar-o-xs": store.layout.sidebar && store.settings.sidebarVisibleMobile,
+        "sidebar-r": templateStore.layout.sidebar && !templateStore.settings.sidebarLeft,
+        "sidebar-mini": templateStore.layout.sidebar && templateStore.settings.sidebarMini,
+        "sidebar-o": templateStore.layout.sidebar && templateStore.settings.sidebarVisibleDesktop,
+        "sidebar-o-xs": templateStore.layout.sidebar && templateStore.settings.sidebarVisibleMobile,
         "sidebar-dark":
-            store.layout.sidebar &&
-            store.settings.sidebarDark &&
-            !store.settings.darkMode,
+            templateStore.layout.sidebar &&
+            templateStore.settings.sidebarDark &&
+            !templateStore.settings.darkMode,
         "side-overlay-o":
-            store.layout.sideOverlay && store.settings.sideOverlayVisible,
+            templateStore.layout.sideOverlay && templateStore.settings.sideOverlayVisible,
         "side-overlay-hover":
-            store.layout.sideOverlay && store.settings.sideOverlayHoverable,
+            templateStore.layout.sideOverlay && templateStore.settings.sideOverlayHoverable,
         "enable-page-overlay":
-            store.layout.sideOverlay && store.settings.pageOverlay,
-        "page-header-fixed": store.layout.header && store.settings.headerFixed,
+            templateStore.layout.sideOverlay && templateStore.settings.pageOverlay,
+        "page-header-fixed": templateStore.layout.header && templateStore.settings.headerFixed,
         "page-header-dark":
-            store.layout.header &&
-            store.settings.headerDark &&
-            !store.settings.darkMode,
-        "main-content-boxed": store.settings.mainContent === "boxed",
-        "main-content-narrow": store.settings.mainContent === "narrow",
-        "rtl-support": store.settings.rtlSupport,
-        "side-trans-enabled": store.settings.sideTransitions,
+            templateStore.layout.header &&
+            templateStore.settings.headerDark &&
+            !templateStore.settings.darkMode,
+        "main-content-boxed": templateStore.settings.mainContent === "boxed",
+        "main-content-narrow": templateStore.settings.mainContent === "narrow",
+        "rtl-support": templateStore.settings.rtlSupport,
+        "side-trans-enabled": templateStore.settings.sideTransitions,
         "side-scroll": true,
-        "sidebar-dark page-header-dark dark-mode": store.settings.darkMode,
+        "sidebar-dark page-header-dark dark-mode": templateStore.settings.darkMode,
     };
 });
 
 // Change dark mode based on dark mode system preference
-if (store.settings.darkModeSystem) {
+if (templateStore.settings.darkModeSystem) {
     if (
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
-        store.darkMode({mode: "on"});
+        templateStore.darkMode({mode: "on"});
     } else {
-        store.darkMode({mode: "off"});
+        templateStore.darkMode({mode: "off"});
     }
 }
 
 window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (e) => {
-        if (store.settings.darkModeSystem) {
+        if (templateStore.settings.darkModeSystem) {
             if (e.matches) {
-                store.darkMode({mode: "on"});
+                templateStore.darkMode({mode: "on"});
             } else {
-                store.darkMode({mode: "off"});
+                templateStore.darkMode({mode: "off"});
             }
         }
     });
+
+let notifications = ref([]);
 
 // Remove side transitions on window resizing
 onMounted(() => {
@@ -87,30 +91,33 @@ onMounted(() => {
     window.addEventListener("resize", () => {
         clearTimeout(winResize);
 
-        store.setSideTransitions({transitions: false});
+        templateStore.setSideTransitions({transitions: false});
 
         winResize = setTimeout(() => {
-            store.setSideTransitions({transitions: true});
+            templateStore.setSideTransitions({transitions: true});
         }, 500);
     });
 });
+
+const notificationStore = useNotificationStore();
+
 </script>
 
 <template>
     <div id="page-container" :class="classContainer">
         <!-- Page Loader -->
-        <div id="page-loader" :class="{ show: store.settings.pageLoader }"></div>
+        <div id="page-loader" :class="{ show: templateStore.settings.pageLoader }"></div>
 
         <!-- Page Overlay -->
         <div
-            v-if="store.layout.sideOverlay && store.settings.pageOverlay"
+            v-if="templateStore.layout.sideOverlay && templateStore.settings.pageOverlay"
             id="page-overlay"
-            @click="store.sideOverlay({ mode: 'close' })"
+            @click="templateStore.sideOverlay({ mode: 'close' })"
         ></div>
         <!-- END Page Overlay -->
 
         <!-- Side Overlay -->
-        <BaseSideOverlay v-if="store.layout.sideOverlay">
+        <BaseSideOverlay v-if="templateStore.layout.sideOverlay">
             <template #header>
                 <slot name="side-overlay-header"></slot>
             </template>
@@ -125,7 +132,7 @@ onMounted(() => {
 
         <!-- Sidebar -->
         <BaseSidebar
-            v-if="store.layout.sidebar"
+            v-if="templateStore.layout.sidebar"
             :with-mini-nav="sidebarWithMiniNav"
         >
             <template #header>
@@ -145,7 +152,7 @@ onMounted(() => {
         <!-- END Sidebar -->
 
         <!-- Header -->
-        <BaseHeader v-if="store.layout.header">
+        <BaseHeader v-if="templateStore.layout.header">
             <template #content-left>
                 <slot name="header-content-left"></slot>
             </template>
@@ -164,12 +171,25 @@ onMounted(() => {
         <!-- Main Container -->
         <div id="main-container">
             <slot name="page-top-content"></slot>
+
+            <div
+                class="position-fixed top-0 end-0 p-3 space-y-3"
+                style="z-index: 9999"
+            >
+                <!-- Notifications -->
+                <Notification v-for="(notification, index) in notificationStore.notifications"
+                              :index="index"
+                              :message="notification.message"
+                              :timer="notification.timer"
+                              :type="notification.type"
+                ></Notification>
+            </div>
             <RouterView/>
         </div>
         <!-- END Main Container -->
 
         <!-- Footer -->
-        <BaseFooter v-if="store.layout.footer">
+        <BaseFooter v-if="templateStore.layout.footer">
             <template #content-left>
                 <slot name="footer-content-left"></slot>
             </template>

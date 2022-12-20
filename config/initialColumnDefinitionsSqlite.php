@@ -1,57 +1,69 @@
 <?php
 return [
     [
-        'column' => 'Id',
-        'type' => 'int',
-        'size' => 11,
+        'name' => 'Id',
+        'data_type' => 'int',
+        'length' => 11,
         'auto_increment' => true,
         'nullable' => false,
         'default' => null,
-        'primary_key' => true
+        'primary_key' => true,
+        'unique_key' => false,
+        'sort_order' => 10
     ],
     [
-        'column' => 'InsertTime',
-        'type' => 'datetime',
-        'size' => null,
+        'name' => 'InsertTime',
+        'data_type' => 'datetime',
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
-        'primary_key' => false
+        'primary_key' => false,
+        'unique_key' => false,
+        'sort_order' => 20
     ],
     [
-        'column' => 'UpdateTime',
-        'type' => 'datetime',
-        'size' => null,
+        'name' => 'UpdateTime',
+        'data_type' => 'datetime',
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
-        'primary_key' => false
+        'primary_key' => false,
+        'unique_key' => false,
+        'sort_order' => 30
     ],
     [
-        'column' => 'DeleteTime',
-        'type' => 'datetime',
-        'size' => null,
+        'name' => 'DeleteTime',
+        'data_type' => 'datetime',
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
-        'primary_key' => false
+        'primary_key' => false,
+        'unique_key' => false,
+        'sort_order' => 40
     ],
     /*[
-        'column' => 'ImportTime',
-        'type' => 'datetime',
-        'size' => null,
+        'name' => 'ImportTime',
+        'data_type' => 'datetime',
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
-        'primary_key' => false
+        'primary_key' => false,
+        'unique_key' => false,
+    'sort_order => 10
     ],
     [
-        'column' => 'ExportTime',
-        'type' => 'datetime',
-        'size' => null,
+        'name' => 'ExportTime',
+        'data_type' => 'datetime',
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
-        'primary_key' => false
+        'primary_key' => false,
+        'unique_key' => false,
+    'sort_order => 10
     ]*/
 ];

@@ -9,14 +9,16 @@ class MysqlQueryGenerator
      * @param string $tableName
      * @param array $columnDefinitions
      * [
-     *      'column' => 'Id',
-     *      'type' => 'int',
-     *      'size' => 11,
+     *      'name' => 'Id',
+     *      'data_type' => 'int',
+     *      'length' => 11,
      *      'auto_increment' => true,
      *      'nullable' => false,
      *      'default' => null,
-     *      'primary_key' => true
-     * ],
+     *      'primary_key' => true,
+     *      'unique_key' => false,
+     *      'sort_order' => 10
+     * ]
      * @param string $engine
      * @param string $charset
      * @param string $collate
@@ -30,7 +32,7 @@ class MysqlQueryGenerator
         string $charset = 'utf8mb4',
         string $collate = 'utf8mb4_general_ci'): string
     {
-        $sql = "CREATE TABLE IF NOT EXISTS";
+        $sql = "CREATE TABLE IF NOT EXISTS ";
 
         if ($databaseName) {
             $sql .= "`$databaseName`.";
@@ -40,9 +42,9 @@ class MysqlQueryGenerator
 
         $columnStrings = [];
         foreach ($columnDefinitions as $column) {
-            $dataTypeString = self::getDataTypeString($column['data_type'], $column['size']);
+            $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
 
-            $columnString = "`" . $column['column'] . "`" . " " . $dataTypeString . " ";
+            $columnString = "`" . $column['name'] . "`" . " " . $dataTypeString . " ";
 
             if ($column['nullable']) {
                 $columnString .= "null ";
@@ -72,15 +74,15 @@ class MysqlQueryGenerator
         return $sql . implode(",", $columnStrings) . ") ENGINE=" . $engine . " DEFAULT CHARSET=" . $charset . " COLLATE=" . $collate . ";";
     }
 
-    private static function getDataTypeString($data_type, $size = null)
+    private static function getDataTypeString($data_type, $length = null)
     {
         $dataTypeString = "";
         switch ($data_type) {
             case 'int':
-                $dataTypeString = "int(" . $size . ")";
+                $dataTypeString = "int(" . $length . ")";
                 break;
             case 'varchar':
-                $dataTypeString = "varchar(" . $size . ")";
+                $dataTypeString = "varchar(" . $length . ")";
                 break;
             case 'text':
                 $dataTypeString = "text";
@@ -113,5 +115,15 @@ class MysqlQueryGenerator
                 break;
         }
         return $dataTypeString;
+    }
+
+    /**
+     * @param $databaseName
+     * @param $tableName
+     * @return string
+     */
+    public static function getDropTableSql($databaseName, $tableName): string
+    {
+        return "DROP TABLE IF EXISTS `$databaseName`.`$tableName`;";
     }
 }

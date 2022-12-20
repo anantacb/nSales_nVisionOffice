@@ -1,9 +1,9 @@
 <?php
 return [
     [
-        'column' => 'Id',
+        'name' => 'Id',
         'data_type' => 'int',
-        'size' => 11,
+        'length' => 11,
         'auto_increment' => true,
         'nullable' => false,
         'default' => null,
@@ -12,9 +12,9 @@ return [
         'sort_order' => 10
     ],
     [
-        'column' => 'InsertTime',
+        'name' => 'InsertTime',
         'data_type' => 'datetime',
-        'size' => null,
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
@@ -23,9 +23,9 @@ return [
         'sort_order' => 20
     ],
     [
-        'column' => 'UpdateTime',
+        'name' => 'UpdateTime',
         'data_type' => 'datetime',
-        'size' => null,
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
@@ -34,9 +34,9 @@ return [
         'sort_order' => 30
     ],
     [
-        'column' => 'DeleteTime',
+        'name' => 'DeleteTime',
         'data_type' => 'datetime',
-        'size' => null,
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
@@ -45,9 +45,9 @@ return [
         'sort_order' => 40
     ],
     /*[
-        'column' => 'ImportTime',
+        'name' => 'ImportTime',
         'data_type' => 'datetime',
-        'size' => null,
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,
@@ -56,9 +56,9 @@ return [
     'sort_order => 10
     ],
     [
-        'column' => 'ExportTime',
+        'name' => 'ExportTime',
         'data_type' => 'datetime',
-        'size' => null,
+        'length' => null,
         'auto_increment' => false,
         'nullable' => true,
         'default' => null,

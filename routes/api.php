@@ -34,6 +34,7 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     // Tables
     Route::post('/tables', [TableController::class, 'getTables']);
+    Route::post('/delete-table', [TableController::class, 'delete']);
     Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
     Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
     Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
