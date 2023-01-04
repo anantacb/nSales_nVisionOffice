@@ -9,7 +9,8 @@ const Login = () => import("@/views/auth/Login.vue");
 const Home = () => import("@/views/Home.vue");
 
 const Tables = () => import("@/views/database/Tables/Tables.vue");
-const CreateTable = () => import("@/views/database/Tables/CreateTable.vue");
+const CreateTable = () => import("@/views/database/CreateTable/CreateTable.vue");
+const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
 
 const routes = [
     {
@@ -36,6 +37,14 @@ const routes = [
                 path: "tables/create",
                 name: "create-table",
                 component: CreateTable,
+                meta: {
+                    authenticated: true
+                }
+            },
+            {
+                path: "table/:id/table-fields",
+                name: "manage-table-fields",
+                component: TableFields,
                 meta: {
                     authenticated: true
                 }

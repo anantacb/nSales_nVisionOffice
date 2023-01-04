@@ -12,6 +12,20 @@ export default class Table {
         });
     }
 
+    static getDetails(tableId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/table-details', {
+                tableId: tableId
+            })
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static getCreatePreviewSql(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/create-table-preview-sql', {...formData})

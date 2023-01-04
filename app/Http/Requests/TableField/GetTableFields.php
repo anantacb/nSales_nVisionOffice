@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Table;
+namespace App\Http\Requests\TableField;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteTable extends FormRequest
+class GetTableFields extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -28,8 +28,8 @@ export default {
 
 <style lang="scss" scoped>
 .data-grid-filter-wrapper {
-    display: flex;
-    justify-content: flex-end;
+    //align-items: end;
+    //justify-content: flex-end;
     margin-bottom: 0.5rem;
     margin-top: 0.5rem;
 

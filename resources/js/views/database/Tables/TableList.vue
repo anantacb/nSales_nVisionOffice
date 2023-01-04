@@ -61,7 +61,7 @@ let request = ref({
     search_columns: ['Name'],
     //relations: [],
     filters: null,
-    order: null,
+    order: {},
     pagination: {"page_no": 1, "per_page": 20},
     query: null
 });
@@ -117,7 +117,7 @@ function deleteTable(table, index) {
             tableData.value.splice(index, 1);
             notificationStore.showNotification(data.message);
         }
-    })
+    });
 }
 
 </script>
@@ -141,13 +141,13 @@ function deleteTable(table, index) {
                 btnClass="btn rounded-pill btn-alt-primary me-1"
                 content="Manage Table Fields"
                 iconClass="fa fa-table-cells"
-                @click="$router.push(`table/table-fields/${props.data.Id}`)"
+                @click="$router.push({name: 'manage-table-fields', params: {id: props.data.Id}})"
             ></PopOverButton>
             <PopOverButton
                 btnClass="btn rounded-pill btn-alt-info me-1"
                 content="Manage Table Indices"
                 iconClass="fa fa-table-cells-large"
-                @click="$router.push(`table/table-fields/${props.data.Id}`)"
+                @click="$router.push({name: 'manage-table-fields', params: {id: props.data.Id}})"
             ></PopOverButton>
             <router-link :to="`/table/${props.data.Id}`" class="btn rounded-pill btn-alt-warning me-1">
                 <i class="fa fa-pen-alt"></i>

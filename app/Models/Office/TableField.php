@@ -12,6 +12,15 @@ class TableField extends BaseModel
 
     protected $table = 'TableField';
 
+    protected $casts = [
+        'InsertTime' => 'datetime:Y-m-d H:i:s',
+        'UpdateTime' => 'datetime:Y-m-d H:i:s',
+        'Nullable' => 'boolean',
+        'Unique' => 'boolean',
+        'PrimaryKey' => 'boolean',
+        'AutoIncrement' => 'boolean',
+    ];
+
     public function companyTableFields(): HasMany
     {
         return $this->hasMany(CompanyTableField::class, 'TableFieldId', 'Id');

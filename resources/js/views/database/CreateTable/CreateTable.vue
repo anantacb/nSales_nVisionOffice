@@ -1,5 +1,5 @@
 <script setup>
-import CreateTableForm from "@/views/database/Tables/CreateTableForm.vue";
+import CreateTableForm from "@/views/database/CreateTable/CreateTableForm.vue";
 import Modal from "@/components/ui/Modal/Modal.vue";
 import {ref} from "vue";
 import Table from "@/models/Table";
@@ -112,7 +112,7 @@ async function saveAndExecute() {
                                 </button>
                             </li>
                         </ul>
-                        <div class="block-content tab-content fs-sm scrollable-content">
+                        <div class="block-content tab-content fs-sm scrollable-modal-content">
                             <div
                                 id="mysql-tab"
                                 aria-labelledby="btabs-static-home-tab"
@@ -170,10 +170,3 @@ async function saveAndExecute() {
     </div>
     <!-- END Page Content -->
 </template>
-
-<style lang="scss" scoped>
-.scrollable-content {
-    max-height: 80vh;
-    overflow: scroll;
-}
-</style>

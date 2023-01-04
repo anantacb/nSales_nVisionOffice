@@ -1,6 +1,13 @@
 <template>
     <div :style="getContainerStyle" class="data-grid-container scrollbar">
-        <DataGridFilter v-if="searchable" @search="searchBy"/>
+
+        <div class="data-grid-filters">
+            <div class="data-grid-extra-filters">
+                <slot name="extra-filters"></slot>
+            </div>
+            <DataGridFilter v-if="searchable" @search="searchBy"/>
+        </div>
+
         <div :style="getGridStyle" class="data-grid">
             <div
                 v-for="field in modifiedTablefields"
@@ -79,6 +86,7 @@
                 </div>
             </template>
         </div>
+
         <DataGridPagination v-if="pagination" :pagination="pagination" @paginate="goToPage"/>
     </div>
 </template>
@@ -218,11 +226,23 @@ export default {
     overflow: auto;
 }
 
+.dark-mode {
+    .data-grid {
+        .data-grid-head-item {
+            background-color: white;
+
+            span {
+                color: black;
+            }
+        }
+    }
+}
+
 .data-grid {
     border-collapse: collapse;
     font-size: 0.9rem;
     line-height: 1.5;
-    margin-bottom: 0;
+    margin-bottom: 15px;
     position: relative;
     display: grid;
     // grid-template-columns: repeat(6, minmax(100px, auto));
@@ -246,6 +266,11 @@ export default {
         top: 0;
         z-index: 5;
         align-items: flex-end;
+        background-color: #1f2937;
+
+        span {
+            color: white;
+        }
 
         .sort-link {
             text-decoration: none;
@@ -309,5 +334,15 @@ export default {
 
 .grid-full-width {
     grid-column: 1/-1;
+}
+
+.data-grid-filters {
+    display: flex;
+    justify-content: space-between;
+}
+
+.data-grid-extra-filters {
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
 }
 </style>

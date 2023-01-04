@@ -327,4 +327,16 @@ class TableService implements TableServiceInterface
 
         return new ServiceDto("Table Deleted Successfully.", 200);
     }
+
+    public function getDetails(Request $request): ServiceDto
+    {
+        $table = $this->tableRepository->firstByAttributes(
+            [
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableId')]
+            ],
+            ['companyTables.company', 'module.companies']
+        );
+
+        return new ServiceDto("Table Deleted Successfully.", 200, $table);
+    }
 }
