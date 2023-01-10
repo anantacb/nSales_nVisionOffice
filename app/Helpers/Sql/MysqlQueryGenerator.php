@@ -100,30 +100,31 @@ class MysqlQueryGenerator
     /**
      * @param $column
      * @param string $columnString
+     * @param bool $forModify
      * @return string
      */
-    private static function getColumnStr($column, string $columnString): string
+    private static function getColumnStr($column, string $columnString, bool $forModify = false): string
     {
         if ($column['nullable']) {
-            $columnString .= "null ";
+            $columnString .= "NULL ";
         } else {
-            $columnString .= "not null ";
+            $columnString .= "NOT NULL ";
         }
 
         if ($column['auto_increment']) {
             $columnString .= "AUTO_INCREMENT ";
         }
 
-        if ($column['primary_key']) {
+        if ($column['primary_key'] && !$forModify) {
             $columnString .= "PRIMARY KEY ";
         }
 
-        if ($column['unique_key']) {
+        if ($column['unique_key'] && !$forModify) {
             $columnString .= "UNIQUE KEY ";
         }
 
         if (!is_null($column['default'])) {
-            $columnString .= "default '{$column['default']}' ";
+            $columnString .= "DEFAULT '{$column['default']}' ";
         }
         return $columnString;
     }
@@ -150,12 +151,24 @@ class MysqlQueryGenerator
         return $sql;
     }
 
-    public static function getDeleteColumnSql($databaseName, $tableName, $columnName)
+    public static function getModifyColumnSql($databaseName, $tableName, $column): string
     {
-        return "ALTER TABLE `$databaseName`.`$tableName` DROP COLUMN `$columnName`";
+        $sql = "ALTER TABLE `$databaseName`.`$tableName` MODIFY ";
+        $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
+        $columnString = "`{$column['name']}` $dataTypeString ";
+
+        $columnString = self::getColumnStr($column, $columnString, true);
+
+        $sql .= trim($columnString) . ";";
+        return $sql;
     }
 
-    public static function getRenameColumnSql($databaseName, $tableName, $oldName, $newColumDefinition)
+    public static function getDeleteColumnSql($databaseName, $tableName, $columnName): string
+    {
+        return "ALTER TABLE `$databaseName`.`$tableName` DROP COLUMN `$columnName`;";
+    }
+
+    public static function getRenameColumnSql($databaseName, $tableName, $oldName, $newColumDefinition): string
     {
         $sql = "ALTER TABLE `$databaseName`.`$tableName` CHANGE `$oldName` ";
         $dataTypeString = self::getDataTypeString($newColumDefinition['data_type'], $newColumDefinition['length']);
@@ -163,5 +176,25 @@ class MysqlQueryGenerator
         $columnString = self::getColumnStr($newColumDefinition, $columnString);
         $sql .= trim($columnString) . ";";
         return $sql;
+    }
+
+    public static function getAddPrimaryKeySql($databaseName, $tableName, $columnName): string
+    {
+        return "ALTER TABLE `$databaseName`.`$tableName` ADD PRIMARY KEY(`$columnName`);";
+    }
+
+    public static function getRemovePrimaryKeySql($databaseName, $tableName, $columnName): string
+    {
+        return "ALTER TABLE `$databaseName`.`$tableName` DROP INDEX `PRIMARY`;";
+    }
+
+    public static function getAddUniqueKeySql($databaseName, $tableName, $columnName): string
+    {
+        return "ALTER TABLE `$databaseName`.`$tableName` ADD UNIQUE(`$columnName`);";
+    }
+
+    public static function getRemoveUniqueKeySql($databaseName, $tableName, $columnName): string
+    {
+        return "ALTER TABLE `$databaseName`.`$tableName` DROP INDEX `$columnName`;";
     }
 }
