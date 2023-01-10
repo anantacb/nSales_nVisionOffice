@@ -8,8 +8,8 @@ import router from "@/router";
 // Grab example data
 //import notifications from "@/data/notifications";
 
-// Main store and Router
-const store = useTemplateStore();
+// Main Template Store and Router
+const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 
 // Reactive variables
@@ -19,23 +19,21 @@ async function logout() {
     try {
         await User.logout();
         authStore.logout();
-        //window.location = "/login";
         await router.push({name: 'login'});
     } catch (error) {
-        console.log(error);
     }
 }
 
 // On form search submit functionality
 function onSubmitSearch() {
-    router.push("/backend/pages/generic/search?" + baseSearchTerm.value);
+    //router.push("/backend/pages/generic/search?" + baseSearchTerm.value);
 }
 
 // When ESCAPE key is hit close the header search section
 function eventHeaderSearch(event) {
     if (event.which === 27) {
         event.preventDefault();
-        store.headerSearch({mode: "off"});
+        templateStore.headerSearch({mode: "off"});
     }
 }
 
@@ -64,7 +62,7 @@ onUnmounted(() => {
                             <button
                                 class="btn btn-sm btn-alt-secondary me-2 d-lg-none"
                                 type="button"
-                                @click="store.sidebar({ mode: 'toggle' })"
+                                @click="templateStore.sidebar({ mode: 'toggle' })"
                             >
                                 <i class="fa fa-fw fa-bars"></i>
                             </button>
@@ -74,7 +72,7 @@ onUnmounted(() => {
                             <button
                                 class="btn btn-sm btn-alt-secondary me-2 d-none d-lg-inline-block"
                                 type="button"
-                                @click="store.sidebarMini({ mode: 'toggle' })"
+                                @click="templateStore.sidebarMini({ mode: 'toggle' })"
                             >
                                 <i class="fa fa-fw fa-ellipsis-v"></i>
                             </button>
@@ -84,7 +82,7 @@ onUnmounted(() => {
                             <button
                                 class="btn btn-sm btn-alt-secondary d-md-none"
                                 type="button"
-                                @click="store.headerSearch({ mode: 'on' })"
+                                @click="templateStore.headerSearch({ mode: 'on' })"
                             >
                                 <i class="fa fa-fw fa-search"></i>
                             </button>
@@ -151,7 +149,7 @@ onUnmounted(() => {
                                             src="/assets/media/avatars/avatar10.jpg"
                                         />
                                         <p class="mt-2 mb-0 fw-medium">{{ authStore.user.Email }}</p>
-                                        <p class="mb-0 text-muted fs-sm fw-medium">{{authStore.user.Initials}}</p>
+                                        <p class="mb-0 text-muted fs-sm fw-medium">{{ authStore.user.Initials }}</p>
                                     </div>
                                     <div class="p-2">
                                         <!--                                        <a
@@ -272,7 +270,7 @@ onUnmounted(() => {
                             <button
                                 class="btn btn-sm btn-alt-secondary ms-2"
                                 type="button"
-                                @click="store.sideOverlay({ mode: 'toggle' })"
+                                @click="templateStore.sideOverlay({ mode: 'toggle' })"
                             >
                                 <i class="fa fa-fw fa-list-ul fa-flip-horizontal"></i>
                             </button>
@@ -287,7 +285,7 @@ onUnmounted(() => {
             <!-- Header Search -->
             <div
                 id="page-header-search"
-                :class="{ show: store.settings.headerSearch }"
+                :class="{ show: templateStore.settings.headerSearch }"
                 class="overlay-header bg-body-extra-light"
             >
                 <div class="content-header">
@@ -296,7 +294,7 @@ onUnmounted(() => {
                             <button
                                 class="btn btn-alt-danger"
                                 type="button"
-                                @click="store.headerSearch({ mode: 'off' })"
+                                @click="templateStore.headerSearch({ mode: 'off' })"
                             >
                                 <i class="fa fa-fw fa-times-circle"></i>
                             </button>
@@ -317,7 +315,7 @@ onUnmounted(() => {
             <!-- Header Loader -->
             <div
                 id="page-header-loader"
-                :class="{ show: store.settings.headerLoader }"
+                :class="{ show: templateStore.settings.headerLoader }"
                 class="overlay-header bg-body-extra-light"
             >
                 <div class="content-header">

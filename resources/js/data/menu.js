@@ -19,6 +19,11 @@ export default {
                     name: "Tables",
                     icon: "fa fa-table",
                     to: "tables",
+                },
+                {
+                    name: "Create Table",
+                    icon: "fa fa-folder-plus",
+                    to: "create-table",
                 }
             ],
         },

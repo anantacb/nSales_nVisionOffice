@@ -11,5 +11,8 @@ class Company extends BaseModel
 
     protected $table = 'Company';
 
-    protected $primaryKey = 'UUUID';
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class, CompanyModule::class, 'CompanyId', 'ModuleId');
+    }
 }

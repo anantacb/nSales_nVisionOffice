@@ -101,7 +101,8 @@ onMounted(() => {
                     <!-- Logo -->
                     <RouterLink :to="{ name: 'home' }" class="fw-semibold text-dual">
                                 <span class="smini-visible">
-                                  <i class="fa fa-circle-notch text-primary"></i>
+                                    <img src="/assets/media/favicons/favicon.png" width="20">
+                                    <!--                                  <i class="fa fa-circle-notch text-primary"></i>-->
                                 </span>
                         <span class="smini-hide fs-5 tracking-wider">
                                   nVision
@@ -185,114 +186,114 @@ onMounted(() => {
                         <!-- END Dark Mode -->
 
                         <!-- Options -->
-<!--                        <div class="dropdown d-inline-block ms-1">
-                            <button
-                                id="sidebar-themes-dropdown"
-                                aria-expanded="false"
-                                aria-haspopup="true"
-                                class="btn btn-sm btn-alt-secondary"
-                                data-bs-auto-close="outside"
-                                data-bs-toggle="dropdown"
-                                type="button"
-                            >
-                                <i class="fa fa-brush"></i>
-                            </button>
-                            <div
-                                aria-labelledby="sidebar-themes-dropdown"
-                                class="dropdown-menu dropdown-menu-end fs-sm smini-hide border-0"
-                            >
-                                &lt;!&ndash; Color Themes &ndash;&gt;
-                                <button
-                                    class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-                                    type="button"
-                                    @click="store.setColorTheme({ theme: '' })"
-                                >
-                                    <span>Default</span>
-                                    <i class="fa fa-circle text-default"></i>
-                                </button>
-                                <button
-                                    class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-                                    type="button"
-                                    @click="store.setColorTheme({ theme: 'amethyst' })"
-                                >
-                                    <span>Amethyst</span>
-                                    <i class="fa fa-circle text-amethyst"></i>
-                                </button>
-                                <button
-                                    class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-                                    type="button"
-                                    @click="store.setColorTheme({ theme: 'city' })"
-                                >
-                                    <span>City</span>
-                                    <i class="fa fa-circle text-city"></i>
-                                </button>
-                                <button
-                                    class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-                                    type="button"
-                                    @click="store.setColorTheme({ theme: 'flat' })"
-                                >
-                                    <span>Flat</span>
-                                    <i class="fa fa-circle text-flat"></i>
-                                </button>
-                                <button
-                                    class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-                                    type="button"
-                                    @click="store.setColorTheme({ theme: 'modern' })"
-                                >
-                                    <span>Modern</span>
-                                    <i class="fa fa-circle text-modern"></i>
-                                </button>
-                                <button
-                                    class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
-                                    type="button"
-                                    @click="store.setColorTheme({ theme: 'smooth' })"
-                                >
-                                    <span>Smooth</span>
-                                    <i class="fa fa-circle text-smooth"></i>
-                                </button>
-                                &lt;!&ndash; END Color Themes &ndash;&gt;
+                        <!--                        <div class="dropdown d-inline-block ms-1">
+                                                    <button
+                                                        id="sidebar-themes-dropdown"
+                                                        aria-expanded="false"
+                                                        aria-haspopup="true"
+                                                        class="btn btn-sm btn-alt-secondary"
+                                                        data-bs-auto-close="outside"
+                                                        data-bs-toggle="dropdown"
+                                                        type="button"
+                                                    >
+                                                        <i class="fa fa-brush"></i>
+                                                    </button>
+                                                    <div
+                                                        aria-labelledby="sidebar-themes-dropdown"
+                                                        class="dropdown-menu dropdown-menu-end fs-sm smini-hide border-0"
+                                                    >
+                                                        &lt;!&ndash; Color Themes &ndash;&gt;
+                                                        <button
+                                                            class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
+                                                            type="button"
+                                                            @click="store.setColorTheme({ theme: '' })"
+                                                        >
+                                                            <span>Default</span>
+                                                            <i class="fa fa-circle text-default"></i>
+                                                        </button>
+                                                        <button
+                                                            class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
+                                                            type="button"
+                                                            @click="store.setColorTheme({ theme: 'amethyst' })"
+                                                        >
+                                                            <span>Amethyst</span>
+                                                            <i class="fa fa-circle text-amethyst"></i>
+                                                        </button>
+                                                        <button
+                                                            class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
+                                                            type="button"
+                                                            @click="store.setColorTheme({ theme: 'city' })"
+                                                        >
+                                                            <span>City</span>
+                                                            <i class="fa fa-circle text-city"></i>
+                                                        </button>
+                                                        <button
+                                                            class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
+                                                            type="button"
+                                                            @click="store.setColorTheme({ theme: 'flat' })"
+                                                        >
+                                                            <span>Flat</span>
+                                                            <i class="fa fa-circle text-flat"></i>
+                                                        </button>
+                                                        <button
+                                                            class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
+                                                            type="button"
+                                                            @click="store.setColorTheme({ theme: 'modern' })"
+                                                        >
+                                                            <span>Modern</span>
+                                                            <i class="fa fa-circle text-modern"></i>
+                                                        </button>
+                                                        <button
+                                                            class="dropdown-item d-flex align-items-center justify-content-between fw-medium"
+                                                            type="button"
+                                                            @click="store.setColorTheme({ theme: 'smooth' })"
+                                                        >
+                                                            <span>Smooth</span>
+                                                            <i class="fa fa-circle text-smooth"></i>
+                                                        </button>
+                                                        &lt;!&ndash; END Color Themes &ndash;&gt;
 
-                                <div v-if="!store.settings.darkMode">
-                                    <div class="dropdown-divider"></div>
+                                                        <div v-if="!store.settings.darkMode">
+                                                            <div class="dropdown-divider"></div>
 
-                                    &lt;!&ndash; Sidebar Styles &ndash;&gt;
-                                    <button
-                                        class="dropdown-item fw-medium"
-                                        type="button"
-                                        @click="store.sidebarStyle({ mode: 'light' })"
-                                    >
-                                        <span>Sidebar Light</span>
-                                    </button>
-                                    <button
-                                        class="dropdown-item fw-medium"
-                                        type="button"
-                                        @click="store.sidebarStyle({ mode: 'dark' })"
-                                    >
-                                        <span>Sidebar Dark</span>
-                                    </button>
-                                    &lt;!&ndash; END Sidebar Styles &ndash;&gt;
+                                                            &lt;!&ndash; Sidebar Styles &ndash;&gt;
+                                                            <button
+                                                                class="dropdown-item fw-medium"
+                                                                type="button"
+                                                                @click="store.sidebarStyle({ mode: 'light' })"
+                                                            >
+                                                                <span>Sidebar Light</span>
+                                                            </button>
+                                                            <button
+                                                                class="dropdown-item fw-medium"
+                                                                type="button"
+                                                                @click="store.sidebarStyle({ mode: 'dark' })"
+                                                            >
+                                                                <span>Sidebar Dark</span>
+                                                            </button>
+                                                            &lt;!&ndash; END Sidebar Styles &ndash;&gt;
 
-                                    <div class="dropdown-divider"></div>
+                                                            <div class="dropdown-divider"></div>
 
-                                    &lt;!&ndash; Header Styles &ndash;&gt;
-                                    <button
-                                        class="dropdown-item fw-medium"
-                                        type="button"
-                                        @click="store.headerStyle({ mode: 'light' })"
-                                    >
-                                        <span>Header Light</span>
-                                    </button>
-                                    <button
-                                        class="dropdown-item fw-medium"
-                                        type="button"
-                                        @click="store.headerStyle({ mode: 'dark' })"
-                                    >
-                                        <span>Header Dark</span>
-                                    </button>
-                                    &lt;!&ndash; END Header Styles &ndash;&gt;
-                                </div>
-                            </div>
-                        </div>-->
+                                                            &lt;!&ndash; Header Styles &ndash;&gt;
+                                                            <button
+                                                                class="dropdown-item fw-medium"
+                                                                type="button"
+                                                                @click="store.headerStyle({ mode: 'light' })"
+                                                            >
+                                                                <span>Header Light</span>
+                                                            </button>
+                                                            <button
+                                                                class="dropdown-item fw-medium"
+                                                                type="button"
+                                                                @click="store.headerStyle({ mode: 'dark' })"
+                                                            >
+                                                                <span>Header Dark</span>
+                                                            </button>
+                                                            &lt;!&ndash; END Header Styles &ndash;&gt;
+                                                        </div>
+                                                    </div>
+                                                </div>-->
                         <!-- END Options -->
                     </slot>
 
