@@ -6,6 +6,8 @@ use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
 use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
+use App\Services\ModuleSetting\ModuleSettingService;
+use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use App\Services\Table\TableService;
 use App\Services\Table\TableServiceInterface;
 use App\Services\TableField\TableFieldService;
@@ -38,5 +40,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(TableFieldServiceInterface::class, TableFieldService::class);
         $this->app->bind(ModuleServiceInterface::class, ModuleService::class);
         $this->app->bind(CompanyServiceInterface::class, CompanyService::class);
+        $this->app->bind(ModuleSettingServiceInterface::class, ModuleSettingService::class);
     }
 }

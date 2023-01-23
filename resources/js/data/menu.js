@@ -27,6 +27,23 @@ export default {
                 }
             ],
         },
+        {
+            name: "Setting",
+            icon: "fa fa-gear",
+            subActivePaths: "",
+            sub: [
+                {
+                    name: "Update Setting",
+                    icon: "fa fa-gear",
+                    to: "update-setting",
+                },
+                {
+                    name: "Create Setting",
+                    icon: "fa fa-folder-plus",
+                    to: "create-setting",
+                }
+            ],
+        },
     ],
 
     /*main1: [

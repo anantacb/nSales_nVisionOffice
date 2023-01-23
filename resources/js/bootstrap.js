@@ -6,7 +6,7 @@ import _ from 'lodash';
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 import axios from 'axios';
-import {useAuthStore} from "@/stores/auth.js";
+import {useAuthStore} from "@/stores/authStore.js";
 import router from "@/router";
 
 window._ = _;

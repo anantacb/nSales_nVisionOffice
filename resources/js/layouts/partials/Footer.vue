@@ -1,5 +1,5 @@
 <script setup>
-import {useTemplateStore} from "@/stores/template";
+import {useTemplateStore} from "@/stores/templateStore";
 
 // Main store
 const store = useTemplateStore();

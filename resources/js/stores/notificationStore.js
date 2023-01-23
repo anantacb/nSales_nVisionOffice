@@ -1,9 +1,7 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 
-export const useNotificationStore = defineStore({
-    id: 'notification',
-
+export const useNotificationStore = defineStore('notification', {
     state: () => ({
         notifications: ref([]),
         count: 0

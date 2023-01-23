@@ -6,6 +6,10 @@ use App\Repositories\Eloquent\Office\Company\CompanyRepository;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepository;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
+use App\Repositories\Eloquent\Office\Setting\ModuleSettingRepository;
+use App\Repositories\Eloquent\Office\Setting\ModuleSettingRepositoryInterface;
+use App\Repositories\Eloquent\Office\Setting\SettingRepository;
+use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Table\CompanyTableFieldRepository;
 use App\Repositories\Eloquent\Office\Table\CompanyTableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\Table\CompanyTableRepository;
@@ -41,5 +45,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TableFieldRepositoryInterface::class, TableFieldRepository::class);
         $this->app->bind(CompanyTableFieldRepositoryInterface::class, CompanyTableFieldRepository::class);
         $this->app->bind(CompanyTableRepositoryInterface::class, CompanyTableRepository::class);
+        $this->app->bind(ModuleSettingRepositoryInterface::class, ModuleSettingRepository::class);
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
     }
 }

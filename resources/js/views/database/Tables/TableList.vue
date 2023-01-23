@@ -1,10 +1,10 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import DataGrid from "@/components/ui/DataGrid/DataGrid.vue";
-import Table from "@/models/Table";
+import Table from "@/models/Office/Table";
 import PopOverButton from "@/components/ui/PopOvers/PopOverButton.vue";
 import Swal from 'sweetalert2';
-import {useNotificationStore} from "@/stores/notification";
+import {useNotificationStore} from "@/stores/notificationStore";
 
 const notificationStore = useNotificationStore();
 

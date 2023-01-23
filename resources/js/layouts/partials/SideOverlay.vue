@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, onMounted, onUnmounted } from "vue";
-import { useTemplateStore } from "@/stores/template";
+import { useTemplateStore } from "@/stores/templateStore";
 
 // SimpleBar, for more info and examples you can check out https://github.com/Grsmto/simplebar/tree/master/packages/simplebar-vue
 import SimpleBar from "simplebar";
