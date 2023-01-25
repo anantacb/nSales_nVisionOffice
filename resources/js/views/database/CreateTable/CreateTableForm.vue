@@ -6,10 +6,10 @@ import Select from "@/components/ui/FormElements/Select.vue";
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import VueSelect from 'vue-select';
 
-import Module from "@/models/Module";
-import Company from "@/models/Company";
-import Table from "@/models/Table";
-import {useTemplateStore} from "@/stores/template";
+import Module from "@/models/Office/Module";
+import Company from "@/models/Office/Company";
+import Table from "@/models/Office/Table";
+import {useTemplateStore} from "@/stores/templateStore";
 
 const templateStore = useTemplateStore();
 

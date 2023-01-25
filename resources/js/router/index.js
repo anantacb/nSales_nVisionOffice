@@ -3,7 +3,7 @@ import NProgress from "nprogress/nprogress.js";
 
 import LayoutBackend from "@/layouts/variations/Backend.vue";
 import LayoutSimple from "@/layouts/variations/Simple.vue";
-import {useAuthStore} from "@/stores/auth";
+import {useAuthStore} from "@/stores/authStore";
 
 const Login = () => import("@/views/auth/Login.vue");
 const Home = () => import("@/views/Home.vue");
@@ -11,6 +11,9 @@ const Home = () => import("@/views/Home.vue");
 const Tables = () => import("@/views/database/Tables/Tables.vue");
 const CreateTable = () => import("@/views/database/CreateTable/CreateTable.vue");
 const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
+
+const CreateSetting = () => import("@/views/setting/CreateSetting.vue");
+const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
 const routes = [
     {
@@ -22,7 +25,8 @@ const routes = [
                 name: "home",
                 component: Home,
                 meta: {
-                    authenticated: true
+                    authenticated: true,
+                    company_specific: false
                 }
             },
             {
@@ -30,7 +34,8 @@ const routes = [
                 name: "tables",
                 component: Tables,
                 meta: {
-                    authenticated: true
+                    authenticated: true,
+                    company_specific: false
                 }
             },
             {
@@ -38,7 +43,8 @@ const routes = [
                 name: "create-table",
                 component: CreateTable,
                 meta: {
-                    authenticated: true
+                    authenticated: true,
+                    company_specific: false
                 }
             },
             {
@@ -46,9 +52,28 @@ const routes = [
                 name: "manage-table-fields",
                 component: TableFields,
                 meta: {
-                    authenticated: true
+                    authenticated: true,
+                    company_specific: false
                 }
             },
+            {
+                path: "setting/update",
+                name: "update-setting",
+                component: UpdateSetting,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "setting/create",
+                name: "create-setting",
+                component: CreateSetting,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            }
         ],
     },
     {

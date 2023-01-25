@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
 use App\Http\Controllers\UserController;
@@ -50,6 +51,10 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Modules
     Route::post('/modules/all', [ModuleController::class, 'getAllModules']);
+
+    // ModuleSettings
+    Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
+    Route::post('/module-settings/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
 
     // Companies
     Route::post('/companies/all', [CompanyController::class, 'getAllCompanies']);

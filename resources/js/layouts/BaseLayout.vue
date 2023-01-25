@@ -1,7 +1,7 @@
 <script setup>
 import {computed, onMounted, ref} from "vue";
-import {useNotificationStore} from "@/stores/notification";
-import {useTemplateStore} from "@/stores/template";
+import {useNotificationStore} from "@/stores/notificationStore";
+import {useTemplateStore} from "@/stores/templateStore";
 
 // Import all layout partials
 import BaseHeader from "@/layouts/partials/Header.vue";

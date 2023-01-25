@@ -1,7 +1,7 @@
 <script setup>
 import {computed} from "vue";
 import {useRoute} from "vue-router";
-import {useTemplateStore} from "@/stores/template";
+import {useTemplateStore} from "@/stores/templateStore";
 
 // Main store and Route
 const store = useTemplateStore();

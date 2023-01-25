@@ -2,8 +2,8 @@
 import CreateTableForm from "@/views/database/CreateTable/CreateTableForm.vue";
 import Modal from "@/components/ui/Modal/Modal.vue";
 import {ref} from "vue";
-import Table from "@/models/Table";
-import {useNotificationStore} from "@/stores/notification";
+import Table from "@/models/Office/Table";
+import {useNotificationStore} from "@/stores/notificationStore";
 import router from "@/router";
 
 let sqlPreviewData = ref([]);
