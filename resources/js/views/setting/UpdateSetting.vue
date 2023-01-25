@@ -5,7 +5,7 @@ import ModuleSetting from "@/models/Office/ModuleSetting";
 import BaseBlock from "@/components/BaseBlock.vue";
 import Select from "@/components/ui/FormElements/Select.vue";
 import Swal from "sweetalert2";
-import JsonEditorVue from 'json-editor-vue'
+import JsonEditorVue from 'json-editor-vue';
 import {useTemplateStore} from "@/stores/templateStore";
 import {useNotificationStore} from "@/stores/notificationStore";
 
