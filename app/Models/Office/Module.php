@@ -22,4 +22,14 @@ class Module extends BaseModel
     {
         return $this->hasMany(ModuleSetting::class, 'ModuleId', 'Id');
     }
+
+    public function tables(): HasMany
+    {
+        return $this->hasMany(Table::class, 'ModuleId', 'Id');
+    }
+
+    public function subModules(): HasMany
+    {
+        return $this->hasMany(Module::class, 'ModuleId', 'Id');
+    }
 }

@@ -224,16 +224,16 @@ class TableService implements TableServiceInterface
                 $this->tableFieldRepository->create(
                     [
                         'TableId' => $table->Id,
-                        'SortOrder' => $columnDefinition['sort_order'],
-                        'Name' => $columnDefinition['name'],
-                        'DataType' => $columnDefinition['data_type'],
+                        'SortOrder' => $columnDefinition['SortOrder'],
+                        'Name' => $columnDefinition['Name'],
+                        'DataType' => $columnDefinition['DataType'],
                         'Type' => $request->get('type'),
-                        'Length' => $columnDefinition['length'],
-                        'Nullable' => $columnDefinition['nullable'],
-                        'Unique' => $columnDefinition['unique_key'],
-                        'PrimaryKey' => $columnDefinition['primary_key'],
-                        'DefaultValue' => $columnDefinition['default'],
-                        'AutoIncrement' => $columnDefinition['auto_increment']
+                        'Length' => $columnDefinition['Length'],
+                        'Nullable' => $columnDefinition['Nullable'],
+                        'Unique' => $columnDefinition['Unique'],
+                        'PrimaryKey' => $columnDefinition['PrimaryKey'],
+                        'DefaultValue' => $columnDefinition['DefaultValue'],
+                        'AutoIncrement' => $columnDefinition['AutoIncrement']
                     ]
                 );
             }

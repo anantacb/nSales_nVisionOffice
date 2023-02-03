@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Repositories\Eloquent\Office\Company\CompanyRepository;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
+use App\Repositories\Eloquent\Office\Module\CompanyModuleRepository;
+use App\Repositories\Eloquent\Office\Module\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepository;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\ModuleSettingRepository;
@@ -47,5 +49,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CompanyTableRepositoryInterface::class, CompanyTableRepository::class);
         $this->app->bind(ModuleSettingRepositoryInterface::class, ModuleSettingRepository::class);
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
+        $this->app->bind(CompanyModuleRepositoryInterface::class, CompanyModuleRepository::class);
     }
 }

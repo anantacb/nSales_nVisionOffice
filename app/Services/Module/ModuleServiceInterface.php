@@ -8,4 +8,10 @@ use Illuminate\Http\Request;
 interface ModuleServiceInterface
 {
     public function getAllModules(Request $request): ServiceDto;
+
+    public function getActivatedAndAvailableModulesByCompany(Request $request): ServiceDto;
+
+    public function activateModule(Request $request): ServiceDto;
+
+    public function deactivateModule(Request $request): ServiceDto;
 }
