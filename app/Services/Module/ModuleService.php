@@ -51,14 +51,14 @@ class ModuleService implements ModuleServiceInterface
             'subModules' => function ($q) {
                 $q->with([
                     'tables' => function ($q) {
-                        $q->whereIn('Type', ['Serve', 'Both']);
+                        $q->whereIn('Type', ['Server', 'Both']);
                     }
                 ]);
             },
             'tables' => function ($q) use ($companyId) {
                 $q->with(['companyTables' => function ($q) use ($companyId) {
                     $q->where('CompanyId', $companyId);
-                }])->whereIn('Type', ['Serve', 'Both']);
+                }])->whereIn('Type', ['Server', 'Both']);
             }];
 
         $installedModuleIds = $companyModules->pluck('ModuleId')->toArray();
@@ -133,12 +133,12 @@ class ModuleService implements ModuleServiceInterface
             'subModules' => function ($q) {
                 $q->with(['tables' => function ($q) {
                     $q->with(['companyTables', 'tableFields.companyTableFields'])
-                        ->whereIn('Type', ['Serve', 'Both']);
+                        ->whereIn('Type', ['Server', 'Both']);
                 }]);
             },
             'tables' => function ($q) {
                 $q->with(['companyTables', 'tableFields.companyTableFields'])
-                    ->whereIn('Type', ['Serve', 'Both']);
+                    ->whereIn('Type', ['Server', 'Both']);
             }];
 
         $module = $this->moduleRepository->firstByAttributes([
@@ -256,12 +256,12 @@ class ModuleService implements ModuleServiceInterface
             'subModules' => function ($q) {
                 $q->with(['tables' => function ($q) {
                     $q->with(['companyTables'])
-                        ->whereIn('Type', ['Serve', 'Both']);
+                        ->whereIn('Type', ['Server', 'Both']);
                 }]);
             },
             'tables' => function ($q) {
                 $q->with(['companyTables'])
-                    ->whereIn('Type', ['Serve', 'Both']);
+                    ->whereIn('Type', ['Server', 'Both']);
             }];
 
         $module = $this->moduleRepository->firstByAttributes([
