@@ -15,6 +15,10 @@ const TableFields = () => import("@/views/database/ManageTableFields/TableFields
 const CreateSetting = () => import("@/views/setting/CreateSetting.vue");
 const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
+const Modules = () => import("@/views/module/Modules.vue");
+const ActivateModule = () => import("@/views/module/ActivateModule.vue");
+const CreateModule = () => import("@/views/module/CreateModule.vue");
+
 const routes = [
     {
         path: "",
@@ -71,9 +75,36 @@ const routes = [
                 component: CreateSetting,
                 meta: {
                     authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "module/create",
+                name: "create-module",
+                component: CreateModule,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "module/activate",
+                name: "activate-module",
+                component: ActivateModule,
+                meta: {
+                    authenticated: true,
                     company_specific: true
                 }
-            }
+            },
+            {
+                path: "modules",
+                name: "modules",
+                component: Modules,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
         ],
     },
     {

@@ -13,7 +13,7 @@ export default {
         {
             name: "Database",
             icon: "fa fa-database",
-            subActivePaths: "",
+            subActivePaths: "table",
             sub: [
                 {
                     name: "Tables",
@@ -30,7 +30,7 @@ export default {
         {
             name: "Setting",
             icon: "fa fa-gear",
-            subActivePaths: "",
+            subActivePaths: "setting",
             sub: [
                 {
                     name: "Update Setting",
@@ -41,6 +41,28 @@ export default {
                     name: "Create Setting",
                     icon: "fa fa-folder-plus",
                     to: "create-setting",
+                }
+            ],
+        },
+        {
+            name: "Module",
+            icon: "fa fa-box",
+            subActivePaths: "module",
+            sub: [
+                {
+                    name: "Modules",
+                    icon: "fa fa-gear",
+                    to: "modules",
+                },
+                {
+                    name: "Create Module",
+                    icon: "fa fa-gear",
+                    to: "create-module",
+                },
+                {
+                    name: "Activate Module",
+                    icon: "fa fa-folder-plus",
+                    to: "activate-module",
                 }
             ],
         },

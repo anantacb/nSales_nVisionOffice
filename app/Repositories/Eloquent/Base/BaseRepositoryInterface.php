@@ -113,6 +113,12 @@ interface BaseRepositoryInterface
 
     /**
      * @param array $data
+     * @return Model
+     */
+    public function firstOrCreate(array $data);
+
+    /**
+     * @param array $data
      */
     public function insert(array $data);
 

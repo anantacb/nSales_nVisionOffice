@@ -51,6 +51,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Modules
     Route::post('/modules/all', [ModuleController::class, 'getAllModules']);
+    Route::post('/modules/get-activated-and-available-modules-by-company', [ModuleController::class, 'getActivatedAndAvailableModulesByCompany']);
+    Route::post('/modules/activate-module', [ModuleController::class, 'activateModule']);
+    Route::post('/modules/deactivate-module', [ModuleController::class, 'deactivateModule']);
 
     // ModuleSettings
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
