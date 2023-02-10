@@ -8,15 +8,15 @@ class SqliteQueryGenerator
      * @param string $tableName
      * @param array $columnDefinitions
      * [
-     *      'name' => 'Id',
-     *      'data_type' => 'int',
-     *      'length' => 11,
-     *      'auto_increment' => true,
-     *      'nullable' => false,
-     *      'default' => null,
-     *      'primary_key' => true,
-     *      'unique_key' => false,
-     *      'sort_order' => 10
+     * 'Name' => 'Id',
+     * 'DataType' => 'int',
+     * 'Length' => 11,
+     * 'AutoIncrement' => true,
+     * 'Nullable' => false,
+     * 'DefaultValue' => null,
+     * 'PrimaryKey' => true,
+     * 'Unique' => false,
+     * 'SortOrder' => 10
      * ]
      * @return string
      */
@@ -29,26 +29,26 @@ class SqliteQueryGenerator
 
         $columnStrings = [];
         foreach ($columnDefinitions as $column) {
-            $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
+            $dataTypeString = self::getDataTypeString($column['DataType'], $column['Length']);
 
-            $columnString = "`" . $column['name'] . "`" . " " . $dataTypeString . " ";
+            $columnString = "`" . $column['Name'] . "`" . " " . $dataTypeString . " ";
 
-            if ($column['auto_increment']) {
+            if ($column['AutoIncrement']) {
                 $columnString .= "AUTO_INCREMENT ";
             }
 
-            if ($column['primary_key']) {
+            if ($column['PrimaryKey']) {
                 $columnString .= "PRIMARY KEY ";
             } else {
-                if ($column['nullable']) {
-                    $columnString .= "null ";
+                if ($column['Nullable']) {
+                    $columnString .= "NULL ";
                 } else {
-                    $columnString .= "not null ";
+                    $columnString .= "NOT NULL ";
                 }
             }
 
-            if (!is_null($column['default'])) {
-                $columnString .= "default " . $column['default'] . " ";
+            if (!is_null($column['DefaultValue'])) {
+                $columnString .= "DEFAULT " . $column['DefaultValue'] . " ";
             }
 
             $columnStrings[] = trim($columnString);

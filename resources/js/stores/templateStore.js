@@ -1,8 +1,7 @@
 import {defineStore} from "pinia";
 
 // Main Pinia Store
-export const useTemplateStore = defineStore({
-    id: "template",
+export const useTemplateStore = defineStore('template', {
     state: () => ({
         // App vital details
         app: {

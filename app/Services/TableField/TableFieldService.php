@@ -112,7 +112,7 @@ class TableFieldService implements TableFieldServiceInterface
                     $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
 
                     foreach ($selectedDatabases as $database) {
-                        $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $this->makeFieldDefinitionArray($newField));
+                        $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $newField);
                         $sqlQueries[] = $sql;
                     }
                 }
@@ -157,8 +157,7 @@ class TableFieldService implements TableFieldServiceInterface
                         $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                         $selectedDatabasesForUpdate = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                         foreach ($selectedDatabasesForUpdate as $database) {
-                            $newColumDefinition = $this->makeFieldDefinitionArray($requestedUpdatedTableField);
-                            $sql = MysqlQueryGenerator::getRenameColumnSql($database, $table->Name, $existingTableFieldData->Name, $newColumDefinition);
+                            $sql = MysqlQueryGenerator::getRenameColumnSql($database, $table->Name, $existingTableFieldData->Name, $requestedUpdatedTableField);
                             $sqlQueries[] = $sql;
                         }
                     }
@@ -183,8 +182,7 @@ class TableFieldService implements TableFieldServiceInterface
                         $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                         $selectedDatabasesForColumnModification = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                         foreach ($selectedDatabasesForColumnModification as $database) {
-                            $requestedColumDefinition = $this->makeFieldDefinitionArray($requestedUpdatedTableField);
-                            $sql = MysqlQueryGenerator::getModifyColumnSql($database, $table->Name, $requestedColumDefinition);
+                            $sql = MysqlQueryGenerator::getModifyColumnSql($database, $table->Name, $requestedUpdatedTableField);
                             $sqlQueries[] = $sql;
                         }
                     }
@@ -245,8 +243,7 @@ class TableFieldService implements TableFieldServiceInterface
 
                         // Add Column to Databases
                         foreach ($newDatabases as $newDatabase) {
-                            $newColumDefinition = $this->makeFieldDefinitionArray($requestedUpdatedTableField);
-                            $sql = MysqlQueryGenerator::getAddColumnSql($newDatabase, $table->Name, $newColumDefinition);
+                            $sql = MysqlQueryGenerator::getAddColumnSql($newDatabase, $table->Name, $requestedUpdatedTableField);
                             $sqlQueries[] = $sql;
                         }
 
@@ -278,7 +275,7 @@ class TableFieldService implements TableFieldServiceInterface
                         $tableFieldSpecificDatabases = $this->getDatabaseNamesByCompanyIds($requestedUpdatedTableField['companies']);
                         $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                         foreach ($selectedDatabases as $database) {
-                            $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $this->makeFieldDefinitionArray($requestedUpdatedTableField));
+                            $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $requestedUpdatedTableField);
                             $sqlQueries[] = $sql;
                         }
                     }
@@ -334,21 +331,6 @@ class TableFieldService implements TableFieldServiceInterface
         return $selectedDatabases;
     }
 
-    private function makeFieldDefinitionArray($field): array
-    {
-        return [
-            'name' => $field['Name'],
-            'data_type' => $field['DataType'],
-            'length' => $field['Length'],
-            'auto_increment' => $field['AutoIncrement'],
-            'nullable' => $field['Nullable'],
-            'default' => $field['DefaultValue'],
-            'primary_key' => $field['PrimaryKey'],
-            'unique_key' => $field['Unique'],
-            'sort_order' => $field['SortOrder']
-        ];
-    }
-
     public function tableFieldsOperationsSaveAndExecute(Request $request): ServiceDto
     {
         $tableId = $request->get('tableId');
@@ -393,8 +375,7 @@ class TableFieldService implements TableFieldServiceInterface
             // Generate Sql Queries if Server or Both
             if (in_array($newField['Type'], ['Server', 'Both'])) {
                 foreach ($selectedDatabases as $database) {
-                    $this->makeFieldDefinitionArray($newField);
-                    $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $this->makeFieldDefinitionArray($newField));
+                    $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $newField);
                     $sqlQueries[] = $sql;
                 }
             }
@@ -459,8 +440,7 @@ class TableFieldService implements TableFieldServiceInterface
                     $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                     $selectedDatabasesForUpdate = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                     foreach ($selectedDatabasesForUpdate as $database) {
-                        $newColumDefinition = $this->makeFieldDefinitionArray($requestedUpdatedTableField);
-                        $sql = MysqlQueryGenerator::getRenameColumnSql($database, $table->Name, $existingTableFieldData->Name, $newColumDefinition);
+                        $sql = MysqlQueryGenerator::getRenameColumnSql($database, $table->Name, $existingTableFieldData->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
                     }
                 }
@@ -485,8 +465,7 @@ class TableFieldService implements TableFieldServiceInterface
                     $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                     $selectedDatabasesForColumnModification = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                     foreach ($selectedDatabasesForColumnModification as $database) {
-                        $requestedColumDefinition = $this->makeFieldDefinitionArray($requestedUpdatedTableField);
-                        $sql = MysqlQueryGenerator::getModifyColumnSql($database, $table->Name, $requestedColumDefinition);
+                        $sql = MysqlQueryGenerator::getModifyColumnSql($database, $table->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
                     }
                 }
@@ -566,8 +545,7 @@ class TableFieldService implements TableFieldServiceInterface
                     // Add Column to Databases
                     $newDatabases = array_diff($requestedDatabases, $existingTableFieldDatabases);
                     foreach ($newDatabases as $newDatabase) {
-                        $newColumDefinition = $this->makeFieldDefinitionArray($requestedUpdatedTableField);
-                        $sql = MysqlQueryGenerator::getAddColumnSql($newDatabase, $table->Name, $newColumDefinition);
+                        $sql = MysqlQueryGenerator::getAddColumnSql($newDatabase, $table->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
                     }
 
@@ -601,7 +579,7 @@ class TableFieldService implements TableFieldServiceInterface
                     $tableFieldSpecificDatabases = $this->getDatabaseNamesByCompanyIds($requestedUpdatedTableField['companies']);
                     $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                     foreach ($selectedDatabases as $database) {
-                        $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $this->makeFieldDefinitionArray($requestedUpdatedTableField));
+                        $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
                     }
                 }

@@ -6,70 +6,15 @@ import Select from "@/components/ui/FormElements/Select.vue";
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import VueSelect from 'vue-select';
 
-import Module from "@/models/Module";
-import Company from "@/models/Company";
-import Table from "@/models/Table";
-import {useTemplateStore} from "@/stores/template";
+import Module from "@/models/Office/Module";
+import Company from "@/models/Office/Company";
+import Table from "@/models/Office/Table";
+import {useTemplateStore} from "@/stores/templateStore";
+import {booleanOptions, clientSyncOptions, databaseOptions, typeOptions} from "@/data/dropDownOptions";
 
 const templateStore = useTemplateStore();
 
 const emit = defineEmits(['showPreview']);
-
-const typeOptions = [
-    {
-        label: "Server",
-        value: "Server",
-    },
-    {
-        label: "Client",
-        value: "Client",
-    },
-    {
-        label: "Both",
-        value: "Both",
-    },
-];
-
-const databaseOptions = [
-    {
-        label: "Company",
-        value: "Company",
-    },
-    {
-        label: "Office",
-        value: "Office",
-    },
-    {
-        label: "Both",
-        value: "Both",
-    },
-];
-
-const clientSyncOptions = [
-    {
-        label: "",
-        value: "",
-    },
-    {
-        label: "Download",
-        value: "Download",
-    },
-    {
-        label: "Both",
-        value: "Both",
-    },
-];
-
-const booleanOptions = [
-    {
-        label: "No",
-        value: "0"
-    },
-    {
-        label: "Yes",
-        value: "1"
-    }
-]
 
 let modules = ref();
 let companies = ref([]);

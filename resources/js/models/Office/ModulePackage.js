@@ -1,8 +1,7 @@
-export default class Module {
-
-    static getAllModules() {
+export default class ModulePackage {
+    static getAllModulePackages() {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/all')
+            axios.post('/api/module-package/all')
                 .then(({data}) => {
                     resolve(data);
                 })

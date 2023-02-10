@@ -3,8 +3,10 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
+use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,8 +52,18 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Modules
     Route::post('/modules/all', [ModuleController::class, 'getAllModules']);
+    Route::post('/modules/get-activated-and-available-modules-by-company', [ModuleController::class, 'getActivatedAndAvailableModulesByCompany']);
+    Route::post('/modules/activate-module', [ModuleController::class, 'activateModule']);
+    Route::post('/modules/deactivate-module', [ModuleController::class, 'deactivateModule']);
+
+    // ModuleSettings
+    Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
+    Route::post('/module-settings/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
 
     // Companies
     Route::post('/companies/all', [CompanyController::class, 'getAllCompanies']);
     Route::post('/companies/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
+    Route::post('/company/create', [CompanyController::class, 'create']);
+
+    Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
 });

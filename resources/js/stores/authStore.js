@@ -1,10 +1,8 @@
 import {defineStore} from "pinia";
-import User from "@/models/User";
+import User from "@/models/Office/User";
 
 // Main Pinia Store
-export const useAuthStore = defineStore({
-    id: "auth",
-
+export const useAuthStore = defineStore('auth', {
     state: () => ({
         token: localStorage.getItem('token'),
         expire_at: localStorage.getItem('expire_at'),
@@ -22,9 +20,10 @@ export const useAuthStore = defineStore({
         },
 
         logout() {
-            localStorage.removeItem('token');
+            localStorage.clear();
+            /*localStorage.removeItem('token');
             localStorage.removeItem('expire_at');
-            localStorage.removeItem('user');
+            localStorage.removeItem('user');*/
             this.token = null;
             this.expire_at = null
             this.user = {};

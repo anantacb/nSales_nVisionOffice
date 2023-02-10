@@ -22,4 +22,9 @@ class Table extends BaseModel
     {
         return $this->belongsTo(Module::class, 'ModuleId', 'Id');
     }
+
+    public function tableFields(): HasMany
+    {
+        return $this->hasMany(TableField::class, 'TableId', 'Id');
+    }
 }

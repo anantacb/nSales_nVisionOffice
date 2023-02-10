@@ -344,6 +344,15 @@ abstract class BaseRepository
     }
 
     /**
+     * @param array $data
+     * @return Model
+     */
+    public function firstOrCreate(array $data)
+    {
+        return $this->model->firstOrCreate($data);
+    }
+
+    /**
      * @param Model $model
      * @param $relation
      * @param $relational_model_ids array

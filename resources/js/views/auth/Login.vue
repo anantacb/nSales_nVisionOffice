@@ -1,15 +1,15 @@
 <script setup>
 import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import {useTemplateStore} from "@/stores/template";
+import {useTemplateStore} from "@/stores/templateStore";
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue"
 
-import User from "@/models/User";
+import User from "@/models/Office/User";
 
 // Vuelidate, for more info and examples you can check out https://github.com/vuelidate/vuelidate
 import useVuelidate from "@vuelidate/core";
 import {required} from "@vuelidate/validators";
-import {useAuthStore} from "@/stores/auth";
+import {useAuthStore} from "@/stores/authStore";
 
 // Main templateStore and Router
 const templateStore = useTemplateStore();

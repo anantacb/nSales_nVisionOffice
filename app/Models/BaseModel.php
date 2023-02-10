@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ModelHelper;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseModel extends Model
 {
+    use ModelHelper;
+
     public const CREATED_AT = "InsertTime";
     public const UPDATED_AT = "UpdateTime";
     protected $primaryKey = "Id";

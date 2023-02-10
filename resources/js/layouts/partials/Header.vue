@@ -1,9 +1,12 @@
 <script setup>
-import {onMounted, onUnmounted, ref} from "vue";
-import {useTemplateStore} from "@/stores/template";
-import {useAuthStore} from "@/stores/auth";
-import User from "@/models/User";
+import {ref} from "vue";
+import {useTemplateStore} from "@/stores/templateStore";
+import {useAuthStore} from "@/stores/authStore";
+import User from "@/models/Office/User";
 import router from "@/router";
+import {useCompanyStore} from "@/stores/companyStore";
+import Select from "@/components/ui/FormElements/Select.vue";
+import {useRoute} from "vue-router";
 
 // Grab example data
 //import notifications from "@/data/notifications";
@@ -11,6 +14,10 @@ import router from "@/router";
 // Main Template Store and Router
 const templateStore = useTemplateStore();
 const authStore = useAuthStore();
+const companyStore = useCompanyStore();
+companyStore.fill();
+
+const route = useRoute();
 
 // Reactive variables
 const baseSearchTerm = ref("");
@@ -24,28 +31,10 @@ async function logout() {
     }
 }
 
-// On form search submit functionality
-function onSubmitSearch() {
-    //router.push("/backend/pages/generic/search?" + baseSearchTerm.value);
+function companyChanged(companyId) {
+    companyStore.setSelectedCompanyById(companyId);
 }
 
-// When ESCAPE key is hit close the header search section
-function eventHeaderSearch(event) {
-    if (event.which === 27) {
-        event.preventDefault();
-        templateStore.headerSearch({mode: "off"});
-    }
-}
-
-// Attach ESCAPE key event listener
-onMounted(() => {
-    document.addEventListener("keydown", eventHeaderSearch);
-});
-
-// Remove keydown event listener
-onUnmounted(() => {
-    document.removeEventListener("keydown", eventHeaderSearch);
-});
 </script>
 
 <template>
@@ -78,36 +67,14 @@ onUnmounted(() => {
                             </button>
                             <!-- END Toggle Mini Sidebar -->
 
-                            <!-- Open Search Section (visible on smaller screens) -->
-                            <button
-                                class="btn btn-sm btn-alt-secondary d-md-none"
-                                type="button"
-                                @click="templateStore.headerSearch({ mode: 'on' })"
-                            >
-                                <i class="fa fa-fw fa-search"></i>
-                            </button>
-                            <!-- END Open Search Section -->
-
-                            <!-- Search Form (visible on larger screens) -->
-                            <form
-                                class="d-none d-md-inline-block"
-                                @submit.prevent="onSubmitSearch"
-                            >
-                                <div class="input-group input-group-sm">
-                                    <input
-                                        id="page-header-search-input2"
-                                        v-model="baseSearchTerm"
-                                        class="form-control form-control-alt"
-                                        name="page-header-search-input2"
-                                        placeholder="Search.."
-                                        type="text"
-                                    />
-                                    <span class="input-group-text border-0">
-                    <i class="fa fa-fw fa-search"></i>
-                  </span>
-                                </div>
-                            </form>
-                            <!-- END Search Form -->
+                            <Select v-if="route.meta.company_specific" id="HeaderDatabase"
+                                    :modelValue="companyStore.getSelectedCompany.Id"
+                                    :options="companyStore.getCompaniesForDropDownOptions"
+                                    :required="true"
+                                    name="HeaderDatabase"
+                                    select-class="form-select-sm"
+                                    @change="companyChanged"
+                            />
                         </slot>
                     </div>
                     <!-- END Left Section -->

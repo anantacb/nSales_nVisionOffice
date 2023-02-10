@@ -1,13 +1,14 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
-import {useTemplateStore} from "@/stores/template";
+import {useTemplateStore} from "@/stores/templateStore";
 import TableFieldsForm from "@/views/database/ManageTableFields/TableFieldsForm.vue";
-import Table from "@/models/Table";
+import Table from "@/models/Office/Table";
 import Modal from "@/components/ui/Modal/Modal.vue";
-import TableField from "@/models/TableField";
-import {useNotificationStore} from "@/stores/notification";
+import TableField from "@/models/Office/TableField";
+import {useNotificationStore} from "@/stores/notificationStore";
 import router from "@/router";
+import Swal from "sweetalert2";
 
 const route = useRoute();
 const templateStore = useTemplateStore();
@@ -110,6 +111,15 @@ async function saveAndExecute() {
     templateStore.pageLoader({mode: 'off'});
 }
 
+function noChange(message) {
+    Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: message,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
 </script>
 
 <template>
@@ -145,6 +155,7 @@ async function saveAndExecute() {
                              :select-companies-options="selectCompaniesOptions"
                              :table="table"
                              @endLoading="endLoading"
+                             @noChange="noChange($event)"
                              @showPreview="showPreviewModal"
                              @startLoading="startLoading"
             ></TableFieldsForm>

@@ -9,15 +9,15 @@ class MysqlQueryGenerator
      * @param string $tableName
      * @param array $columnDefinitions
      * [
-     * 'name' => 'Id',
-     * 'data_type' => 'int',
-     * 'length' => 11,
-     * 'auto_increment' => true,
-     * 'nullable' => false,
-     * 'default' => null,
-     * 'primary_key' => true,
-     * 'unique_key' => false,
-     * 'sort_order' => 10
+     * 'Name' => 'Id',
+     * 'DataType' => 'int',
+     * 'Length' => 11,
+     * 'AutoIncrement' => true,
+     * 'Nullable' => false,
+     * 'DefaultValue' => null,
+     * 'PrimaryKey' => true,
+     * 'Unique' => false,
+     * 'SortOrder' => 10
      * ]
      * @param string $engine
      * @param string $charset
@@ -41,10 +41,11 @@ class MysqlQueryGenerator
         $sql .= "`$tableName` ( ";
 
         $columnStrings = [];
-        foreach ($columnDefinitions as $column) {
-            $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
 
-            $columnString = "`" . $column['name'] . "`" . " " . $dataTypeString . " ";
+        foreach ($columnDefinitions as $column) {
+            $dataTypeString = self::getDataTypeString($column['DataType'], $column['Length']);
+
+            $columnString = "`" . $column['Name'] . "`" . " " . $dataTypeString . " ";
 
             $columnString = self::getColumnStr($column, $columnString);
 
@@ -105,26 +106,26 @@ class MysqlQueryGenerator
      */
     private static function getColumnStr($column, string $columnString, bool $forModify = false): string
     {
-        if ($column['nullable']) {
+        if ($column['Nullable']) {
             $columnString .= "NULL ";
         } else {
             $columnString .= "NOT NULL ";
         }
 
-        if ($column['auto_increment']) {
+        if ($column['AutoIncrement']) {
             $columnString .= "AUTO_INCREMENT ";
         }
 
-        if ($column['primary_key'] && !$forModify) {
+        if ($column['PrimaryKey'] && !$forModify) {
             $columnString .= "PRIMARY KEY ";
         }
 
-        if ($column['unique_key'] && !$forModify) {
+        if ($column['Unique'] && !$forModify) {
             $columnString .= "UNIQUE KEY ";
         }
 
-        if (!is_null($column['default'])) {
-            $columnString .= "DEFAULT '{$column['default']}' ";
+        if (!is_null($column['DefaultValue'])) {
+            $columnString .= "DEFAULT '{$column['DefaultValue']}' ";
         }
         return $columnString;
     }
@@ -142,8 +143,8 @@ class MysqlQueryGenerator
     public static function getAddColumnSql($databaseName, $tableName, $column): string
     {
         $sql = "ALTER TABLE `$databaseName`.`$tableName` ADD ";
-        $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
-        $columnString = "`{$column['name']}` $dataTypeString ";
+        $dataTypeString = self::getDataTypeString($column['DataType'], $column['Length']);
+        $columnString = "`{$column['Name']}` $dataTypeString ";
 
         $columnString = self::getColumnStr($column, $columnString);
 
@@ -154,8 +155,8 @@ class MysqlQueryGenerator
     public static function getModifyColumnSql($databaseName, $tableName, $column): string
     {
         $sql = "ALTER TABLE `$databaseName`.`$tableName` MODIFY ";
-        $dataTypeString = self::getDataTypeString($column['data_type'], $column['length']);
-        $columnString = "`{$column['name']}` $dataTypeString ";
+        $dataTypeString = self::getDataTypeString($column['DataType'], $column['Length']);
+        $columnString = "`{$column['Name']}` $dataTypeString ";
 
         $columnString = self::getColumnStr($column, $columnString, true);
 
@@ -171,8 +172,8 @@ class MysqlQueryGenerator
     public static function getRenameColumnSql($databaseName, $tableName, $oldName, $newColumDefinition): string
     {
         $sql = "ALTER TABLE `$databaseName`.`$tableName` CHANGE `$oldName` ";
-        $dataTypeString = self::getDataTypeString($newColumDefinition['data_type'], $newColumDefinition['length']);
-        $columnString = "`{$newColumDefinition['name']}` $dataTypeString ";
+        $dataTypeString = self::getDataTypeString($newColumDefinition['DataType'], $newColumDefinition['Length']);
+        $columnString = "`{$newColumDefinition['Name']}` $dataTypeString ";
         $columnString = self::getColumnStr($newColumDefinition, $columnString);
         $sql .= trim($columnString) . ";";
         return $sql;
@@ -196,5 +197,10 @@ class MysqlQueryGenerator
     public static function getRemoveUniqueKeySql($databaseName, $tableName, $columnName): string
     {
         return "ALTER TABLE `$databaseName`.`$tableName` DROP INDEX `$columnName`;";
+    }
+
+    public static function getCreateDatabaseSql($databaseName): string
+    {
+        return "CREATE DATABASE $databaseName";
     }
 }

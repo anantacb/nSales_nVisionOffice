@@ -1,6 +1,6 @@
 <script setup>
 import {onMounted, ref, watch} from "vue";
-import {useTemplateStore} from "@/stores/template";
+import {useTemplateStore} from "@/stores/templateStore";
 
 import BaseNavigation from "@/components/BaseNavigation.vue";
 
