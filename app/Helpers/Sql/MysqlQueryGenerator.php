@@ -198,4 +198,9 @@ class MysqlQueryGenerator
     {
         return "ALTER TABLE `$databaseName`.`$tableName` DROP INDEX `$columnName`;";
     }
+
+    public static function getCreateDatabaseSql($databaseName): string
+    {
+        return "CREATE DATABASE $databaseName";
+    }
 }

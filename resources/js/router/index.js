@@ -18,6 +18,8 @@ const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 const Modules = () => import("@/views/module/Modules.vue");
 const ActivateModule = () => import("@/views/module/ActivateModule.vue");
 const CreateModule = () => import("@/views/module/CreateModule.vue");
+const CreateCompany = () => import("@/views/company/CreateCompany.vue");
+const Companies = () => import("@/views/company/Companies.vue");
 
 const routes = [
     {
@@ -43,7 +45,7 @@ const routes = [
                 }
             },
             {
-                path: "tables/create",
+                path: "table/create",
                 name: "create-table",
                 component: CreateTable,
                 meta: {
@@ -100,6 +102,25 @@ const routes = [
                 path: "modules",
                 name: "modules",
                 component: Modules,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+
+            {
+                path: "companies",
+                name: "companies",
+                component: Companies,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "company/create",
+                name: "create-company",
+                component: CreateCompany,
                 meta: {
                     authenticated: true,
                     company_specific: false

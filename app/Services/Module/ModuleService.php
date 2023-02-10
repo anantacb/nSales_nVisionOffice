@@ -4,11 +4,10 @@ namespace App\Services\Module;
 
 
 use App\Contracts\ServiceDto;
-use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
-use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
+use App\Services\Traits\ModuleHelperTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 
 class ModuleService implements ModuleServiceInterface
 {
+    use ModuleHelperTrait;
+
     protected ModuleRepositoryInterface $moduleRepository;
     protected CompanyModuleRepositoryInterface $companyModuleRepository;
 
@@ -24,7 +25,6 @@ class ModuleService implements ModuleServiceInterface
     public function __construct(
         ModuleRepositoryInterface        $moduleRepository,
         CompanyModuleRepositoryInterface $companyModuleRepository,
-        TableRepositoryInterface         $tableRepository,
         CompanyRepositoryInterface       $companyRepository
     )
     {
@@ -200,49 +200,6 @@ class ModuleService implements ModuleServiceInterface
         return new ServiceDto("Module installed Successfully!!!", 200, []);
     }
 
-    private function makeEntryInCompanyModuleTable($companyId, $moduleId)
-    {
-        $this->companyModuleRepository->firstOrCreate([
-            'ModuleId' => $moduleId,
-            'CompanyId' => $companyId
-        ]);
-    }
-
-    private function getModulesCreateTableSqlQueries($module, $company): array
-    {
-        $companyId = $company->Id;
-        $sqlQueries = [];
-        $tablesToCreate = [];
-        $module->tables->each(function ($table) use ($companyId, &$tablesToCreate) {
-            if ($table->companyTables->count()) {
-                // Is company Specific table
-                $companyTableIds = $table->companyTables->pluck('TableId')->toArray();
-                if (in_array($companyId, $companyTableIds)) {
-                    $tablesToCreate[] = $table;
-                }
-            } else {
-                $tablesToCreate[] = $table;
-            }
-        });
-
-        foreach ($tablesToCreate as $tableToCreate) {
-            $tableFields = [];
-            $tableToCreate->tableFields->sortBy('SortOrder')->each(function ($tableField) use ($companyId, &$tableFields) {
-                if ($tableField->companyTableFields->count()) {
-                    $companyTableFieldCompanyIds = $tableField->companyTableFields->pluck('CompanyId')->toArray();
-                    if (in_array($companyId, $companyTableFieldCompanyIds)) {
-
-                        $tableFields[] = $tableField->only(['Name', 'DataType', 'Length', 'AutoIncrement', 'Nullable', 'DefaultValue', 'PrimaryKey', 'Unique', 'SortOrder']);
-                    }
-                } else {
-                    $tableFields[] = $tableField->only(['Name', 'DataType', 'Length', 'AutoIncrement', 'Nullable', 'DefaultValue', 'PrimaryKey', 'Unique', 'SortOrder']);
-                }
-            });
-
-            $sqlQueries[] = MysqlQueryGenerator::getCreateTableSql($company->DatabaseName, $tableToCreate->Name, $tableFields);
-        }
-        return $sqlQueries;
-    }
 
     public function deactivateModule(Request $request): ServiceDto
     {
@@ -321,36 +278,5 @@ class ModuleService implements ModuleServiceInterface
         }
 
         return new ServiceDto("Module uninstalled Successfully!!!", 200, []);
-    }
-
-    private function deleteEntryFromCompanyModuleTable($companyId, $moduleId)
-    {
-        $this->companyModuleRepository->deleteByAttributes([
-            ['column' => 'ModuleId', 'operand' => '=', 'value' => $moduleId],
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
-        ]);
-    }
-
-    private function getModulesDeleteTableSqlQueries($module, $company): array
-    {
-        $companyId = $company->Id;
-        $sqlQueries = [];
-        $tablesToCreate = [];
-        $module->tables->each(function ($table) use ($companyId, &$tablesToCreate) {
-            if ($table->companyTables->count()) {
-                // Is company Specific table
-                $companyTableIds = $table->companyTables->pluck('TableId')->toArray();
-                if (in_array($companyId, $companyTableIds)) {
-                    $tablesToCreate[] = $table;
-                }
-            } else {
-                $tablesToCreate[] = $table;
-            }
-        });
-
-        foreach ($tablesToCreate as $tableToCreate) {
-            $sqlQueries[] = MysqlQueryGenerator::getDropTableSql($company->DatabaseName, $tableToCreate->Name);
-        }
-        return $sqlQueries;
     }
 }

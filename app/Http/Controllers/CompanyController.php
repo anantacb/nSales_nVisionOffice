@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Company\Create;
 use App\Http\Requests\Company\ModuleEnabledCompanies;
 use App\Services\Company\CompanyServiceInterface;
 use App\Transformer\ApiResponseTransformer;
@@ -26,6 +27,12 @@ class CompanyController extends Controller
     public function getModuleEnabledCompanies(ModuleEnabledCompanies $request): JsonResponse
     {
         $response = $this->companyService->getModuleEnabledCompanies($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function create(Create $request)
+    {
+        $response = $this->companyService->create($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 }

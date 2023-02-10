@@ -67,9 +67,8 @@ const classContainer = computed(() => {
 // Checks if a submenu path is part of the URL path
 function subIsActive(paths) {
     const activePaths = Array.isArray(paths) ? paths : [paths];
-
     return activePaths.some((path) => {
-        return route.path.indexOf(path) === 0; // current path starts with this path string
+        return route.path.indexOf(path) !== -1;
     });
 }
 
@@ -132,8 +131,8 @@ function linkClicked(e, submenu) {
                         >-->
                 <RouterLink
                     :active-class="node.to && node.to !== '#' ? 'active' : ''"
-                    class="nav-main-link"
                     :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
+                    class="nav-main-link"
                 >
                     <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
                     <span v-if="node.name" class="nav-main-link-name">

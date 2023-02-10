@@ -6,6 +6,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
+use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,4 +63,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Companies
     Route::post('/companies/all', [CompanyController::class, 'getAllCompanies']);
     Route::post('/companies/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
+    Route::post('/company/create', [CompanyController::class, 'create']);
+
+    Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
 });

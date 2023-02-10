@@ -6,6 +6,10 @@
 // Main Stylesheet
 @import "@/assets/scss/main.scss";
 
+// Flatpickr + Custom overrides
+@import "flatpickr/dist/flatpickr.css";
+@import "@/assets/scss/vendor/_flatpickr.scss";
+
 // Vue Select Css And Overwritten Scss
 @import "vue-select/dist/vue-select.css";
 @import "@/assets/scss/vendor/_vue-select.scss";
