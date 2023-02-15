@@ -56,7 +56,7 @@ let integrationTypeOptions = ref([]);
 let fileTransferTypeOptions = ref([]);
 
 async function getOptions() {
-    let typeData = await TableHelper.getEnumValues('Office', Company.name, 'Type');
+    let typeData = await TableHelper.getEnumValues('Office', `Company`, 'Type');
     typeOptions.value = typeData.data.map((item) => {
         return {
             label: item,
@@ -64,7 +64,7 @@ async function getOptions() {
         }
     });
 
-    let integrationTypeData = await TableHelper.getEnumValues('Office', Company.name, 'IntegrationType');
+    let integrationTypeData = await TableHelper.getEnumValues('Office', `Company`, 'IntegrationType');
     integrationTypeOptions.value = integrationTypeData.data.map((item) => {
         return {
             label: item,
@@ -72,7 +72,7 @@ async function getOptions() {
         }
     });
 
-    let fileTransferTypeData = await TableHelper.getEnumValues('Office', Company.name, 'FileTransferType');
+    let fileTransferTypeData = await TableHelper.getEnumValues('Office', `Company`, 'FileTransferType');
     fileTransferTypeOptions.value = fileTransferTypeData.data.map((item) => {
         return {
             label: item,
@@ -80,7 +80,7 @@ async function getOptions() {
         }
     });
 
-    let storageLocationData = await TableHelper.getEnumValues('Office', Company.name, 'StorageLocation');
+    let storageLocationData = await TableHelper.getEnumValues('Office', `Company`, 'StorageLocation');
     storageLocationOptions.value = storageLocationData.data.map((item) => {
         return {
             label: item,
