@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
 use App\Http\Controllers\TableHelperController;
@@ -66,4 +67,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/create', [CompanyController::class, 'create']);
 
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
+
+    Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
+
+    Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);
 });

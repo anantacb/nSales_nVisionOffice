@@ -14,16 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', function (CompanyUserRepository $companyUserRepository) {
-    $developerUsersIds = $companyUserRepository->getByAttributes([], '', '', '', false,
-        [
-            [
-                "relation" => "roles", "column" => "Type", "operator" => "=", "values" => "Developer"
-            ]
-        ]
-    )->pluck('UserId')->unique()->values()->toArray();
-
-    dd($developerUsersIds);
+Route::get('/test', function () {
+    dd(date_default_timezone_get());
 });
 
 /*Route::get('/', function () {
@@ -33,6 +25,9 @@ Route::get('/test', function (CompanyUserRepository $companyUserRepository) {
 Route::get('{any}', function () {
     return view('app');
 })->where('any', '.*');
+
+
+
 
 //Auth::routes();
 

@@ -67,8 +67,9 @@ const classContainer = computed(() => {
 // Checks if a submenu path is part of the URL path
 function subIsActive(paths) {
     const activePaths = Array.isArray(paths) ? paths : [paths];
+
     return activePaths.some((path) => {
-        return route.path.indexOf(path) !== -1;
+        return route.path.indexOf(path) === 1; // current path starts with this path string
     });
 }
 
@@ -89,7 +90,7 @@ function linkClicked(e, submenu) {
                 // If submenu is open, close it..
                 el.classList.remove("open");
             } else {
-                // .. else if submenu is closed, close all other (same level) submenus first before open it
+                // . else if submenu is closed, close all other (same level) submenus first before open it
                 Array.from(el.closest("ul").children).forEach((element) => {
                     element.classList.remove("open");
                 });
