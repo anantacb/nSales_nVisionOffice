@@ -10,13 +10,13 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     actions: {
-        setToken(payload) {
+        async setToken(payload) {
             this.token = payload.access_token;
-            this.expire_at = payload.expire_at;
+            this.expires_in = payload.expires_in;
             localStorage.setItem('token', this.token);
-            localStorage.setItem('expire_at', this.expire_at);
+            localStorage.setItem('expires_in', this.expires_in);
             axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
-            this.getUserDetails();
+            await this.getAuthUserDetails();
         },
 
         logout() {
@@ -30,9 +30,9 @@ export const useAuthStore = defineStore('auth', {
             delete axios.defaults.headers.common['Authorization'];
         },
 
-        async getUserDetails() {
+        async getAuthUserDetails() {
             try {
-                let {data} = await User.getDetails();
+                let {data} = await User.getAuthUserDetails();
                 this.user = data.data;
                 localStorage.setItem('user', JSON.stringify(this.user));
             } catch (err) {
@@ -41,13 +41,48 @@ export const useAuthStore = defineStore('auth', {
 
         getToken() {
             return this.token;
-        }
+        },
+
+        isAuthenticated() {
+            /*let localDate = new Date();
+            let utcDate = new Date(
+                localDate.getUTCFullYear(),
+                localDate.getUTCMonth(),
+                localDate.getUTCDate(),
+                localDate.getUTCHours(),
+                localDate.getUTCMinutes(),
+                localDate.getUTCSeconds()
+            );
+            let utcDateTime = Math.floor(utcDate.getTime() / 1000);*/
+            // Expire at is coming in UTC
+
+            // Check for expire at
+
+            return !!this.token;
+        },
     },
 
     getters: {
-        isAuthenticated() {
+        /*isAuthenticated() {
+            console.log('isAuthenticated');
+            let localDate = new Date();
+            let utcDate = new Date(
+                localDate.getUTCFullYear(),
+                localDate.getUTCMonth(),
+                localDate.getUTCDate(),
+                localDate.getUTCHours(),
+                localDate.getUTCMinutes(),
+                localDate.getUTCSeconds()
+            );
+            let utcDateTime = Math.floor(utcDate.getTime() / 1000); // Expire at is coming in UTC
+
+            // Check for expire at
+            if (utcDateTime > parseInt(this.expire_at)) {
+                console.log(utcDateTime, parseInt(this.expire_at));
+                return false;
+            }
             return !!this.token;
-        },
+        },*/
 
         getUser() {
             return this.user;

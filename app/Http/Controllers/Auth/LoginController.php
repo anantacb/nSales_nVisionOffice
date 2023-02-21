@@ -132,11 +132,12 @@ class LoginController extends Controller
 
     protected function respondWithToken($token)
     {
+
         return ApiResponseTransformer::success(
             [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'expire_at' => strtotime(Carbon::now()->toDateTimeString()),
+                'expires_in' => auth()->factory()->getTTL() * 60
             ],
             "Authentication successful!"
         );

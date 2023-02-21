@@ -16,10 +16,14 @@ const CreateSetting = () => import("@/views/setting/CreateSetting.vue");
 const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
 const Modules = () => import("@/views/module/Modules.vue");
-const ActivateModule = () => import("@/views/module/ActivateModule.vue");
 const CreateModule = () => import("@/views/module/CreateModule.vue");
-const CreateCompany = () => import("@/views/company/CreateCompany.vue");
+const ActivateModule = () => import("@/views/module/ActivateModule.vue");
+
 const Companies = () => import("@/views/company/Companies.vue");
+const CreateCompany = () => import("@/views/company/CreateCompany.vue");
+
+const Users = () => import("@/views/user/Users.vue");
+const CreateCompanyUser = () => import("@/views/user/CreateCompanyUser.vue");
 
 const routes = [
     {
@@ -35,8 +39,9 @@ const routes = [
                     company_specific: false
                 }
             },
+
             {
-                path: "tables",
+                path: "database/tables",
                 name: "tables",
                 component: Tables,
                 meta: {
@@ -45,7 +50,7 @@ const routes = [
                 }
             },
             {
-                path: "table/create",
+                path: "database/table/create",
                 name: "create-table",
                 component: CreateTable,
                 meta: {
@@ -54,7 +59,7 @@ const routes = [
                 }
             },
             {
-                path: "table/:id/table-fields",
+                path: "database/table/:id/table-fields",
                 name: "manage-table-fields",
                 component: TableFields,
                 meta: {
@@ -62,6 +67,7 @@ const routes = [
                     company_specific: false
                 }
             },
+
             {
                 path: "setting/update",
                 name: "update-setting",
@@ -80,6 +86,7 @@ const routes = [
                     company_specific: false
                 }
             },
+
             {
                 path: "module/create",
                 name: "create-module",
@@ -99,7 +106,7 @@ const routes = [
                 }
             },
             {
-                path: "modules",
+                path: "module/modules",
                 name: "modules",
                 component: Modules,
                 meta: {
@@ -109,7 +116,7 @@ const routes = [
             },
 
             {
-                path: "companies",
+                path: "company/companies",
                 name: "companies",
                 component: Companies,
                 meta: {
@@ -124,6 +131,25 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: false
+                }
+            },
+
+            {
+                path: "user/users",
+                name: "users",
+                component: Users,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "user/company-user/create",
+                name: "create-company-user",
+                component: CreateCompanyUser,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
                 }
             },
         ],
@@ -169,7 +195,7 @@ NProgress.configure({showSpinner: true});
 
 router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
-    const isAuthenticated = authStore.isAuthenticated;
+    const isAuthenticated = authStore.isAuthenticated();
     if (to.meta.authenticated) {
         if (isAuthenticated) {
             next();

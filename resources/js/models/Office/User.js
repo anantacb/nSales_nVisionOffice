@@ -26,9 +26,23 @@ export default class User {
         });
     }
 
-    static getDetails() {
+    static getAuthUserDetails() {
         return new Promise((resolve, reject) => {
             axios.post('/api/auth/user')
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static createCompanyUser(company_id, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/users/company-user/create', {
+                company_id, ...formData
+            })
                 .then((data) => {
                     resolve(data);
                 })

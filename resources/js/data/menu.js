@@ -13,7 +13,7 @@ export default {
         {
             name: "Database",
             icon: "fa fa-database",
-            subActivePaths: "table",
+            subActivePaths: "database",
             sub: [
                 {
                     name: "Tables",
@@ -69,7 +69,7 @@ export default {
         {
             name: "Company",
             icon: "fa fa-box",
-            subActivePaths: ["company", 'companies'],
+            subActivePaths: ["company"],
             sub: [
                 {
                     name: "Companies",
@@ -80,6 +80,23 @@ export default {
                     name: "Create Company",
                     icon: "fa fa-gear",
                     to: "create-company",
+                }
+            ],
+        },
+        {
+            name: "User",
+            icon: "fa fa-box",
+            subActivePaths: ["user"],
+            sub: [
+                {
+                    name: "Users",
+                    icon: "fa fa-gear",
+                    to: "users",
+                },
+                {
+                    name: "Create Company User",
+                    icon: "fa fa-gear",
+                    to: "create-company-user",
                 }
             ],
         },

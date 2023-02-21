@@ -8,6 +8,8 @@ use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
+use App\Services\Role\RoleService;
+use App\Services\Role\RoleServiceInterface;
 use App\Services\Table\TableService;
 use App\Services\Table\TableServiceInterface;
 use App\Services\TableField\TableFieldService;
@@ -44,5 +46,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(CompanyServiceInterface::class, CompanyService::class);
         $this->app->bind(ModuleSettingServiceInterface::class, ModuleSettingService::class);
         $this->app->bind(TableHelperServiceInterface::class, TableHelperService::class);
+        $this->app->bind(RoleServiceInterface::class, RoleService::class);
     }
 }
