@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquent\Office\Module;
+namespace App\Repositories\Eloquent\Office\CompanyModule;
 
 use App\Repositories\Eloquent\Base\BaseRepositoryInterface;
 

@@ -6,7 +6,7 @@ namespace App\Services\ModuleSetting;
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
-use App\Repositories\Eloquent\Office\Setting\ModuleSettingRepositoryInterface;
+use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use Illuminate\Http\Request;
 

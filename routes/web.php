@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\Eloquent\Office\User\CompanyUserRepository;
 use Illuminate\Support\Facades\Route;
 
 /*

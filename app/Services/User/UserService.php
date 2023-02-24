@@ -4,8 +4,8 @@ namespace App\Services\User;
 
 
 use App\Contracts\ServiceDto;
-use App\Repositories\Eloquent\Office\Role\CompanyUserRoleRepositoryInterface;
-use App\Repositories\Eloquent\Office\User\CompanyUserRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -76,7 +76,7 @@ class UserService implements UserServiceInterface
         }
 
         // TODO Send Mail
-        
+
         return new ServiceDto('User Created Successfully', 200, $user);
     }
 }

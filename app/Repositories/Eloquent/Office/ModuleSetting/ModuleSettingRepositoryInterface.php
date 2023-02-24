@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquent\Office\Setting;
+namespace App\Repositories\Eloquent\Office\ModuleSetting;
 
 use App\Repositories\Eloquent\Base\BaseRepositoryInterface;
 

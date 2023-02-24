@@ -5,7 +5,7 @@ namespace App\Services\Module;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
-use App\Repositories\Eloquent\Office\Module\CompanyModuleRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Services\Traits\ModuleHelperTrait;
 use Exception;

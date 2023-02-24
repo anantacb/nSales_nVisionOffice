@@ -1,0 +1,10 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use App\Contracts\ServiceDto;
+use Illuminate\Http\Request;
+
+interface $SERVICE_NAME$ServiceInterface
+{
+}

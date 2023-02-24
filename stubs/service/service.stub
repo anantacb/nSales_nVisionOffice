@@ -1,0 +1,13 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use App\Contracts\ServiceDto;
+use Illuminate\Http\Request;
+
+class $SERVICE_NAME$Service implements $SERVICE_NAME$ServiceInterface
+{
+    public function __construct()
+    {
+    }
+}
