@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquent\Office\Role;
+namespace App\Repositories\Eloquent\Office\CompanyUserRole;
 
 use App\Models\Office\CompanyUserRole;
 use App\Repositories\Eloquent\Base\BaseRepository;

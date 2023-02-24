@@ -1,0 +1,14 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use App\Models\Office\$MODEL$;
+use App\Repositories\Eloquent\Base\BaseRepository;
+
+class $MODEL$Repository extends BaseRepository implements $MODEL$RepositoryInterface
+{
+    public function __construct($MODEL$ $model)
+    {
+        parent::__construct($model);
+    }
+}

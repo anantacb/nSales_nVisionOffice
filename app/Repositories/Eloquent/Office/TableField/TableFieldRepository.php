@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquent\Office\Table;
+namespace App\Repositories\Eloquent\Office\TableField;
 
 use App\Models\Office\TableField;
 use App\Repositories\Eloquent\Base\BaseRepository;
