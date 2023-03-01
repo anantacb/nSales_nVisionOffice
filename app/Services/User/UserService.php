@@ -51,13 +51,13 @@ class UserService implements UserServiceInterface
         ]);
 
         $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('company_id')]
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
         ], [], '', 'Number', true);
 
         $number = $latestCompanyUser->Number + 1;
 
         $companyUser = $this->companyUserRepository->create([
-            'CompanyId' => $request->get('company_id'),
+            'CompanyId' => $request->get('CompanyId'),
             'UserId' => $user->Id,
             'Number' => $number,
             'CultureName' => $request->get('CultureName'),
@@ -78,5 +78,20 @@ class UserService implements UserServiceInterface
         // TODO Send Mail
 
         return new ServiceDto('User Created Successfully', 200, $user);
+    }
+
+    public function getCompanyUsers(Request $request): ServiceDto
+    {
+        $companyId = $request->get('CompanyId');
+        $relations = [
+            'user' => function ($q) {
+                $q->select(['Id', 'Name', 'Initials']);
+            }
+        ];
+        $companyUsers = $this->companyUserRepository->getByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
+        ], $relations, ['Id', 'UserId', 'CompanyId', 'Initials']);
+
+        return new ServiceDto('User Created Successfully', 200, $companyUsers);
     }
 }

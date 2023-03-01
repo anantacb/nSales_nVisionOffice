@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
+use App\Repositories\Eloquent\Office\Application\ApplicationRepositoryInterface;
+use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
+use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Company\CompanyRepository;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepository;
@@ -14,6 +18,8 @@ use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepository;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepository;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepository;
+use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepository;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepository;
@@ -70,5 +76,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(CompanyUserRoleRepositoryInterface::class, CompanyUserRoleRepository::class);
+
+        $this->app->bind(ApplicationRepositoryInterface::class, ApplicationRepository::class);
+        $this->app->bind(ApplicationModuleRepositoryInterface::class, ApplicationModuleRepository::class);
+
+        $this->app->bind(EmailConfigurationRepositoryInterface::class, EmailConfigurationRepository::class);
     }
 }

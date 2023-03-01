@@ -32,4 +32,9 @@ class Module extends BaseModel
     {
         return $this->hasMany(Module::class, 'ModuleId', 'Id');
     }
+
+    public function applications(): BelongsToMany
+    {
+        return $this->belongsToMany(Application::class, ApplicationModule::class, 'ModuleId', 'ApplicationId');
+    }
 }

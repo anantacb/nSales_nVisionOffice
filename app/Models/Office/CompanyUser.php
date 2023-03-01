@@ -4,6 +4,7 @@ namespace App\Models\Office;
 
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -23,8 +24,18 @@ class CompanyUser extends BaseModel
         return $this->hasMany(CompanyUserRole::class, 'CompanyUserId', 'Id');
     }
 
-    public function scopeOfCompany($query, $company_id)
+    public function scopeOfCompany($query, $CompanyId)
     {
-        return $query->where('CompanyId', $company_id);
+        return $query->where('CompanyId', $CompanyId);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'UserId', 'Id');
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'CompanyId', 'Id');
     }
 }

@@ -10,4 +10,6 @@ interface UserServiceInterface
     public function authUserDetails(): ServiceDto;
 
     public function createCompanyUser(Request $request): ServiceDto;
+
+    public function getCompanyUsers(Request $request): ServiceDto;
 }

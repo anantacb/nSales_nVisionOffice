@@ -25,6 +25,9 @@ const CreateCompany = () => import("@/views/company/CreateCompany.vue");
 const Users = () => import("@/views/user/Users.vue");
 const CreateCompanyUser = () => import("@/views/user/CreateCompanyUser.vue");
 
+const CreateEmailConfiguration = () => import('@/views/email-configuration/CreateEmailConfiguration.vue')
+const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations.vue')
+
 const routes = [
     {
         path: "",
@@ -150,6 +153,25 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: true
+                }
+            },
+
+            {
+                path: "email-configuration/email-configurations",
+                name: "email-configurations",
+                component: EmailConfigurations,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "email-configuration/create",
+                name: "create-email-configuration",
+                component: CreateEmailConfiguration,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
                 }
             },
         ],

@@ -19,7 +19,7 @@ class RoleService implements RoleServiceInterface
     public function getAssignableRolesByCompany(Request $request): ServiceDto
     {
         $roles = $this->roleRepository->getByAttributes([
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('company_id')],
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')],
             ['column' => 'Type', 'operand' => '!=', 'value' => 'Developer']
         ], '', ['Id', 'Name', 'Type', 'CompanyId']);
 

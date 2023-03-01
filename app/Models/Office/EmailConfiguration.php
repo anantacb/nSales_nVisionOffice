@@ -17,7 +17,28 @@ class EmailConfiguration extends BaseModel
         return $this->belongsTo(Module::class, 'ModuleId', 'Id');
     }
 
-    public function application(): BelongsTo {
+    public function application(): BelongsTo
+    {
         return $this->belongsTo(Application::class, 'ModuleId', 'Id');
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'CompanyId', 'Id');
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'RoleId', 'Id');
+    }
+
+    public function companyUser(): BelongsTo
+    {
+        return $this->belongsTo(CompanyUser::class, 'CompanyUserId', 'Id');
+    }
+
+    public function user()
+    {
+        $this->hasOneThrough(User::class, CompanyUser::class, 'UserId', 'CompanyUserId', 'Id', 'Id');
     }
 }

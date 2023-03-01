@@ -43,7 +43,7 @@ const createUserRef = ref(null);
 
 async function getRoles() {
     let {data} = await Role.getRolesByCompany(companyStore.selectedCompany.Id);
-    RoleOptions.value = data.data;
+    RoleOptions.value = data;
 }
 
 async function createUser() {

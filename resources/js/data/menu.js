@@ -10,6 +10,7 @@ export default {
             name: "Developer",
             heading: true,
         },
+
         {
             name: "Database",
             icon: "fa fa-database",
@@ -27,6 +28,7 @@ export default {
                 }
             ],
         },
+
         {
             name: "Setting",
             icon: "fa fa-gear",
@@ -44,6 +46,7 @@ export default {
                 }
             ],
         },
+
         {
             name: "Module",
             icon: "fa fa-box",
@@ -66,6 +69,7 @@ export default {
                 }
             ],
         },
+
         {
             name: "Company",
             icon: "fa fa-box",
@@ -83,6 +87,7 @@ export default {
                 }
             ],
         },
+
         {
             name: "User",
             icon: "fa fa-box",
@@ -97,6 +102,24 @@ export default {
                     name: "Create Company User",
                     icon: "fa fa-gear",
                     to: "create-company-user",
+                }
+            ],
+        },
+
+        {
+            name: "Email Configuration",
+            icon: "fa fa-database",
+            subActivePaths: "email-configuration",
+            sub: [
+                {
+                    name: "Email Configurations",
+                    icon: "fa fa-table",
+                    to: "email-configurations",
+                },
+                {
+                    name: "Create Email Configuration",
+                    icon: "fa fa-folder-plus",
+                    to: "create-email-configuration",
                 }
             ],
         },

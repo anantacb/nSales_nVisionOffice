@@ -12,10 +12,24 @@ export default class Module {
         });
     }
 
-    static getActivatedAndAvailableModulesByCompany(company_id) {
+    static getModulesByApplication(ApplicationId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/modules/get-by-application', {
+                ApplicationId: ApplicationId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getActivatedAndAvailableModulesByCompany(CompanyId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/modules/get-activated-and-available-modules-by-company', {
-                company_id: company_id
+                CompanyId: CompanyId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -26,11 +40,10 @@ export default class Module {
         });
     }
 
-    static activateModule(company_id, module) {
+    static activateModule(CompanyId, module) {
         return new Promise((resolve, reject) => {
             axios.post('/api/modules/activate-module', {
-                company_id: company_id,
-                module: module
+                CompanyId: CompanyId, module: module
             })
                 .then(({data}) => {
                     resolve(data);
@@ -41,11 +54,24 @@ export default class Module {
         });
     }
 
-    static deactivateModule(company_id, module) {
+    static deactivateModule(CompanyId, module) {
         return new Promise((resolve, reject) => {
             axios.post('/api/modules/deactivate-module', {
-                company_id: company_id,
-                module: module
+                CompanyId: CompanyId, module: module
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getActivatedModulesByCompany(CompanyId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/modules/get-activated-modules-by-company', {
+                CompanyId: CompanyId
             })
                 .then(({data}) => {
                     resolve(data);

@@ -56,9 +56,9 @@ class MakeRepositoryService
     protected function getPaths(string $model, $type): array
     {
         if ($type == 'office') {
-            $path = 'App/Repositories/Eloquent/Office/';
+            $path = 'App/Repositories/Eloquent/Office';
         } else {
-            $path = 'App/Repositories/Eloquent/Company/';
+            $path = 'App/Repositories/Eloquent/Company';
         }
 
         return [
