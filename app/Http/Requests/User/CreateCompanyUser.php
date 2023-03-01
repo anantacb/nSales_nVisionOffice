@@ -24,7 +24,7 @@ class CreateCompanyUser extends FormRequest
     public function rules()
     {
         return [
-            'company_id' => 'required',
+            'CompanyId' => 'required',
 
             'Name' => 'required',
             'Email' => 'required|unique:User',

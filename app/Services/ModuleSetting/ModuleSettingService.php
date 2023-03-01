@@ -33,7 +33,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function getAllModuleSettingsByCompanyId(Request $request): ServiceDto
     {
-        $companyId = $request->get('company_id');
+        $companyId = $request->get('CompanyId');
 
         $defaultModuleNames = ['System'];
 
@@ -155,9 +155,9 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function updateModuleSettingsByCompanyId(Request $request): ServiceDto
     {
-        $companyId = $request->get('company_id');
+        $companyId = $request->get('CompanyId');
 
-        foreach ($request->get('module_settings') as $moduleSetting) {
+        foreach ($request->get('ModuleSettings') as $moduleSetting) {
             if ($moduleSetting['setting']) {
                 $this->settingRepository->findByIdAndUpdate($moduleSetting['setting']['Id'], [
                     'Value' => $moduleSetting['Value']

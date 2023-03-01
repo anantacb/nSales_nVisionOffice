@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Module\GetModulesByApplication;
 use App\Services\Module\ModuleServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
@@ -28,9 +29,21 @@ class ModuleController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getActivatedModulesByCompany(Request $request): JsonResponse
+    {
+        $response = $this->moduleService->getActivatedModulesByCompany($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function activateModule(Request $request): JsonResponse
     {
         $response = $this->moduleService->activateModule($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getModulesByApplication(GetModulesByApplication $request): JsonResponse
+    {
+        $response = $this->moduleService->getModulesByApplication($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

@@ -7,4 +7,5 @@ use Illuminate\Http\Request;
 
 interface EmailConfigurationServiceInterface
 {
+    public function create(Request $request): ServiceDto;
 }

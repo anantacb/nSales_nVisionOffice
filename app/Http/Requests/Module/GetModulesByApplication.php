@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Role;
+namespace App\Http\Requests\Module;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetRoles extends FormRequest
+class GetModulesByApplication extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class GetRoles extends FormRequest
     public function rules()
     {
         return [
-            'CompanyId' => 'required'
+            'ApplicationId' => 'required|exists:Application,Id'
         ];
     }
 }

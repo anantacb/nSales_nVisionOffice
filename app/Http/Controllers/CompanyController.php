@@ -30,7 +30,7 @@ class CompanyController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
-    public function create(Create $request)
+    public function create(Create $request): JsonResponse
     {
         $response = $this->companyService->create($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);

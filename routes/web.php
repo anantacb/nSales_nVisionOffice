@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Office\Module;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/test', function () {
+
+    $module = Module::with(['applications'])->where('Id', 5)->first();
+    dd($module->toArray());
     dd(date_default_timezone_get());
 });
 

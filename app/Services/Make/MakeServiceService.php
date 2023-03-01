@@ -54,7 +54,7 @@ class MakeServiceService
 
     protected function getPaths(string $service): array
     {
-        $path = 'App/Services/';
+        $path = 'App/Services';
 
         return [
             base_path($path) . "/$service/{$service}Service.php",

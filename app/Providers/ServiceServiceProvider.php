@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Services\Application\ApplicationService;
+use App\Services\Application\ApplicationServiceInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
+use App\Services\EmailConfiguration\EmailConfigurationService;
+use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
 use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
@@ -47,5 +51,7 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ModuleSettingServiceInterface::class, ModuleSettingService::class);
         $this->app->bind(TableHelperServiceInterface::class, TableHelperService::class);
         $this->app->bind(RoleServiceInterface::class, RoleService::class);
+        $this->app->bind(ApplicationServiceInterface::class, ApplicationService::class);
+        $this->app->bind(EmailConfigurationServiceInterface::class, EmailConfigurationService::class);
     }
 }

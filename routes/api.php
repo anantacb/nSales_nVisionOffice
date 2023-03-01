@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\RoleController;
@@ -36,7 +38,7 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 });
 
 Route::middleware(['auth:api'])->group(function () {
-    // Tables
+    // Table
     Route::post('/tables', [TableController::class, 'getTables']);
     Route::post('/table-details', [TableController::class, 'getDetails']);
     Route::post('/delete-table', [TableController::class, 'delete']);
@@ -44,31 +46,43 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
     Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
 
-    // TableFields
+    // TableField
     Route::post('/table-fields', [TableFieldController::class, 'getTableFields']);
     Route::post('/table-fields-operation-sql-previews', [TableFieldController::class, 'tableFieldsOperationPreviews']);
     Route::post('/table-fields-operations-save-without-executing', [TableFieldController::class, 'tableFieldsOperationsSaveWithoutExecuting']);
     Route::post('/table-fields-operations-save-and-execute', [TableFieldController::class, 'tableFieldsOperationsSaveAndExecute']);
 
 
-    // Modules
+    // Module
     Route::post('/modules/all', [ModuleController::class, 'getAllModules']);
     Route::post('/modules/get-activated-and-available-modules-by-company', [ModuleController::class, 'getActivatedAndAvailableModulesByCompany']);
+    Route::post('/modules/get-activated-modules-by-company', [ModuleController::class, 'getActivatedModulesByCompany']);
     Route::post('/modules/activate-module', [ModuleController::class, 'activateModule']);
     Route::post('/modules/deactivate-module', [ModuleController::class, 'deactivateModule']);
+    Route::post('/modules/get-by-application', [ModuleController::class, 'getModulesByApplication']);
 
-    // ModuleSettings
+    // ModuleSetting
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-settings/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
 
-    // Companies
+    // Company
     Route::post('/companies/all', [CompanyController::class, 'getAllCompanies']);
     Route::post('/companies/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
     Route::post('/company/create', [CompanyController::class, 'create']);
 
+    // Helpers
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
 
+    // Role
     Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
 
+    // User
     Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);
+    Route::post('/users/get-company-users', [UserController::class, 'getCompanyUsers']);
+
+    // Application
+    Route::post('applications/all', [ApplicationController::class, 'getAllApplications']);
+
+    // EmailConfiguration
+    Route::post('email-configuration/create', [EmailConfigurationController::class, 'create']);
 });

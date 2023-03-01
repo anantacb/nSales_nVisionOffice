@@ -4,6 +4,7 @@ namespace App\Services\Module;
 
 
 use App\Contracts\ServiceDto;
+use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
@@ -21,16 +22,20 @@ class ModuleService implements ModuleServiceInterface
     protected CompanyModuleRepositoryInterface $companyModuleRepository;
 
     protected CompanyRepositoryInterface $companyRepository;
+    protected ApplicationModuleRepository $applicationModuleRepository;
 
     public function __construct(
         ModuleRepositoryInterface        $moduleRepository,
         CompanyModuleRepositoryInterface $companyModuleRepository,
-        CompanyRepositoryInterface       $companyRepository
+        CompanyRepositoryInterface       $companyRepository,
+        ApplicationModuleRepository      $applicationModuleRepository
     )
     {
         $this->moduleRepository = $moduleRepository;
         $this->companyModuleRepository = $companyModuleRepository;
         $this->companyRepository = $companyRepository;
+        $this->applicationModuleRepository = $applicationModuleRepository;
+
     }
 
     public function getAllModules(Request $request): ServiceDto
@@ -41,7 +46,7 @@ class ModuleService implements ModuleServiceInterface
 
     public function getActivatedAndAvailableModulesByCompany(Request $request): ServiceDto
     {
-        $companyId = $request->get('company_id');
+        $companyId = $request->get('CompanyId');
         $companyModules = $this->companyModuleRepository->getByAttributes([
                 ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
             ]
@@ -121,10 +126,25 @@ class ModuleService implements ModuleServiceInterface
         ];
     }
 
+    public function getActivatedModulesByCompany(Request $request): ServiceDto
+    {
+        $companyId = $request->get('CompanyId');
+        $companyModules = $this->companyModuleRepository->getByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
+        ]);
+
+        $installedModuleIds = $companyModules->pluck('ModuleId')->toArray();
+        $installedModules = $this->moduleRepository->getByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $installedModuleIds]
+        ], '', ['Id', 'Name'], 'Name');
+
+        return new ServiceDto("Installed Modules retrieved!!!", 200, $installedModules);
+    }
+
     public function activateModule(Request $request): ServiceDto
     {
         $requestModule = $request->get('module');
-        $companyId = $request->get('company_id');
+        $companyId = $request->get('CompanyId');
         $company = $this->companyRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $companyId]
         ]);
@@ -204,7 +224,7 @@ class ModuleService implements ModuleServiceInterface
     public function deactivateModule(Request $request): ServiceDto
     {
         $requestModule = $request->get('module');
-        $companyId = $request->get('company_id');
+        $companyId = $request->get('CompanyId');
         $company = $this->companyRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $companyId]
         ]);
@@ -278,5 +298,18 @@ class ModuleService implements ModuleServiceInterface
         }
 
         return new ServiceDto("Module uninstalled Successfully!!!", 200, []);
+    }
+
+    public function getModulesByApplication(Request $request): ServiceDto
+    {
+        $moduleIds = $this->applicationModuleRepository->getByAttributes([
+            ['column' => 'ApplicationId', 'operand' => '=', 'value' => $request->get('ApplicationId')]
+        ])->pluck('ModuleId')->toArray();
+
+        $modules = $this->moduleRepository->getByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $moduleIds]
+        ], '', ['Id', 'Name'], 'Name');
+
+        return new ServiceDto("Modules by Application retrieved!!!", 200, $modules);
     }
 }
