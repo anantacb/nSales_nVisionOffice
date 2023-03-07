@@ -13,7 +13,7 @@ let tableFields = [
         name: "module",
         title: "Module",
         formatter: (module) => {
-            return module.Name;
+            return module ? module.Name : '';
         }
     },
     {
@@ -61,7 +61,7 @@ let request = ref({
     //relations: [],
     filters: null,
     order: {},
-    pagination: {"page_no": 1, "per_page": 20},
+    pagination: {"page_no": 1, "per_page": 5},
     query: null
 });
 
