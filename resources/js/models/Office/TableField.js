@@ -5,7 +5,7 @@ export default class TableField {
             axios.post('/api/table-fields', {
                 tableId: tableId
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -20,7 +20,7 @@ export default class TableField {
                 tableId: tableId,
                 ...formData
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -35,7 +35,7 @@ export default class TableField {
                 tableId: tableId,
                 ...formData
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -50,7 +50,7 @@ export default class TableField {
                 tableId: tableId,
                 ...formData
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {

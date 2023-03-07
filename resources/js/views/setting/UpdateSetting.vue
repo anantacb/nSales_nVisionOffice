@@ -29,9 +29,9 @@ let initialModuleSettings = {};
 
 async function getModuleSettings() {
     moduleSettingsRef.value.statusLoading();
-    let data = await ModuleSetting.getModuleSettings(companyStore.selectedCompany.Id);
-    moduleSettings.value = data.data;
-    initialModuleSettings = JSON.parse(JSON.stringify(data.data));
+    let {data} = await ModuleSetting.getModuleSettings(companyStore.selectedCompany.Id);
+    moduleSettings.value = data;
+    initialModuleSettings = JSON.parse(JSON.stringify(data));
     moduleSettingsRef.value.statusNormal();
 }
 
@@ -50,9 +50,12 @@ async function update() {
     }
     moduleSettingsRef.value.statusLoading();
 
-    let data = await ModuleSetting.updateModuleSettings(companyStore.selectedCompany.Id, updatedSettings.value);
+    let {data, message} = await ModuleSetting.updateModuleSettings(
+        companyStore.selectedCompany.Id,
+        updatedSettings.value
+    );
 
-    notificationStore.showNotification(data.message);
+    notificationStore.showNotification(message);
 
     updatedSettings.value = [];
 

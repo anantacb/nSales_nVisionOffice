@@ -21,7 +21,7 @@ let Name = ref('');
 let Email = ref('');
 let PhoneNo = ref('');
 let MobileNo = ref('');
-let Disabled = ref('0');
+let Disabled = ref(0);
 
 let Password = ref('');
 let PasswordConfirmation = ref('');
@@ -30,14 +30,14 @@ let CultureName = ref('da-DK');
 let Initials = ref('');
 let Territory = ref('');
 let Commission = ref(0);
-let Billable = ref('1');
+let Billable = ref(1);
 let Note = ref('');
 
 let RoleIds = ref([]);
 
 let RoleOptions = ref([]);
 
-let SendMail = ref('1');
+let SendMail = ref(1);
 
 const createUserRef = ref(null);
 
@@ -70,9 +70,9 @@ async function createUser() {
     };
 
     try {
-        let {data} = await User.createCompanyUser(companyStore.selectedCompany.Id, formData);
+        let {data, message} = await User.createCompanyUser(companyStore.selectedCompany.Id, formData);
         await router.push({name: 'users'});
-        notificationStore.showNotification(data.message);
+        notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
     }

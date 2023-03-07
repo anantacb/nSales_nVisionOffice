@@ -53,7 +53,7 @@ async function login() {
 
     try {
         let {data} = await User.login(state.email, state.password);
-        authStore.setToken(data.data);
+        await authStore.setToken(data);
         await router.push({name: localStorage.getItem('expected_route') ? localStorage.getItem('expected_route') : 'home'});
         localStorage.removeItem('expected_route');
     } catch (exception) {

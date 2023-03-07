@@ -57,5 +57,4 @@ class TableController extends Controller
         $response = $this->service->deleteTable($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
-
 }

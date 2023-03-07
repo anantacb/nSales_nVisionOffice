@@ -5,7 +5,7 @@ export default class User {
                 email: email,
                 password: password
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -17,7 +17,7 @@ export default class User {
     static logout() {
         return new Promise((resolve, reject) => {
             axios.post('/api/auth/logout')
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -29,7 +29,7 @@ export default class User {
     static getAuthUserDetails() {
         return new Promise((resolve, reject) => {
             axios.post('/api/auth/user')
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -43,7 +43,7 @@ export default class User {
             axios.post('/api/users/company-user/create', {
                 CompanyId, ...formData
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {

@@ -3,7 +3,7 @@ export default class Table {
     static getTables(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/tables', {...formData})
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -14,10 +14,10 @@ export default class Table {
 
     static getDetails(tableId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/table-details', {
+            axios.post('/api/table/details', {
                 tableId: tableId
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -29,7 +29,7 @@ export default class Table {
     static getCreatePreviewSql(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/create-table-preview-sql', {...formData})
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -41,7 +41,7 @@ export default class Table {
     static createTableSaveAndExecute(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/create-table-save-and-execute', {...formData})
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -52,10 +52,8 @@ export default class Table {
 
     static createTableSaveWithoutExecuting(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-save-without-executing', {
-                ...formData
-            })
-                .then((data) => {
+            axios.post('/api/create-table-save-without-executing', formData)
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {
@@ -66,10 +64,10 @@ export default class Table {
 
     static delete(tableId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/delete-table', {
+            axios.post('/api/table/delete', {
                 tableId: tableId
             })
-                .then((data) => {
+                .then(({data}) => {
                     resolve(data);
                 })
                 .catch((error) => {

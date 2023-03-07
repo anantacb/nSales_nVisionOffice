@@ -40,8 +40,8 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 Route::middleware(['auth:api'])->group(function () {
     // Table
     Route::post('/tables', [TableController::class, 'getTables']);
-    Route::post('/table-details', [TableController::class, 'getDetails']);
-    Route::post('/delete-table', [TableController::class, 'delete']);
+    Route::post('/table/details', [TableController::class, 'getDetails']);
+    Route::post('/table/delete', [TableController::class, 'delete']);
     Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
     Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
     Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
@@ -84,5 +84,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('applications/all', [ApplicationController::class, 'getAllApplications']);
 
     // EmailConfiguration
-    Route::post('email-configuration/create', [EmailConfigurationController::class, 'create']);
+    Route::post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);
+    Route::post('/email-configuration/create', [EmailConfigurationController::class, 'create']);
+    Route::post('/email-configuration/update', [EmailConfigurationController::class, 'update']);
+    Route::post('/email-configuration/delete', [EmailConfigurationController::class, 'delete']);
+    Route::post('/email-configuration/details', [EmailConfigurationController::class, 'details']);
 });

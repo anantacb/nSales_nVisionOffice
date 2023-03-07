@@ -3,7 +3,6 @@ import {onMounted, ref} from "vue";
 import InputErrorMessages from '@/components/ui/FormElements/InputErrorMessages.vue';
 import Select from '@/components/ui/FormElements/Select.vue';
 import {booleanOptions} from "@/data/dropDownOptions";
-import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
 import User from "@/models/Office/User";
 import {useFormErrors} from "@/composables/useFormErrors";
@@ -13,36 +12,12 @@ import Module from "@/models/Office/Module";
 import Company from "@/models/Office/Company";
 import Role from "@/models/Office/Role";
 import EmailConfiguration from "@/models/Office/EmailConfiguration";
+import {useRoute} from "vue-router";
+
+const route = useRoute();
 
 const notificationStore = useNotificationStore();
 const {errors, setErrors, resetErrors} = useFormErrors();
-
-let Name = ref('');
-let TemplateType = ref('Internal');
-let Disabled = ref(0);
-
-let From = ref('');
-let To = ref('');
-let Cc = ref('');
-let Bcc = ref('');
-
-let SendToCompany = ref(0);
-let SendToUser = ref(0);
-let SendToCustomer = ref(0);
-let SendToSupplier = ref(0);
-
-
-let Subject = ref("$\"Order Copy #\"+ Order.OrderNumber");
-let Body = ref("$\"Dear Customer,\nWe are pleased to send you a copy of the order you have just placed with us.\nPlease find the order copy attached to this email as a PDF document.\nBest Regards\n\"+ Company.Name");
-let Description = ref("");
-let TemplatePath = ref("Templates\\Order.xslt");
-
-let ApplyTo = ref('');
-let ModuleId = ref(null);
-let ApplicationId = ref('');
-let CompanyId = ref(null);
-let RoleId = ref(null);
-let CompanyUserId = ref(null);
 
 let ApplicationOptions = ref([]);
 let CompanyOptions = ref([]);
@@ -65,7 +40,7 @@ const ApplyToOptions = ['', 'Application', 'Company', 'Role', 'User'].map((item)
     }
 });
 
-const createEmailConfigurationRef = ref(null);
+const editEmailConfigurationRef = ref(null);
 
 let TemplateTypeOptions = ref([]);
 
@@ -80,11 +55,11 @@ async function getTemplateTypes() {
 }
 
 function resetApplyToData() {
-    ModuleId.value = null;
-    ApplicationId.value = null;
-    CompanyId.value = null;
-    RoleId.value = null;
-    CompanyUserId.value = null;
+    EmailConfigurationModel.value.ModuleId = null;
+    EmailConfigurationModel.value.ApplicationId = null;
+    EmailConfigurationModel.value.CompanyId = null;
+    EmailConfigurationModel.value.RoleId = null;
+    EmailConfigurationModel.value.CompanyUserId = null;
 
     ApplicationOptions.value = [];
     CompanyOptions.value = [];
@@ -110,11 +85,10 @@ function makeApplyToDropdownsVisible(selectedDropdowns) {
 }
 
 async function applyToChanged() {
-    createEmailConfigurationRef.value.statusLoading();
+    editEmailConfigurationRef.value.statusLoading();
     resetApplyToData();
     resetApplyToDropDownVisibility();
-
-    switch (ApplyTo.value) {
+    switch (EmailConfigurationModel.value.ApplyTo) {
         case 'Application':
             await getApplications();
             makeApplyToDropdownsVisible(['Application', 'Module']);
@@ -134,7 +108,7 @@ async function applyToChanged() {
         default:
             break;
     }
-    createEmailConfigurationRef.value.statusNormal();
+    editEmailConfigurationRef.value.statusNormal();
 }
 
 async function getApplications() {
@@ -151,16 +125,16 @@ async function getApplications() {
 
 async function applicationChanged() {
     ModuleOptions.value = [];
-    if (!ApplicationId.value) {
+    if (!EmailConfigurationModel.value.ApplicationId) {
         return;
     }
-    createEmailConfigurationRef.value.statusLoading();
-    await getModulesByApplication(ApplicationId.value);
-    createEmailConfigurationRef.value.statusNormal();
+    editEmailConfigurationRef.value.statusLoading();
+    await getModulesByApplication(EmailConfigurationModel.value.ApplicationId);
+    editEmailConfigurationRef.value.statusNormal();
 }
 
 async function getModulesByApplication() {
-    let {data} = await Module.getModulesByApplication(ApplicationId.value);
+    let {data} = await Module.getModulesByApplication(EmailConfigurationModel.value.ApplicationId);
     let options = [{label: 'Select Module', value: ''}];
 
     data.forEach((module) => {
@@ -188,25 +162,25 @@ async function companyChanged() {
     RoleOptions.value = [];
     CompanyUserOptions.value = [];
 
-    if (!CompanyId.value) {
+    if (!EmailConfigurationModel.value.CompanyId) {
         return;
     }
 
-    createEmailConfigurationRef.value.statusLoading();
+    editEmailConfigurationRef.value.statusLoading();
 
-    if (ApplyTo.value === 'Company') {
+    if (EmailConfigurationModel.value.ApplyTo === 'Company') {
         await getModulesByCompany();
-    } else if (ApplyTo.value === 'Role') {
+    } else if (EmailConfigurationModel.value.ApplyTo === 'Role') {
         await getRolesByCompany();
-    } else if (ApplyTo.value === 'User') {
+    } else if (EmailConfigurationModel.value.ApplyTo === 'User') {
         await getCompanyUsers();
     }
 
-    createEmailConfigurationRef.value.statusNormal();
+    editEmailConfigurationRef.value.statusNormal();
 }
 
 async function getModulesByCompany() {
-    const {data} = await Module.getActivatedModulesByCompany(CompanyId.value);
+    const {data} = await Module.getActivatedModulesByCompany(EmailConfigurationModel.value.CompanyId);
     let options = [{label: 'Select Module', value: ''}];
 
     data.forEach((module) => {
@@ -218,7 +192,7 @@ async function getModulesByCompany() {
 }
 
 async function getRolesByCompany() {
-    const {data} = await Role.getRolesByCompany(CompanyId.value);
+    const {data} = await Role.getRolesByCompany(EmailConfigurationModel.value.CompanyId);
 
     let options = [{label: 'Select Role', value: ''}];
     data.forEach((role) => {
@@ -231,17 +205,17 @@ async function getRolesByCompany() {
 async function roleChanged() {
     ModuleOptions.value = [];
 
-    if (!RoleId.value) {
+    if (!EmailConfigurationModel.value.RoleId) {
         return;
     }
 
-    createEmailConfigurationRef.value.statusLoading();
+    editEmailConfigurationRef.value.statusLoading();
     await getModulesByCompany();
-    createEmailConfigurationRef.value.statusNormal();
+    editEmailConfigurationRef.value.statusNormal();
 }
 
 async function getCompanyUsers() {
-    const {data} = await User.getCompanyUsers(CompanyId.value);
+    const {data} = await User.getCompanyUsers(EmailConfigurationModel.value.CompanyId);
 
     let options = [{label: 'Select User', value: ''}];
 
@@ -256,68 +230,104 @@ async function getCompanyUsers() {
 async function companyUserChanged() {
     ModuleOptions.value = [];
 
-    if (!CompanyUserId.value) {
+    if (!EmailConfigurationModel.value.CompanyUserId) {
         return;
     }
 
-    createEmailConfigurationRef.value.statusLoading();
+    editEmailConfigurationRef.value.statusLoading();
     await getModulesByCompany();
-    createEmailConfigurationRef.value.statusNormal();
+    editEmailConfigurationRef.value.statusNormal();
 }
 
-async function createEmailConfiguration() {
-    createEmailConfigurationRef.value.statusLoading();
+async function updateEmailConfiguration() {
+    editEmailConfigurationRef.value.statusLoading();
 
     let formData = {
-        Name: Name.value,
-        TemplateType: TemplateType.value,
-        Disabled: Disabled.value,
-        From: From.value,
-        To: To.value,
-        Cc: Cc.value,
-        Bcc: Bcc.value,
-        SendToCompany: SendToCompany.value,
-        SendToUser: SendToUser.value,
-        SendToCustomer: SendToCustomer.value,
-        SendToSupplier: SendToSupplier.value,
-        Subject: Subject.value,
-        Body: Body.value,
-        Description: Description.value,
-        TemplatePath: TemplatePath.value,
-        ApplyTo: ApplyTo.value,
-        ModuleId: ModuleId.value,
-        ApplicationId: ApplicationId.value,
-        CompanyId: CompanyId.value,
-        RoleId: RoleId.value,
-        CompanyUserId: CompanyUserId.value,
+        Id: EmailConfigurationModel.value.Id,
+        Name: EmailConfigurationModel.value.Name,
+        TemplateType: EmailConfigurationModel.value.TemplateType,
+        Disabled: EmailConfigurationModel.value.Disabled,
+        From: EmailConfigurationModel.value.From,
+        To: EmailConfigurationModel.value.To,
+        Cc: EmailConfigurationModel.value.Cc,
+        Bcc: EmailConfigurationModel.value.Bcc,
+        SendToCompany: EmailConfigurationModel.value.SendToCompany,
+        SendToUser: EmailConfigurationModel.value.SendToUser,
+        SendToCustomer: EmailConfigurationModel.value.SendToCustomer,
+        SendToSupplier: EmailConfigurationModel.value.SendToSupplier,
+        Subject: EmailConfigurationModel.value.Subject,
+        Body: EmailConfigurationModel.value.Body,
+        Description: EmailConfigurationModel.value.Description,
+        TemplatePath: EmailConfigurationModel.value.TemplatePath,
+        ApplyTo: EmailConfigurationModel.value.ApplyTo,
+        ModuleId: EmailConfigurationModel.value.ModuleId,
+        ApplicationId: EmailConfigurationModel.value.ApplicationId,
+        CompanyId: EmailConfigurationModel.value.CompanyId,
+        RoleId: EmailConfigurationModel.value.RoleId,
+        CompanyUserId: EmailConfigurationModel.value.CompanyUserId,
     };
 
     try {
-        let {data, message} = await EmailConfiguration.create(formData);
-        createEmailConfigurationRef.value.statusNormal();
-        await router.push({name: 'email-configurations'});
+        let {data, message} = await EmailConfiguration.update(formData);
+        editEmailConfigurationRef.value.statusNormal();
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
-        createEmailConfigurationRef.value.statusNormal();
+        editEmailConfigurationRef.value.statusNormal();
     }
 
 }
 
 onMounted(async () => {
-    createEmailConfigurationRef.value.statusLoading();
+    editEmailConfigurationRef.value.statusLoading();
     await getTemplateTypes();
-    createEmailConfigurationRef.value.statusNormal();
+    await getEmailConfigurationDetails();
+    switch (EmailConfigurationModel.value.ApplyTo) {
+        case 'Application':
+            await getApplications();
+            await getModulesByApplication();
+            makeApplyToDropdownsVisible(['Application', 'Module']);
+            break;
+        case 'Company':
+            await getCompanies();
+            await getModulesByCompany();
+            makeApplyToDropdownsVisible(['Company', 'Module']);
+            break;
+        case 'Role':
+            await getCompanies();
+            EmailConfigurationModel.value.CompanyId = EmailConfigurationModel.value.role.CompanyId;
+            await getRolesByCompany();
+            await getModulesByCompany();
+            makeApplyToDropdownsVisible(['Company', 'Role', 'Module']);
+            break;
+        case 'User':
+            await getCompanies();
+            EmailConfigurationModel.value.CompanyId = EmailConfigurationModel.value.company_user.CompanyId;
+            await getCompanyUsers();
+            await getModulesByCompany();
+            makeApplyToDropdownsVisible(['Company', 'User', 'Module']);
+            break;
+        default:
+            break;
+    }
+    editEmailConfigurationRef.value.statusNormal();
 });
+
+let EmailConfigurationModel = ref({});
+
+async function getEmailConfigurationDetails() {
+    let {data} = await EmailConfiguration.details(route.params.id);
+    EmailConfigurationModel.value = data;
+}
 
 </script>
 
 <template>
     <div class="content">
 
-        <BaseBlock ref="createEmailConfigurationRef" content-full title="Create Email Configuration">
+        <BaseBlock ref="editEmailConfigurationRef" content-full title="Edit Email Configuration">
 
-            <form class="space-y-4" @submit.prevent="createEmailConfiguration">
+            <form class="space-y-4" @submit.prevent="updateEmailConfiguration">
 
                 <div class="row">
                     <div class="col-lg-4 space-y-2">
@@ -327,7 +337,7 @@ onMounted(async () => {
                                 Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="Name"
+                                <input id="Name" v-model="EmailConfigurationModel.Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Name"
                                        type="text"
@@ -341,7 +351,8 @@ onMounted(async () => {
                                 Disabled<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Disabled" v-model="Disabled" :options="booleanOptions"
+                                <Select id="Disabled" v-model="EmailConfigurationModel.Disabled"
+                                        :options="booleanOptions"
                                         :required="true"
                                         :select-class="errors.Disabled ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Disabled"
@@ -355,7 +366,8 @@ onMounted(async () => {
                                 TemplateType<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="TemplateType" v-model="TemplateType" :options="TemplateTypeOptions"
+                                <Select id="TemplateType" v-model="EmailConfigurationModel.TemplateType"
+                                        :options="TemplateTypeOptions"
                                         :required="true"
                                         :select-class="errors.TemplateType ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="TemplateType"
@@ -373,7 +385,7 @@ onMounted(async () => {
                                 From
                             </label>
                             <div class="col-sm-8">
-                                <input id="From" v-model="From"
+                                <input id="From" v-model="EmailConfigurationModel.From"
                                        :class="errors.From ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="From"
                                        type="text"
@@ -387,7 +399,7 @@ onMounted(async () => {
                                 To
                             </label>
                             <div class="col-sm-8">
-                                <input id="To" v-model="To"
+                                <input id="To" v-model="EmailConfigurationModel.To"
                                        :class="errors.To ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="To"
                                        type="text"
@@ -401,7 +413,7 @@ onMounted(async () => {
                                 Cc
                             </label>
                             <div class="col-sm-8">
-                                <input id="Cc" v-model="Cc"
+                                <input id="Cc" v-model="EmailConfigurationModel.Cc"
                                        :class="errors.Cc ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Cc"
                                        type="text"
@@ -415,7 +427,7 @@ onMounted(async () => {
                                 Bcc
                             </label>
                             <div class="col-sm-8">
-                                <input id="Bcc" v-model="Bcc"
+                                <input id="Bcc" v-model="EmailConfigurationModel.Bcc"
                                        :class="errors.Bcc ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Bcc"
                                        type="text"
@@ -434,7 +446,8 @@ onMounted(async () => {
                                 Company
                             </label>
                             <div class="col-sm-8">
-                                <Select id="SendToCompany" v-model="SendToCompany" :options="booleanOptions"
+                                <Select id="SendToCompany" v-model="EmailConfigurationModel.SendToCompany"
+                                        :options="booleanOptions"
                                         :required="false"
                                         :select-class="errors.SendToCompany ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="SendToCompany"
@@ -448,7 +461,8 @@ onMounted(async () => {
                                 User
                             </label>
                             <div class="col-sm-8">
-                                <Select id="SendToUser" v-model="SendToUser" :options="booleanOptions"
+                                <Select id="SendToUser" v-model="EmailConfigurationModel.SendToUser"
+                                        :options="booleanOptions"
                                         :required="false"
                                         :select-class="errors.SendToUser ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="SendToUser"
@@ -462,7 +476,8 @@ onMounted(async () => {
                                 Customer
                             </label>
                             <div class="col-sm-8">
-                                <Select id="SendToCustomer" v-model="SendToCustomer" :options="booleanOptions"
+                                <Select id="SendToCustomer" v-model="EmailConfigurationModel.SendToCustomer"
+                                        :options="booleanOptions"
                                         :required="false"
                                         :select-class="errors.SendToCustomer ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="SendToCustomer"
@@ -476,7 +491,8 @@ onMounted(async () => {
                                 Supplier
                             </label>
                             <div class="col-sm-8">
-                                <Select id="SendToSupplier" v-model="SendToSupplier" :options="booleanOptions"
+                                <Select id="SendToSupplier" v-model="EmailConfigurationModel.SendToSupplier"
+                                        :options="booleanOptions"
                                         :required="false"
                                         :select-class="errors.SendToSupplier ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="SendToSupplier"
@@ -496,7 +512,7 @@ onMounted(async () => {
                                 ApplyTo<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="ApplyTo" v-model="ApplyTo" :options="ApplyToOptions"
+                                <Select id="ApplyTo" v-model="EmailConfigurationModel.ApplyTo" :options="ApplyToOptions"
                                         :required="true"
                                         :select-class="errors.ApplyTo ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="ApplyTo"
@@ -510,7 +526,8 @@ onMounted(async () => {
                                 Application<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Application" v-model="ApplicationId" :options="ApplicationOptions"
+                                <Select id="Application" v-model="EmailConfigurationModel.ApplicationId"
+                                        :options="ApplicationOptions"
                                         :required="true"
                                         :select-class="errors.Application ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Application"
@@ -525,7 +542,8 @@ onMounted(async () => {
                                 Company<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Company" v-model="CompanyId" :options="CompanyOptions"
+                                <Select id="Company" v-model="EmailConfigurationModel.CompanyId"
+                                        :options="CompanyOptions"
                                         :required="true"
                                         :select-class="errors.Company ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Company"
@@ -540,7 +558,7 @@ onMounted(async () => {
                                 Role<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Role" v-model="RoleId" :options="RoleOptions"
+                                <Select id="Role" v-model="EmailConfigurationModel.RoleId" :options="RoleOptions"
                                         :required="true"
                                         :select-class="errors.Role ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Role"
@@ -555,7 +573,8 @@ onMounted(async () => {
                                 User<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="User" v-model="CompanyUserId" :options="CompanyUserOptions"
+                                <Select id="User" v-model="EmailConfigurationModel.CompanyUserId"
+                                        :options="CompanyUserOptions"
                                         :required="true"
                                         :select-class="errors.User ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="User"
@@ -570,7 +589,7 @@ onMounted(async () => {
                                 Module<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Module" v-model="ModuleId" :options="ModuleOptions"
+                                <Select id="Module" v-model="EmailConfigurationModel.ModuleId" :options="ModuleOptions"
                                         :required="true"
                                         :select-class="errors.Module ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Module"
@@ -588,7 +607,7 @@ onMounted(async () => {
                                 Subject
                             </label>
                             <div class="col-sm-10">
-                                <input id="Subject" v-model="Subject"
+                                <input id="Subject" v-model="EmailConfigurationModel.Subject"
                                        :class="errors.Subject ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Subject"
                                        type="text"
@@ -602,7 +621,8 @@ onMounted(async () => {
                                 Body
                             </label>
                             <div class="col-sm-10">
-                            <textarea id="Body" v-model="Body" :class="{'is-invalid': errors.Body}"
+                            <textarea id="Body" v-model="EmailConfigurationModel.Body"
+                                      :class="{'is-invalid': errors.Body}"
                                       class="form-control" rows="4">
                             </textarea>
                                 <InputErrorMessages v-if="errors.Body"
@@ -614,7 +634,8 @@ onMounted(async () => {
                                 Description
                             </label>
                             <div class="col-sm-10">
-                            <textarea id="Description" v-model="Description" :class="{'is-invalid': errors.Description}"
+                            <textarea id="Description" v-model="EmailConfigurationModel.Description"
+                                      :class="{'is-invalid': errors.Description}"
                                       class="form-control" rows="1">
                             </textarea>
                                 <InputErrorMessages v-if="errors.Description"
@@ -626,7 +647,7 @@ onMounted(async () => {
                                 TemplatePath
                             </label>
                             <div class="col-sm-10">
-                                <input id="TemplatePath" v-model="TemplatePath"
+                                <input id="TemplatePath" v-model="EmailConfigurationModel.TemplatePath"
                                        :class="errors.TemplatePath ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="TemplatePath"
                                        type="text"

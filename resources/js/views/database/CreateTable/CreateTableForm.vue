@@ -25,11 +25,11 @@ let type = ref("Server");
 let database = ref("Company");
 let module = ref("");
 let selectedCompanies = ref([]);
-let disabled = ref("0");
+let disabled = ref(0);
 
 let clientSync = ref("");
-let autoNumbering = ref("0");
-let enableTruncate = ref("1");
+let autoNumbering = ref(0);
+let enableTruncate = ref(1);
 
 let sqlTruncate = ref("");
 let sqlSeed = ref("");
@@ -50,12 +50,13 @@ onMounted(() => {
 
 async function getAllModules() {
     loading.value.moduleDropDown = true;
-    let data = await Module.getAllModules();
-    modules.value = data.data;
+    let {data} = await Module.getAllModules();
+    modules.value = data;
     loading.value.moduleDropDown = false;
 }
 
 async function getModuleEnabledCompanies() {
+    selectedCompanies.value = [];
     if (!module.value) {
         companies.value = [];
         return;
@@ -84,7 +85,7 @@ async function submit() {
     };
     try {
         let {data} = await Table.getCreatePreviewSql(formData);
-        emit("showPreview", data.data, formData);
+        emit("showPreview", data, formData);
     } catch (err) {
         if (err.response.status === 422) {
             errors.value = err.response.data.errors;
@@ -99,8 +100,6 @@ async function submit() {
     <form class="space-y-4" @submit.prevent="submit">
         <div class="row">
             <div class="col-lg-6 space-y-3">
-                <!-- Form Horizontal - Default Style -->
-
                 <div class="row">
                     <label class="col-sm-4 col-form-label" for="Name">
                         Name
@@ -202,11 +201,9 @@ async function submit() {
                                             :errorMessages="errors.disabled"></InputErrorMessages>
                     </div>
                 </div>
-                <!-- END Form Horizontal - Default Style -->
             </div>
-            <div class="col-lg-6 space-y-3">
-                <!-- Form Horizontal - Default Style -->
 
+            <div class="col-lg-6 space-y-3">
                 <div class="row">
                     <label class="col-sm-4 col-form-label" for="ClientSync">
                         Client Sync
@@ -241,8 +238,6 @@ async function submit() {
                                             :errorMessages="errors.enableTruncate"></InputErrorMessages>
                     </div>
                 </div>
-
-                <!-- END Form Horizontal - Default Style -->
             </div>
 
             <div class="col-lg-6 space-y-3 mt-3">
@@ -257,7 +252,6 @@ async function submit() {
                                             :errorMessages="errors.sqlTruncate"></InputErrorMessages>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-lg-6 space-y-3 mt-3">
@@ -271,7 +265,6 @@ async function submit() {
                         <InputErrorMessages v-if="errors.sqlSeed" :errorMessages="errors.sqlSeed"></InputErrorMessages>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-lg-6 space-y-3 mt-3">
