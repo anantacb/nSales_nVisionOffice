@@ -3999,11 +3999,11 @@ const clientSyncOptions = [
 const booleanOptions = [
     {
         label: "No",
-        value: "0"
+        value: 0
     },
     {
         label: "Yes",
-        value: "1"
+        value: 1
     }
 ];
 

@@ -42,7 +42,7 @@ let DefaultCulture = ref('da-DK');
 let DefaultCurrency = ref('DKK');
 let TrialStartDate = ref(null);
 let TrialDays = ref(14);
-let Disabled = ref(false);
+let Disabled = ref(0);
 
 let Note = ref('');
 
@@ -56,32 +56,32 @@ let integrationTypeOptions = ref([]);
 let fileTransferTypeOptions = ref([]);
 
 async function getOptions() {
-    let typeData = await TableHelper.getEnumValues('Office', `Company`, 'Type');
-    typeOptions.value = typeData.data.map((item) => {
+    let {data: typeData} = await TableHelper.getEnumValues('Office', `Company`, 'Type');
+    typeOptions.value = typeData.map((item) => {
         return {
             label: item,
             value: item,
         }
     });
 
-    let integrationTypeData = await TableHelper.getEnumValues('Office', `Company`, 'IntegrationType');
-    integrationTypeOptions.value = integrationTypeData.data.map((item) => {
+    let {data: integrationTypeData} = await TableHelper.getEnumValues('Office', `Company`, 'IntegrationType');
+    integrationTypeOptions.value = integrationTypeData.map((item) => {
         return {
             label: item,
             value: item,
         }
     });
 
-    let fileTransferTypeData = await TableHelper.getEnumValues('Office', `Company`, 'FileTransferType');
-    fileTransferTypeOptions.value = fileTransferTypeData.data.map((item) => {
+    let {data: fileTransferTypeData} = await TableHelper.getEnumValues('Office', `Company`, 'FileTransferType');
+    fileTransferTypeOptions.value = fileTransferTypeData.map((item) => {
         return {
             label: item,
             value: item,
         }
     });
 
-    let storageLocationData = await TableHelper.getEnumValues('Office', `Company`, 'StorageLocation');
-    storageLocationOptions.value = storageLocationData.data.map((item) => {
+    let {data: storageLocationData} = await TableHelper.getEnumValues('Office', `Company`, 'StorageLocation');
+    storageLocationOptions.value = storageLocationData.map((item) => {
         return {
             label: item,
             value: item,

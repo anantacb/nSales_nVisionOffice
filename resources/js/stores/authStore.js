@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', {
         async getAuthUserDetails() {
             try {
                 let {data} = await User.getAuthUserDetails();
-                this.user = data.data;
+                this.user = data;
                 localStorage.setItem('user', JSON.stringify(this.user));
             } catch (err) {
             }

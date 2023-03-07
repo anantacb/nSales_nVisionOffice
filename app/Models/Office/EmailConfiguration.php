@@ -5,12 +5,14 @@ namespace App\Models\Office;
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class EmailConfiguration extends BaseModel
 {
     use HasFactory;
 
     protected $table = 'EmailConfiguration';
+    protected $appends = ['ApplyTo'];
 
     public function module(): BelongsTo
     {
@@ -37,8 +39,24 @@ class EmailConfiguration extends BaseModel
         return $this->belongsTo(CompanyUser::class, 'CompanyUserId', 'Id');
     }
 
-    public function user()
+    public function user(): HasOneThrough
     {
-        $this->hasOneThrough(User::class, CompanyUser::class, 'UserId', 'CompanyUserId', 'Id', 'Id');
+        return $this->hasOneThrough(User::class, CompanyUser::class, 'Id', 'Id', 'CompanyUserId', 'UserId');
+    }
+
+    public function getApplyToAttribute()
+    {
+        $mapping = [
+            'ApplicationId' => 'Application',
+            'CompanyId' => 'Company',
+            'RoleId' => 'Role',
+            'CompanyUserId' => 'User',
+        ];
+
+        foreach ($mapping as $key => $value) {
+            if ($this->$key) {
+                return $value;
+            }
+        }
     }
 }

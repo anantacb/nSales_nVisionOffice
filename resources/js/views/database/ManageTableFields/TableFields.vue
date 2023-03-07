@@ -29,9 +29,9 @@ let selectCompaniesOptions = ref([]);
 
 async function getTableDetails() {
     let {data} = await Table.getDetails(route.params.id);
-    table.value = data.data;
+    table.value = data;
 
-    let tableCompanies = data.data.company_tables.map((company_table) => {
+    let tableCompanies = data.company_tables.map((company_table) => {
         return {
             label: company_table.company.Name,
             value: company_table.company.Id
@@ -41,7 +41,7 @@ async function getTableDetails() {
     tableCompanies = _.orderBy(tableCompanies, ['label'], ['asc']);
 
     if (_.isEmpty(tableCompanies)) {
-        selectCompaniesOptions = data.data.module.companies.map((company) => {
+        selectCompaniesOptions = data.module.companies.map((company) => {
             return {
                 label: company.Name,
                 value: company.Id
@@ -87,10 +87,13 @@ function endLoading() {
 async function saveWithoutExecuting() {
     templateStore.pageLoader({mode: 'on'});
     try {
-        let {data} = await TableField.tableFieldsOperationsSaveWithoutExecuting(table.value.Id, sqlFormData.value);
+        let {data, message} = await TableField.tableFieldsOperationsSaveWithoutExecuting(
+            table.value.Id,
+            sqlFormData.value
+        );
         modal.value.closeModal();
         await router.push({name: 'tables'});
-        notificationStore.showNotification(data.message);
+        notificationStore.showNotification(message);
     } catch (error) {
         notificationStore.showNotification(error.response.data.message, 'error');
     }
@@ -100,11 +103,11 @@ async function saveWithoutExecuting() {
 async function saveAndExecute() {
     templateStore.pageLoader({mode: 'on'});
     try {
-        let {data} = await TableField.tableFieldsOperationsSaveAndExecute(table.value.Id, sqlFormData.value);
+        let {data, message} = await TableField.tableFieldsOperationsSaveAndExecute(table.value.Id, sqlFormData.value);
         modal.value.closeModal();
         //await router.push({name: 'manage-table-fields', params: {id: table.value.Id}});
         await router.push({name: 'tables'});
-        notificationStore.showNotification(data.message);
+        notificationStore.showNotification(message);
     } catch (error) {
         notificationStore.showNotification(error.response.data.message, 'error');
     }

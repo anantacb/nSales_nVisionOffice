@@ -20,10 +20,10 @@ function showPreviewModal(queries, formData) {
 
 async function saveWithoutExecuting() {
     try {
-        let {data} = await Table.createTableSaveWithoutExecuting(sqlFormData.value);
+        let {data, message} = await Table.createTableSaveWithoutExecuting(sqlFormData.value);
         modal.value.closeModal();
         await router.push({name: 'tables'});
-        notificationStore.showNotification(data.message);
+        notificationStore.showNotification(message);
     } catch (error) {
         notificationStore.showNotification(error.response.data.message, 'error', 15000);
         modal.value.closeModal();
@@ -32,10 +32,10 @@ async function saveWithoutExecuting() {
 
 async function saveAndExecute() {
     try {
-        let {data} = await Table.createTableSaveAndExecute(sqlFormData.value);
+        let {data, message} = await Table.createTableSaveAndExecute(sqlFormData.value);
         modal.value.closeModal();
         await router.push({name: 'tables'});
-        notificationStore.showNotification(data.message);
+        notificationStore.showNotification(message);
     } catch (error) {
         notificationStore.showNotification(error.response.data.message, 'error', 15000);
         modal.value.closeModal();
@@ -46,18 +46,18 @@ async function saveAndExecute() {
 
 <template>
     <!-- Hero -->
-    <BasePageHeading subtitle="" title="Create Table">
-        <template #extra>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-alt">
-                    <li aria-current="page" class="breadcrumb-item">Database</li>
-                    <li class="breadcrumb-item">
-                        <router-link :to="{name: 'create-table'}" class="link-fx">Create Table</router-link>
-                    </li>
-                </ol>
-            </nav>
-        </template>
-    </BasePageHeading>
+    <!--    <BasePageHeading subtitle="" title="Create Table">
+            <template #extra>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-alt">
+                        <li aria-current="page" class="breadcrumb-item">Database</li>
+                        <li class="breadcrumb-item">
+                            <router-link :to="{name: 'create-table'}" class="link-fx">Create Table</router-link>
+                        </li>
+                    </ol>
+                </nav>
+            </template>
+        </BasePageHeading>-->
     <!-- END Hero -->
 
     <!-- Page Content -->

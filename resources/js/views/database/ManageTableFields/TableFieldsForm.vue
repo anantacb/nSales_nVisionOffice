@@ -116,7 +116,7 @@ async function getTableFields() {
         emit('startLoading');
         let {data} = await TableField.getTableFields(route.params.id);
 
-        let responseTableFields = data.data;
+        let responseTableFields = data;
         // Order By Sort Order
         responseTableFields = _.orderBy(responseTableFields, ['SortOrder'], ['asc'])
 
@@ -434,7 +434,7 @@ async function getSqlPreviews() {
 
     let {data} = await TableField.getTableFieldsOperationPreviews(props.table.Id, formData);
 
-    emit('showPreview', data.data, formData);
+    emit('showPreview', data, formData);
 }
 
 // end

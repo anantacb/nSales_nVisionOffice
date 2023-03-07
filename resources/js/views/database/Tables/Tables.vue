@@ -1,12 +1,10 @@
 <script setup>
 
-import TableList from "@/views/database/Tables/TableList.vue";
-
-</script>
+import TableList from "@/views/database/Tables/TableList.vue";</script>
 
 <template>
     <!-- Hero -->
-    <BasePageHeading subtitle="" title="Tables">
+<!--    <BasePageHeading subtitle="" title="Tables">
         <template #extra>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-alt">
@@ -17,12 +15,12 @@ import TableList from "@/views/database/Tables/TableList.vue";
                 </ol>
             </nav>
         </template>
-    </BasePageHeading>
+    </BasePageHeading>-->
     <!-- END Hero -->
 
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock class="text-center">
+        <BaseBlock title="Tables">
             <TableList/>
         </BaseBlock>
     </div>
