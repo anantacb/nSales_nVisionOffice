@@ -1,7 +1,5 @@
 <script setup>
 import {onMounted, ref, watch} from "vue";
-import InputErrorMessages from '@/components/ui/FormElements/InputErrorMessages.vue';
-import Select from '@/components/ui/FormElements/Select.vue';
 import {booleanOptions, cultureOptions} from "@/data/dropDownOptions";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";

@@ -20,7 +20,6 @@ class ModuleService implements ModuleServiceInterface
 
     protected ModuleRepositoryInterface $moduleRepository;
     protected CompanyModuleRepositoryInterface $companyModuleRepository;
-
     protected CompanyRepositoryInterface $companyRepository;
     protected ApplicationModuleRepository $applicationModuleRepository;
 
@@ -41,6 +40,13 @@ class ModuleService implements ModuleServiceInterface
     public function getAllModules(Request $request): ServiceDto
     {
         $modules = $this->moduleRepository->getByAttributes([], '', ['Id', 'Name'], 'Name');
+        return new ServiceDto("Modules retrieved!!!", 200, $modules);
+    }
+
+    public function getModules(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        $modules = $this->moduleRepository->paginatedData($request);
         return new ServiceDto("Modules retrieved!!!", 200, $modules);
     }
 
@@ -311,5 +317,70 @@ class ModuleService implements ModuleServiceInterface
         ], '', ['Id', 'Name'], 'Name');
 
         return new ServiceDto("Modules by Application retrieved!!!", 200, $modules);
+    }
+
+    public function create(Request $request): ServiceDto
+    {
+        $module = $this->moduleRepository->create([
+            'ModuleId' => $request->get('ModuleId'),
+            'Name' => $request->get('Name'),
+            'Description' => $request->get('Description'),
+            'Note' => $request->get('Note'),
+            'Type' => $request->get('Type'),
+            'Disabled' => $request->get('Disabled'),
+            'SyncOfficeData' => $request->get('SyncOfficeData'),
+            'ViewPath' => $request->get('ViewPath'),
+            'MainTableName' => $request->get('MainTableName') ?? '',
+            'IsGenericModule' => $request->get('IsGenericModule') ?? '',
+            'MenuVisible' => $request->get('MenuVisible') ?? 1,
+            'MenuTitle' => $request->get('MenuTitle') ?? '',
+            'MenuSubTitle' => $request->get('MenuSubTitle') ?? '',
+            'MenuGroup' => $request->get('MenuGroup') ?? '',
+            'MenuOrder' => $request->get('MenuOrder') ?? 0,
+            'MenuIcon' => $request->get('MenuIcon') ?? '',
+            'ElementNameSingular' => $request->get('ElementNameSingular') ?? '',
+            'ElementNamePlural' => $request->get('ElementNamePlural') ?? '',
+        ]);
+        return new ServiceDto("Module Created Successfully.", 200, $module);
+    }
+
+    public function update(Request $request): ServiceDto
+    {
+        $module = $this->moduleRepository->findByIdAndUpdate(
+            $request->get('Id'),
+            [
+                'ModuleId' => $request->get('ModuleId'),
+                'Name' => $request->get('Name'),
+                'Description' => $request->get('Description'),
+                'Note' => $request->get('Note'),
+                'Type' => $request->get('Type'),
+                'Disabled' => $request->get('Disabled'),
+                'SyncOfficeData' => $request->get('SyncOfficeData'),
+                'ViewPath' => $request->get('ViewPath'),
+                'MainTableName' => $request->get('MainTableName') ?? '',
+                'IsGenericModule' => $request->get('IsGenericModule') ?? '',
+                'MenuVisible' => $request->get('MenuVisible') ?? 1,
+                'MenuTitle' => $request->get('MenuTitle') ?? '',
+                'MenuSubTitle' => $request->get('MenuSubTitle') ?? '',
+                'MenuGroup' => $request->get('MenuGroup') ?? '',
+                'MenuOrder' => $request->get('MenuOrder') ?? 0,
+                'MenuIcon' => $request->get('MenuIcon') ?? '',
+                'ElementNameSingular' => $request->get('ElementNameSingular') ?? '',
+                'ElementNamePlural' => $request->get('ElementNamePlural') ?? '',
+            ]
+        );
+        return new ServiceDto("Module Updated Successfully.", 200, $module);
+    }
+
+    public function details(Request $request): ServiceDto
+    {
+        $module = $this->moduleRepository->findById($request->get('ModuleId'));
+        return new ServiceDto("Module Created Successfully.", 200, $module);
+    }
+
+    public function delete(Request $request): ServiceDto
+    {
+        $this->moduleRepository->findByIdAndDelete($request->get('ModuleId'));
+        return new ServiceDto("Module Deleted Successfully.", 200, []);
     }
 }

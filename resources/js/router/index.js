@@ -15,8 +15,9 @@ const TableFields = () => import("@/views/database/ManageTableFields/TableFields
 const CreateSetting = () => import("@/views/setting/CreateSetting.vue");
 const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
-const Modules = () => import("@/views/module/Modules.vue");
+const Modules = () => import("@/views/module/Modules/Modules.vue");
 const CreateModule = () => import("@/views/module/CreateModule.vue");
+const EditModule = () => import("@/views/module/EditModule.vue");
 const ActivateModule = () => import("@/views/module/ActivateModule.vue");
 
 const Companies = () => import("@/views/company/Companies.vue");
@@ -113,6 +114,15 @@ const routes = [
                 path: "module/modules",
                 name: "modules",
                 component: Modules,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "module/:id/edit",
+                name: "edit-module",
+                component: EditModule,
                 meta: {
                     authenticated: true,
                     company_specific: false

@@ -1,7 +1,5 @@
 <script setup>
 import {onMounted, ref} from "vue";
-import InputErrorMessages from '@/components/ui/FormElements/InputErrorMessages.vue';
-import Select from '@/components/ui/FormElements/Select.vue';
 import {booleanOptions} from "@/data/dropDownOptions";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
@@ -301,7 +299,6 @@ async function createEmailConfiguration() {
         setErrors(error.response.data.errors);
         createEmailConfigurationRef.value.statusNormal();
     }
-
 }
 
 onMounted(async () => {
