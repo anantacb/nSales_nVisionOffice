@@ -2,8 +2,6 @@
 
 import {onMounted, ref} from "vue";
 
-import Select from "@/components/ui/FormElements/Select.vue";
-import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import VueSelect from 'vue-select';
 
 import Module from "@/models/Office/Module";

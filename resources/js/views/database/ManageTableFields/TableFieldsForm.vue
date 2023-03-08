@@ -3,7 +3,6 @@ import {computed, onMounted, ref} from "vue";
 import TableField from "@/models/Office/TableField";
 import {useRoute} from "vue-router";
 import {useNotificationStore} from "@/stores/notificationStore";
-import Select from "@/components/ui/FormElements/Select.vue";
 import PopOverButton from "@/components/ui/PopOvers/PopOverButton.vue";
 import VueSelect from "vue-select";
 import Table from "@/models/Office/Table";

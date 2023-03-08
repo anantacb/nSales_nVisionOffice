@@ -5,7 +5,6 @@ import {useAuthStore} from "@/stores/authStore";
 import User from "@/models/Office/User";
 import router from "@/router";
 import {useCompanyStore} from "@/stores/companyStore";
-import Select from "@/components/ui/FormElements/Select.vue";
 import {useRoute} from "vue-router";
 
 // Grab example data

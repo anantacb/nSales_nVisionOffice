@@ -3,7 +3,6 @@ import {useCompanyStore} from "@/stores/companyStore";
 import {onMounted, ref, watch} from "vue";
 import ModuleSetting from "@/models/Office/ModuleSetting";
 import BaseBlock from "@/components/BaseBlock.vue";
-import Select from "@/components/ui/FormElements/Select.vue";
 import Swal from "sweetalert2";
 import JsonEditorVue from 'json-editor-vue';
 import {useTemplateStore} from "@/stores/templateStore";

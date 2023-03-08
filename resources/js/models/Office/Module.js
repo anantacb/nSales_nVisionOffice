@@ -1,8 +1,19 @@
 export default class Module {
-
     static getAllModules() {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/all')
+            axios.post('/api/module/all')
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getModules(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/modules', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -72,6 +83,58 @@ export default class Module {
         return new Promise((resolve, reject) => {
             axios.post('/api/modules/get-activated-modules-by-company', {
                 CompanyId: CompanyId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static create(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module/create', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static update(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module/update', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static details(ModuleId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module/details', {
+                ModuleId: ModuleId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static delete(ModuleId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module/delete', {
+                ModuleId: ModuleId
             })
                 .then(({data}) => {
                     resolve(data);

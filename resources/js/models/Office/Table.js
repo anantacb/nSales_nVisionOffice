@@ -2,7 +2,7 @@ export default class Table {
 
     static getTables(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/tables', {...formData})
+            axios.post('/api/tables', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -28,7 +28,7 @@ export default class Table {
 
     static getCreatePreviewSql(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-preview-sql', {...formData})
+            axios.post('/api/create-table-preview-sql', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -40,7 +40,7 @@ export default class Table {
 
     static createTableSaveAndExecute(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-save-and-execute', {...formData})
+            axios.post('/api/create-table-save-and-execute', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
