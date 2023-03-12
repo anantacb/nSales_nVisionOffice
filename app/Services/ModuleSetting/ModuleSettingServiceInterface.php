@@ -10,4 +10,12 @@ interface ModuleSettingServiceInterface
     public function getAllModuleSettingsByCompanyId(Request $request): ServiceDto;
 
     public function updateModuleSettingsByCompanyId(Request $request): ServiceDto;
+
+    public function create(Request $request): ServiceDto;
+
+    public function details(Request $request): ServiceDto;
+
+    public function update(Request $request): ServiceDto;
+
+    public function delete(Request $request): ServiceDto;
 }

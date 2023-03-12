@@ -1,9 +1,9 @@
 <script setup>
 import {onMounted, ref} from 'vue';
 import DataGrid from "@/components/ui/DataGrid/DataGrid.vue";
-import Table from "@/models/Office/Table";
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
+import Module from "@/models/Office/Module";
 
 const notificationStore = useNotificationStore();
 
@@ -20,24 +20,14 @@ let tableFields = [
         sortField: "Type"
     },
     {
-        name: "Version",
-        title: "Version",
-        sortField: "Version"
+        name: "MainTableName",
+        title: "Main Table Name"
     },
     {
-        name: "ClientSync",
-        title: "Client Sync",
-        sortField: "ClientSync"
-    },
-    {
-        name: "company_tables",
-        title: "Company",
-        formatter: (company_tables) => {
-            let company_batches = ``;
-            company_tables.forEach((company_table) => {
-                company_batches += `<span class="fs-xs fw-semibold d-inline-block py-1 px-3 rounded-pill bg-success-light text-success">${company_table.company.Name}</span>`
-            });
-            return company_batches;
+        name: "SyncOfficeData",
+        title: "Sync Office Data",
+        formatter: (data) => {
+            return data ? "Yes" : "No";
         }
     },
     {
@@ -49,15 +39,14 @@ let tableFields = [
     },
     {
         name: "Action",
-        title: "Action",
-        sortField: ""
+        title: "Action"
     }
 ];
 let bodyHeight = "100vh";
 let paginationData = ref(null);
 let isLoading = ref(true);
 let request = ref({
-    search_columns: ['Name'],
+    search_columns: ['Name', 'MainTableName', 'Description'],
     //relations: [],
     filters: null,
     order: {},
@@ -66,12 +55,12 @@ let request = ref({
 });
 
 onMounted(() => {
-    getTables();
+    getModules();
 });
 
 function goToPage(pageNo) {
     request.value.pagination.page_no = pageNo;
-    getTables();
+    getModules();
 }
 
 function sortBy({field, order}) {
@@ -79,24 +68,24 @@ function sortBy({field, order}) {
         {"column": field, "sort": order}
     ];
     request.value.pagination.page_no = 1;
-    getTables();
+    getModules();
 }
 
 function search(query) {
     request.value.query = query;
     request.value.pagination.page_no = 1;
-    getTables();
+    getModules();
 }
 
-async function getTables() {
-    let {data, pagination} = await Table.getTables(request.value);
+async function getModules() {
+    let {data, pagination} = await Module.getModules(request.value);
     tableData.value = data;
     paginationData.value = pagination;
 }
 
-function deleteTable(table, index) {
+function deleteModule(module, index) {
     Swal.fire({
-        title: 'Are you sure? Delete table?',
+        title: 'Are you sure? Delete Module?',
         html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
         input: 'text',
         inputAttributes: {
@@ -112,7 +101,7 @@ function deleteTable(table, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await Table.delete(table.Id);
+            let {data, message} = await Module.delete(module.Id);
             tableData.value.splice(index, 1);
             notificationStore.showNotification(message);
         }
@@ -136,23 +125,12 @@ function deleteTable(table, index) {
         @sortBy="sortBy"
     >
         <template v-slot:body-Action="props">
-            <PopOverButton
-                btnClass="btn rounded-pill btn-alt-primary me-1"
-                content="Manage Table Fields"
-                iconClass="fa fa-table-cells"
-                @click="$router.push({name: 'manage-table-fields', params: {id: props.data.Id}})"
-            ></PopOverButton>
-            <PopOverButton
-                btnClass="btn rounded-pill btn-alt-info me-1"
-                content="Manage Table Indices"
-                iconClass="fa fa-table-cells-large"
-                @click="$router.push({name: 'manage-table-fields', params: {id: props.data.Id}})"
-            ></PopOverButton>
-            <router-link :to="`/table/${props.data.Id}`" class="btn rounded-pill btn-alt-warning me-1">
+            <router-link :to="{name: 'edit-module', params:{id: props.data.Id}}"
+                         class="btn rounded-pill btn-alt-warning me-1">
                 <i class="fa fa-pen-alt"></i>
             </router-link>
             <button class="btn rounded-pill btn-alt-danger me-1" type="button"
-                    @click="deleteTable(props.data, props.index)">
+                    @click="deleteModule(props.data, props.index)">
                 <i class="fa fa-trash-alt"></i>
             </button>
         </template>

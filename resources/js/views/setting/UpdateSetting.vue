@@ -13,6 +13,7 @@ const templateStore = useTemplateStore();
 const notificationStore = useNotificationStore();
 
 watch(() => companyStore.getSelectedCompany, () => {
+    updatedSettings.value = [];
     getModuleSettings();
 });
 

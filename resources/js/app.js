@@ -24,10 +24,11 @@ import BasePageHeading from "@/components/BasePageHeading.vue";
 
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import Select from "@/components/ui/FormElements/Select.vue";
+import PopOverButton from "@/components/ui/PopOvers/PopOverButton.vue";
 
 // Template directives
-import clickRipple from "@/directives/clickRipple";
 
+import clickRipple from "@/directives/clickRipple";
 // Bootstrap framework
 import * as bootstrap from "bootstrap";
 
@@ -43,8 +44,7 @@ app.component("BasePageHeading", BasePageHeading);
 
 app.component("InputErrorMessages", InputErrorMessages);
 app.component("Select", Select);
-
-//app.component('ExampleComponent', ExampleComponent);
+app.component("PopOverButton", PopOverButton);
 
 // Register global directives
 app.directive("click-ripple", clickRipple);

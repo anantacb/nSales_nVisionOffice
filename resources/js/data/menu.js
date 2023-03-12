@@ -43,7 +43,12 @@ export default {
                     name: "Create Setting",
                     icon: "fa fa-folder-plus",
                     to: "create-setting",
-                }
+                },
+                {
+                    name: "Settings",
+                    icon: "fa fa-folder-plus",
+                    to: "settings",
+                },
             ],
         },
 
