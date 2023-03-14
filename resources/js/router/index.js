@@ -12,7 +12,9 @@ const Tables = () => import("@/views/database/Tables/Tables.vue");
 const CreateTable = () => import("@/views/database/CreateTable/CreateTable.vue");
 const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
 
-const CreateSetting = () => import("@/views/setting/CreateSetting.vue");
+const ModuleSettings = () => import("@/views/setting/ModuleSettings/ModuleSettings.vue");
+const CreateModuleSetting = () => import("@/views/setting/CreateModuleSetting.vue");
+const EditModuleSetting = () => import("@/views/setting/EditModuleSetting.vue");
 const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
 const Modules = () => import("@/views/module/Modules/Modules.vue");
@@ -85,7 +87,25 @@ const routes = [
             {
                 path: "setting/create",
                 name: "create-setting",
-                component: CreateSetting,
+                component: CreateModuleSetting,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "settings/settings",
+                name: "settings",
+                component: ModuleSettings,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "setting/:id/edit",
+                name: "edit-setting",
+                component: EditModuleSetting,
                 meta: {
                     authenticated: true,
                     company_specific: false
