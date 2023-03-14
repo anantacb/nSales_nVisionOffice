@@ -25,9 +25,10 @@ import BasePageHeading from "@/components/BasePageHeading.vue";
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import Select from "@/components/ui/FormElements/Select.vue";
 import PopOverButton from "@/components/ui/PopOvers/PopOverButton.vue";
+import DataGrid from "@/components/ui/DataGrid/DataGrid.vue";
+
 
 // Template directives
-
 import clickRipple from "@/directives/clickRipple";
 // Bootstrap framework
 import * as bootstrap from "bootstrap";
@@ -42,6 +43,7 @@ app.component("BaseBlock", BaseBlock);
 app.component("BaseBackground", BaseBackground);
 app.component("BasePageHeading", BasePageHeading);
 
+app.component("DataGrid", DataGrid);
 app.component("InputErrorMessages", InputErrorMessages);
 app.component("Select", Select);
 app.component("PopOverButton", PopOverButton);

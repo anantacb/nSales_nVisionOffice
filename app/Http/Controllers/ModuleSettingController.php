@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ModuleSetting\Create;
 use App\Http\Requests\ModuleSetting\DetailsOrDelete;
 use App\Http\Requests\ModuleSetting\Update;
+use App\Http\Requests\PaginatedDataRequest;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +23,13 @@ class ModuleSettingController extends Controller
     public function getAllModuleSettingsByCompany(Request $request): JsonResponse
     {
         $response = $this->service->getAllModuleSettingsByCompanyId($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+
+    public function getModuleSettings(PaginatedDataRequest $request): JsonResponse
+    {
+        $response = $this->service->getModuleSettings($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

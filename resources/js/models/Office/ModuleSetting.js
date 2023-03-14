@@ -1,9 +1,21 @@
 export default class ModuleSetting {
-    static getModuleSettings(CompanyId) {
+    static getModuleSettingsByCompany(CompanyId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/module-setting/all-by-company', {
                 CompanyId: CompanyId
             })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getModuleSettings(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module-settings', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -52,10 +64,10 @@ export default class ModuleSetting {
         });
     }
 
-    static details(ModuleId) {
+    static details(ModuleSettingId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/module-setting/details', {
-                ModuleId: ModuleId
+                ModuleSettingId: ModuleSettingId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -66,10 +78,10 @@ export default class ModuleSetting {
         });
     }
 
-    static delete(ModuleId) {
+    static delete(ModuleSettingId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/module-setting/delete', {
-                ModuleId: ModuleId
+                ModuleSettingId: ModuleSettingId
             })
                 .then(({data}) => {
                     resolve(data);

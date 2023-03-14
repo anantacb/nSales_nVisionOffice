@@ -227,4 +227,14 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         ]);
         return new ServiceDto("Setting Deleted Successfully.", 200, []);
     }
+
+    public function getModuleSettings(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        $request['relations'] = [
+            ["name" => "module", "columns" => ['Id', 'Name']],
+        ];
+        $moduleSettings = $this->moduleSettingRepository->paginatedData($request);
+        return new ServiceDto("Module Settings retrieved!!!", 200, $moduleSettings);
+    }
 }

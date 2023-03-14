@@ -3,58 +3,47 @@ import Module from "@/models/Office/Module";
 import {onMounted, ref} from "vue";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {booleanOptions} from "@/data/dropDownOptions";
-import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
 import ModuleSetting from "@/models/Office/ModuleSetting";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const notificationStore = useNotificationStore();
 
 let {errors, setErrors, resetErrors} = useFormErrors();
 
-let Name = ref('');
-let ModuleId = ref('');
-let CoreSetting = ref(0);
-let Disabled = ref(0);
+let ModuleSettingModel = ref({});
 
-let DataType = ref('');
-let Options = ref('');
-let Readonly = ref(0);
-let Visible = ref(1);
-
-let Value = ref('');
-let ValueExpression = ref('');
-let Note = ref('');
-
-async function createModuleSetting() {
-    createModuleSettingRef.value.statusLoading();
+async function updateModuleSetting() {
+    updateModuleSettingRef.value.statusLoading();
     let formData = {
-        Name : Name.value,
-        ModuleId : ModuleId.value,
-        CoreSetting : CoreSetting.value,
-        Disabled : Disabled.value,
-        DataType : DataType.value,
-        Options : Options.value,
-        Readonly : Readonly.value,
-        Visible : Visible.value,
-        Value : Value.value,
-        ValueExpression : ValueExpression.value,
-        Note : Note.value,
+        Id: ModuleSettingModel.value.Id,
+        Name: ModuleSettingModel.value.Name,
+        ModuleId: ModuleSettingModel.value.ModuleId,
+        CoreSetting: ModuleSettingModel.value.CoreSetting,
+        Disabled: ModuleSettingModel.value.Disabled,
+        DataType: ModuleSettingModel.value.DataType,
+        Options: ModuleSettingModel.value.Options,
+        Readonly: ModuleSettingModel.value.Readonly,
+        Visible: ModuleSettingModel.value.Visible,
+        Value: ModuleSettingModel.value.Value,
+        ValueExpression: ModuleSettingModel.value.ValueExpression,
+        Note: ModuleSettingModel.value.Note,
     };
     try {
-        let {data, message} = await ModuleSetting.create(formData);
-        createModuleSettingRef.value.statusNormal();
-        await router.push({name: 'module-settings'});
+        let {data, message} = await ModuleSetting.update(formData);
+        updateModuleSettingRef.value.statusNormal();
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
-        createModuleSettingRef.value.statusNormal();
+        updateModuleSettingRef.value.statusNormal();
     }
 }
 
 const DataTypeOptions = ['Boolean', 'Double', 'Int32', 'String', 'Enum'];
 
 function selectDataTypeFromDropdown(value) {
-    DataType.value = value;
+    ModuleSettingModel.value.DataType = value;
 }
 
 let ModuleOptions = ref([]);
@@ -71,18 +60,26 @@ async function getAllModules() {
     ModuleOptions.value = options;
 }
 
-let createModuleSettingRef = ref(null);
+let updateModuleSettingRef = ref(null);
 
-onMounted(() => {
-    getAllModules();
+onMounted(async () => {
+    updateModuleSettingRef.value.statusLoading();
+    await getAllModules();
+    await getModuleSettingDetails();
+    updateModuleSettingRef.value.statusNormal();
 });
+
+async function getModuleSettingDetails() {
+    let {data} = await ModuleSetting.details(route.params.id);
+    ModuleSettingModel.value = data;
+}
 </script>
 
 <template>
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock ref="createModuleSettingRef" content-full title="Create Setting">
-            <form class="space-y-4" @submit.prevent="createModuleSetting">
+        <BaseBlock ref="updateModuleSettingRef" content-full title="Create Setting">
+            <form class="space-y-4" @submit.prevent="updateModuleSetting">
                 <div class="row">
                     <div class="col-lg-4 space-y-2">
                         <h5 class="fw-light text-center">General</h5>
@@ -91,7 +88,7 @@ onMounted(() => {
                                 Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="Name"
+                                <input id="Name" v-model="ModuleSettingModel.Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Name"
                                        required
@@ -106,7 +103,7 @@ onMounted(() => {
                                 Module<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Module" v-model="ModuleId" :options="ModuleOptions"
+                                <Select id="Module" v-model="ModuleSettingModel.ModuleId" :options="ModuleOptions"
                                         :required="true"
                                         :select-class="errors.Module ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Module"
@@ -120,7 +117,8 @@ onMounted(() => {
                                 CoreSetting<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="CoreSetting" v-model="CoreSetting" :options="booleanOptions"
+                                <Select id="CoreSetting" v-model="ModuleSettingModel.CoreSetting"
+                                        :options="booleanOptions"
                                         :required="true"
                                         :select-class="errors.CoreSetting ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="CoreSetting"
@@ -134,7 +132,7 @@ onMounted(() => {
                                 Disabled<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Disabled" v-model="Disabled" :options="booleanOptions"
+                                <Select id="Disabled" v-model="ModuleSettingModel.Disabled" :options="booleanOptions"
                                         :required="true"
                                         :select-class="errors.Disabled ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Disabled"
@@ -157,11 +155,11 @@ onMounted(() => {
                                     iconClass="si si-info">
                                 </PopOverButton>
                             </div>
-
                             <div class="col-sm-8">
                                 <div class="input-group input-group-sm">
                                     <input
-                                        v-model="DataType"
+                                        v-model="ModuleSettingModel.DataType"
+                                        :class="errors.DataType ? `is-invalid` : ``"
                                         aria-label="Select Datatype"
                                         class="form-control"
                                         required
@@ -182,9 +180,10 @@ onMounted(() => {
                                             {{ DataTypeOption }}
                                         </a>
                                     </div>
+
+                                    <InputErrorMessages v-if="errors.DataType"
+                                                        :errorMessages="errors.DataType"></InputErrorMessages>
                                 </div>
-                                <InputErrorMessages v-if="errors.DataType"
-                                                    :errorMessages="errors.DataType"></InputErrorMessages>
                             </div>
                         </div>
                         <div class="row">
@@ -192,7 +191,7 @@ onMounted(() => {
                                 Options
                             </label>
                             <div class="col-sm-8">
-                                <input id="Options" v-model="Options"
+                                <input id="Options" v-model="ModuleSettingModel.Options"
                                        :class="errors.Options ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Options"
                                        type="text"
@@ -206,7 +205,7 @@ onMounted(() => {
                                 Readonly<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Readonly" v-model="Readonly" :options="booleanOptions"
+                                <Select id="Readonly" v-model="ModuleSettingModel.Readonly" :options="booleanOptions"
                                         :required="true"
                                         :select-class="errors.Readonly ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Readonly"
@@ -220,7 +219,7 @@ onMounted(() => {
                                 Visible<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Visible" v-model="Visible" :options="booleanOptions"
+                                <Select id="Visible" v-model="ModuleSettingModel.Visible" :options="booleanOptions"
                                         :required="true"
                                         :select-class="errors.Visible ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Visible"
@@ -237,7 +236,8 @@ onMounted(() => {
                                 Value
                             </label>
                             <div class="col-sm-8">
-                            <textarea id="Value" v-model="Value" :class="{'is-invalid': errors.Value}"
+                            <textarea id="Value" v-model="ModuleSettingModel.Value"
+                                      :class="{'is-invalid': errors.Value}"
                                       class="form-control form-control-sm" rows="2">
                             </textarea>
                                 <InputErrorMessages v-if="errors.Value"
@@ -249,7 +249,7 @@ onMounted(() => {
                                 ValueExpression
                             </label>
                             <div class="col-sm-8">
-                            <textarea id="ValueExpression" v-model="ValueExpression"
+                            <textarea id="ValueExpression" v-model="ModuleSettingModel.ValueExpression"
                                       :class="{'is-invalid': errors.ValueExpression}"
                                       class="form-control form-control-sm" rows="2">
                             </textarea>
@@ -262,7 +262,7 @@ onMounted(() => {
                                 Note
                             </label>
                             <div class="col-sm-8">
-                            <textarea id="Note" v-model="Note" :class="{'is-invalid': errors.Note}"
+                            <textarea id="Note" v-model="ModuleSettingModel.Note" :class="{'is-invalid': errors.Note}"
                                       class="form-control form-control-sm" rows="2">
                             </textarea>
                                 <InputErrorMessages v-if="errors.Note"

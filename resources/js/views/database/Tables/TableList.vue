@@ -1,6 +1,5 @@
 <script setup>
 import {onMounted, ref} from 'vue';
-import DataGrid from "@/components/ui/DataGrid/DataGrid.vue";
 import Table from "@/models/Office/Table";
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
