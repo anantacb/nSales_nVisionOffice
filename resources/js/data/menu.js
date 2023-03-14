@@ -35,15 +35,20 @@ export default {
             subActivePaths: "setting",
             sub: [
                 {
-                    name: "Update Setting",
-                    icon: "fa fa-gear",
-                    to: "update-setting",
+                    name: "Settings",
+                    icon: "fa fa-folder-plus",
+                    to: "settings",
                 },
                 {
                     name: "Create Setting",
                     icon: "fa fa-folder-plus",
                     to: "create-setting",
-                }
+                },
+                {
+                    name: "Update Setting",
+                    icon: "fa fa-gear",
+                    to: "update-setting",
+                },
             ],
         },
 

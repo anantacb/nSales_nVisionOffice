@@ -13,6 +13,7 @@ const templateStore = useTemplateStore();
 const notificationStore = useNotificationStore();
 
 watch(() => companyStore.getSelectedCompany, () => {
+    updatedSettings.value = [];
     getModuleSettings();
 });
 
@@ -28,7 +29,7 @@ let initialModuleSettings = {};
 
 async function getModuleSettings() {
     moduleSettingsRef.value.statusLoading();
-    let {data} = await ModuleSetting.getModuleSettings(companyStore.selectedCompany.Id);
+    let {data} = await ModuleSetting.getModuleSettingsByCompany(companyStore.selectedCompany.Id);
     moduleSettings.value = data;
     initialModuleSettings = JSON.parse(JSON.stringify(data));
     moduleSettingsRef.value.statusNormal();

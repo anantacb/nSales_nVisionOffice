@@ -1,7 +1,7 @@
 export default class Company {
     static getAllCompanies() {
         return new Promise((resolve, reject) => {
-            axios.post('/api/companies/all')
+            axios.post('/api/company/all')
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -13,7 +13,7 @@ export default class Company {
 
     static getModuleEnabledCompanies(moduleId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/companies/by-module-enabled', {
+            axios.post('/api/company/by-module-enabled', {
                 moduleId: moduleId
             })
                 .then(({data}) => {

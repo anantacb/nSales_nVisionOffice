@@ -25,7 +25,7 @@ export default class Module {
 
     static getModulesByApplication(ApplicationId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/get-by-application', {
+            axios.post('/api/module/get-by-application', {
                 ApplicationId: ApplicationId
             })
                 .then(({data}) => {
@@ -39,7 +39,7 @@ export default class Module {
 
     static getActivatedAndAvailableModulesByCompany(CompanyId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/get-activated-and-available-modules-by-company', {
+            axios.post('/api/module/get-activated-and-available-modules-by-company', {
                 CompanyId: CompanyId
             })
                 .then(({data}) => {
@@ -53,7 +53,7 @@ export default class Module {
 
     static activateModule(CompanyId, module) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/activate-module', {
+            axios.post('/api/module/activate-module', {
                 CompanyId: CompanyId, module: module
             })
                 .then(({data}) => {
@@ -67,7 +67,7 @@ export default class Module {
 
     static deactivateModule(CompanyId, module) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/deactivate-module', {
+            axios.post('/api/module/deactivate-module', {
                 CompanyId: CompanyId, module: module
             })
                 .then(({data}) => {
@@ -81,7 +81,7 @@ export default class Module {
 
     static getActivatedModulesByCompany(CompanyId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/modules/get-activated-modules-by-company', {
+            axios.post('/api/module/get-activated-modules-by-company', {
                 CompanyId: CompanyId
             })
                 .then(({data}) => {

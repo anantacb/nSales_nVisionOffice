@@ -173,4 +173,68 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
         return new ServiceDto("Settings Updated Successfully!!!", 200, []);
     }
+
+    public function create(Request $request): ServiceDto
+    {
+        $moduleSetting = $this->moduleSettingRepository->create([
+            'ModuleId' => $request->get('ModuleId'),
+            'Name' => $request->get('Name'),
+            'DataType' => $request->get('DataType'),
+            'Options' => $request->get('Options'),
+            'Value' => $request->get('Value'),
+            'ValueExpression' => $request->get('ValueExpression'),
+            'CoreSetting' => $request->get('CoreSetting'),
+            'Note' => $request->get('Note'),
+            'Readonly' => $request->get('Readonly'),
+            'Visible' => $request->get('Visible'),
+            'Disabled' => $request->get('Disabled'),
+        ]);
+        return new ServiceDto("Setting Created Successfully.", 200, $moduleSetting);
+    }
+
+    public function update(Request $request): ServiceDto
+    {
+        $moduleSetting = $this->moduleSettingRepository->findByIdAndUpdate(
+            $request->get('Id'),
+            [
+                'ModuleId' => $request->get('ModuleId'),
+                'Name' => $request->get('Name'),
+                'DataType' => $request->get('DataType'),
+                'Options' => $request->get('Options'),
+                'Value' => $request->get('Value'),
+                'ValueExpression' => $request->get('ValueExpression'),
+                'CoreSetting' => $request->get('CoreSetting'),
+                'Note' => $request->get('Note'),
+                'Readonly' => $request->get('Readonly'),
+                'Visible' => $request->get('Visible'),
+                'Disabled' => $request->get('Disabled'),
+            ]
+        );
+        return new ServiceDto("Module Updated Successfully.", 200, $moduleSetting);
+    }
+
+    public function details(Request $request): ServiceDto
+    {
+        $moduleSetting = $this->moduleSettingRepository->findById($request->get('ModuleSettingId'));
+        return new ServiceDto("Setting Retrieved Successfully.", 200, $moduleSetting);
+    }
+
+    public function delete(Request $request): ServiceDto
+    {
+        $this->moduleSettingRepository->findByIdAndDelete($request->get('ModuleSettingId'));
+        $this->settingRepository->deleteByAttributes([
+            ['column' => 'ModuleSettingId', 'operand' => '=', 'value' => $request->get('ModuleSettingId')]
+        ]);
+        return new ServiceDto("Setting Deleted Successfully.", 200, []);
+    }
+
+    public function getModuleSettings(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        $request['relations'] = [
+            ["name" => "module", "columns" => ['Id', 'Name']],
+        ];
+        $moduleSettings = $this->moduleSettingRepository->paginatedData($request);
+        return new ServiceDto("Module Settings retrieved!!!", 200, $moduleSettings);
+    }
 }
