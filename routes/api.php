@@ -55,30 +55,37 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Module
     Route::post('/modules', [ModuleController::class, 'getModules']);
+    Route::post('/module/create', [ModuleController::class, 'create']);
+    Route::post('/module/update', [ModuleController::class, 'update']);
+    Route::post('/module/details', [ModuleController::class, 'details']);
+    Route::post('/module/delete', [ModuleController::class, 'delete']);
     Route::post('/module/all', [ModuleController::class, 'getAllModules']);
     Route::post('/module/get-activated-and-available-modules-by-company', [ModuleController::class, 'getActivatedAndAvailableModulesByCompany']);
     Route::post('/module/get-activated-modules-by-company', [ModuleController::class, 'getActivatedModulesByCompany']);
     Route::post('/module/activate-module', [ModuleController::class, 'activateModule']);
     Route::post('/module/deactivate-module', [ModuleController::class, 'deactivateModule']);
     Route::post('/module/get-by-application', [ModuleController::class, 'getModulesByApplication']);
-    Route::post('/module/create', [ModuleController::class, 'create']);
-    Route::post('/module/update', [ModuleController::class, 'update']);
-    Route::post('/module/details', [ModuleController::class, 'details']);
-    Route::post('/module/delete', [ModuleController::class, 'delete']);
+
 
     // ModuleSetting
-    Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
-    Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
     Route::post('/module-settings', [ModuleSettingController::class, 'getModuleSettings']);
     Route::post('/module-setting/create', [ModuleSettingController::class, 'create']);
     Route::post('/module-setting/update', [ModuleSettingController::class, 'update']);
     Route::post('/module-setting/delete', [ModuleSettingController::class, 'delete']);
     Route::post('/module-setting/details', [ModuleSettingController::class, 'details']);
+    Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
+    Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
+
 
     // Company
+    Route::post('/companies', [CompanyController::class, 'getCompanies']);
+    Route::post('/company/create', [CompanyController::class, 'create']);
+    Route::post('/company/update', [CompanyController::class, 'update']);
+    Route::post('/company/details', [CompanyController::class, 'details']);
+    Route::post('/company/delete', [CompanyController::class, 'delete']);
     Route::post('/company/all', [CompanyController::class, 'getAllCompanies']);
     Route::post('/company/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
-    Route::post('/company/create', [CompanyController::class, 'create']);
+
 
     // Helpers
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);

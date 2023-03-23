@@ -25,9 +25,61 @@ export default class Company {
         });
     }
 
+    static getCompanies(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/companies', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static create(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/company/create', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static update(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/update', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static details(CompanyId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/details', {
+                CompanyId: CompanyId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static delete(CompanyId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/delete', {
+                CompanyId: CompanyId
+            })
                 .then(({data}) => {
                     resolve(data);
                 })

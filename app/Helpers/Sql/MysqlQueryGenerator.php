@@ -203,4 +203,19 @@ class MysqlQueryGenerator
     {
         return "CREATE DATABASE $databaseName";
     }
+
+    public static function getCopyTableStructureSql($sourceDatabase, $sourceTableName, $targetDatabase, $targetTableName): string
+    {
+        return "CREATE TABLE `$targetDatabase`.`$targetTableName` like `$sourceDatabase`.`$sourceTableName`;";
+    }
+
+    public static function getCopyTableDataSql($sourceDatabase, $sourceTableName, $targetDatabase, $targetTableName): string
+    {
+        return "INSERT INTO `$targetDatabase`.`$targetTableName` SELECT * FROM `$sourceDatabase`.`$sourceTableName`;";
+    }
+
+    public static function getDropDatabaseSql($databaseName): string
+    {
+        return "DROP DATABASE $databaseName;";
+    }
 }

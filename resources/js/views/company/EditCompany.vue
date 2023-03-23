@@ -1,52 +1,19 @@
 <script setup>
-import {onMounted, ref, watch} from "vue";
+import {onMounted, ref} from "vue";
 import TableHelper from "@/models/TableHelper";
 import Company from "@/models/Office/Company";
 import FlatPicker from "vue-flatpickr-component";
 import {booleanOptions, countryOptions, cultureOptions, currencyOptions} from "@/data/dropDownOptions";
 import slugify from "@sindresorhus/slugify";
-import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
 
-let Name = ref('');
-let Type = ref('Standard');
-let IntegrationType = ref('Standard');
-let FileTransferType = ref('None');
-let DomainName = ref('');
-let DatabaseName = ref('');
-let StorageLocation = ref('nVisionOffice');
-
-let CompanyName = ref('');
-let Street = ref('');
-let ZipCode = ref('');
-let City = ref('');
-let State = ref('');
-let Country = ref('Denmark');
-let VATNo = ref('');
-
-let Email = ref('');
-let PhoneNo = ref('');
-let FaxNo = ref('');
-let ContactPerson = ref('');
-let ContactEmail = ref('');
-let Homepage = ref('');
-
-let Seats = ref(1);
-let DefaultCulture = ref('da-DK');
-let DefaultCurrency = ref('DKK');
-let TrialStartDate = ref(null);
-let TrialDays = ref(14);
-let Disabled = ref(0);
-
-let Note = ref('');
-
-let ServiceUrl = ref('https://ws.nvisionoffice.com');
-let GraphQLServiceURL = ref('https://nvision-api.nsales.io/graphql');
-
+let CompanyModel = ref({});
 
 let storageLocationOptions = ref([]);
 let typeOptions = ref([]);
@@ -87,77 +54,96 @@ async function getOptions() {
     });
 }
 
-const createCompanyRef = ref(null);
+const updateCompanyRef = ref(null);
 
-async function createCompany() {
-    createCompanyRef.value.statusLoading();
+async function updateCompany() {
+    updateCompanyRef.value.statusLoading();
     let formData = {
-        Name: Name.value,
-        Type: Type.value,
-        IntegrationType: IntegrationType.value,
-        FileTransferType: FileTransferType.value,
-        DomainName: DomainName.value,
-        DatabaseName: DatabaseName.value,
-        StorageLocation: StorageLocation.value,
-        CompanyName: CompanyName.value,
-        Street: Street.value,
-        ZipCode: ZipCode.value,
-        City: City.value,
-        State: State.value,
-        Country: Country.value,
-        VATNo: VATNo.value,
-        Email: Email.value,
-        PhoneNo: PhoneNo.value,
-        FaxNo: FaxNo.value,
-        ContactPerson: ContactPerson.value,
-        ContactEmail: ContactEmail.value,
-        Homepage: Homepage.value,
-        Seats: Seats.value,
-        DefaultCulture: DefaultCulture.value,
-        DefaultCurrency: DefaultCurrency.value,
-        TrialStartDate: TrialStartDate.value,
-        TrialDays: TrialDays.value,
-        Disabled: Disabled.value,
-        Note: Note.value,
-        ServiceUrl: ServiceUrl.value,
-        GraphQLServiceURL: GraphQLServiceURL.value,
+        Id: CompanyModel.value.Id,
+        Name: CompanyModel.value.Name,
+        Type: CompanyModel.value.Type,
+        IntegrationType: CompanyModel.value.IntegrationType,
+        FileTransferType: CompanyModel.value.FileTransferType,
+        DomainName: CompanyModel.value.DomainName,
+        DatabaseName: CompanyModel.value.DatabaseName,
+        StorageLocation: CompanyModel.value.StorageLocation,
+        CompanyName: CompanyModel.value.CompanyName,
+        Street: CompanyModel.value.Street,
+        ZipCode: CompanyModel.value.ZipCode,
+        City: CompanyModel.value.City,
+        State: CompanyModel.value.State,
+        Country: CompanyModel.value.Country,
+        VATNo: CompanyModel.value.VATNo,
+        Email: CompanyModel.value.Email,
+        PhoneNo: CompanyModel.value.PhoneNo,
+        FaxNo: CompanyModel.value.FaxNo,
+        ContactPerson: CompanyModel.value.ContactPerson,
+        ContactEmail: CompanyModel.value.ContactEmail,
+        Homepage: CompanyModel.value.Homepage,
+        Seats: CompanyModel.value.Seats,
+        DefaultCulture: CompanyModel.value.DefaultCulture,
+        DefaultCurrency: CompanyModel.value.DefaultCurrency,
+        TrialStartDate: CompanyModel.value.TrialStartDate,
+        TrialDays: CompanyModel.value.TrialDays,
+        Disabled: CompanyModel.value.Disabled,
+        Note: CompanyModel.value.Note,
+        ServiceUrl: CompanyModel.value.ServiceUrl,
+        GraphQLServiceURL: CompanyModel.value.GraphQLServiceURL,
     };
 
     try {
-        let {data, message} = await Company.create(formData);
-        await router.push({name: 'companies'});
+        let {data, message} = await Company.update(formData);
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
     }
-    createCompanyRef.value.statusNormal();
+    updateCompanyRef.value.statusNormal();
+}
+
+
+const InitialCompanyModel = ref({});
+
+async function getCompanyDetails() {
+    let {data} = await Company.details(route.params.id);
+    InitialCompanyModel.value = JSON.parse(JSON.stringify(data));
+
+    CompanyModel.value = data;
+    if (CompanyModel.value.TrialStartDate === "0000-00-00 00:00:00") {
+        CompanyModel.value.TrialStartDate = null;
+    }
 }
 
 onMounted(async () => {
-    createCompanyRef.value.statusLoading();
+    updateCompanyRef.value.statusLoading();
     await getOptions();
-    createCompanyRef.value.statusNormal();
+    await getCompanyDetails();
+    updateCompanyRef.value.statusNormal();
 });
 
-watch(Name, (newName, oldName) => {
-    DomainName.value = slugify(newName, {
+function nameChanged() {
+    if (InitialCompanyModel.value.Name === CompanyModel.value.Name) {
+        CompanyModel.value.DomainName = InitialCompanyModel.value.DomainName;
+        CompanyModel.value.DatabaseName = InitialCompanyModel.value.DatabaseName;
+        return;
+    }
+
+    CompanyModel.value.DomainName = slugify(CompanyModel.value.Name, {
         separator: '',
         customReplacements: [
             ['&', '']
         ]
     });
-
-    DatabaseName.value = `nvisiondb_${DomainName.value}`;
-});
+    CompanyModel.value.DatabaseName = `nvisiondb_${CompanyModel.value.DomainName}`;
+}
 
 </script>
 
 <template>
     <div class="content">
 
-        <BaseBlock ref="createCompanyRef" content-full title="Create Company">
+        <BaseBlock ref="updateCompanyRef" content-full title="Edit Company">
 
-            <form class="space-y-4" @submit.prevent="createCompany">
+            <form class="space-y-4" @submit.prevent="updateCompany">
 
                 <div class="row">
                     <div class="col-lg-4 space-y-2">
@@ -166,11 +152,13 @@ watch(Name, (newName, oldName) => {
                                 Account Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="Name"
+                                <input id="Name" v-model="CompanyModel.Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Name" placeholder="Name"
                                        required
-                                       type="text"/>
+                                       type="text"
+                                       @keyup="nameChanged"
+                                />
                                 <InputErrorMessages v-if="errors.Name"
                                                     :errorMessages="errors.Name"></InputErrorMessages>
                             </div>
@@ -180,7 +168,7 @@ watch(Name, (newName, oldName) => {
                                 Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="Type" :options="typeOptions"
+                                <Select id="Type" v-model="CompanyModel.Type" :options="typeOptions"
                                         :required="true"
                                         :select-class="errors.Type ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Type"/>
@@ -193,7 +181,8 @@ watch(Name, (newName, oldName) => {
                                 Integration Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="IntegrationType" :options="integrationTypeOptions"
+                                <Select id="Type" v-model="CompanyModel.IntegrationType"
+                                        :options="integrationTypeOptions"
                                         :required="true"
                                         :select-class="errors.IntegrationType ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="IntegrationType"/>
@@ -206,7 +195,8 @@ watch(Name, (newName, oldName) => {
                                 File Transfer Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="FileTransferType" :options="fileTransferTypeOptions"
+                                <Select id="Type" v-model="CompanyModel.FileTransferType"
+                                        :options="fileTransferTypeOptions"
                                         :required="true"
                                         :select-class="errors.FileTransferType ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="FileTransferType"/>
@@ -219,7 +209,7 @@ watch(Name, (newName, oldName) => {
                                 Domain Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="DomainName"
+                                <input id="Name" v-model="CompanyModel.DomainName"
                                        :class="errors.DomainName ? `is-invalid form-select-sm` : `form-select-sm`"
                                        class="form-control" disabled
                                        name="DomainName" required
@@ -233,7 +223,7 @@ watch(Name, (newName, oldName) => {
                                 Database Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="DatabaseName"
+                                <input id="Name" v-model="CompanyModel.DatabaseName"
                                        :class="errors.DatabaseName ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" disabled name="DatabaseName"
                                        placeholder="" required
@@ -247,7 +237,8 @@ watch(Name, (newName, oldName) => {
                                 Storage Location<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="StorageLocation" :options="storageLocationOptions"
+                                <Select id="Type" v-model="CompanyModel.StorageLocation"
+                                        :options="storageLocationOptions"
                                         :required="true"
                                         :select-class="errors.StorageLocation ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="StorageLocation"/>
@@ -263,7 +254,7 @@ watch(Name, (newName, oldName) => {
                                 Company Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="CompanyName" v-model="CompanyName"
+                                <input id="CompanyName" v-model="CompanyModel.CompanyName"
                                        :class="errors.CompanyName ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="CompanyName"
                                        required
@@ -277,7 +268,7 @@ watch(Name, (newName, oldName) => {
                                 Address
                             </label>
                             <div class="col-sm-8">
-                                <input id="Street" v-model="Street"
+                                <input id="Street" v-model="CompanyModel.Street"
                                        :class="errors.Street ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Street"
                                        type="text"/>
@@ -290,7 +281,7 @@ watch(Name, (newName, oldName) => {
                                 ZipCode
                             </label>
                             <div class="col-sm-8">
-                                <input id="ZipCode" v-model="ZipCode"
+                                <input id="ZipCode" v-model="CompanyModel.ZipCode"
                                        :class="errors.ZipCode ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="ZipCode"
                                        type="text"/>
@@ -303,7 +294,7 @@ watch(Name, (newName, oldName) => {
                                 City
                             </label>
                             <div class="col-sm-8">
-                                <input id="City" v-model="City"
+                                <input id="City" v-model="CompanyModel.City"
                                        :class="errors.City ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="City"
                                        type="text"/>
@@ -316,7 +307,7 @@ watch(Name, (newName, oldName) => {
                                 State
                             </label>
                             <div class="col-sm-8">
-                                <input id="State" v-model="State"
+                                <input id="State" v-model="CompanyModel.State"
                                        :class="errors.State ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="State"
                                        type="text"/>
@@ -329,7 +320,7 @@ watch(Name, (newName, oldName) => {
                                 Country
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Country" v-model="Country" :options="countryOptions"
+                                <Select id="Country" v-model="CompanyModel.Country" :options="countryOptions"
                                         :select-class="errors.Country ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Country"/>
                                 <InputErrorMessages v-if="errors.Country"
@@ -341,7 +332,7 @@ watch(Name, (newName, oldName) => {
                                 VAT No
                             </label>
                             <div class="col-sm-8">
-                                <input id="VATNo" v-model="VATNo"
+                                <input id="VATNo" v-model="CompanyModel.VATNo"
                                        :class="errors.VATNo ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="VATNo"
                                        type="text"/>
@@ -357,7 +348,7 @@ watch(Name, (newName, oldName) => {
                                 Email
                             </label>
                             <div class="col-sm-8">
-                                <input id="Email" v-model="Email"
+                                <input id="Email" v-model="CompanyModel.Email"
                                        :class="errors.Email ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Email"
                                        type="text"/>
@@ -370,7 +361,7 @@ watch(Name, (newName, oldName) => {
                                 Phone No
                             </label>
                             <div class="col-sm-8">
-                                <input id="PhoneNo" v-model="PhoneNo"
+                                <input id="PhoneNo" v-model="CompanyModel.PhoneNo"
                                        :class="errors.PhoneNo ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="PhoneNo"
                                        type="text"/>
@@ -383,7 +374,7 @@ watch(Name, (newName, oldName) => {
                                 Fax No
                             </label>
                             <div class="col-sm-8">
-                                <input id="FaxNo" v-model="FaxNo"
+                                <input id="FaxNo" v-model="CompanyModel.FaxNo"
                                        :class="errors.FaxNo ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="FaxNo"
                                        type="text"/>
@@ -396,7 +387,7 @@ watch(Name, (newName, oldName) => {
                                 Contact Person
                             </label>
                             <div class="col-sm-8">
-                                <input id="ContactPerson" v-model="ContactPerson"
+                                <input id="ContactPerson" v-model="CompanyModel.ContactPerson"
                                        :class="errors.ContactPerson ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="ContactPerson"
                                        type="text"/>
@@ -409,7 +400,7 @@ watch(Name, (newName, oldName) => {
                                 Contact Email
                             </label>
                             <div class="col-sm-8">
-                                <input id="ContactEmail" v-model="ContactEmail"
+                                <input id="ContactEmail" v-model="CompanyModel.ContactEmail"
                                        :class="errors.ContactEmail ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="ContactEmail"
                                        type="text"/>
@@ -422,7 +413,7 @@ watch(Name, (newName, oldName) => {
                                 Homepage
                             </label>
                             <div class="col-sm-8">
-                                <input id="Homepage" v-model="Homepage"
+                                <input id="Homepage" v-model="CompanyModel.Homepage"
                                        :class="errors.Homepage ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Homepage"
                                        type="text"/>
@@ -442,7 +433,7 @@ watch(Name, (newName, oldName) => {
                                 Seats
                             </label>
                             <div class="col-sm-8">
-                                <input id="Seats" v-model.number="Seats"
+                                <input id="Seats" v-model.number="CompanyModel.Seats"
                                        :class="errors.Seats ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Seats"
                                        required
@@ -456,7 +447,7 @@ watch(Name, (newName, oldName) => {
                                 Default Culture
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="DefaultCulture" :options="cultureOptions"
+                                <Select id="Type" v-model="CompanyModel.DefaultCulture" :options="cultureOptions"
                                         :required="true"
                                         :select-class="errors.DefaultCulture ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="DefaultCulture"/>
@@ -469,7 +460,7 @@ watch(Name, (newName, oldName) => {
                                 Default Currency
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="DefaultCurrency" :options="currencyOptions"
+                                <Select id="Type" v-model="CompanyModel.DefaultCurrency" :options="currencyOptions"
                                         :required="true"
                                         :select-class="errors.DefaultCurrency ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="DefaultCulture"/>
@@ -483,7 +474,7 @@ watch(Name, (newName, oldName) => {
                             </label>
                             <div class="col-sm-8">
                                 <FlatPicker
-                                    v-model="TrialStartDate"
+                                    v-model="CompanyModel.TrialStartDate"
                                     class="form-control form-control-sm"
                                     placeholder="Y-m-d"
                                 />
@@ -496,7 +487,7 @@ watch(Name, (newName, oldName) => {
                                 Trial Days<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="TrialDays" v-model.number="TrialDays"
+                                <input id="TrialDays" v-model.number="CompanyModel.TrialDays"
                                        :class="errors.TrialDays ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="TrialDays"
                                        required
@@ -510,7 +501,7 @@ watch(Name, (newName, oldName) => {
                                 Disabled<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Disabled" v-model="Disabled" :options="booleanOptions"
+                                <Select id="Disabled" v-model="CompanyModel.Disabled" :options="booleanOptions"
                                         :required="true"
                                         :select-class="errors.Disabled ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Disabled"/>
@@ -518,6 +509,7 @@ watch(Name, (newName, oldName) => {
                                                     :errorMessages="errors.Disabled"></InputErrorMessages>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="col-lg-8 space-y-2">
@@ -526,7 +518,7 @@ watch(Name, (newName, oldName) => {
                                 ServiceUrl<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-10">
-                                <input id="ServiceUrl" v-model="ServiceUrl"
+                                <input id="ServiceUrl" v-model="CompanyModel.ServiceUrl"
                                        :class="errors.ServiceUrl ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="ServiceUrl"
                                        required
@@ -540,7 +532,7 @@ watch(Name, (newName, oldName) => {
                                 GraphQLServiceURL<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-10">
-                                <input id="GraphQLServiceURL" v-model="GraphQLServiceURL"
+                                <input id="GraphQLServiceURL" v-model="CompanyModel.GraphQLServiceURL"
                                        :class="errors.GraphQLServiceURL ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="GraphQLServiceURL"
                                        required
@@ -554,7 +546,7 @@ watch(Name, (newName, oldName) => {
                                 Note
                             </label>
                             <div class="col-sm-10">
-                                <textarea id="Note" v-model="Note"
+                                <textarea id="Note" v-model="CompanyModel.Note"
                                           :class="errors.Note ? `is-invalid form-control-sm` : `form-control-sm`"
                                           class="form-control" name="Note"
                                 ></textarea>

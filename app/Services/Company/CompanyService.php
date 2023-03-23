@@ -64,6 +64,16 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Companies retrieved!!!", 200, $companies);
     }
 
+    public function getCompanies(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        /*$request['relations'] = [
+            ["name" => "module", "columns" => ['Id', 'Name']],
+        ];*/
+        $companies = $this->companyRepository->paginatedData($request);
+        return new ServiceDto("Companies retrieved!!!", 200, $companies);
+    }
+
     public function create(Request $request): ServiceDto
     {
         $company = $this->companyRepository->create($request->all());
@@ -149,5 +159,104 @@ class CompanyService implements CompanyServiceInterface
         }
 
         return new ServiceDto("Company Created Successfully.", 200, $company);
+    }
+
+    public function update(Request $request): ServiceDto
+    {
+        $relations = [
+            'modules' => function ($q) {
+                $q->with([
+                    'tables' => function ($q) {
+                        $q->with(['companyTables'])
+                            ->whereIn('Type', ['Server', 'Both']);
+                    }
+                ]);
+            }
+        ];
+
+        $initialCompany = $this->companyRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('Id')]
+        ], $relations);
+
+        $updatedCompany = $this->companyRepository->findByIdAndUpdate(
+            $request->get('Id'),
+            $request->except('Id')
+        );
+
+        /**
+         * Database Name Updated as Company Name and Domain updated
+         * So Rename the database
+         */
+        if ($initialCompany->DatabaseName !== $updatedCompany->DatabaseName) {
+            $sqlQueries = [];
+            $sqlQueries[] = MysqlQueryGenerator::getCreateDatabaseSql($updatedCompany->DatabaseName);
+            $sqlQueries[] = "SET SQL_MODE='ALLOW_INVALID_DATES';";
+            foreach ($initialCompany->modules as $module) {
+                foreach ($module->tables as $table) {
+                    if ($table->companyTables->count()) {
+                        $companyTableCompanyIds = $table->companyTables->pluck('CompanyId')->toArray();
+                        if (in_array($initialCompany->Id, $companyTableCompanyIds)) {
+                            $sqlQueries[] = MysqlQueryGenerator::getCopyTableStructureSql(
+                                $initialCompany->DatabaseName,
+                                $table->Name,
+                                $updatedCompany->DatabaseName,
+                                $table->Name
+                            );
+                            $sqlQueries[] = MysqlQueryGenerator::getCopyTableDataSql(
+                                $initialCompany->DatabaseName,
+                                $table->Name,
+                                $updatedCompany->DatabaseName,
+                                $table->Name
+                            );
+                        }
+                    } else {
+                        $sqlQueries[] = MysqlQueryGenerator::getCopyTableStructureSql(
+                            $initialCompany->DatabaseName,
+                            $table->Name,
+                            $updatedCompany->DatabaseName,
+                            $table->Name
+                        );
+                        $sqlQueries[] = MysqlQueryGenerator::getCopyTableDataSql(
+                            $initialCompany->DatabaseName,
+                            $table->Name,
+                            $updatedCompany->DatabaseName,
+                            $table->Name
+                        );
+                    }
+                }
+            }
+            $sqlQueries[] = MysqlQueryGenerator::getDropDatabaseSql($initialCompany->DatabaseName);
+
+            foreach ($sqlQueries as $sqlQuery) {
+                try {
+                    DB::statement($sqlQuery);
+                } catch (Exception $exception) {
+                    Log::error("Update Company Rename Database Error. Message: {$exception->getMessage()}");
+                }
+            }
+        }
+        return new ServiceDto("Company Updated Successfully.", 200, $updatedCompany);
+    }
+
+    public function details(Request $request): ServiceDto
+    {
+        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        return new ServiceDto("Company Retrieved Successfully.", 200, $company);
+    }
+
+    public function delete(Request $request): ServiceDto
+    {
+        $company = $this->companyRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyId')]
+        ]);
+        $sqlQuery = MysqlQueryGenerator::getDropDatabaseSql($company->DatabaseName);
+        try {
+            DB::statement($sqlQuery);
+        } catch (Exception $exception) {
+            Log::error("Update Company Rename Database Error. Message: {$exception->getMessage()}");
+        }
+
+        $this->companyRepository->findByIdAndDelete($company->Id);
+        return new ServiceDto("Company Deleted Successfully.", 200, []);
     }
 }
