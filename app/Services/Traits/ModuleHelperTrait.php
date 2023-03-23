@@ -14,7 +14,7 @@ trait ModuleHelperTrait
         $module->tables->each(function ($table) use ($companyId, &$tablesToCreate) {
             if ($table->companyTables->count()) {
                 // Is company Specific table
-                $companyTableIds = $table->companyTables->pluck('TableId')->toArray();
+                $companyTableIds = $table->companyTables->pluck('CompanyId')->toArray();
                 if (in_array($companyId, $companyTableIds)) {
                     $tablesToCreate[] = $table;
                 }

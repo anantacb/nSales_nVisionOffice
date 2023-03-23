@@ -16,6 +16,7 @@
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.0",
+        "opcodesio/log-viewer": "^2.3",
         "php-open-source-saver/jwt-auth": "^2.0"
     },
     "require-dev": {
