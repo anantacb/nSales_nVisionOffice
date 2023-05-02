@@ -81,6 +81,8 @@ async function updateCompany() {
         ContactEmail: CompanyModel.value.ContactEmail,
         Homepage: CompanyModel.value.Homepage,
         Seats: CompanyModel.value.Seats,
+        NvisionMobileLicences: CompanyModel.value.NvisionMobileLicences,
+        NsalesOfficeLicences: CompanyModel.value.NsalesOfficeLicences,
         DefaultCulture: CompanyModel.value.DefaultCulture,
         DefaultCurrency: CompanyModel.value.DefaultCurrency,
         TrialStartDate: CompanyModel.value.TrialStartDate,
@@ -435,11 +437,39 @@ function nameChanged() {
                             <div class="col-sm-8">
                                 <input id="Seats" v-model.number="CompanyModel.Seats"
                                        :class="errors.Seats ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Seats"
-                                       required
-                                       type="number"/>
+                                       class="form-control" min="1"
+                                       name="Seats"
+                                       required type="number"/>
                                 <InputErrorMessages v-if="errors.Seats"
                                                     :errorMessages="errors.Seats"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="NvisionMobileLicences">
+                                NvisionMobileLicences
+                            </label>
+                            <div class="col-sm-8">
+                                <input id="NvisionMobileLicences" v-model.number="CompanyModel.NvisionMobileLicences"
+                                       :class="errors.NvisionMobileLicences ? `is-invalid form-control-sm` : `form-control-sm`"
+                                       class="form-control" min="1"
+                                       name="NvisionMobileLicences"
+                                       required type="number"/>
+                                <InputErrorMessages v-if="errors.NvisionMobileLicences"
+                                                    :errorMessages="errors.NvisionMobileLicences"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="NsalesOfficeLicences">
+                                NsalesOfficeLicences
+                            </label>
+                            <div class="col-sm-8">
+                                <input id="NsalesOfficeLicences" v-model.number="CompanyModel.NsalesOfficeLicences"
+                                       :class="errors.NsalesOfficeLicences ? `is-invalid form-control-sm` : `form-control-sm`"
+                                       class="form-control" min="1"
+                                       name="NsalesOfficeLicences"
+                                       required type="number"/>
+                                <InputErrorMessages v-if="errors.NsalesOfficeLicences"
+                                                    :errorMessages="errors.NsalesOfficeLicences"></InputErrorMessages>
                             </div>
                         </div>
                         <div class="row">

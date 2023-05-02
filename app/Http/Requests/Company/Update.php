@@ -59,6 +59,8 @@ class Update extends FormRequest
             'ContactEmail' => 'nullable',
             'Homepage' => 'nullable',
             'Seats' => 'required|numeric|min:1',
+            'NvisionMobileLicences' => 'required|numeric|min:1',
+            'NsalesOfficeLicences' => 'required|numeric|min:1',
             'DefaultCulture' => 'required',
             'DefaultCurrency' => 'required',
             'TrialStartDate' => 'nullable',
