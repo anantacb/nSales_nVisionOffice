@@ -36,6 +36,8 @@ let ContactEmail = ref('');
 let Homepage = ref('');
 
 let Seats = ref(1);
+let NvisionMobileLicences = ref(1);
+let NsalesOfficeLicences = ref(1);
 let DefaultCulture = ref('da-DK');
 let DefaultCurrency = ref('DKK');
 let TrialStartDate = ref(null);
@@ -113,6 +115,8 @@ async function createCompany() {
         ContactEmail: ContactEmail.value,
         Homepage: Homepage.value,
         Seats: Seats.value,
+        NvisionMobileLicences: NvisionMobileLicences.value,
+        NsalesOfficeLicences: NsalesOfficeLicences.value,
         DefaultCulture: DefaultCulture.value,
         DefaultCurrency: DefaultCurrency.value,
         TrialStartDate: TrialStartDate.value,
@@ -451,6 +455,37 @@ watch(Name, (newName, oldName) => {
                                                     :errorMessages="errors.Seats"></InputErrorMessages>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="NvisionMobileLicences">
+                                NvisionMobileLicences
+                            </label>
+                            <div class="col-sm-8">
+                                <input id="NvisionMobileLicences" v-model.number="NvisionMobileLicences"
+                                       :class="errors.NvisionMobileLicences ? `is-invalid form-control-sm` : `form-control-sm`"
+                                       class="form-control" name="NvisionMobileLicences"
+                                       required
+                                       type="number"/>
+                                <InputErrorMessages v-if="errors.NvisionMobileLicences"
+                                                    :errorMessages="errors.NvisionMobileLicences"></InputErrorMessages>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="NsalesOfficeLicences">
+                                NsalesOfficeLicences
+                            </label>
+                            <div class="col-sm-8">
+                                <input id="NsalesOfficeLicences" v-model.number="NsalesOfficeLicences"
+                                       :class="errors.NsalesOfficeLicences ? `is-invalid form-control-sm` : `form-control-sm`"
+                                       class="form-control" name="NsalesOfficeLicences"
+                                       required
+                                       type="number"/>
+                                <InputErrorMessages v-if="errors.NsalesOfficeLicences"
+                                                    :errorMessages="errors.NsalesOfficeLicences"></InputErrorMessages>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="DefaultCulture">
                                 Default Culture
