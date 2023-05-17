@@ -1,6 +1,6 @@
 <script setup>
 import {onMounted, ref, watch} from "vue";
-import {booleanOptions, cultureOptions} from "@/data/dropDownOptions";
+import {booleanOptions, cultureOptions, licenceTypeOptions} from "@/data/dropDownOptions";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
@@ -9,20 +9,14 @@ import Role from "@/models/Office/Role";
 import User from "@/models/Office/User";
 import {useFormErrors} from "@/composables/useFormErrors";
 
-
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
-
 const {errors, setErrors, resetErrors} = useFormErrors();
 
 let Name = ref('');
 let Email = ref('');
 let PhoneNo = ref('');
 let MobileNo = ref('');
-let Disabled = ref(0);
-
-let Password = ref('');
-let PasswordConfirmation = ref('');
 
 let CultureName = ref('da-DK');
 let Initials = ref('');
@@ -30,6 +24,7 @@ let Territory = ref('');
 let Commission = ref(0);
 let Billable = ref(1);
 let Note = ref('');
+let LicenceType = ref('NvisionMobile');
 
 let RoleIds = ref([]);
 
@@ -37,7 +32,7 @@ let RoleOptions = ref([]);
 
 let SendMail = ref(1);
 
-const createUserRef = ref(null);
+const createCompanyUserRef = ref(null);
 
 async function getRoles() {
     let {data} = await Role.getRolesByCompany(companyStore.selectedCompany.Id);
@@ -45,14 +40,13 @@ async function getRoles() {
 }
 
 async function createUser() {
-    createUserRef.value.statusLoading();
+    createCompanyUserRef.value.statusLoading();
 
     let formData = {
         Name: Name.value,
         Email: Email.value,
         PhoneNo: PhoneNo.value,
         MobileNo: MobileNo.value,
-        Disabled: Disabled.value,
         CultureName: CultureName.value,
 
         Initials: Initials.value,
@@ -60,27 +54,27 @@ async function createUser() {
         Commission: Commission.value,
         Billable: Billable.value,
         Note: Note.value,
+        LicenceType: LicenceType.value,
 
         RoleIds: RoleIds.value,
-        Password: Password.value,
-        Password_confirmation: PasswordConfirmation.value,
         SendMail: SendMail.value
     };
 
     try {
-        let {data, message} = await User.createCompanyUser(companyStore.selectedCompany.Id, formData);
+        let {message} = await User.createCompanyUser(companyStore.selectedCompany.Id, formData);
+        createCompanyUserRef.value.statusNormal();
         await router.push({name: 'users'});
         notificationStore.showNotification(message);
     } catch (error) {
+        createCompanyUserRef.value.statusNormal();
         setErrors(error.response.data.errors);
     }
-    createUserRef.value.statusNormal();
 }
 
 onMounted(async () => {
-    createUserRef.value.statusLoading();
+    createCompanyUserRef.value.statusLoading();
     await getRoles();
-    createUserRef.value.statusNormal();
+    createCompanyUserRef.value.statusNormal();
 });
 
 function resetForm() {
@@ -88,25 +82,25 @@ function resetForm() {
     Email.value = '';
     PhoneNo.value = '';
     MobileNo.value = '';
-    Disabled.value = false;
-    Password.value = '';
-    PasswordConfirmation.value = '';
+
     CultureName.value = 'da-DK';
     Initials.value = '';
     Territory.value = '';
     Commission.value = 0;
-    Billable.value = '1';
+    Billable.value = 1;
     Note.value = '';
+    LicenceType.value = 'NvisionMobile';
     RoleIds.value = [];
-    SendMail.value = '1';
+
+    SendMail.value = 1;
 }
 
 watch(() => companyStore.getSelectedCompany, async () => {
-    createUserRef.value.statusLoading();
+    createCompanyUserRef.value.statusLoading();
     await getRoles();
     resetErrors();
     resetForm();
-    createUserRef.value.statusNormal();
+    createCompanyUserRef.value.statusNormal();
 });
 
 </script>
@@ -114,7 +108,13 @@ watch(() => companyStore.getSelectedCompany, async () => {
 <template>
     <div class="content">
 
-        <BaseBlock ref="createUserRef" content-full title="Create User">
+        <BaseBlock ref="createCompanyUserRef" content-full title="Create User">
+
+            <template #options>
+                <router-link :to="{name:'company-users'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
 
             <form class="space-y-4" @submit.prevent="createUser">
 
@@ -179,20 +179,6 @@ watch(() => companyStore.getSelectedCompany, async () => {
                                                     :errorMessages="errors.MobileNo"></InputErrorMessages>
                             </div>
                         </div>
-                        <div class="row">
-                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Disabled">
-                                Disabled<span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-8">
-                                <Select id="Disabled" v-model="Disabled" :options="booleanOptions"
-                                        :required="true"
-                                        :select-class="errors.Disabled ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="Disabled"
-                                        @change="resetErrors"/>
-                                <InputErrorMessages v-if="errors.Disabled"
-                                                    :errorMessages="errors.Disabled"></InputErrorMessages>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="col-lg-4 space-y-2">
@@ -213,11 +199,25 @@ watch(() => companyStore.getSelectedCompany, async () => {
                             </div>
                         </div>
                         <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="LicenceType">
+                                Licence Type<span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <Select id="LicenceType" v-model="LicenceType" :options="licenceTypeOptions"
+                                        :required="true"
+                                        :select-class="errors.LicenceType ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="LicenceType"
+                                        @change="resetErrors"/>
+                                <InputErrorMessages v-if="errors.LicenceType"
+                                                    :errorMessages="errors.LicenceType"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="CultureName">
                                 Culture<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="CultureName" :options="cultureOptions"
+                                <Select id="CultureName" v-model="CultureName" :options="cultureOptions"
                                         :required="true"
                                         :select-class="errors.CultureName ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="CultureName"
@@ -313,38 +313,7 @@ watch(() => companyStore.getSelectedCompany, async () => {
                     </div>
 
                     <div class="col-lg-4 space-y-2">
-                        <h5 class="fw-light">Password</h5>
-                        <div class="row">
-                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Password">
-                                Password
-                            </label>
-                            <div class="col-sm-8">
-                                <input id="Password" v-model="Password"
-                                       :class="errors.Password ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Password"
-                                       required
-                                       type="password"
-                                       @keyup="resetErrors"/>
-                                <InputErrorMessages v-if="errors.Password"
-                                                    :errorMessages="errors.Password"></InputErrorMessages>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <label class="col-sm-4 col-form-label col-form-label-sm" for="PasswordConfirmation">
-                                Confirm Password
-                            </label>
-                            <div class="col-sm-8">
-                                <input id="PasswordConfirmation" v-model="PasswordConfirmation"
-                                       :class="errors.PasswordConfirmation ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="PasswordConfirmation"
-                                       required
-                                       type="password"
-                                       @keyup="resetErrors"/>
-                                <InputErrorMessages v-if="errors.PasswordConfirmation"
-                                                    :errorMessages="errors.PasswordConfirmation"></InputErrorMessages>
-                            </div>
-                        </div>
-
+                        <h5 class="fw-light">Operations</h5>
                         <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="SendMail">
                                 Send Email

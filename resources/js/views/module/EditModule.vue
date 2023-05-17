@@ -87,7 +87,12 @@ onMounted(async () => {
 <template>
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock ref="updateModuleRef" content-full title="Create Module">
+        <BaseBlock ref="updateModuleRef" content-full title="Edit Module">
+            <template #options>
+                <router-link :to="{name:'modules'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
             <form class="space-y-4" @submit.prevent="updateModule">
 
                 <div class="row">

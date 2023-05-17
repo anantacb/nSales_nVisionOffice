@@ -197,7 +197,7 @@ async function companyChanged() {
     } else if (ApplyTo.value === 'Role') {
         await getRolesByCompany();
     } else if (ApplyTo.value === 'User') {
-        await getCompanyUsers();
+        await getAllCompanyUsers();
     }
 
     createEmailConfigurationRef.value.statusNormal();
@@ -238,8 +238,8 @@ async function roleChanged() {
     createEmailConfigurationRef.value.statusNormal();
 }
 
-async function getCompanyUsers() {
-    const {data} = await User.getCompanyUsers(CompanyId.value);
+async function getAllCompanyUsers() {
+    const {data} = await User.getAllCompanyUsers(CompanyId.value);
 
     let options = [{label: 'Select User', value: ''}];
 
@@ -313,6 +313,12 @@ onMounted(async () => {
     <div class="content">
 
         <BaseBlock ref="createEmailConfigurationRef" content-full title="Create Email Configuration">
+
+            <template #options>
+                <router-link :to="{name:'email-configurations'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
 
             <form class="space-y-4" @submit.prevent="createEmailConfiguration">
 

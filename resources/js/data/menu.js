@@ -104,6 +104,16 @@ export default {
                     to: "users",
                 },
                 {
+                    name: "Developers",
+                    icon: "fa fa-gear",
+                    to: "developers",
+                },
+                {
+                    name: "Company Users",
+                    icon: "fa fa-gear",
+                    to: "company-users",
+                },
+                {
                     name: "Create Company User",
                     icon: "fa fa-gear",
                     to: "create-company-user",

@@ -79,36 +79,6 @@ class ModuleSettingService implements ModuleSettingServiceInterface
                 }
             }
         }
-        //dd($modules->toArray());
-
-        /*$moduleSettings = [];
-
-        $relations = [
-            'setting' => function ($q) use ($companyId) {
-                $q->where('CompanyId', $companyId)
-                    ->select(["Id", "ModuleSettingId", "Value", "ValueExpression", "CompanyId"]);
-            },
-            'module'
-        ];
-
-        $filter_by_relations = [
-            [
-                "relation" => "module.companies", "column" => "Company.Id", "operator" => "=", "values" => $companyId
-            ]
-        ];
-
-        $all_module_settings = $this->moduleSettingRepository->getByAttributes([], $relations, [
-            "Id", "ModuleId", "Name", "Label", "DataType", "Options", "Value", "ValueExpression", "Note"
-        ], '', false, $filter_by_relations);
-
-        foreach ($all_module_settings as $module_setting) {
-            $moduleSetting = collect($module_setting)->except(['module'])->toArray();
-            $moduleSetting['DefaultValue'] = $moduleSetting['Value'];
-            if ($moduleSetting['setting']) {
-                $moduleSetting['Value'] = $moduleSetting['setting']['Value'];
-            }
-            $moduleSettings[$module_setting->module->Name][] = $moduleSetting;
-        }*/
 
         return new ServiceDto("ModuleSettings retrieved!!!", 200, $moduleSettings);
     }

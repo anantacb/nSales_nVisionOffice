@@ -94,8 +94,13 @@ onMounted(() => {
     <!-- Page Content -->
     <div class="content">
         <BaseBlock ref="createModuleRef" content-full title="Create Module">
-            <form class="space-y-4" @submit.prevent="createModule">
+            <template #options>
+                <router-link :to="{name:'modules'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
 
+            <form class="space-y-4" @submit.prevent="createModule">
                 <div class="row">
                     <div class="col-lg-4 space-y-2">
                         <h5 class="fw-light text-center">General</h5>

@@ -4007,6 +4007,17 @@ const booleanOptions = [
     }
 ];
 
+const licenceTypeOptions = [
+    {
+        label: "nVision Mobile",
+        value: "NvisionMobile"
+    },
+    {
+        label: "nSales Office",
+        value: "NsalesOffice"
+    }
+];
+
 export {
     countryOptions,
     cultureOptions,
@@ -4014,5 +4025,6 @@ export {
     typeOptions,
     databaseOptions,
     clientSyncOptions,
-    booleanOptions
+    booleanOptions,
+    licenceTypeOptions
 };

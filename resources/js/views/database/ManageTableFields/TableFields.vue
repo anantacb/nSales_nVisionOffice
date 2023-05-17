@@ -2,9 +2,9 @@
 import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
 import {useTemplateStore} from "@/stores/templateStore";
-import TableFieldsForm from "@/views/database/ManageTableFields/TableFieldsForm.vue";
+import TableFieldsFormComponent from "@/views/database/ManageTableFields/TableFieldsForm.vue";
 import Table from "@/models/Office/Table";
-import Modal from "@/components/ui/Modal/Modal.vue";
+import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import TableField from "@/models/Office/TableField";
 import {useNotificationStore} from "@/stores/notificationStore";
 import router from "@/router";
@@ -126,21 +126,6 @@ function noChange(message) {
 </script>
 
 <template>
-    <!-- Hero -->
-    <!--    <BasePageHeading>
-            <template #extra>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-alt">
-                        <li aria-current="page" class="breadcrumb-item">Table</li>
-                        <li class="breadcrumb-item">
-                            <router-link :to="{name: 'tables'}" class="link-fx">Tables</router-link>
-                        </li>
-                    </ol>
-                </nav>
-            </template>
-        </BasePageHeading>-->
-    <!-- END Hero -->
-
     <!-- Page Content -->
     <div class="content">
         <BaseBlock
@@ -149,26 +134,29 @@ function noChange(message) {
             btn-option-fullscreen
         >
             <template #options>
+                <router-link :to="{name:'tables'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
                 <button class="btn btn-sm btn-outline-primary me-1" type="button"
                         @click="addNewField">Add Field
                 </button>
             </template>
 
-            <TableFieldsForm ref="tableFieldsForm"
-                             :select-companies-options="selectCompaniesOptions"
-                             :table="table"
-                             @endLoading="endLoading"
-                             @noChange="noChange($event)"
-                             @showPreview="showPreviewModal"
-                             @startLoading="startLoading"
-            ></TableFieldsForm>
+            <TableFieldsFormComponent ref="tableFieldsForm"
+                                      :select-companies-options="selectCompaniesOptions"
+                                      :table="table"
+                                      @endLoading="endLoading"
+                                      @noChange="noChange($event)"
+                                      @showPreview="showPreviewModal"
+                                      @startLoading="startLoading"
+            ></TableFieldsFormComponent>
 
             <template v-slot:footer>
                 <button class="btn btn-outline-primary" @click="previewSql">Preview Sql</button>
             </template>
         </BaseBlock>
 
-        <Modal id="queries" ref="modal">
+        <ModalComponent id="queries" ref="modal">
             <template v-slot:modal-content>
                 <BaseBlock class="mb-0" transparent>
                     <!--                    <template #options>
@@ -268,7 +256,7 @@ function noChange(message) {
                     </template>
                 </BaseBlock>
             </template>
-        </Modal>
+        </ModalComponent>
     </div>
     <!-- END Page Content -->
 </template>

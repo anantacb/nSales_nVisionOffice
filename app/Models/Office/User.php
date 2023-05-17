@@ -6,6 +6,7 @@ use App\Models\Traits\ModelHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -33,8 +34,6 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
         'Hash',
         'Salt',
         'Disabled',
@@ -49,8 +48,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [
-        'InsertTime' => 'datetime:Y-m-d',
-        'UpdateTime' => 'datetime:Y-m-d',
+        'InsertTime' => 'datetime:Y-m-d H:i:s',
+        'UpdateTime' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**
@@ -78,8 +77,18 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(CompanyUser::class, 'UserId', 'Id');
     }
 
+    public function companyUser(): HasOne
+    {
+        return $this->hasOne(CompanyUser::class, 'UserId', 'Id');
+    }
+
     public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'CompanyUser', 'UserId', 'CompanyId');
+    }
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(Device::class, 'UserId', 'Id');
     }
 }

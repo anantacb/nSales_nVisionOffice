@@ -41,7 +41,7 @@ async function createModuleSetting() {
         Note: Note.value,
     };
     try {
-        let {data, message} = await ModuleSetting.create(formData);
+        let {message} = await ModuleSetting.create(formData);
         createModuleSettingRef.value.statusNormal();
         await router.push({name: 'settings'});
         notificationStore.showNotification(message);
@@ -82,6 +82,11 @@ onMounted(() => {
     <!-- Page Content -->
     <div class="content">
         <BaseBlock ref="createModuleSettingRef" content-full title="Create Setting">
+            <template #options>
+                <router-link :to="{name:'settings'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
             <form class="space-y-4" @submit.prevent="createModuleSetting">
                 <div class="row">
                     <div class="col-lg-4 space-y-2">
