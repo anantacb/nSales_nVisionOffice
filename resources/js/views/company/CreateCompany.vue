@@ -161,6 +161,12 @@ watch(Name, (newName, oldName) => {
 
         <BaseBlock ref="createCompanyRef" content-full title="Create Company">
 
+            <template #options>
+                <router-link :to="{name:'companies'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
+
             <form class="space-y-4" @submit.prevent="createCompany">
 
                 <div class="row">

@@ -171,7 +171,7 @@ async function companyChanged() {
     } else if (EmailConfigurationModel.value.ApplyTo === 'Role') {
         await getRolesByCompany();
     } else if (EmailConfigurationModel.value.ApplyTo === 'User') {
-        await getCompanyUsers();
+        await getAllCompanyUsers();
     }
 
     editEmailConfigurationRef.value.statusNormal();
@@ -212,8 +212,8 @@ async function roleChanged() {
     editEmailConfigurationRef.value.statusNormal();
 }
 
-async function getCompanyUsers() {
-    const {data} = await User.getCompanyUsers(EmailConfigurationModel.value.CompanyId);
+async function getAllCompanyUsers() {
+    const {data} = await User.getAllCompanyUsers(EmailConfigurationModel.value.CompanyId);
 
     let options = [{label: 'Select User', value: ''}];
 
@@ -301,7 +301,7 @@ onMounted(async () => {
         case 'User':
             await getCompanies();
             EmailConfigurationModel.value.CompanyId = EmailConfigurationModel.value.company_user.CompanyId;
-            await getCompanyUsers();
+            await getAllCompanyUsers();
             await getModulesByCompany();
             makeApplyToDropdownsVisible(['Company', 'User', 'Module']);
             break;
@@ -324,6 +324,12 @@ async function getEmailConfigurationDetails() {
     <div class="content">
 
         <BaseBlock ref="editEmailConfigurationRef" content-full title="Edit Email Configuration">
+
+            <template #options>
+                <router-link :to="{name:'email-configurations'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
 
             <form class="space-y-4" @submit.prevent="updateEmailConfiguration">
 

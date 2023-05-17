@@ -45,24 +45,14 @@ async function saveAndExecute() {
 </script>
 
 <template>
-    <!-- Hero -->
-    <!--    <BasePageHeading subtitle="" title="Create Table">
-            <template #extra>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-alt">
-                        <li aria-current="page" class="breadcrumb-item">Database</li>
-                        <li class="breadcrumb-item">
-                            <router-link :to="{name: 'create-table'}" class="link-fx">Create Table</router-link>
-                        </li>
-                    </ol>
-                </nav>
-            </template>
-        </BasePageHeading>-->
-    <!-- END Hero -->
-
     <!-- Page Content -->
     <div class="content">
         <BaseBlock content-full title="Create Table">
+            <template #options>
+                <router-link :to="{name:'tables'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
             <CreateTableForm @showPreview="showPreviewModal"/>
         </BaseBlock>
 

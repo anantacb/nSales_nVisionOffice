@@ -12,12 +12,6 @@ class Company extends BaseModel
 
     protected $table = 'Company';
 
-    /*protected $casts = [
-        'InsertTime' => 'datetime:Y-m-d H:i:s',
-        'UpdateTime' => 'datetime:Y-m-d H:i:s',
-        'TrialStartDate' => 'datetime:Y-m-d H:i:s',
-    ];*/
-
     public function modules(): BelongsToMany
     {
         return $this->belongsToMany(Module::class, CompanyModule::class, 'CompanyId', 'ModuleId');

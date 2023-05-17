@@ -145,6 +145,12 @@ function nameChanged() {
 
         <BaseBlock ref="updateCompanyRef" content-full title="Edit Company">
 
+            <template #options>
+                <router-link :to="{name:'companies'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
+
             <form class="space-y-4" @submit.prevent="updateCompany">
 
                 <div class="row">

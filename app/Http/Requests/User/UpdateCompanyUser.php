@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateCompanyUser extends FormRequest
+class UpdateCompanyUser extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,19 +26,15 @@ class CreateCompanyUser extends FormRequest
     {
         return [
             'CompanyId' => 'required',
-
-            'Name' => 'required',
-            'Email' => 'required|unique:User',
-            'PhoneNo' => 'nullable',
-            'MobileNo' => 'nullable',
-            'Disabled' => 'required',
-
+            'UserId' => 'required',
+            'CompanyUserId' => 'required',
             'Initials' => [
                 'required',
                 Rule::unique('CompanyUser', 'Initials')
                     ->where(function ($q) {
                         $q->where('CompanyId', '=', $this->request->get('CompanyId'));
-                    }),
+                    })
+                    ->ignore($this->request->get('CompanyUserId'), 'Id'),
             ],
             'LicenceType' => 'required|in:NvisionMobile,NsalesOffice',
             'CultureName' => 'required',

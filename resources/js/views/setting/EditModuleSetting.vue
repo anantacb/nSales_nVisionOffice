@@ -78,7 +78,12 @@ async function getModuleSettingDetails() {
 <template>
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock ref="updateModuleSettingRef" content-full title="Create Setting">
+        <BaseBlock ref="updateModuleSettingRef" content-full title="Edit Setting">
+            <template #options>
+                <router-link :to="{name:'settings'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
             <form class="space-y-4" @submit.prevent="updateModuleSetting">
                 <div class="row">
                     <div class="col-lg-4 space-y-2">

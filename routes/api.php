@@ -94,8 +94,19 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
 
     // User
+    Route::post('/users', [UserController::class, 'getUsers']);
+    Route::post('/user/details', [UserController::class, 'details']);
+    Route::post('/user/update', [UserController::class, 'update']);
+    Route::post('/user/delete', [UserController::class, 'delete']);
+    Route::post('/users/developers', [UserController::class, 'getDevelopers']);
+
+    Route::post('/users/company-users', [UserController::class, 'getCompanyUsers']);
     Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);
-    Route::post('/users/get-company-users', [UserController::class, 'getCompanyUsers']);
+    Route::post('/users/company-user/update', [UserController::class, 'updateCompanyUser']);
+    Route::post('/users/company-user/delete', [UserController::class, 'deleteCompanyUser']);
+    Route::post('/users/company-user/details', [UserController::class, 'companyUserDetails']);
+
+    Route::post('/users/get-all-company-users', [UserController::class, 'getAllCompanyUsers']);
 
     // Application
     Route::post('applications/all', [ApplicationController::class, 'getAllApplications']);
