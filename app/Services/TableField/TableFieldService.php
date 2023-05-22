@@ -587,16 +587,22 @@ class TableFieldService implements TableFieldServiceInterface
         }
 
 
+        $totalQueries = count($sqlQueries);
+        $successful = 0;
+        $failed = 0;
+
         // Execute All Queries
         if (in_array($table->Type, ['Server', 'Both'])) {
             foreach ($sqlQueries as $sql) {
                 try {
                     DB::statement($sql);
+                    $successful += 1;
                 } catch (Exception $exception) {
-                    if (App::environment('production')) {
+                    /*if (App::environment('production')) {
                         return new ServiceDto($exception->getMessage(), 500);
-                    }
-                    Log::error("Query execution failed Query: {$sql}");
+                    }*/
+                    $failed += 1;
+                    Log::error("Query execution failed (tableFieldsOperationsSaveAndExecute).  Query: $sql");
                 }
             }
         }
@@ -606,7 +612,11 @@ class TableFieldService implements TableFieldServiceInterface
             'Version' => $table->Version + 1
         ]);
 
-        return new ServiceDto("TableFields Operation Save And Execute Finished Successfully.", 200, []);
+        return new ServiceDto(
+            "Total: $totalQueries\nSuccess: $successful\nFailed: $failed\nTableFields Operation Save And Execute Finished Successfully.",
+            200,
+            []
+        );
     }
 
     /**
