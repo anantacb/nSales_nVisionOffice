@@ -144,9 +144,37 @@ export default class User {
         });
     }
 
+    static tagDeveloperToAllCompanies(UserId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/users/developer/tag-developer-to-all-companies', {
+                UserId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static updateCompanyUser(CompanyId, formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/users/company-user/update', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static assignUserToCompany(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/user/assign-to-company', {
                 CompanyId, ...formData
             })
                 .then(({data}) => {

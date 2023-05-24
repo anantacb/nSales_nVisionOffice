@@ -85,6 +85,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/delete', [CompanyController::class, 'delete']);
     Route::post('/company/all', [CompanyController::class, 'getAllCompanies']);
     Route::post('/company/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
+    Route::post('/company/assignable-companies-by-user', [CompanyController::class, 'getAssignableCompaniesByUser']);
 
 
     // Helpers
@@ -98,7 +99,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/details', [UserController::class, 'details']);
     Route::post('/user/update', [UserController::class, 'update']);
     Route::post('/user/delete', [UserController::class, 'delete']);
+    Route::post('/user/assign-to-company', [UserController::class, 'assignToCompany']);
+
     Route::post('/users/developers', [UserController::class, 'getDevelopers']);
+    Route::post('/users/developer/tag-developer-to-all-companies', [UserController::class, 'tagDeveloperToAllCompanies']);
 
     Route::post('/users/company-users', [UserController::class, 'getCompanyUsers']);
     Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);

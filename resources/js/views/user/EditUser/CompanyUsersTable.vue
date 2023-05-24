@@ -1,7 +1,9 @@
 <script setup>
 import {Dataset, DatasetInfo, DatasetItem, DatasetPager, DatasetSearch, DatasetShow} from "vue-dataset";
 import {computed, onMounted, reactive} from "vue";
+import Button from "@/components/ui/Button.vue";
 
+const emit = defineEmits(['assignToCompany'])
 const props = defineProps({
     companyUsers: {
         type: Array,
@@ -83,6 +85,11 @@ function onSort(event, i) {
 }
 
 onMounted(() => {
+    performDomActions();
+});
+
+
+function performDomActions() {
     // Remove labels from
     document.querySelectorAll("#datasetLength label").forEach((el) => {
         el.remove();
@@ -91,15 +98,20 @@ onMounted(() => {
     // Replace select classes
     let selectLength = document.querySelector("#datasetLength select");
 
-    selectLength.classList = "";
+    //selectLength.classList = "";
     selectLength.classList.add("form-select");
     selectLength.style.width = "80px";
-});
+}
 
 </script>
 
 <template>
     <BaseBlock content-full title="Company User">
+        <template #options>
+            <button class="btn btn-sm btn-outline-info" @click="emit('assignToCompany')">
+                <i class="fa fa-plus-circle"></i> Assign To Company
+            </button>
+        </template>
         <Dataset
             v-slot="{ ds }"
             :ds-data="CompanyUsers"

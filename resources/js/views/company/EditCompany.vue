@@ -162,7 +162,8 @@ function nameChanged() {
                             <div class="col-sm-8">
                                 <input id="Name" v-model="CompanyModel.Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Name" placeholder="Name"
+                                       autocomplete="off" class="form-control" name="Name"
+                                       placeholder="Name"
                                        required
                                        type="text"
                                        @keyup="nameChanged"
@@ -189,7 +190,7 @@ function nameChanged() {
                                 Integration Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="CompanyModel.IntegrationType"
+                                <Select id="IntegrationType" v-model="CompanyModel.IntegrationType"
                                         :options="integrationTypeOptions"
                                         :required="true"
                                         :select-class="errors.IntegrationType ? `is-invalid form-select-sm` : `form-select-sm`"
@@ -203,7 +204,7 @@ function nameChanged() {
                                 File Transfer Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="CompanyModel.FileTransferType"
+                                <Select id="FileTransferType" v-model="CompanyModel.FileTransferType"
                                         :options="fileTransferTypeOptions"
                                         :required="true"
                                         :select-class="errors.FileTransferType ? `is-invalid form-select-sm` : `form-select-sm`"
@@ -217,7 +218,7 @@ function nameChanged() {
                                 Domain Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="CompanyModel.DomainName"
+                                <input id="DomainName" v-model="CompanyModel.DomainName"
                                        :class="errors.DomainName ? `is-invalid form-select-sm` : `form-select-sm`"
                                        class="form-control" disabled
                                        name="DomainName" required
@@ -231,7 +232,7 @@ function nameChanged() {
                                 Database Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="CompanyModel.DatabaseName"
+                                <input id="DatabaseName" v-model="CompanyModel.DatabaseName"
                                        :class="errors.DatabaseName ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" disabled name="DatabaseName"
                                        placeholder="" required
@@ -245,7 +246,7 @@ function nameChanged() {
                                 Storage Location<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="CompanyModel.StorageLocation"
+                                <Select id="StorageLocation" v-model="CompanyModel.StorageLocation"
                                         :options="storageLocationOptions"
                                         :required="true"
                                         :select-class="errors.StorageLocation ? `is-invalid form-select-sm` : `form-select-sm`"
@@ -330,7 +331,7 @@ function nameChanged() {
                             <div class="col-sm-8">
                                 <Select id="Country" v-model="CompanyModel.Country" :options="countryOptions"
                                         :select-class="errors.Country ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="Country"/>
+                                        autocomplete="off" name="Country"/>
                                 <InputErrorMessages v-if="errors.Country"
                                                     :errorMessages="errors.Country"></InputErrorMessages>
                             </div>
@@ -358,7 +359,7 @@ function nameChanged() {
                             <div class="col-sm-8">
                                 <input id="Email" v-model="CompanyModel.Email"
                                        :class="errors.Email ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Email"
+                                       autocomplete="off" class="form-control" name="Email"
                                        type="text"/>
                                 <InputErrorMessages v-if="errors.Email"
                                                     :errorMessages="errors.Email"></InputErrorMessages>
@@ -483,7 +484,8 @@ function nameChanged() {
                                 Default Culture
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="CompanyModel.DefaultCulture" :options="cultureOptions"
+                                <Select id="DefaultCulture" v-model="CompanyModel.DefaultCulture"
+                                        :options="cultureOptions"
                                         :required="true"
                                         :select-class="errors.DefaultCulture ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="DefaultCulture"/>
@@ -496,7 +498,8 @@ function nameChanged() {
                                 Default Currency
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="CompanyModel.DefaultCurrency" :options="currencyOptions"
+                                <Select id="DefaultCurrency" v-model="CompanyModel.DefaultCurrency"
+                                        :options="currencyOptions"
                                         :required="true"
                                         :select-class="errors.DefaultCurrency ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="DefaultCulture"/>
@@ -510,6 +513,7 @@ function nameChanged() {
                             </label>
                             <div class="col-sm-8">
                                 <FlatPicker
+                                    id="TrialStartDate"
                                     v-model="CompanyModel.TrialStartDate"
                                     class="form-control form-control-sm"
                                     placeholder="Y-m-d"

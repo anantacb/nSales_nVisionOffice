@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PaginatedDataRequest;
+use App\Http\Requests\User\AssignToCompany;
 use App\Http\Requests\User\CreateCompanyUser;
 use App\Http\Requests\User\DetailsOrDelete;
 use App\Http\Requests\User\DetailsOrDeleteCompanyUser;
@@ -81,9 +82,23 @@ class UserController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function tagDeveloperToAllCompanies(Request $request): JsonResponse
+    {
+        $response = $this->service->tagDeveloperToAllCompanies($request);
+
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function updateCompanyUser(UpdateCompanyUser $request): JsonResponse
     {
         $response = $this->service->updateCompanyUser($request);
+
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function assignToCompany(AssignToCompany $request): JsonResponse
+    {
+        $response = $this->service->assignToCompany($request);
 
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }

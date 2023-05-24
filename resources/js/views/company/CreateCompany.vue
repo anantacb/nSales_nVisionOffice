@@ -178,7 +178,8 @@ watch(Name, (newName, oldName) => {
                             <div class="col-sm-8">
                                 <input id="Name" v-model="Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Name" placeholder="Name"
+                                       autocomplete="off" class="form-control" name="Name"
+                                       placeholder="Name"
                                        required
                                        type="text"/>
                                 <InputErrorMessages v-if="errors.Name"
@@ -203,7 +204,7 @@ watch(Name, (newName, oldName) => {
                                 Integration Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="IntegrationType" :options="integrationTypeOptions"
+                                <Select id="IntegrationType" v-model="IntegrationType" :options="integrationTypeOptions"
                                         :required="true"
                                         :select-class="errors.IntegrationType ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="IntegrationType"/>
@@ -216,7 +217,8 @@ watch(Name, (newName, oldName) => {
                                 File Transfer Type<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="FileTransferType" :options="fileTransferTypeOptions"
+                                <Select id="FileTransferType" v-model="FileTransferType"
+                                        :options="fileTransferTypeOptions"
                                         :required="true"
                                         :select-class="errors.FileTransferType ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="FileTransferType"/>
@@ -229,7 +231,7 @@ watch(Name, (newName, oldName) => {
                                 Domain Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="DomainName"
+                                <input id="DomainName" v-model="DomainName"
                                        :class="errors.DomainName ? `is-invalid form-select-sm` : `form-select-sm`"
                                        class="form-control" disabled
                                        name="DomainName" required
@@ -243,7 +245,7 @@ watch(Name, (newName, oldName) => {
                                 Database Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="DatabaseName"
+                                <input id="DatabaseName" v-model="DatabaseName"
                                        :class="errors.DatabaseName ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" disabled name="DatabaseName"
                                        placeholder="" required
@@ -257,7 +259,7 @@ watch(Name, (newName, oldName) => {
                                 Storage Location<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="StorageLocation" :options="storageLocationOptions"
+                                <Select id="StorageLocation" v-model="StorageLocation" :options="storageLocationOptions"
                                         :required="true"
                                         :select-class="errors.StorageLocation ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="StorageLocation"/>
@@ -341,7 +343,7 @@ watch(Name, (newName, oldName) => {
                             <div class="col-sm-8">
                                 <Select id="Country" v-model="Country" :options="countryOptions"
                                         :select-class="errors.Country ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="Country"/>
+                                        autocomplete="off" name="Country"/>
                                 <InputErrorMessages v-if="errors.Country"
                                                     :errorMessages="errors.Country"></InputErrorMessages>
                             </div>
@@ -369,7 +371,7 @@ watch(Name, (newName, oldName) => {
                             <div class="col-sm-8">
                                 <input id="Email" v-model="Email"
                                        :class="errors.Email ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Email"
+                                       autocomplete="off" class="form-control" name="Email"
                                        type="text"/>
                                 <InputErrorMessages v-if="errors.Email"
                                                     :errorMessages="errors.Email"></InputErrorMessages>
@@ -497,7 +499,7 @@ watch(Name, (newName, oldName) => {
                                 Default Culture
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="DefaultCulture" :options="cultureOptions"
+                                <Select id="DefaultCulture" v-model="DefaultCulture" :options="cultureOptions"
                                         :required="true"
                                         :select-class="errors.DefaultCulture ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="DefaultCulture"/>
@@ -510,7 +512,7 @@ watch(Name, (newName, oldName) => {
                                 Default Currency
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Type" v-model="DefaultCurrency" :options="currencyOptions"
+                                <Select id="DefaultCurrency" v-model="DefaultCurrency" :options="currencyOptions"
                                         :required="true"
                                         :select-class="errors.DefaultCurrency ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="DefaultCulture"/>
@@ -524,6 +526,7 @@ watch(Name, (newName, oldName) => {
                             </label>
                             <div class="col-sm-8">
                                 <FlatPicker
+                                    id="TrialStartDate"
                                     v-model="TrialStartDate"
                                     class="form-control form-control-sm"
                                     placeholder="Y-m-d"

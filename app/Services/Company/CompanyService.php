@@ -259,4 +259,22 @@ class CompanyService implements CompanyServiceInterface
         $this->companyRepository->findByIdAndDelete($company->Id);
         return new ServiceDto("Company Deleted Successfully.", 200, []);
     }
+
+    public function getAssignableCompaniesByUser(Request $request): ServiceDto
+    {
+        $relations = [
+            'companyUsers'
+        ];
+        $user = $this->userRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('UserId')]
+        ], $relations);
+
+        $assignedCompanyIds = $user->companyUsers->pluck('CompanyId')->toArray();
+
+        $assignAbleCompanies = $this->companyRepository->getByAttributes([
+            ['column' => 'Id', 'operand' => '!=', 'value' => $assignedCompanyIds]
+        ], '', ['Id', 'Name', 'CompanyName']);
+
+        return new ServiceDto("Companies Retrieved Successfully.", 200, $assignAbleCompanies);
+    }
 }

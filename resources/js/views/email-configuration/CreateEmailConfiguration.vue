@@ -333,6 +333,8 @@ onMounted(async () => {
                                 <input id="Name" v-model="Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
                                        class="form-control" name="Name"
+                                       required
+                                       autocomplete="off"
                                        type="text"
                                        @keyup="resetErrors"/>
                                 <InputErrorMessages v-if="errors.Name"

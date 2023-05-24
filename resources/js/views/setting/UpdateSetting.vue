@@ -151,7 +151,8 @@ function removeFromUpdatedList(key, settingIndex) {
                          tabindex="0"
                     >
                         <div v-for="(setting, settingIndex) in settings" class="row">
-                            <label :for="`${key}-${setting.Name}`" class="col-sm-3 col-form-label col-form-label-sm">
+                            <label :for="`${key}-${setting.Name}`"
+                                   class="col-sm-3 col-form-label col-form-label-sm label-text">
                                 {{ setting.Name }}
                             </label>
                             <div class="col-sm-9">
@@ -216,4 +217,9 @@ function removeFromUpdatedList(key, settingIndex) {
     height: 75vh;
     overflow: auto;
 }
+
+.label-text {
+    word-wrap: break-word;
+}
+
 </style>

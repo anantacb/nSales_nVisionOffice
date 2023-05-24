@@ -156,7 +156,7 @@ function noChange(message) {
             </template>
         </BaseBlock>
 
-        <ModalComponent id="queries" ref="modal">
+        <ModalComponent id="queries" ref="modal" modal-body-classes="modal-xl">
             <template v-slot:modal-content>
                 <BaseBlock class="mb-0" transparent>
                     <!--                    <template #options>
