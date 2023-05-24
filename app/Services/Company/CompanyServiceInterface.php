@@ -11,6 +11,8 @@ interface CompanyServiceInterface
 
     public function getModuleEnabledCompanies(Request $request): ServiceDto;
 
+    public function getAssignableCompaniesByUser(Request $request): ServiceDto;
+
     public function getCompanies(Request $request): ServiceDto;
 
     public function create(Request $request): ServiceDto;

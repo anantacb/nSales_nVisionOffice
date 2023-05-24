@@ -2,7 +2,7 @@
     <div class="data-grid-filter-wrapper">
         <div class="input-group search-input-group">
             <input :value="search" aria-describedby="search-addon" aria-label="Search" class="form-control"
-                   placeholder="Search..." type="text" @input="debounceSearch($event.target.value)">
+                   name="Search" placeholder="Search..." type="text" @input="debounceSearch($event.target.value)">
             <span id="search-addon" class="input-group-text">
                     <i class="fa fa-search"></i>
             </span>

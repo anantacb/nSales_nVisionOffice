@@ -4,6 +4,7 @@ namespace App\Services\User;
 
 
 use App\Contracts\ServiceDto;
+use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
@@ -15,16 +16,19 @@ class UserService implements UserServiceInterface
     protected UserRepositoryInterface $userRepository;
     protected CompanyUserRepositoryInterface $companyUserRepository;
     protected CompanyUserRoleRepositoryInterface $companyUserRoleRepository;
+    protected CompanyRepositoryInterface $companyRepository;
 
     public function __construct(
         UserRepositoryInterface            $userRepository,
         CompanyUserRepositoryInterface     $companyUserRepository,
-        CompanyUserRoleRepositoryInterface $companyUserRoleRepository
+        CompanyUserRoleRepositoryInterface $companyUserRoleRepository,
+        CompanyRepositoryInterface         $companyRepository
     )
     {
         $this->userRepository = $userRepository;
         $this->companyUserRepository = $companyUserRepository;
         $this->companyUserRoleRepository = $companyUserRoleRepository;
+        $this->companyRepository = $companyRepository;
     }
 
     public function authUserDetails(): ServiceDto
@@ -124,6 +128,41 @@ class UserService implements UserServiceInterface
         // TODO Send Mail
 
         return new ServiceDto('User Created Successfully', 200, $user);
+    }
+
+    public function assignToCompany(Request $request): ServiceDto
+    {
+        $userId = $request->get('UserId');
+        $companyId = $request->get('CompanyId');
+        $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
+        ], [], '', 'Number', true);
+
+        $number = $latestCompanyUser->Number + 1;
+
+        $companyUser = $this->companyUserRepository->create([
+            'CompanyId' => $companyId,
+            'UserId' => $userId,
+            'Number' => $number,
+            'CultureName' => $request->get('CultureName'),
+            'Initials' => $request->get('Initials'),
+            'LicenceType' => $request->get('LicenceType'),
+            'Territory' => $request->get('Territory'),
+            'Commission' => $request->get('Commission'),
+            'Billable' => $request->get('Billable'),
+            'Note' => $request->get('Note')
+        ]);
+
+        foreach ($request->get('RoleIds') as $roleId) {
+            $this->companyUserRoleRepository->create([
+                'RoleId' => $roleId,
+                'CompanyUserId' => $companyUser->Id
+            ]);
+        }
+
+        // TODO Send Mail
+
+        return new ServiceDto('User Assigned Successfully', 200, []);
     }
 
     public function companyUserDetails(Request $request): ServiceDto
@@ -242,5 +281,38 @@ class UserService implements UserServiceInterface
         ], $relations, ['Id', 'UserId', 'CompanyId', 'Initials']);
 
         return new ServiceDto('Company Users Retrieved Successfully', 200, $companyUsers);
+    }
+
+    public function tagDeveloperToAllCompanies(Request $request): ServiceDto
+    {
+        $userId = $request->get('UserId');
+
+        $user = $this->userRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $userId]
+        ]);
+
+        $relations = [
+            'roles' => function ($q) {
+                $q->where('Type', 'Developer');
+            }
+        ];
+        $companies = $this->companyRepository->getByAttributes([], $relations);
+
+        foreach ($companies as $company) {
+            if ($company->roles) {
+                $companyUser = $this->companyUserRepository->firstOrCreate([
+                    'CompanyId' => $company->Id,
+                    'UserId' => $user->Id,
+                    'Commission' => 0
+                ]);
+
+                $this->companyUserRoleRepository->firstOrCreate([
+                    'RoleId' => $company->roles[0]->Id,
+                    'CompanyUserId' => $companyUser->Id
+                ]);
+            }
+        }
+
+        return new ServiceDto('Successfully Assigned To All Companies.', 200, []);
     }
 }

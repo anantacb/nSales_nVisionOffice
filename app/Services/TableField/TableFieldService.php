@@ -14,7 +14,6 @@ use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -341,10 +340,10 @@ class TableFieldService implements TableFieldServiceInterface
             ['companyTables.company', 'module.companies']
         );
 
-        $tableModuleCompanyIds = $table->module->companies->pluck('Id')->toArray();
+        //$tableModuleCompanyIds = $table->module->companies->pluck('Id')->toArray();
         $tableModuleCompanyDatabases = $table->module->companies->pluck('DatabaseName')->toArray();
 
-        $companyTableCompanyIds = $table->companyTables->pluck('company.Id')->toArray();
+        //$companyTableCompanyIds = $table->companyTables->pluck('company.Id')->toArray();
         $companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();
 
         $sqlQueries = [];
@@ -602,7 +601,7 @@ class TableFieldService implements TableFieldServiceInterface
                         return new ServiceDto($exception->getMessage(), 500);
                     }*/
                     $failed += 1;
-                    Log::error("Query execution failed (tableFieldsOperationsSaveAndExecute).  Query: $sql");
+                    Log::error("Query execution failed (tableFieldsOperationsSaveAndExecute). \n Query: $sql \n Error Message: {$exception->getMessage()}");
                 }
             }
         }

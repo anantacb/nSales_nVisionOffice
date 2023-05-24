@@ -98,7 +98,8 @@ onMounted(() => {
                             <div class="col-sm-8">
                                 <input id="Name" v-model="Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Name"
+                                       autocomplete="off" class="form-control"
+                                       name="Name"
                                        required
                                        type="text"
                                        @keyup="resetErrors"/>
@@ -158,13 +159,14 @@ onMounted(() => {
                             <div class="col-sm-1">
                                 <PopOverButton
                                     btnClass="btn btn-sm"
-                                    content="enums must be formatted like: enum('A','B',...)."
+                                    content="enums must be formatted like: Enum('A','B',...)."
                                     iconClass="si si-info">
                                 </PopOverButton>
                             </div>
                             <div class="col-sm-8">
                                 <div class="input-group input-group-sm">
                                     <input
+                                        id="DataType"
                                         v-model="DataType"
                                         :class="errors.DataType ? `is-invalid` : ``"
                                         aria-label="Select Datatype"

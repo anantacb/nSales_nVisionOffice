@@ -161,7 +161,8 @@ watch(() => companyStore.getSelectedCompany, async (newValue, oldValue) => {
                                         <div class="col-sm-8">
                                             <input id="Name" v-model="Name"
                                                    :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
-                                                   class="form-control" disabled
+                                                   autocomplete="off" class="form-control"
+                                                   disabled
                                                    name="Name"
                                                    required
                                                    type="text"
@@ -177,7 +178,8 @@ watch(() => companyStore.getSelectedCompany, async (newValue, oldValue) => {
                                         <div class="col-sm-8">
                                             <input id="Email" v-model="Email"
                                                    :class="errors.Email ? `is-invalid form-control-sm` : `form-control-sm`"
-                                                   class="form-control" disabled
+                                                   autocomplete="off" class="form-control"
+                                                   disabled
                                                    name="Email"
                                                    required
                                                    type="email"

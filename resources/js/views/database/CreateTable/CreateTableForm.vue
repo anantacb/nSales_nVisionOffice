@@ -96,51 +96,54 @@ async function submit() {
 
 <template>
     <form class="space-y-4" @submit.prevent="submit">
-        <div class="row">
-            <div class="col-lg-6 space-y-3">
+        <div class="row space-y-2">
+            <div class="col-lg-4 space-y-2">
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Name">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Name">
                         Name
                     </label>
                     <div class="col-sm-8">
-                        <input id="Name" v-model="name" :class="{'is-invalid': errors.name}"
-                               class="form-control" name="Name" placeholder="Name"
+                        <input id="Name" v-model="name"
+                               :class="errors.name ? `is-invalid form-control-sm` : `form-control-sm`"
+                               autocomplete="off" class="form-control" name="Name" placeholder="Name"
                                required
                                type="text"/>
                         <InputErrorMessages v-if="errors.name" :errorMessages="errors.name"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Type">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Type">
                         Type
                     </label>
                     <div class="col-sm-8">
                         <Select id="Type" v-model="type" :options="typeOptions"
                                 :required="true"
-                                :select-class="errors.type ? `is-invalid` : ``" name="Type"/>
+                                :select-class="errors.type ? `is-invalid form-select-sm` : `form-select-sm`"
+                                name="Type"/>
                         <InputErrorMessages v-if="errors.type" :errorMessages="errors.type"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Database">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Database">
                         Database
                     </label>
                     <div class="col-sm-8">
                         <Select id="Database" v-model="database" :options="databaseOptions"
-                                :required="true" :select-class="errors.database ? `is-invalid` : ``"
+                                :required="true"
+                                :select-class="errors.database ? `is-invalid form-select-sm` : `form-select-sm`"
                                 name="Database"/>
                         <InputErrorMessages v-if="errors.database"
                                             :errorMessages="errors.database"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Module">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Module">
                         Module
                     </label>
                     <div class="col-sm-8">
                         <VueSelect
                             v-model="module"
-                            :class="{'is-invalid': errors.module}"
+                            :class="errors.module ? `is-invalid` : ``"
                             :clearable="false"
                             :get-option-label="module => module.Name"
                             :input-required="true"
@@ -166,13 +169,13 @@ async function submit() {
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Companies">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Companies">
                         Companies
                     </label>
                     <div class="col-sm-8">
                         <VueSelect
                             v-model="selectedCompanies"
-                            :class="{'is-invalid': errors.selectedCompanies}"
+                            :class="errors.selectedCompanies ? `is-invalid` : ``"
                             :clearable="true"
                             :get-option-label="company => company.Name"
                             :inputId="`Companies`"
@@ -188,12 +191,12 @@ async function submit() {
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Disabled">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Disabled">
                         Disabled
                     </label>
                     <div class="col-sm-8">
                         <Select id="Disabled" v-model="disabled" :options="booleanOptions" :required="true"
-                                :select-class="errors.disabled ? `is-invalid` : ``"
+                                :select-class="errors.disabled ? `is-invalid form-select-sm` : `form-select-sm`"
                                 name="Disabled"/>
                         <InputErrorMessages v-if="errors.disabled"
                                             :errorMessages="errors.disabled"></InputErrorMessages>
@@ -201,77 +204,79 @@ async function submit() {
                 </div>
             </div>
 
-            <div class="col-lg-6 space-y-3">
+            <div class="col-lg-4 space-y-2">
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="ClientSync">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="ClientSync">
                         Client Sync
                     </label>
                     <div class="col-sm-8">
                         <Select id="ClientSync" v-model="clientSync" :options="clientSyncOptions"
-                                :required="false" :select-class="errors.clientSync ? `is-invalid` : ``"
+                                :required="false"
+                                :select-class="errors.clientSync ? `is-invalid form-select-sm` : `form-select-sm`"
                                 name="ClientSync"/>
                         <InputErrorMessages v-if="errors.clientSync"
                                             :errorMessages="errors.clientSync"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="AutoNumbering">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="AutoNumbering">
                         Auto Numbering
                     </label>
                     <div class="col-sm-8">
                         <Select id="AutoNumbering" v-model="autoNumbering" :options="booleanOptions" :required="true"
-                                :select-class="errors.autoNumbering ? `is-invalid` : ``" name="AutoNumbering"/>
+                                :select-class="errors.autoNumbering ? `is-invalid form-select-sm` : `form-select-sm`"
+                                name="AutoNumbering"/>
                         <InputErrorMessages v-if="errors.autoNumbering"
                                             :errorMessages="errors.autoNumbering"></InputErrorMessages>
                     </div>
                 </div>
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="example-hf-password">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="EnableTruncate">
                         Enable Truncate:
                     </label>
                     <div class="col-sm-8">
-                        <Select v-model="enableTruncate" :options="booleanOptions" :required="true"
-                                :select-class="errors.enableTruncate ? `is-invalid` : ``"/>
+                        <Select id="EnableTruncate" v-model="enableTruncate" :options="booleanOptions"
+                                :required="true"
+                                :select-class="errors.enableTruncate ? `is-invalid form-select-sm` : `form-select-sm`"/>
                         <InputErrorMessages v-if="errors.enableTruncate"
                                             :errorMessages="errors.enableTruncate"></InputErrorMessages>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-6 space-y-3 mt-3">
+            <div class="col-lg-4 space-y-2">
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="SqlTruncate">
                         Sql Truncate
                     </label>
                     <div class="col-sm-8">
-                        <textarea v-model="sqlTruncate" :class="{'is-invalid': errors.sqlTruncate}" class="form-control"
+                        <textarea id="SqlTruncate"
+                                  v-model="sqlTruncate"
+                                  :class="errors.sqlTruncate ? `is-invalid form-control-sm` : `form-control-sm`"
+                                  class="form-control"
                                   placeholder=""></textarea>
                         <InputErrorMessages v-if="errors.sqlTruncate"
                                             :errorMessages="errors.sqlTruncate"></InputErrorMessages>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-lg-6 space-y-3 mt-3">
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="SqlSeed">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="SqlSeed">
                         Sql Seed
                     </label>
                     <div class="col-sm-8">
-                        <textarea id="SqlSeed" v-model="sqlSeed" :class="{'is-invalid': errors.sqlSeed}"
+                        <textarea id="SqlSeed" v-model="sqlSeed"
+                                  :class="errors.sqlSeed ? `is-invalid form-control-sm` : `form-control-sm`"
                                   class="form-control" placeholder=""></textarea>
                         <InputErrorMessages v-if="errors.sqlSeed" :errorMessages="errors.sqlSeed"></InputErrorMessages>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-lg-6 space-y-3 mt-3">
                 <div class="row">
-                    <label class="col-sm-4 col-form-label" for="Note">
+                    <label class="col-sm-4 col-form-label col-form-label-sm" for="Note">
                         Note
                     </label>
                     <div class="col-sm-8">
-                        <textarea id="Note" v-model="note" :class="{'is-invalid': errors.note}"
+                        <textarea id="Note" v-model="note"
+                                  :class="errors.note ? `is-invalid form-control-sm` : `form-control-sm`"
                                   class="form-control"></textarea>
                         <InputErrorMessages v-if="errors.note" :errorMessages="errors.note"></InputErrorMessages>
                     </div>

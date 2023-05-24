@@ -2,9 +2,9 @@
 import {onMounted, ref} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
-import Company from "@/models/Office/Company";
 import User from "@/models/Office/User";
 
+const emit = defineEmits(['startLoading', 'endLoading']);
 const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
@@ -77,22 +77,25 @@ function search(query) {
 }
 
 async function getDevelopers() {
+    emit('startLoading');
     let {data, pagination} = await User.getDevelopers(request.value);
     tableData.value = data;
     paginationData.value = pagination;
+    emit('endLoading');
 }
 
-function deleteCompany(company, index) {
+function tagDeveloperToAllCompanies(userId) {
     Swal.fire({
-        title: 'Are you sure? Delete Company?',
-        html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
+        title: 'Are you sure?',
+        html: 'Please type <code class="text-danger">Confirm</code> and press Confirm.',
         input: 'text',
         inputAttributes: {
             autocapitalize: 'off'
         },
         showCancelButton: true,
-        confirmButtonText: 'Delete',
-        confirmButtonColor: 'red',
+        confirmButtonText: 'Confirm',
+        cancelButtonColor: 'red',
+        confirmButtonColor: 'green',
         showLoaderOnConfirm: true,
         preConfirm: (text) => {
             return text === `Confirm`;
@@ -100,9 +103,10 @@ function deleteCompany(company, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await Company.delete(company.Id);
-            tableData.value.splice(index, 1);
+            emit('startLoading');
+            let {data, message} = await User.tagDeveloperToAllCompanies(userId);
             notificationStore.showNotification(message);
+            emit('endLoading');
         }
     });
 }
@@ -113,7 +117,6 @@ function deleteCompany(company, index) {
     <DataGrid
         :expandable="false"
         :height="`${bodyHeight - 115}px`"
-        :isLoading="isLoading"
         :pagination="paginationData"
         :searchable="true"
         :tabledata="tableData"
@@ -128,6 +131,7 @@ function deleteCompany(company, index) {
                 btnClass="btn rounded-pill btn-alt-primary me-1"
                 content="Give Access to All Companies"
                 iconClass="far fa-chess-king"
+                @click="tagDeveloperToAllCompanies(props.data.Id)"
             ></PopOverButton>
         </template>
     </DataGrid>

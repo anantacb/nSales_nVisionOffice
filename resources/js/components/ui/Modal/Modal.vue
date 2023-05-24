@@ -6,6 +6,13 @@ defineProps({
     id: {
         required: true,
         type: String
+    },
+    modalBodyClasses: {
+        required: false,
+        type: String,
+        default: () => {
+            return ''
+        }
     }
 });
 
@@ -41,7 +48,9 @@ defineExpose({
         role="dialog"
         tabindex="-1"
     >
-        <div class="modal-dialog modal-xl" role="document">
+        <div :class="modalBodyClasses"
+             class="modal-dialog"
+             role="document">
             <div class="modal-content">
                 <slot name="modal-content"></slot>
             </div>

@@ -1,6 +1,6 @@
 <script setup>
 import CreateTableForm from "@/views/database/CreateTable/CreateTableForm.vue";
-import Modal from "@/components/ui/Modal/Modal.vue";
+import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import {ref} from "vue";
 import Table from "@/models/Office/Table";
 import {useNotificationStore} from "@/stores/notificationStore";
@@ -20,7 +20,7 @@ function showPreviewModal(queries, formData) {
 
 async function saveWithoutExecuting() {
     try {
-        let {data, message} = await Table.createTableSaveWithoutExecuting(sqlFormData.value);
+        let {message} = await Table.createTableSaveWithoutExecuting(sqlFormData.value);
         modal.value.closeModal();
         await router.push({name: 'tables'});
         notificationStore.showNotification(message);
@@ -32,7 +32,7 @@ async function saveWithoutExecuting() {
 
 async function saveAndExecute() {
     try {
-        let {data, message} = await Table.createTableSaveAndExecute(sqlFormData.value);
+        let {message} = await Table.createTableSaveAndExecute(sqlFormData.value);
         modal.value.closeModal();
         await router.push({name: 'tables'});
         notificationStore.showNotification(message);
@@ -56,7 +56,7 @@ async function saveAndExecute() {
             <CreateTableForm @showPreview="showPreviewModal"/>
         </BaseBlock>
 
-        <Modal id="queries" ref="modal">
+        <ModalComponent id="queries" ref="modal">
             <template v-slot:modal-content>
                 <BaseBlock class="mb-0" transparent>
                     <!--                    <template #options>
@@ -156,7 +156,7 @@ async function saveAndExecute() {
                     </template>
                 </BaseBlock>
             </template>
-        </Modal>
+        </ModalComponent>
     </div>
     <!-- END Page Content -->
 </template>

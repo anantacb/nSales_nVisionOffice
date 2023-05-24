@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Company\AssignableUserCompanies;
 use App\Http\Requests\Company\Create;
 use App\Http\Requests\Company\DetailsOrDelete;
 use App\Http\Requests\Company\ModuleEnabledCompanies;
@@ -30,6 +31,12 @@ class CompanyController extends Controller
     public function getModuleEnabledCompanies(ModuleEnabledCompanies $request): JsonResponse
     {
         $response = $this->service->getModuleEnabledCompanies($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getAssignableCompaniesByUser(AssignableUserCompanies $request): JsonResponse
+    {
+        $response = $this->service->getAssignableCompaniesByUser($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
