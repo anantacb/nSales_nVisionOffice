@@ -1,8 +1,9 @@
 export default class Role {
-    static getRolesByCompany(CompanyId) {
+    static getRolesByCompany(CompanyId, WithDeveloper = false) {
         return new Promise((resolve, reject) => {
             axios.post('/api/roles/by-company', {
-                CompanyId: CompanyId
+                CompanyId: CompanyId,
+                WithDeveloper: WithDeveloper
             })
                 .then(({data}) => {
                     resolve(data);

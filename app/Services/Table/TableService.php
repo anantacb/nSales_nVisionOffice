@@ -339,4 +339,16 @@ class TableService implements TableServiceInterface
 
         return new ServiceDto("Table Deleted Successfully.", 200, $table);
     }
+
+    public function getByModule(Request $request): ServiceDto
+    {
+        $table = $this->tableRepository->getByAttributes(
+            [
+                ['column' => 'ModuleId', 'operand' => '=', 'value' => $request->get('moduleId')]
+            ],
+            [], ['Name', 'Id']
+        );
+
+        return new ServiceDto("Tables By Module Retrieved Successfully.", 200, $table);
+    }
 }

@@ -36,6 +36,13 @@ const EditCompanyUser = () => import("@/views/user/EditCompanyUser.vue");
 const CreateEmailConfiguration = () => import('@/views/email-configuration/CreateEmailConfiguration.vue')
 const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations/EmailConfigurations.vue')
 const EditEmailConfiguration = () => import('@/views/email-configuration/EditEmailConfiguration.vue');
+
+const CreateDataFilter = () => import('@/views/data-filter/CreateDataFilter.vue')
+const DataFilters = () => import('@/views/data-filter/DataFilters/DataFilters.vue')
+const EditDataFilter = () => import('@/views/data-filter/EditDataFilter.vue');
+
+const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters/CompanyDataFilters.vue')
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -266,6 +273,49 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: false
+                }
+            },
+
+            {
+                path: "data-filter/data-filters",
+                name: "data-filters",
+                component: DataFilters,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "data-filter/create",
+                name: "create-data-filter",
+                component: CreateDataFilter,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "data-filter/:id/edit",
+                name: "edit-data-filter",
+                component: EditDataFilter,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                },
+                beforeEnter: (to, from) => {
+                    if (['data-filters', 'company-data-filters'].includes(from.name)) {
+                        localStorage.setItem('data-filter-back-route', from.name);
+                    }
+                    return true;
+                },
+            },
+            {
+                path: "data-filter/company-data-filters",
+                name: "company-data-filters",
+                component: CompanyDataFilters,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
                 }
             },
         ],

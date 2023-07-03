@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Role;
+namespace App\Http\Requests\DataFilter;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetRoles extends FormRequest
+class GetFilterResult extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class GetRoles extends FormRequest
     public function rules()
     {
         return [
-            'CompanyId' => 'required',
-            'WithDeveloper' => 'required|boolean'
+            'DataFilterId' => 'required|exists:DataFilter,Id',
+            'CompanyUserId' => 'required',
         ];
     }
 }

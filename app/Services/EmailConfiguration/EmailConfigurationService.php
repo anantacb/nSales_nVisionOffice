@@ -79,7 +79,21 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
     {
         $request = $request->all();
         $request['relations'] = [
-            ["name" => "module", "columns" => ['Id', 'Name']],
+            [
+                "name" => "module", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "application", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "role", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "company", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "user", "columns" => ['UserId', 'Name']
+            ],
         ];
         $emailConfigurations = $this->emailConfigurationRepository->paginatedData($request);
         return new ServiceDto("Email Configurations retrieved!!!", 200, $emailConfigurations);

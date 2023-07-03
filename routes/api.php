@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
@@ -42,6 +43,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/tables', [TableController::class, 'getTables']);
     Route::post('/table/details', [TableController::class, 'getDetails']);
     Route::post('/table/delete', [TableController::class, 'delete']);
+    Route::post('/table/get-by-module', [TableController::class, 'getByModule']);
     Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
     Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
     Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
@@ -121,4 +123,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/email-configuration/update', [EmailConfigurationController::class, 'update']);
     Route::post('/email-configuration/delete', [EmailConfigurationController::class, 'delete']);
     Route::post('/email-configuration/details', [EmailConfigurationController::class, 'details']);
+
+    // DataFilter
+    Route::post('/data-filters', [DataFilterController::class, 'getDataFilters']);
+    Route::post('/data-filter/create', [DataFilterController::class, 'create']);
+    Route::post('/data-filter/update', [DataFilterController::class, 'update']);
+    Route::post('/data-filter/details', [DataFilterController::class, 'details']);
+    Route::post('/data-filter/delete', [DataFilterController::class, 'delete']);
+
+    Route::post('/data-filters/company-data-filters', [DataFilterController::class, 'getCompanyDataFilters']);
+    Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);
 });

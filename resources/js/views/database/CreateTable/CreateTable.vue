@@ -56,15 +56,9 @@ async function saveAndExecute() {
             <CreateTableForm @showPreview="showPreviewModal"/>
         </BaseBlock>
 
-        <ModalComponent id="queries" ref="modal">
+        <ModalComponent id="queries" ref="modal" modal-body-classes="modal-xl">
             <template v-slot:modal-content>
                 <BaseBlock class="mb-0" transparent>
-                    <!--                    <template #options>
-                                            <button aria-label="Close" class="btn-block-option" data-bs-dismiss="modal" type="button">
-                                                <i class="fa fa-fw fa-times"></i>
-                                            </button>
-                                        </template>-->
-
                     <template #content>
                         <ul class="nav nav-tabs nav-tabs-block" role="tablist">
                             <li class="nav-item">
