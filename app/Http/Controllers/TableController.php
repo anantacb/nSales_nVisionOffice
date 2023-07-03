@@ -8,6 +8,7 @@ use App\Http\Requests\Table\DetailsOrDeleteTable;
 use App\Services\Table\TableServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class TableController extends Controller
 {
@@ -55,6 +56,12 @@ class TableController extends Controller
     public function delete(DetailsOrDeleteTable $request): JsonResponse
     {
         $response = $this->service->deleteTable($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getByModule(Request $request): JsonResponse
+    {
+        $response = $this->service->getByModule($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 }

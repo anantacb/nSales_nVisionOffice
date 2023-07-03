@@ -1,8 +1,8 @@
-export default class Table {
+export default class DataFilter {
 
-    static getTables(formData) {
+    static create(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/tables', formData)
+            axios.post('/api/data-filter/create', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -12,10 +12,46 @@ export default class Table {
         });
     }
 
-    static getDetails(tableId) {
+    static update(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/table/details', {
-                tableId: tableId
+            axios.post('/api/data-filter/update', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getDataFilters(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/data-filters', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getFilterResult(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/data-filters/get-filter-result', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getCompanyDataFilters(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/data-filters/company-data-filters', {
+                CompanyId, ...formData
             })
                 .then(({data}) => {
                     resolve(data);
@@ -26,46 +62,10 @@ export default class Table {
         });
     }
 
-    static getCreatePreviewSql(formData) {
+    static delete(DataFilterId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-preview-sql', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static createTableSaveAndExecute(formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-save-and-execute', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static createTableSaveWithoutExecuting(formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/create-table-save-without-executing', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static delete(tableId) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/table/delete', {
-                tableId: tableId
+            axios.post('/api/data-filter/delete', {
+                DataFilterId: DataFilterId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -76,10 +76,10 @@ export default class Table {
         });
     }
 
-    static getTablesByModule(moduleId) {
+    static details(DataFilterId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/table/get-by-module', {
-                moduleId: moduleId
+            axios.post('/api/data-filter/details', {
+                DataFilterId: DataFilterId
             })
                 .then(({data}) => {
                     resolve(data);

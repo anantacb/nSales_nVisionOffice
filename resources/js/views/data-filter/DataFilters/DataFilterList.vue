@@ -2,12 +2,17 @@
 import {onMounted, ref} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
-import EmailConfiguration from "@/models/Office/EmailConfiguration";
+import DataFilter from "@/models/Office/DataFilter";
 
 const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let tableFields = [
+    {
+        name: "Type",
+        title: "Type",
+        sortField: "Type"
+    },
     {
         name: "module",
         title: "Module",
@@ -16,34 +21,49 @@ let tableFields = [
         }
     },
     {
+        name: "table",
+        title: "Table",
+        formatter: (table) => {
+            return table ? table.Name : '';
+        }
+    },
+    {
         name: "Name",
         title: "Name",
         sortField: "Name"
     },
     {
-        name: "From",
-        title: "From",
-        sortField: "From"
+        name: "Value",
+        title: "Value",
+        sortField: "",
+        formatter: (data) => {
+            if (data && data.length > 20) {
+                return data.substring(0, 20) + '...'
+            } else {
+                return data;
+            }
+        }
     },
     {
-        name: "To",
-        title: "To",
-        sortField: "To"
-    },
-    {
-        name: "TemplateType",
-        title: "Type",
-        sortField: "TemplateType"
+        name: "ValueExpression",
+        title: "Value Expression",
+        sortField: "",
+        formatter: (data) => {
+            if (data && data.length > 20) {
+                return data.substring(0, 20) + '...'
+            } else {
+                return data;
+            }
+        }
     },
     {
         name: "ApplyTo",
-        title: "Applies To"
+        title: "Apply To"
     },
     {
         name: "ApplyOn",
-        title: "Applies On"
+        title: "Applies On",
     },
-
     {
         name: "Disabled",
         title: "Disabled",
@@ -60,7 +80,7 @@ let bodyHeight = "100vh";
 let paginationData = ref(null);
 let isLoading = ref(true);
 let request = ref({
-    search_columns: ['Name', 'From', 'To', 'Cc', 'Bcc'],
+    search_columns: ['Name', 'Value', 'ValueExpression'],
     //relations: [],
     filters: null,
     order: {},
@@ -69,12 +89,12 @@ let request = ref({
 });
 
 onMounted(() => {
-    getEmailConfigurations();
+    getDataFilters();
 });
 
 function goToPage(pageNo) {
     request.value.pagination.page_no = pageNo;
-    getEmailConfigurations();
+    getDataFilters();
 }
 
 function sortBy({field, order}) {
@@ -82,24 +102,24 @@ function sortBy({field, order}) {
         {"column": field, "sort": order}
     ];
     request.value.pagination.page_no = 1;
-    getEmailConfigurations();
+    getDataFilters();
 }
 
 function search(query) {
     request.value.query = query;
     request.value.pagination.page_no = 1;
-    getEmailConfigurations();
+    getDataFilters();
 }
 
-async function getEmailConfigurations() {
-    let {data, pagination} = await EmailConfiguration.getEmailConfigurations(request.value);
+async function getDataFilters() {
+    let {data, pagination} = await DataFilter.getDataFilters(request.value);
     tableData.value = data;
     paginationData.value = pagination;
 }
 
-function deleteEmailConfiguration(table, index) {
+function deleteDataFilter(dataFilter, index) {
     Swal.fire({
-        title: 'Are you sure? Delete Email Configuration?',
+        title: 'Are you sure? Delete Data Filer?',
         html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
         input: 'text',
         inputAttributes: {
@@ -115,7 +135,7 @@ function deleteEmailConfiguration(table, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await EmailConfiguration.delete(table.Id);
+            let {data, message} = await DataFilter.delete(dataFilter.Id);
             tableData.value.splice(index, 1);
             notificationStore.showNotification(message);
         }
@@ -126,16 +146,16 @@ function getApplyOnValue(row) {
     let ApplyOnValue = '';
     switch (row.ApplyTo) {
         case 'Application':
-            ApplyOnValue = row.application ? row.application.Name : '';
+            ApplyOnValue = row.application.Name;
             break;
         case 'Company':
-            ApplyOnValue = row.company ? row.company.Name : '';
+            ApplyOnValue = row.company.Name;
             break;
         case 'Role':
-            ApplyOnValue = row.role ? row.role.Name : '';
+            ApplyOnValue = row.role.Name;
             break;
         case 'User':
-            ApplyOnValue = row.user ? row.user.Name : '';
+            ApplyOnValue = row.user.Name;
             break;
         default:
             break;
@@ -163,12 +183,13 @@ function getApplyOnValue(row) {
             {{ getApplyOnValue(props.data) }}
         </template>
         <template v-slot:body-Action="props">
-            <router-link :to="{name: 'edit-email-configuration', params:{id: props.data.Id}}"
+
+            <router-link :to="{name: 'edit-data-filter', params:{id: props.data.Id}}"
                          class="btn rounded-pill btn-alt-warning me-1">
                 <i class="fa fa-pen-alt"></i>
             </router-link>
             <button class="btn rounded-pill btn-alt-danger me-1" type="button"
-                    @click="deleteEmailConfiguration(props.data, props.index)">
+                    @click="deleteDataFilter(props.data, props.index)">
                 <i class="fa fa-trash-alt"></i>
             </button>
         </template>

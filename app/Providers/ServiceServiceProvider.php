@@ -6,6 +6,8 @@ use App\Services\Application\ApplicationService;
 use App\Services\Application\ApplicationServiceInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
+use App\Services\DataFilter\DataFilterService;
+use App\Services\DataFilter\DataFilterServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
 use App\Services\Module\ModuleService;
@@ -53,5 +55,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(RoleServiceInterface::class, RoleService::class);
         $this->app->bind(ApplicationServiceInterface::class, ApplicationService::class);
         $this->app->bind(EmailConfigurationServiceInterface::class, EmailConfigurationService::class);
+        $this->app->bind(DataFilterServiceInterface::class, DataFilterService::class);
     }
 }

@@ -21,7 +21,7 @@ class EmailConfiguration extends BaseModel
 
     public function application(): BelongsTo
     {
-        return $this->belongsTo(Application::class, 'ModuleId', 'Id');
+        return $this->belongsTo(Application::class, 'ApplicationId', 'Id');
     }
 
     public function company(): BelongsTo

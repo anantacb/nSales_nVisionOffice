@@ -138,5 +138,28 @@ export default {
                 }
             ],
         },
+
+        {
+            name: "Data Filter",
+            icon: "fa fa-database",
+            subActivePaths: "data-filter",
+            sub: [
+                {
+                    name: "Data Filters",
+                    icon: "fa fa-table",
+                    to: "data-filters",
+                },
+                {
+                    name: "Company Data Filters",
+                    icon: "fa fa-table",
+                    to: "company-data-filters",
+                },
+                {
+                    name: "Create Data Filter",
+                    icon: "fa fa-folder-plus",
+                    to: "create-data-filter",
+                }
+            ],
+        },
     ]
 };
