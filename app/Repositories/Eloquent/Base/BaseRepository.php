@@ -120,7 +120,7 @@ abstract class BaseRepository
      * @param $relation
      * @return mixed
      */
-    private function getWhereHas(mixed $model, $relation): mixed
+    protected function getWhereHas(mixed $model, $relation): mixed
     {
         $model = $model->whereHas($relation["relation"], function ($query) use ($relation) {
             if ($relation["values"]) {

@@ -43,6 +43,10 @@ const EditDataFilter = () => import('@/views/data-filter/EditDataFilter.vue');
 
 const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters/CompanyDataFilters.vue')
 
+const Roles = () => import('@/views/roles/Roles/Roles.vue');
+const CreateRole = () => import('@/views/roles/CreateRole.vue');
+const EditRole = () => import('@/views/roles/EditRole.vue');
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -316,6 +320,34 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: true
+                }
+            },
+
+            {
+                path: "role/roles",
+                name: "roles",
+                component: Roles,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "role/create",
+                name: "create-role",
+                component: CreateRole,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "role/:id/edit",
+                name: "edit-role",
+                component: EditRole,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
                 }
             },
         ],

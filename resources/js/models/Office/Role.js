@@ -13,4 +13,70 @@ export default class Role {
                 });
         });
     }
+
+    static create(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/roles/create', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static update(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/roles/update', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getCompanyRoles(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/roles/company-roles', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static delete(RoleId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/roles/delete', {
+                RoleId: RoleId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static details(RoleId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/roles/details', {
+                RoleId: RoleId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }
