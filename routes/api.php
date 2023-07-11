@@ -133,4 +133,12 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/data-filters/company-data-filters', [DataFilterController::class, 'getCompanyDataFilters']);
     Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);
+
+    // Role
+
+    Route::post('/roles/company-roles', [RoleController::class, 'getCompanyRoles']);
+    Route::post('/roles/create', [RoleController::class, 'create']);
+    Route::post('/roles/update', [RoleController::class, 'update']);
+    Route::post('/roles/delete', [RoleController::class, 'delete']);
+    Route::post('/roles/details', [RoleController::class, 'details']);
 });

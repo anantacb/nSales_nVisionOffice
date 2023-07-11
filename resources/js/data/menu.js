@@ -161,5 +161,23 @@ export default {
                 }
             ],
         },
+
+        {
+            name: "Role",
+            icon: "fa fa-box",
+            subActivePaths: ["role"],
+            sub: [
+                {
+                    name: "Roles",
+                    icon: "fa fa-gear",
+                    to: "roles",
+                },
+                {
+                    name: "Create Role",
+                    icon: "fa fa-gear",
+                    to: "create-role",
+                }
+            ],
+        },
     ]
 };
