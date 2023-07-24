@@ -1,10 +1,10 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import Order from "@/models/Company/Order";
 import {useCompanyStore} from "@/stores/companyStore";
-//import moment from "moment";
+import moment from "moment";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -36,13 +36,15 @@ let tableFields = [
         name: "OrderDate",
         title: "Date",
         formatter: (data) => {
-            return data;
-            //return moment(data).format('Y-m-d');
+            return moment(data).format('YYYY-MM-DD');
         }
     },
     {
         name: "DeliveryDate",
-        title: "Delivery"
+        title: "Delivery",
+        formatter: (data) => {
+            return moment(data).format('YYYY-MM-DD');
+        }
     },
     {
         name: "ExportStatus",
@@ -66,6 +68,11 @@ let request = ref({
 });
 
 onMounted(() => {
+    request.value.pagination.page_no = 1;
+    getOrders();
+});
+
+watch(() => companyStore.getSelectedCompany, () => {
     getOrders();
 });
 
