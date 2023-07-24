@@ -1,0 +1,11 @@
+<?php
+
+namespace $NAMESPACE$;
+
+
+use App\Repositories\Eloquent\Base\BaseRepositoryInterface;
+
+interface $MODEL$RepositoryInterface extends BaseRepositoryInterface
+{
+
+}

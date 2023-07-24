@@ -7,6 +7,7 @@ use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
@@ -141,4 +142,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/roles/update', [RoleController::class, 'update']);
     Route::post('/roles/delete', [RoleController::class, 'delete']);
     Route::post('/roles/details', [RoleController::class, 'details']);
+
+    Route::middleware(['company'])->group(function () {
+        // Order
+        Route::post('/orders', [OrderController::class, 'getOrders']);
+        Route::post('/order/details', [OrderController::class, 'details']);
+    });
+
 });

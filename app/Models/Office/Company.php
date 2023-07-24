@@ -6,6 +6,7 @@ use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Company extends BaseModel
 {
@@ -21,5 +22,10 @@ class Company extends BaseModel
     public function roles(): HasMany
     {
         return $this->hasMany(Role::class, 'CompanyId', 'Id');
+    }
+
+    public function imageHostAccount(): HasOne
+    {
+        return $this->hasOne(ImageHostAccount::class, 'CompanyId', 'Id');
     }
 }

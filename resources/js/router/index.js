@@ -47,6 +47,9 @@ const Roles = () => import('@/views/roles/Roles/Roles.vue');
 const CreateRole = () => import('@/views/roles/CreateRole.vue');
 const EditRole = () => import('@/views/roles/EditRole.vue');
 
+
+const Orders = () => import('@/views/order/Orders/Orders.vue')
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -350,8 +353,19 @@ const routes = [
                     company_specific: false
                 }
             },
+
+            {
+                path: "order/orders",
+                name: "orders",
+                component: Orders,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
         ],
     },
+
     {
         path: "",
         component: LayoutSimple,
