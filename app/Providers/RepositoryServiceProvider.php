@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\Company\Order\OrderRepository;
+use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
@@ -85,5 +87,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EmailConfigurationRepositoryInterface::class, EmailConfigurationRepository::class);
 
         $this->app->bind(DataFilterRepositoryInterface::class, DataFilterRepository::class);
+
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
     }
 }

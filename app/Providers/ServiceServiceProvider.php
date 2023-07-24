@@ -14,6 +14,8 @@ use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
+use App\Services\Order\OrderService;
+use App\Services\Order\OrderServiceInterface;
 use App\Services\Role\RoleService;
 use App\Services\Role\RoleServiceInterface;
 use App\Services\Table\TableService;
@@ -25,6 +27,7 @@ use App\Services\TableHelper\TableHelperServiceInterface;
 use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
 use Illuminate\Support\ServiceProvider;
+use function Psy\bin;
 
 class ServiceServiceProvider extends ServiceProvider
 {
@@ -56,5 +59,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ApplicationServiceInterface::class, ApplicationService::class);
         $this->app->bind(EmailConfigurationServiceInterface::class, EmailConfigurationService::class);
         $this->app->bind(DataFilterServiceInterface::class, DataFilterService::class);
+        $this->app->bind(OrderServiceInterface::class, OrderService::class);
     }
 }

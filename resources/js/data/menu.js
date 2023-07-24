@@ -1,7 +1,8 @@
 /*
- * Main and demo navigation arrays
+ * Main navigation arrays
  *
  * 'to' attribute points to the route name, not the path url
+ * For Direct Links points the url
  */
 
 export default {
@@ -23,7 +24,7 @@ export default {
                 },
                 {
                     name: "Create Table",
-                    icon: "fa fa-folder-plus",
+                    icon: "fa fa-plus",
                     to: "create-table",
                 }
             ],
@@ -36,17 +37,17 @@ export default {
             sub: [
                 {
                     name: "Settings",
-                    icon: "fa fa-folder-plus",
+                    icon: "fa fa-gears",
                     to: "settings",
                 },
                 {
                     name: "Create Setting",
-                    icon: "fa fa-folder-plus",
+                    icon: "fa fa-plus",
                     to: "create-setting",
                 },
                 {
                     name: "Update Setting",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-screwdriver-wrench",
                     to: "update-setting",
                 },
             ],
@@ -59,17 +60,17 @@ export default {
             sub: [
                 {
                     name: "Modules",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-boxes-stacked",
                     to: "modules",
                 },
                 {
                     name: "Create Module",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-plus",
                     to: "create-module",
                 },
                 {
                     name: "Activate Module",
-                    icon: "fa fa-folder-plus",
+                    icon: "fa fa-box-open",
                     to: "activate-module",
                 }
             ],
@@ -77,17 +78,17 @@ export default {
 
         {
             name: "Company",
-            icon: "fa fa-box",
+            icon: "fa fa-building-columns",
             subActivePaths: ["company"],
             sub: [
                 {
                     name: "Companies",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-building-columns",
                     to: "companies",
                 },
                 {
                     name: "Create Company",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-plus",
                     to: "create-company",
                 }
             ],
@@ -95,27 +96,27 @@ export default {
 
         {
             name: "User",
-            icon: "fa fa-box",
+            icon: "fa fa-user-large",
             subActivePaths: ["user"],
             sub: [
                 {
                     name: "Users",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-users",
                     to: "users",
                 },
                 {
                     name: "Developers",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-chalkboard-user",
                     to: "developers",
                 },
                 {
                     name: "Company Users",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-circle-user",
                     to: "company-users",
                 },
                 {
                     name: "Create Company User",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-user-plus",
                     to: "create-company-user",
                 }
             ],
@@ -123,17 +124,17 @@ export default {
 
         {
             name: "Email Configuration",
-            icon: "fa fa-database",
+            icon: "fa fa-envelope",
             subActivePaths: "email-configuration",
             sub: [
                 {
                     name: "Email Configurations",
-                    icon: "fa fa-table",
+                    icon: "fa fa-envelopes-bulk",
                     to: "email-configurations",
                 },
                 {
                     name: "Create Email Configuration",
-                    icon: "fa fa-folder-plus",
+                    icon: "fa fa-plus",
                     to: "create-email-configuration",
                 }
             ],
@@ -141,22 +142,22 @@ export default {
 
         {
             name: "Data Filter",
-            icon: "fa fa-database",
+            icon: "fa fa-filter",
             subActivePaths: "data-filter",
             sub: [
                 {
                     name: "Data Filters",
-                    icon: "fa fa-table",
+                    icon: "fa fa-filter",
                     to: "data-filters",
                 },
                 {
                     name: "Company Data Filters",
-                    icon: "fa fa-table",
+                    icon: "fa fa-filter-circle-dollar",
                     to: "company-data-filters",
                 },
                 {
                     name: "Create Data Filter",
-                    icon: "fa fa-folder-plus",
+                    icon: "fa fa-plus",
                     to: "create-data-filter",
                 }
             ],
@@ -164,20 +165,39 @@ export default {
 
         {
             name: "Role",
-            icon: "fa fa-box",
+            icon: "fa fa-user-tag",
             subActivePaths: ["role"],
             sub: [
                 {
                     name: "Roles",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-user-tag",
                     to: "roles",
                 },
                 {
                     name: "Create Role",
-                    icon: "fa fa-gear",
+                    icon: "fa fa-plus",
                     to: "create-role",
                 }
             ],
+        },
+
+        {
+            name: "Log Viewer",
+            to: "/log-viewer",
+            icon: "far fa-eye",
+            directLink: true,
+            targetBlank: true
+        },
+
+        {
+            name: "Company",
+            heading: true,
+        },
+
+        {
+            name: "Orders",
+            icon: "fa fa-file-lines",
+            to: 'orders'
         },
     ]
 };

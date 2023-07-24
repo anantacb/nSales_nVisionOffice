@@ -454,7 +454,8 @@ defineExpose({
             <tbody>
             <tr v-for="(tableField, index) in tableFieldsData" :key="`${tableField.Id}`">
                 <td style="width: 250px">
-                    <input v-model="tableField.Name"
+                    <input :id="`tableFieldName${index}`"
+                           v-model="tableField.Name"
                            class="form-control form-control-sm"
                            type="text"
                            @input="nameChanged(index)"
@@ -477,6 +478,7 @@ defineExpose({
                             iconClass="si si-info"
                         ></PopOverButton>
                         <input
+                            :id="`tableFieldDataType${index}`"
                             v-model="tableField.DataType"
                             aria-label="Select Datatype"
                             class="form-control form-control-sm"
@@ -503,12 +505,14 @@ defineExpose({
                 </td>
                 <td>
                     <input v-if="['int', 'varchar', 'tinyint'].includes(tableField.DataType)"
+                           :id="`tableFieldLength${index}`"
                            v-model.number="tableField.Length"
                            class="form-control form-control-sm"
                            min="1" type="number" @input="lengthChange(index)">
                 </td>
                 <td>
-                    <input v-model="tableField.DefaultValue"
+                    <input :id="`tableFieldDefaultValue${index}`"
+                           v-model="tableField.DefaultValue"
                            class="form-control form-control-sm"
                            type="text"
                            @input="defaultValueChanged(index)"
@@ -531,7 +535,8 @@ defineExpose({
                            class="form-check-input" type="checkbox" @change="uniqueValueChanged(index)">
                 </td>
                 <td style="width: 100px">
-                    <input v-model.number="tableField.SortOrder"
+                    <input :id="`tableFieldSortOrder${index}`"
+                           v-model.number="tableField.SortOrder"
                            class="form-control form-control-sm"
                            type="number"
                            @input="sortOrderChanged(index)"
