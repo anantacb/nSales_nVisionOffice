@@ -129,26 +129,29 @@ function linkClicked(e, submenu) {
                           :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
                           class="nav-main-link"
                           :active-class="node.to && node.to !== '#' ? 'active' : ''"
+
                         >-->
-                <RouterLink
-                    :active-class="node.to && node.to !== '#' ? 'active' : ''"
-                    :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
-                    class="nav-main-link"
+                <a v-if="node.directLink"
+                   :href="node.to"
+                   :target="node.targetBlank ? `_blank` : ``"
+                   class="nav-main-link"
                 >
                     <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                    <span v-if="node.name" class="nav-main-link-name">
-            {{ node.name }}
-          </span>
+                    <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
+                </a>
+                <RouterLink v-else
+                            :active-class="node.to && node.to !== '#' ? 'active' : ''"
+                            :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
+                            class="nav-main-link"
+                >
+                    <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
+                    <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
                     <span
                         v-if="node.badge"
-                        :class="
-              node['badge-variant']
-                ? `bg-${node['badge-variant']}`
-                : 'bg-primary'
-            "
-                        class="nav-main-link-badge badge rounded-pill"
-                    >{{ node.badge }}</span
-                    >
+                        :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
+                        class="nav-main-link-badge badge rounded-pill">
+                        {{ node.badge }}
+                    </span>
                 </RouterLink>
             </div>
             <!-- END Normal Link -->

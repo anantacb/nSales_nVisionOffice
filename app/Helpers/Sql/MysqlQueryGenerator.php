@@ -68,6 +68,9 @@ class MysqlQueryGenerator
             case 'text':
                 $dataTypeString = "text";
                 break;
+            case 'timestamp':
+                $dataTypeString = "timestamp";
+                break;
             case 'datetime':
                 $dataTypeString = "datetime";
                 break;
@@ -124,7 +127,7 @@ class MysqlQueryGenerator
             $columnString .= "UNIQUE KEY ";
         }
 
-        if (!is_null($column['DefaultValue'])) {
+        if (!is_null($column['DefaultValue']) && $column['DefaultValue'] != "") {
             $columnString .= "DEFAULT '{$column['DefaultValue']}' ";
         }
         return $columnString;

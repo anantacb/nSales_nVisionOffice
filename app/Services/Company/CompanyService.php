@@ -4,6 +4,8 @@ namespace App\Services\Company;
 
 use App\Contracts\ServiceDto;
 use App\Helpers\Sql\MysqlQueryGenerator;
+use App\Models\Office\Company;
+use App\Models\Office\Module;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
@@ -12,8 +14,11 @@ use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepositoryInterf
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use App\Services\Traits\ModuleHelperTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -46,6 +51,81 @@ class CompanyService implements CompanyServiceInterface
         $this->companyUserRepository = $companyUserRepository;
         $this->userRepository = $userRepository;
         $this->companyUserRoleRepository = $companyUserRoleRepository;
+    }
+
+    /**
+     * @param int $company_id
+     * @return false|void
+     */
+    public static function setCompanyDatabaseConnection(int $company_id)
+    {
+        if (!$company_id) {
+            return false;
+        }
+
+        $company = Cache::remember(
+            'company_' . $company_id,
+            Carbon::now()->addHours(24),
+            function () use ($company_id) {
+                $company_data = Company::with([
+                    'imageHostAccount',
+                    'modules' => function ($q) use ($company_id) {
+                        $q->with(['moduleSettings' => function ($q) use ($company_id) {
+                            $q->with(['setting' => function ($q) use ($company_id) {
+                                $q->where('CompanyId', $company_id);
+                            }]);
+                        }]);
+                    }
+                ])
+                    ->find($company_id);
+
+                $formatted_module_settings = [];
+
+                foreach ($company_data->modules as $module) {
+                    $formatted_module_settings[$module->Name] = [];
+                    foreach ($module->moduleSettings as $module_setting) {
+                        if ($module_setting->setting) {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->setting->Value;
+                        } else {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->Value;
+                        }
+                    }
+                }
+
+                $default_modules = Module::with([
+                    'moduleSettings' => function ($q) use ($company_id) {
+                        $q->with(['setting' => function ($q) use ($company_id) {
+                            $q->where('CompanyId', $company_id);
+                        }]);
+                    }])->whereIn('Name', ['System'])->get();
+
+                foreach ($default_modules as $module) {
+                    $formatted_module_settings[$module->Name] = [];
+                    foreach ($module->moduleSettings as $module_setting) {
+                        if ($module_setting->setting) {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->setting->Value;
+                        } else {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->Value;
+                        }
+                    }
+                }
+
+                $company_data->module_settings = $formatted_module_settings;
+
+                return $company_data;
+            }
+        );
+
+        //Session::put('selected_company', $company);
+
+
+        Config::set('database.connections.mysql_company.database', $company->DatabaseName);
+
+        DB::connection('mysql_company')->reconnect();
     }
 
     public function getAllCompanies(Request $request): ServiceDto
