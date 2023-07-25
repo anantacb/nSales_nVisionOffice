@@ -26,7 +26,6 @@ class DataFilterController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
-
     public function getCompanyDataFilters(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getCompanyDataFilters($request);

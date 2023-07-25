@@ -99,6 +99,30 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
         return new ServiceDto("Email Configurations retrieved!!!", 200, $emailConfigurations);
     }
 
+    public function getCompanyEmailConfigurations(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        $request['relations'] = [
+            [
+                "name" => "module", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "application", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "role", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "company", "columns" => ['Id', 'Name']
+            ],
+            [
+                "name" => "user", "columns" => ['UserId', 'Name']
+            ],
+        ];
+        $emailConfigurations = $this->emailConfigurationRepository->paginatedCompanyWiseData($request);
+        return new ServiceDto("Email Configurations retrieved!!!", 200, $emailConfigurations);
+    }
+
     public function delete(Request $request): ServiceDto
     {
         $this->emailConfigurationRepository->findByIdAndDelete($request->get('EmailConfigurationId'));

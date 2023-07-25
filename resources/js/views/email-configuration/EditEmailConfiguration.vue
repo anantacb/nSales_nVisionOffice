@@ -318,6 +318,8 @@ async function getEmailConfigurationDetails() {
     EmailConfigurationModel.value = data;
 }
 
+let backButtonRoute = localStorage.getItem('email-configuration-back-route') ?? 'email-configurations';
+
 </script>
 
 <template>
@@ -326,7 +328,7 @@ async function getEmailConfigurationDetails() {
         <BaseBlock ref="editEmailConfigurationRef" content-full title="Edit Email Configuration">
 
             <template #options>
-                <router-link :to="{name:'email-configurations'}" class="btn btn-sm btn-outline-info">
+                <router-link :to="{name: backButtonRoute}" class="btn btn-sm btn-outline-info">
                     <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
                 </router-link>
             </template>

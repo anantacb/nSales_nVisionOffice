@@ -35,6 +35,7 @@ const EditCompanyUser = () => import("@/views/user/EditCompanyUser.vue");
 
 const CreateEmailConfiguration = () => import('@/views/email-configuration/CreateEmailConfiguration.vue')
 const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations/EmailConfigurations.vue')
+const CompanyEmailConfigurations = () => import('@/views/email-configuration/CompanyEmailConfigurations/CompanyEmailConfigurations.vue')
 const EditEmailConfiguration = () => import('@/views/email-configuration/EditEmailConfiguration.vue');
 
 const CreateDataFilter = () => import('@/views/data-filter/CreateDataFilter.vue')
@@ -265,6 +266,15 @@ const routes = [
                 }
             },
             {
+                path: "email-configuration/company-email-configurations",
+                name: "company-email-configurations",
+                component: CompanyEmailConfigurations,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
                 path: "email-configuration/create",
                 name: "create-email-configuration",
                 component: CreateEmailConfiguration,
@@ -280,7 +290,13 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: false
-                }
+                },
+                beforeEnter: (to, from) => {
+                    if (['email-configurations', 'company-email-configurations'].includes(from.name)) {
+                        localStorage.setItem('email-configuration-back-route', from.name);
+                    }
+                    return true;
+                },
             },
 
             {
