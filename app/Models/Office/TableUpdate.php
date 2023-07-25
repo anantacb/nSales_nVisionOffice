@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TableUpdate extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'TableUpdate';
 }

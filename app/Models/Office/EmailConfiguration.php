@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class EmailConfiguration extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'EmailConfiguration';
     protected $appends = ['ApplyTo'];
@@ -44,7 +44,7 @@ class EmailConfiguration extends BaseModel
         return $this->hasOneThrough(User::class, CompanyUser::class, 'Id', 'Id', 'CompanyUserId', 'UserId');
     }
 
-    public function getApplyToAttribute()
+    public function getApplyToAttribute(): string
     {
         $mapping = [
             'ApplicationId' => 'Application',
@@ -58,5 +58,6 @@ class EmailConfiguration extends BaseModel
                 return $value;
             }
         }
+        return '';
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Application extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'Application';
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ImageHostAccount extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'ImageHostAccount';
 }

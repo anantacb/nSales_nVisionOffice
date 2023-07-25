@@ -4,9 +4,7 @@ namespace App\Services\Order;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class OrderService implements OrderServiceInterface
 {
@@ -37,9 +35,9 @@ class OrderService implements OrderServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $company = $this->orderRepository->firstByAttributes([
+        $order = $this->orderRepository->firstByAttributes([
 
-        ]);
-        return new ServiceDto("Order Retrieved Successfully.", 200, $company);
+         ]);
+        return new ServiceDto("Order Retrieved Successfully.", 200, $order);
     }
 }

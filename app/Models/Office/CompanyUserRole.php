@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CompanyUserRole extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'CompanyUserRole';
 

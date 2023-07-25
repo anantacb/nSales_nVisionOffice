@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanyModule extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'CompanyModule';
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class IntegrationTypes extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'IntegrationTypes';
 }
