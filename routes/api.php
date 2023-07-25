@@ -120,6 +120,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     // EmailConfiguration
     Route::post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);
+    Route::post('/email-configurations/company-email-configurations', [EmailConfigurationController::class, 'getCompanyEmailConfigurations']);
     Route::post('/email-configuration/create', [EmailConfigurationController::class, 'create']);
     Route::post('/email-configuration/update', [EmailConfigurationController::class, 'update']);
     Route::post('/email-configuration/delete', [EmailConfigurationController::class, 'delete']);
@@ -136,7 +137,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);
 
     // Role
-
     Route::post('/roles/company-roles', [RoleController::class, 'getCompanyRoles']);
     Route::post('/roles/create', [RoleController::class, 'create']);
     Route::post('/roles/update', [RoleController::class, 'update']);

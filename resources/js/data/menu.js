@@ -133,6 +133,11 @@ export default {
                     to: "email-configurations",
                 },
                 {
+                    name: "Company Email Configurations",
+                    icon: "fa fa-envelopes-bulk",
+                    to: "company-email-configurations",
+                },
+                {
                     name: "Create Email Configuration",
                     icon: "fa fa-plus",
                     to: "create-email-configuration",

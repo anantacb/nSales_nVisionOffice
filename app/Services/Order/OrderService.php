@@ -22,11 +22,11 @@ class OrderService implements OrderServiceInterface
         $request = $request->all();
 
 
-        try {
+        /*try {
             DB::connection('mysql_company')->getPdo();
         } catch (Exception $e) {
             die("Could not connect to the database.  Please check your configuration. error:" . $e);
-        }
+        }*/
 
         /*$request['relations'] = [
             ["name" => "module", "columns" => ['Id', 'Name']],

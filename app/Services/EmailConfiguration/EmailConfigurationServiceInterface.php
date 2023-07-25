@@ -9,6 +9,8 @@ interface EmailConfigurationServiceInterface
 {
     public function getEmailConfigurations(Request $request): ServiceDto;
 
+    public function getCompanyEmailConfigurations(Request $request): ServiceDto;
+
     public function create(Request $request): ServiceDto;
 
     public function update(Request $request): ServiceDto;

@@ -25,6 +25,12 @@ class EmailConfigurationController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getCompanyEmailConfigurations(PaginatedDataRequest $request): JsonResponse
+    {
+        $response = $this->service->getCompanyEmailConfigurations($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function create(Create $request): JsonResponse
     {
         $response = $this->service->create($request);
