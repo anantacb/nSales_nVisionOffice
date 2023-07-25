@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ModulePackage extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'ModulePackage';
 

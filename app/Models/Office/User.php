@@ -3,6 +3,7 @@
 namespace App\Models\Office;
 
 use App\Models\Traits\ModelHelper;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +19,7 @@ class User extends Authenticatable implements JWTSubject
 
     public const CREATED_AT = 'InsertTime';
     public const UPDATED_AT = 'UpdateTime';
+
     protected $table = 'User';
     protected $primaryKey = 'Id';
 
@@ -43,21 +45,11 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'InsertTime' => 'datetime:Y-m-d H:i:s',
-        'UpdateTime' => 'datetime:Y-m-d H:i:s',
-    ];
-
-    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
-    public function getJWTIdentifier()
+    public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
@@ -67,7 +59,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
         return [];
     }
@@ -90,5 +82,16 @@ class User extends Authenticatable implements JWTSubject
     public function devices(): HasMany
     {
         return $this->hasMany(Device::class, 'UserId', 'Id');
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param DateTimeInterface $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

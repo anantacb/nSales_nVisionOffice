@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Device extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'Device';
 

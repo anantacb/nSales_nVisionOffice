@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CompanyTableField extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'CompanyTableField';
 

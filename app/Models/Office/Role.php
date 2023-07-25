@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Role extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'Role';
 

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Company extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'Company';
 

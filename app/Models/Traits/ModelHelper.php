@@ -30,7 +30,7 @@ trait ModelHelper
 
         foreach (explode(',', $matches[1]) as $value) {
             $v = trim($value, "'");
-            array_push($enum_values, $v);
+            $enum_values[] = $v;
         }
         return $enum_values;
     }

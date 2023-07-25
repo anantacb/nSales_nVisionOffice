@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ModuleSetting extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'ModuleSetting';
 

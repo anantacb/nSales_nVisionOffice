@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Table extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'Table';
 

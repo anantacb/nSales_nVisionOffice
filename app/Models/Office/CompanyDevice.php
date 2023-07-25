@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CompanyDevice extends BaseModel
 {
-    use HasFactory;
+
 
     protected $table = 'CompanyDevice';
 

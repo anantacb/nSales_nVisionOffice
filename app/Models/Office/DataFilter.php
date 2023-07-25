@@ -3,14 +3,11 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class DataFilter extends BaseModel
 {
-    use HasFactory;
-
     protected $table = 'DataFilter';
     protected $appends = ['ApplyTo'];
 
@@ -49,7 +46,7 @@ class DataFilter extends BaseModel
         return $this->hasOneThrough(User::class, CompanyUser::class, 'Id', 'Id', 'CompanyUserId', 'UserId');
     }
 
-    public function getApplyToAttribute()
+    public function getApplyToAttribute(): string
     {
         $mapping = [
             'ApplicationId' => 'Application',
@@ -63,5 +60,7 @@ class DataFilter extends BaseModel
                 return $value;
             }
         }
+
+        return '';
     }
 }
