@@ -76,6 +76,18 @@ export default class Table {
         });
     }
 
+    static update(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/table/update', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static getTablesByModule(moduleId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table/get-by-module', {

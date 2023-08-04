@@ -46,6 +46,7 @@ class TableService implements TableServiceInterface
         $request = $request->all();
         $request['relations'] = [
             ["name" => "companyTables.Company", "columns" => ['Id', 'Name', 'CompanyName']],
+            ["name" => "module", "columns" => ['Id', 'Name']],
         ];
         $tables = $this->tableRepository->paginatedData($request);
         return new ServiceDto("Tables retrieved!!!", 200, $tables);
@@ -253,7 +254,7 @@ class TableService implements TableServiceInterface
         }
     }
 
-    private function deleteTableAndRelationalData($table)
+    private function deleteTableAndRelationalData($table): void
     {
         $this->tableRepository->findByIdAndDelete($table->Id);
         $this->tableFieldRepository->deleteByAttributes(
@@ -268,7 +269,7 @@ class TableService implements TableServiceInterface
         );
     }
 
-    private function dropTablesFromDatabases($table, $databases)
+    private function dropTablesFromDatabases($table, $databases): void
     {
         foreach ($databases as $database) {
             $sql = MysqlQueryGenerator::getDropTableSql($database, $table->Name);
@@ -328,6 +329,21 @@ class TableService implements TableServiceInterface
         return new ServiceDto("Table Deleted Successfully.", 200);
     }
 
+    public function updateTable(Request $request): ServiceDto
+    {
+        $table = $this->tableRepository->findByIdAndUpdate($request->get('Id'), [
+            'Disabled' => $request->get('Disabled'),
+            'ClientSync' => $request->get('ClientSync'),
+            'AutoNumbering' => $request->get('AutoNumbering'),
+            'EnableSqlTruncate' => $request->get('EnableSqlTruncate'),
+            'SqlTruncate' => $request->get('SqlTruncate'),
+            'SqlSeed' => $request->get('SqlSeed'),
+            'Note' => $request->get('Note'),
+        ]);
+
+        return new ServiceDto("Table Updated Successfully.", 200, $table);
+    }
+
     public function getDetails(Request $request): ServiceDto
     {
         $table = $this->tableRepository->firstByAttributes(
@@ -337,7 +353,7 @@ class TableService implements TableServiceInterface
             ['companyTables.company', 'module.companies']
         );
 
-        return new ServiceDto("Table Deleted Successfully.", 200, $table);
+        return new ServiceDto("Table Retrieved Successfully.", 200, $table);
     }
 
     public function getByModule(Request $request): ServiceDto

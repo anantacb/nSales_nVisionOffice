@@ -3,15 +3,12 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Company extends BaseModel
 {
-
-
     protected $table = 'Company';
 
     public function modules(): BelongsToMany

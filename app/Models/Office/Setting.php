@@ -3,13 +3,10 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Setting extends BaseModel
 {
-
-
     protected $table = 'Setting';
 
     public function company(): BelongsTo
