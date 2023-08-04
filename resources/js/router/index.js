@@ -10,6 +10,7 @@ const Home = () => import("@/views/Home.vue");
 
 const Tables = () => import("@/views/database/Tables/Tables.vue");
 const CreateTable = () => import("@/views/database/CreateTable/CreateTable.vue");
+const EditTable = () => import("@/views/database/EditTable.vue");
 const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
 
 const ModuleSettings = () => import("@/views/setting/ModuleSettings/ModuleSettings.vue");
@@ -94,8 +95,15 @@ const routes = [
                     company_specific: false
                 }
             },
-
-
+            {
+                path: "database/table/:id/edit",
+                name: "edit-table",
+                component: EditTable,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
             {
                 path: "settings/settings",
                 name: "settings",

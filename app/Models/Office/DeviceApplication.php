@@ -3,11 +3,8 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DeviceApplication extends BaseModel
 {
-
-
     protected $table = 'DeviceApplication';
 }

@@ -27,7 +27,6 @@ use App\Services\TableHelper\TableHelperServiceInterface;
 use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
 use Illuminate\Support\ServiceProvider;
-use function Psy\bin;
 
 class ServiceServiceProvider extends ServiceProvider
 {

@@ -1,4 +1,5 @@
 <?php
+
 return [
     [
         'Name' => 'Id',
@@ -13,7 +14,7 @@ return [
     ],
     [
         'Name' => 'InsertTime',
-        'DataType' => 'datetime',
+        'DataType' => 'timestamp',
         'Length' => null,
         'AutoIncrement' => false,
         'Nullable' => true,
@@ -24,7 +25,7 @@ return [
     ],
     [
         'Name' => 'UpdateTime',
-        'DataType' => 'datetime',
+        'DataType' => 'timestamp',
         'Length' => null,
         'AutoIncrement' => false,
         'Nullable' => true,
@@ -35,7 +36,7 @@ return [
     ],
     [
         'Name' => 'DeleteTime',
-        'DataType' => 'datetime',
+        'DataType' => 'timestamp',
         'Length' => null,
         'AutoIncrement' => false,
         'Nullable' => true,

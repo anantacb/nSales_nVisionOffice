@@ -44,6 +44,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/tables', [TableController::class, 'getTables']);
     Route::post('/table/details', [TableController::class, 'getDetails']);
     Route::post('/table/delete', [TableController::class, 'delete']);
+    Route::post('/table/update', [TableController::class, 'update']);
     Route::post('/table/get-by-module', [TableController::class, 'getByModule']);
     Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
     Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);

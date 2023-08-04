@@ -3,13 +3,10 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CompanyUserRole extends BaseModel
 {
-
-
     protected $table = 'CompanyUserRole';
 
     public function role(): HasOne

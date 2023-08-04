@@ -3,14 +3,11 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Module extends BaseModel
 {
-
-
     protected $table = 'Module';
 
     public function companies(): BelongsToMany

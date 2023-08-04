@@ -19,6 +19,13 @@ let tableFields = [
         sortField: "Type"
     },
     {
+        name: "module",
+        title: "Module",
+        formatter: (module) => {
+            return module ? module.Name : '';
+        }
+    },
+    {
         name: "Version",
         title: "Version",
         sortField: "Version"
@@ -147,7 +154,8 @@ function deleteTable(table, index) {
                 iconClass="fa fa-table-cells-large"
                 @click="$router.push({name: 'manage-table-fields', params: {id: props.data.Id}})"
             ></PopOverButton>
-            <router-link :to="`/table/${props.data.Id}`" class="btn rounded-pill btn-alt-warning me-1">
+            <router-link :to="{name: 'edit-table', params: {id: props.data.Id}}"
+                         class="btn rounded-pill btn-alt-warning me-1">
                 <i class="fa fa-pen-alt"></i>
             </router-link>
             <button class="btn rounded-pill btn-alt-danger me-1" type="button"

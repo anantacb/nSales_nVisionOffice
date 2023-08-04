@@ -17,6 +17,8 @@ interface TableServiceInterface
 
     public function deleteTable(Request $request): ServiceDto;
 
+    public function updateTable(Request $request): ServiceDto;
+
     public function getDetails(Request $request): ServiceDto;
 
     public function getByModule(Request $request): ServiceDto;

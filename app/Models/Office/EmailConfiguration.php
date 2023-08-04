@@ -3,14 +3,11 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class EmailConfiguration extends BaseModel
 {
-
-
     protected $table = 'EmailConfiguration';
     protected $appends = ['ApplyTo'];
 
