@@ -9,6 +9,8 @@ interface TableFieldServiceInterface
 {
     public function getTableFields(Request $request): ServiceDto;
 
+    public function getGeneralTableFields(Request $request): ServiceDto;
+
     public function getTableFieldsOperationPreviews(Request $request): ServiceDto;
 
     public function tableFieldsOperationsSaveAndExecute(Request $request): ServiceDto;

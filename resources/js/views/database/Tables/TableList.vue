@@ -152,7 +152,7 @@ function deleteTable(table, index) {
                 btnClass="btn rounded-pill btn-alt-info me-1"
                 content="Manage Table Indices"
                 iconClass="fa fa-table-cells-large"
-                @click="$router.push({name: 'manage-table-fields', params: {id: props.data.Id}})"
+                @click="$router.push({name: 'manage-table-indices', params: {id: props.data.Id}})"
             ></PopOverButton>
             <router-link :to="{name: 'edit-table', params: {id: props.data.Id}}"
                          class="btn rounded-pill btn-alt-warning me-1">

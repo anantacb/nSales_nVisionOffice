@@ -75,6 +75,10 @@ const props = defineProps({
         type: String,
         description: "Add additional classes to default block-header",
     },
+    titleClass: {
+        type: String,
+        description: "Add additional classes to default block-title",
+    },
     optionsClass: {
         type: String,
         description: "Add additional classes to default block-options",
@@ -360,7 +364,7 @@ defineExpose({
         >
             <slot name="header">
                 <!-- Block Title -->
-                <h3 class="block-title">
+                <h3 :class="titleClass" class="block-title">
                     <slot name="title"></slot>
                     {{ title }}
                     <small v-if="subtitle">{{ subtitle }}</small>

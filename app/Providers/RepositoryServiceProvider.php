@@ -16,6 +16,8 @@ use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepository;
 use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepository;
 use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyTableIndex\CompanyTableIndexRepository;
+use App\Repositories\Eloquent\Office\CompanyTableIndex\CompanyTableIndexRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepository;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepository;
@@ -38,6 +40,8 @@ use App\Repositories\Eloquent\Office\Table\TableRepository;
 use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepository;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepository;
+use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepository;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -63,8 +67,12 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(TableRepositoryInterface::class, TableRepository::class);
         $this->app->bind(CompanyTableRepositoryInterface::class, CompanyTableRepository::class);
+
         $this->app->bind(TableFieldRepositoryInterface::class, TableFieldRepository::class);
         $this->app->bind(CompanyTableFieldRepositoryInterface::class, CompanyTableFieldRepository::class);
+
+        $this->app->bind(TableIndexRepositoryInterface::class, TableIndexRepository::class);
+        $this->app->bind(CompanyTableIndexRepositoryInterface::class, CompanyTableIndexRepository::class);
 
         $this->app->bind(ModuleRepositoryInterface::class, ModuleRepository::class);
         $this->app->bind(CompanyModuleRepositoryInterface::class, CompanyModuleRepository::class);
