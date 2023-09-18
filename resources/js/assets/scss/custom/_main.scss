@@ -36,3 +36,19 @@
 .dark-mode .list-group-item-info {
     background-color: #0c91cf;
 }
+
+.text-transform-none {
+    text-transform: none !important;
+}
+
+.text-transform-upper {
+    text-transform: uppercase !important;
+}
+
+.text-transform-lower {
+    text-transform: lowercase !important;
+}
+
+.block-title {
+    text-transform: none;
+}

@@ -20,17 +20,27 @@ class TableFieldRepository extends BaseRepository implements TableFieldRepositor
         $defaultTableFields = $this->model
             ->where("TableId", $tableId)
             ->whereNotIn("Name", $hiddenTableFields)
-            ->whereNotIn("Id", function ($query){
+            ->whereNotIn("Id", function ($query) {
                 $query->select('TableFieldId')->from('CompanyTableField');
             });
 
         $companySpecificTableFields = $this->model
             ->where("TableId", $tableId)
             ->whereNotIn("Name", $hiddenTableFields)
-            ->whereIn("Id", function ($query) use($companyId){
+            ->whereIn("Id", function ($query) use ($companyId) {
                 $query->select('TableFieldId')->from('CompanyTableField')->where("CompanyId", $companyId);
             });
 
         return $defaultTableFields->union($companySpecificTableFields)->get();
+    }
+
+    public function getGeneralTableFields($tableId, $selectColumns = "*")
+    {
+        return $this->model
+            ->select($selectColumns)
+            ->where("TableId", $tableId)
+            ->whereNotIn("Id", function ($query) {
+                $query->select('TableFieldId')->from('CompanyTableField');
+            })->get();
     }
 }

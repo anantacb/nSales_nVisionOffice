@@ -11,6 +11,7 @@ use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepositoryInterfac
 use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
+use App\Services\Traits\TableHelperTrait;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Log;
 
 class TableFieldService implements TableFieldServiceInterface
 {
+    use TableHelperTrait;
+
     protected TableRepositoryInterface $tableRepository;
     protected CompanyTableRepositoryInterface $companyTableRepository;
     protected TableFieldRepositoryInterface $tableFieldRepository;
@@ -76,6 +79,13 @@ class TableFieldService implements TableFieldServiceInterface
             'SortOrder'
         );
         return new ServiceDto("TableFields Retrieved Successfully.", 200, $tableFields);
+    }
+
+    public function getGeneralTableFields(Request $request): ServiceDto
+    {
+        $tableId = $request->get('tableId');
+        $tableFields = $this->tableFieldRepository->getGeneralTableFields($tableId, ['Id', 'Name']);
+        return new ServiceDto("General TableFields Retrieved Successfully.", 200, $tableFields);
     }
 
     public function getTableFieldsOperationPreviews(Request $request): ServiceDto
@@ -302,32 +312,6 @@ class TableFieldService implements TableFieldServiceInterface
             ])->pluck('DatabaseName')->toArray();
         }
         return [];
-    }
-
-    private function getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases = []): array
-    {
-        if ($tableFieldSpecificDatabases) {
-            return $tableFieldSpecificDatabases;
-        }
-
-        $selectedDatabases = [];
-        // Company Specific Table
-        if ($companyTableDatabases) {
-            $selectedDatabases = $companyTableDatabases;
-        } else {
-            switch ($table->Database) {
-                case 'Company':
-                    $selectedDatabases = array_merge($tableModuleCompanyDatabases, ['NVISION_TEMPLATE']);
-                    break;
-                case 'Office':
-                    $selectedDatabases = ['NVISION_OFFICE'];
-                    break;
-                case 'Both':
-                    $selectedDatabases = array_merge($tableModuleCompanyDatabases, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
-                    break;
-            }
-        }
-        return $selectedDatabases;
     }
 
     public function tableFieldsOperationsSaveAndExecute(Request $request): ServiceDto

@@ -1,8 +1,8 @@
-export default class TableField {
+export default class TableIndex {
 
-    static getTableFields(tableId) {
+    static getTableIndices(tableId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/table-fields', {
+            axios.post('/api/table-indices', {
                 tableId: tableId
             })
                 .then(({data}) => {
@@ -14,23 +14,9 @@ export default class TableField {
         });
     }
 
-    static getGeneralTableFields(tableId) {
+    static getTableIndicesOperationPreviews(tableId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/general-table-fields', {
-                tableId: tableId
-            })
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static getTableFieldsOperationPreviews(tableId, formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/table-fields-operation-sql-previews', {
+            axios.post('/api/table-indices-operation-sql-previews', {
                 tableId: tableId,
                 ...formData
             })
@@ -43,9 +29,9 @@ export default class TableField {
         });
     }
 
-    static tableFieldsOperationsSaveAndExecute(tableId, formData) {
+    static tableIndicesOperationsSaveAndExecute(tableId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/table-fields-operations-save-and-execute', {
+            axios.post('/api/table-indices-operations-save-and-execute', {
                 tableId: tableId,
                 ...formData
             })
@@ -58,9 +44,9 @@ export default class TableField {
         });
     }
 
-    static tableFieldsOperationsSaveWithoutExecuting(tableId, formData) {
+    static tableIndicesOperationsSaveWithoutExecuting(tableId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/table-fields-operations-save-without-executing', {
+            axios.post('/api/table-indices-operations-save-without-executing', {
                 tableId: tableId,
                 ...formData
             })

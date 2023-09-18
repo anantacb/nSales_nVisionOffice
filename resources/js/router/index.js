@@ -12,6 +12,7 @@ const Tables = () => import("@/views/database/Tables/Tables.vue");
 const CreateTable = () => import("@/views/database/CreateTable/CreateTable.vue");
 const EditTable = () => import("@/views/database/EditTable.vue");
 const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
+const TableIndices = () => import("@/views/database/ManageTableIndices/TableIndices.vue");
 
 const ModuleSettings = () => import("@/views/setting/ModuleSettings/ModuleSettings.vue");
 const CreateModuleSetting = () => import("@/views/setting/CreateModuleSetting.vue");
@@ -90,6 +91,15 @@ const routes = [
                 path: "database/table/:id/table-fields",
                 name: "manage-table-fields",
                 component: TableFields,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "database/table/:id/table-indices",
+                name: "manage-table-indices",
+                component: TableIndices,
                 meta: {
                     authenticated: true,
                     company_specific: false

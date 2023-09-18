@@ -155,6 +155,14 @@ class MysqlQueryGenerator
         return $sql;
     }
 
+    public static function getAddIndexSql($databaseName, $tableName, $index): string
+    {
+        $sql = "ALTER TABLE `$databaseName`.`$tableName` ADD ";
+        $sql .= $index['Unique'] ? 'UNIQUE ' : '';
+        $sql .= "INDEX {$index['Name']} (" . implode(',', $index['columns']) . ");";
+        return $sql;
+    }
+
     public static function getModifyColumnSql($databaseName, $tableName, $column): string
     {
         $sql = "ALTER TABLE `$databaseName`.`$tableName` MODIFY ";
@@ -170,6 +178,11 @@ class MysqlQueryGenerator
     public static function getDeleteColumnSql($databaseName, $tableName, $columnName): string
     {
         return "ALTER TABLE `$databaseName`.`$tableName` DROP COLUMN `$columnName`;";
+    }
+
+    public static function getDeleteIndexSql($databaseName, $tableName, $indexName): string
+    {
+        return "DROP INDEX $indexName ON `$databaseName`.`$tableName`;";
     }
 
     public static function getRenameColumnSql($databaseName, $tableName, $oldName, $newColumDefinition): string
