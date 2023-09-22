@@ -19,6 +19,8 @@ interface ModuleServiceInterface
 
     public function getModulesByApplication(Request $request): ServiceDto;
 
+    public function getAssignableModulesByApplication(Request $request): ServiceDto;
+
     public function deactivateModule(Request $request): ServiceDto;
 
     public function create(Request $request): ServiceDto;

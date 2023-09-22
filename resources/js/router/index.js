@@ -35,14 +35,18 @@ const CompanyUsers = () => import("@/views/user/CompanyUsers/CompanyUsers.vue");
 const CreateCompanyUser = () => import("@/views/user/CreateCompanyUser.vue");
 const EditCompanyUser = () => import("@/views/user/EditCompanyUser.vue");
 
-const CreateEmailConfiguration = () => import('@/views/email-configuration/CreateEmailConfiguration.vue')
-const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations/EmailConfigurations.vue')
-const CompanyEmailConfigurations = () => import('@/views/email-configuration/CompanyEmailConfigurations/CompanyEmailConfigurations.vue')
+const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations/EmailConfigurations.vue');
+const CreateEmailConfiguration = () => import('@/views/email-configuration/CreateEmailConfiguration.vue');
+const CompanyEmailConfigurations = () => import('@/views/email-configuration/CompanyEmailConfigurations/CompanyEmailConfigurations.vue');
 const EditEmailConfiguration = () => import('@/views/email-configuration/EditEmailConfiguration.vue');
 
-const CreateDataFilter = () => import('@/views/data-filter/CreateDataFilter.vue')
-const DataFilters = () => import('@/views/data-filter/DataFilters/DataFilters.vue')
+const DataFilters = () => import('@/views/data-filter/DataFilters/DataFilters.vue');
+const CreateDataFilter = () => import('@/views/data-filter/CreateDataFilter.vue');
 const EditDataFilter = () => import('@/views/data-filter/EditDataFilter.vue');
+
+const Applications = () => import('@/views/application/Applications/Applications.vue');
+const CreateApplication = () => import('@/views/application/CreateApplication.vue');
+const EditApplication = () => import('@/views/application/EditApplication/EditApplication.vue');
 
 const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters/CompanyDataFilters.vue')
 
@@ -357,6 +361,34 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: true
+                }
+            },
+
+            {
+                path: "application/applications",
+                name: "applications",
+                component: Applications,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "application/create",
+                name: "create-application",
+                component: CreateApplication,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "application/:id/edit",
+                name: "edit-application",
+                component: EditApplication,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
                 }
             },
 

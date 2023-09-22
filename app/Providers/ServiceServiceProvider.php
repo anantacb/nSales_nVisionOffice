@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Services\Application\ApplicationService;
 use App\Services\Application\ApplicationServiceInterface;
+use App\Services\ApplicationModule\ApplicationModuleService;
+use App\Services\ApplicationModule\ApplicationModuleServiceInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
 use App\Services\DataFilter\DataFilterService;
@@ -47,7 +49,7 @@ class ServiceServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->app->bind(UserServiceInterface::class, UserService::class);
         $this->app->bind(TableServiceInterface::class, TableService::class);
@@ -62,5 +64,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(EmailConfigurationServiceInterface::class, EmailConfigurationService::class);
         $this->app->bind(DataFilterServiceInterface::class, DataFilterService::class);
         $this->app->bind(OrderServiceInterface::class, OrderService::class);
+        $this->app->bind(ApplicationModuleServiceInterface::class, ApplicationModuleService::class);
     }
 }

@@ -57,6 +57,12 @@ class ModuleController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getAssignableModulesByApplication(GetModulesByApplication $request): JsonResponse
+    {
+        $response = $this->service->getAssignableModulesByApplication($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function deactivateModule(Request $request): JsonResponse
     {
         $response = $this->service->deactivateModule($request);
