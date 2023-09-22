@@ -31,6 +31,24 @@ export default {
         },
 
         {
+            name: "Application",
+            icon: "fa fa-mobile",
+            subActivePaths: "application",
+            sub: [
+                {
+                    name: "Applications",
+                    icon: "fa fa-mobile",
+                    to: "applications",
+                },
+                {
+                    name: "Create Application",
+                    icon: "fa fa-plus",
+                    to: "create-application",
+                }
+            ],
+        },
+
+        {
             name: "Setting",
             icon: "fa fa-gear",
             subActivePaths: "setting",

@@ -319,6 +319,19 @@ class ModuleService implements ModuleServiceInterface
         return new ServiceDto("Modules by Application retrieved!!!", 200, $modules);
     }
 
+    public function getAssignableModulesByApplication(Request $request): ServiceDto
+    {
+        $moduleIds = $this->applicationModuleRepository->getByAttributes([
+            ['column' => 'ApplicationId', 'operand' => '=', 'value' => $request->get('ApplicationId')]
+        ])->pluck('ModuleId')->toArray();
+
+        $modules = $this->moduleRepository->getByAttributes([
+            ['column' => 'Id', 'operand' => '!=', 'value' => $moduleIds]
+        ], '', ['Id', 'Name'], 'Name');
+        
+        return new ServiceDto("Assignable Modules by Application retrieved!!!", 200, $modules);
+    }
+
     public function create(Request $request): ServiceDto
     {
         $module = $this->moduleRepository->create([

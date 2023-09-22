@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DataFilterController;
@@ -60,7 +61,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/general-table-fields', [TableFieldController::class, 'getGeneralTableFields']);
 
     // TableIndex
-
     Route::post('/table-indices', [TableIndexController::class, 'getTableIndices']);
     Route::post('/table-indices-operation-sql-previews', [TableIndexController::class, 'tableIndicesOperationPreviews']);
     Route::post('/table-indices-operations-save-without-executing', [TableIndexController::class, 'tableIndicesOperationsSaveWithoutExecuting']);
@@ -78,6 +78,12 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module/activate-module', [ModuleController::class, 'activateModule']);
     Route::post('/module/deactivate-module', [ModuleController::class, 'deactivateModule']);
     Route::post('/module/get-by-application', [ModuleController::class, 'getModulesByApplication']);
+    Route::post('/module/get-assignable-modules-by-application', [ModuleController::class, 'getAssignableModulesByApplication']);
+
+    // ApplicationModule
+    Route::post('/application-module/create', [ApplicationModuleController::class, 'create']);
+    Route::post('/application-module/delete', [ApplicationModuleController::class, 'delete']);
+    Route::post('/application-module/update', [ApplicationModuleController::class, 'update']);
 
 
     // ModuleSetting
@@ -127,6 +133,11 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Application
     Route::post('applications/all', [ApplicationController::class, 'getAllApplications']);
+    Route::post('/applications', [ApplicationController::class, 'getApplications']);
+    Route::post('/application/create', [ApplicationController::class, 'create']);
+    Route::post('/application/update', [ApplicationController::class, 'update']);
+    Route::post('/application/delete', [ApplicationController::class, 'delete']);
+    Route::post('/application/details', [ApplicationController::class, 'details']);
 
     // EmailConfiguration
     Route::post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);

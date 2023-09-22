@@ -1,7 +1,10 @@
 <script setup>
 import {Dataset, DatasetInfo, DatasetItem, DatasetPager, DatasetSearch, DatasetShow} from "vue-dataset";
-import {computed, onMounted, reactive} from "vue";
+import {computed, onMounted} from "vue";
 import Button from "@/components/ui/Button.vue";
+import {useJQueryDatatableTable} from "@/composables/useJQueryDatatableTable";
+
+let {columns, setColumns, onSort, sortBy, performDomActions} = useJQueryDatatableTable();
 
 const emit = defineEmits(['assignToCompany'])
 const props = defineProps({
@@ -12,7 +15,7 @@ const props = defineProps({
     }
 });
 
-const cols = reactive([
+setColumns([
     {
         name: "Company Name",
         field: "CompanyName",
@@ -46,62 +49,9 @@ const CompanyUsers = computed(() => {
     })
 });
 
-// Sort by functionality
-const sortBy = computed(() => {
-    return cols.reduce((acc, o) => {
-        if (o.sort) {
-            o.sort === "asc" ? acc.push(o.field) : acc.push("-" + o.field);
-        }
-        return acc;
-    }, []);
-});
-
-// On sort th click
-function onSort(event, i) {
-    let toset;
-    const sortEl = cols[i];
-
-    if (!event.shiftKey) {
-        cols.forEach((o) => {
-            if (o.field !== sortEl.field) {
-                o.sort = "";
-            }
-        });
-    }
-
-    if (!sortEl.sort) {
-        toset = "asc";
-    }
-
-    if (sortEl.sort === "desc") {
-        toset = event.shiftKey ? "" : "asc";
-    }
-
-    if (sortEl.sort === "asc") {
-        toset = "desc";
-    }
-
-    sortEl.sort = toset;
-}
-
 onMounted(() => {
-    performDomActions();
+    performDomActions()
 });
-
-
-function performDomActions() {
-    // Remove labels from
-    document.querySelectorAll("#datasetLength label").forEach((el) => {
-        el.remove();
-    });
-
-    // Replace select classes
-    let selectLength = document.querySelector("#datasetLength select");
-
-    //selectLength.classList = "";
-    selectLength.classList.add("form-select");
-    selectLength.style.width = "80px";
-}
 
 </script>
 
@@ -135,7 +85,7 @@ function performDomActions() {
                             <tr>
                                 <th scope="col">ID</th>
                                 <th
-                                    v-for="(th, index) in cols"
+                                    v-for="(th, index) in columns"
                                     :key="th.field"
                                     :class="['sort', th.sort]"
                                     @click="onSort($event, index)"
