@@ -133,8 +133,8 @@ async function createCompany() {
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
+        createCompanyRef.value.statusNormal();
     }
-    createCompanyRef.value.statusNormal();
 }
 
 onMounted(async () => {

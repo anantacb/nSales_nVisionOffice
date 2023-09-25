@@ -158,12 +158,12 @@ class ModuleService implements ModuleServiceInterface
         $relations = [
             'subModules' => function ($q) {
                 $q->with(['tables' => function ($q) {
-                    $q->with(['companyTables', 'tableFields.companyTableFields'])
+                    $q->with(['companyTables', 'tableFields.companyTableFields', 'tableIndices.companyTableIndices'])
                         ->whereIn('Type', ['Server', 'Both']);
                 }]);
             },
             'tables' => function ($q) {
-                $q->with(['companyTables', 'tableFields.companyTableFields'])
+                $q->with(['companyTables', 'tableFields.companyTableFields', 'tableIndices.companyTableIndices'])
                     ->whereIn('Type', ['Server', 'Both']);
             }];
 
@@ -190,7 +190,7 @@ class ModuleService implements ModuleServiceInterface
 
         // Has Sub Modules And Install
         if ($requestModule['InstallSubModules']) {
-            // Entry In CompanyModule table TODO
+            // Entry In CompanyModule table
             $subModuleIds = $module->subModules->pluck('Id')->toArray();
             $moduleAndSubModuleIds = array_merge([$module->Id], $subModuleIds);
             foreach ($moduleAndSubModuleIds as $moduleId) {
@@ -328,7 +328,7 @@ class ModuleService implements ModuleServiceInterface
         $modules = $this->moduleRepository->getByAttributes([
             ['column' => 'Id', 'operand' => '!=', 'value' => $moduleIds]
         ], '', ['Id', 'Name'], 'Name');
-        
+
         return new ServiceDto("Assignable Modules by Application retrieved!!!", 200, $modules);
     }
 

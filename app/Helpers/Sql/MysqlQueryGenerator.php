@@ -19,6 +19,7 @@ class MysqlQueryGenerator
      * 'Unique' => false,
      * 'SortOrder' => 10
      * ]
+     * @param array $indexDefinitions
      * @param string $engine
      * @param string $charset
      * @param string $collate
@@ -28,6 +29,7 @@ class MysqlQueryGenerator
         string $databaseName,
         string $tableName,
         array  $columnDefinitions,
+        array  $indexDefinitions = [],
         string $engine = 'InnoDB',
         string $charset = 'utf8mb4',
         string $collate = 'utf8mb4_general_ci'): string
@@ -52,7 +54,13 @@ class MysqlQueryGenerator
             $columnStrings[] = trim($columnString);
         }
 
-        return $sql . implode(",", $columnStrings) . ") ENGINE=" . $engine . " DEFAULT CHARSET=" . $charset . " COLLATE=" . $collate . ";";
+        $sql .= implode(",", $columnStrings) . ") ENGINE=" . $engine . " DEFAULT CHARSET=" . $charset . " COLLATE=" . $collate . ";";
+
+        foreach ($indexDefinitions as $indexDefinition) {
+            $indexDefinition['columns'] = explode(',', $indexDefinition['ColumnNames']);
+            $sql .= self::getAddIndexSql($databaseName, $tableName, $indexDefinition);
+        }
+        return $sql;
     }
 
     private static function getDataTypeString($data_type, $length = null)
@@ -133,6 +141,28 @@ class MysqlQueryGenerator
         return $columnString;
     }
 
+    public static function getAddIndexSql($databaseName, $tableName, $index): string
+    {
+        $sql = "ALTER TABLE `$databaseName`.`$tableName` ADD ";
+        $sql .= $index['Unique'] ? 'UNIQUE ' : '';
+        $sql .= "INDEX {$index['Name']} (" . implode(',', $index['columns']) . ");";
+        return $sql;
+    }
+
+    public static function getCreateTableIndicesSqlQueries(
+        string $databaseName,
+        string $tableName,
+        array  $indexDefinitions = [],
+    ): array
+    {
+        $sqlQueries = [];
+        foreach ($indexDefinitions as $indexDefinition) {
+            $indexDefinition['columns'] = explode(',', $indexDefinition['ColumnNames']);
+            $sqlQueries[] = self::getAddIndexSql($databaseName, $tableName, $indexDefinition);
+        }
+        return $sqlQueries;
+    }
+
     /**
      * @param $databaseName
      * @param $tableName
@@ -152,14 +182,6 @@ class MysqlQueryGenerator
         $columnString = self::getColumnStr($column, $columnString);
 
         $sql .= trim($columnString) . ";";
-        return $sql;
-    }
-
-    public static function getAddIndexSql($databaseName, $tableName, $index): string
-    {
-        $sql = "ALTER TABLE `$databaseName`.`$tableName` ADD ";
-        $sql .= $index['Unique'] ? 'UNIQUE ' : '';
-        $sql .= "INDEX {$index['Name']} (" . implode(',', $index['columns']) . ");";
         return $sql;
     }
 
