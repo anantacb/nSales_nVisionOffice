@@ -167,7 +167,7 @@ class CompanyService implements CompanyServiceInterface
                     'module' => function ($q) {
                         $q->with([
                             'tables' => function ($q) {
-                                $q->with(['companyTables', 'tableFields.companyTableFields'])
+                                $q->with(['companyTables', 'tableFields.companyTableFields', 'tableIndices.companyTableIndices'])
                                     ->whereIn('Type', ['Server', 'Both']);
                             }
                         ]);

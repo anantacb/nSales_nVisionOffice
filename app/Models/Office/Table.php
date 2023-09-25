@@ -24,4 +24,9 @@ class Table extends BaseModel
     {
         return $this->hasMany(TableField::class, 'TableId', 'Id');
     }
+
+    public function tableIndices(): HasMany
+    {
+        return $this->hasMany(TableIndex::class, 'TableId', 'Id');
+    }
 }

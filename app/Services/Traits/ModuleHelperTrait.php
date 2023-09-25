@@ -25,11 +25,11 @@ trait ModuleHelperTrait
 
         foreach ($tablesToCreate as $tableToCreate) {
             $tableFields = [];
-            $tableToCreate->tableFields->sortBy('SortOrder')->each(function ($tableField) use ($companyId, &$tableFields) {
+            $tableIndices = [];
+            $tableToCreate->tableFields->sortBy('SortOrder')->whereIn('Type', ['Server', 'Both'])->each(function ($tableField) use ($companyId, &$tableFields) {
                 if ($tableField->companyTableFields->count()) {
                     $companyTableFieldCompanyIds = $tableField->companyTableFields->pluck('CompanyId')->toArray();
                     if (in_array($companyId, $companyTableFieldCompanyIds)) {
-
                         $tableFields[] = $tableField->only(['Name', 'DataType', 'Length', 'AutoIncrement', 'Nullable', 'DefaultValue', 'PrimaryKey', 'Unique', 'SortOrder']);
                     }
                 } else {
@@ -37,7 +37,19 @@ trait ModuleHelperTrait
                 }
             });
 
+            $tableToCreate->tableIndices->whereIn('Type', ['Server', 'Both'])->each(function ($tableIndex) use ($companyId, &$tableIndices) {
+                if ($tableIndex->companyTableIndices->count()) {
+                    $companyTableIndexCompanyIds = $tableIndex->companyTableIndices->pluck('CompanyId')->toArray();
+                    if (in_array($companyId, $companyTableIndexCompanyIds)) {
+                        $tableIndices[] = $tableIndex->only(['Name', 'Type', 'Unique', 'ColumnNames']);
+                    }
+                } else {
+                    $tableIndices[] = $tableIndex->only(['Name', 'Type', 'Unique', 'ColumnNames']);
+                }
+            });
+
             $sqlQueries[] = MysqlQueryGenerator::getCreateTableSql($company->DatabaseName, $tableToCreate->Name, $tableFields);
+            $sqlQueries = array_merge($sqlQueries, MysqlQueryGenerator::getCreateTableIndicesSqlQueries($company->DatabaseName, $tableToCreate->Name, $tableIndices));
         }
         return $sqlQueries;
     }
