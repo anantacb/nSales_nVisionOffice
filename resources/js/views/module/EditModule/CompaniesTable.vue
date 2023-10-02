@@ -43,7 +43,7 @@ onMounted(() => {
             :ds-sortby="sortBy"
         >
             <div :data-page-count="ds.dsPagecount" class="row">
-                <div id="datasetLengthCompanies" class="datasetLength col-md-8 py-2">
+                <div id="datasetLengthCompanies" class="datasetLength datatable-dataset-show col-md-8 py-2">
                     <DatasetShow/>
                 </div>
                 <div class="col-md-4 py-2">
