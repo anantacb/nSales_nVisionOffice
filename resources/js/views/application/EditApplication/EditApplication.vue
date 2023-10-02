@@ -194,7 +194,7 @@ onMounted(async () => {
                             <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
                         </router-link>
                     </template>
-                    <form class="space-y-4" @submit.prevent="updateApplication">
+                    <form class="space-y-2" @submit.prevent="updateApplication">
                         <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="Name">
                                 Name<span class="text-danger">*</span>

@@ -9,11 +9,11 @@ export function useJQueryDatatableTable() {
 
     function performDomActions() {
         // Remove labels from
-        document.querySelectorAll("#datasetLength label").forEach((el) => {
+        document.querySelectorAll(".datasetLength label").forEach((el) => {
             el.remove();
         });
         // Replace select classes
-        let selectLength = document.querySelector("#datasetLength select");
+        let selectLength = document.querySelector(".datasetLength select");
         //selectLength.classList = "";
         selectLength.classList.add("form-select");
         selectLength.style.width = "80px";
