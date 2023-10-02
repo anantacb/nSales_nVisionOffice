@@ -111,7 +111,7 @@ function deleteApplicationModule(ApplicationModuleId, index) {
             :ds-sortby="sortBy"
         >
             <div :data-page-count="ds.dsPagecount" class="row">
-                <div id="datasetLength" class="col-md-8 py-2">
+                <div id="datasetLengthApplicationModules" class="datasetLength col-md-8 py-2">
                     <DatasetShow/>
                 </div>
                 <div class="col-md-4 py-2">

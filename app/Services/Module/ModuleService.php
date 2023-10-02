@@ -387,8 +387,16 @@ class ModuleService implements ModuleServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $module = $this->moduleRepository->findById($request->get('ModuleId'));
-        return new ServiceDto("Module Created Successfully.", 200, $module);
+        $relations = [
+            'companies',
+            'applications'
+        ];
+        $module = $this->moduleRepository
+            ->firstByAttributes([
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('ModuleId')]
+            ], $relations);
+
+        return new ServiceDto("Module Retrieved Successfully.", 200, $module);
     }
 
     public function delete(Request $request): ServiceDto

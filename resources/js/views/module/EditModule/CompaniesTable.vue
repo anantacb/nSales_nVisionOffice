@@ -1,75 +1,49 @@
 <script setup>
 import {Dataset, DatasetInfo, DatasetItem, DatasetPager, DatasetSearch, DatasetShow} from "vue-dataset";
-import {computed, onMounted} from "vue";
-import Button from "@/components/ui/Button.vue";
+import {onMounted} from "vue";
 import {useJQueryDatatableTable} from "@/composables/useJQueryDatatableTable";
 
-let {columns, setColumns, onSort, sortBy, performDomActions} = useJQueryDatatableTable();
-
-const emit = defineEmits(['assignToCompany'])
 const props = defineProps({
-    companyUsers: {
+    companies: {
         type: Array,
         required: false,
         default: () => []
     }
 });
 
+let {columns, setColumns, onSort, sortBy, performDomActions} = useJQueryDatatableTable();
+
 setColumns([
     {
-        name: "Company Name",
-        field: "CompanyName",
-        sort: "",
+        name: "Name",
+        field: "Name",
+        sort: ""
     },
     {
-        name: "Initials",
-        field: "Initials",
-        sort: "",
-    },
-    {
-        name: "Licence Type",
-        field: "LicenceType",
-        sort: "",
-    },
-    {
-        name: "Roles",
-        field: "Roles",
-        sort: "",
+        name: "Domain",
+        field: "DomainName",
+
     }
 ]);
 
-const CompanyUsers = computed(() => {
-    return props.companyUsers.map((companyUser) => {
-        return {
-            LicenceType: companyUser.LicenceType,
-            Initials: companyUser.Initials,
-            CompanyName: companyUser.company.CompanyName,
-            Roles: companyUser.roles.map(role => role.Name)
-        }
-    })
-});
-
 onMounted(() => {
-    performDomActions()
+    performDomActions();
 });
 
 </script>
 
 <template>
-    <BaseBlock content-full title="Company User">
+    <BaseBlock content-full>
         <template #options>
-            <button class="btn btn-sm btn-outline-info" @click="emit('assignToCompany')">
-                <i class="fa fa-plus-circle"></i> Assign To Company
-            </button>
         </template>
         <Dataset
             v-slot="{ ds }"
-            :ds-data="CompanyUsers"
-            :ds-search-in="['CompanyName', 'Name']"
+            :ds-data="props.companies"
+            :ds-search-in="['Name', 'DomainName']"
             :ds-sortby="sortBy"
         >
             <div :data-page-count="ds.dsPagecount" class="row">
-                <div id="datasetLengthCompanyUsers" class="datasetLength col-md-8 py-2">
+                <div id="datasetLengthCompanies" class="datasetLength col-md-8 py-2">
                     <DatasetShow/>
                 </div>
                 <div class="col-md-4 py-2">
@@ -88,6 +62,7 @@ onMounted(() => {
                                     v-for="(th, index) in columns"
                                     :key="th.field"
                                     :class="['sort', th.sort]"
+                                    :style="th.minWidth ? `min-width:${th.minWidth}px` : ``"
                                     @click="onSort($event, index)"
                                 >
                                     {{ th.name }} <i class="gg-select float-end"></i>
@@ -98,14 +73,8 @@ onMounted(() => {
                                 <template #default="{ row, rowIndex }">
                                     <tr>
                                         <th scope="row">{{ rowIndex + 1 }}</th>
-                                        <td>{{ row.CompanyName }}</td>
-                                        <td>{{ row.Initials }}</td>
-                                        <td>{{ row.LicenceType }}</td>
-                                        <td><span v-for="role in row.Roles"
-                                                  :class="role === `Developer` ? `bg-danger-light text-danger` : (role === 'Administrator' ? `bg-success-light text-success`: `bg-info-light text-info`)"
-                                                  class="fs-xs fw-semibold d-inline-block py-1 px-3 rounded-pill"
-                                        >{{ role }}</span>
-                                        </td>
+                                        <td>{{ row.Name }}</td>
+                                        <td>{{ row.DomainName }}</td>
                                     </tr>
                                 </template>
                             </DatasetItem>

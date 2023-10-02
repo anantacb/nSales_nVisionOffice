@@ -21,7 +21,7 @@ const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
 const Modules = () => import("@/views/module/Modules/Modules.vue");
 const CreateModule = () => import("@/views/module/CreateModule.vue");
-const EditModule = () => import("@/views/module/EditModule.vue");
+const EditModule = () => import("@/views/module/EditModule/EditModule.vue");
 const ActivateModule = () => import("@/views/module/ActivateModule.vue");
 
 const Companies = () => import("@/views/company/Companies/Companies.vue");
