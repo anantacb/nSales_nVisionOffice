@@ -220,7 +220,60 @@ export default {
         {
             name: "Orders",
             icon: "fa fa-file-lines",
-            to: 'orders'
+            subActivePaths: ["order"],
+            moduleSpecific: true,
+            moduleName: 'Order',
+            sub: [
+                {
+                    name: "Orders",
+                    icon: "fa fa-truck-moving",
+                    to: "orders",
+                    moduleSpecific: true,
+                    moduleName: 'Order',
+                },
+                {
+                    name: "Open Orders",
+                    icon: "fa fa-boxes",
+                    to: "orders",
+                    moduleSpecific: true,
+                    moduleName: 'Order',
+                },
+                {
+                    name: "Failed Orders",
+                    icon: "fa fa-file-lines",
+                    to: "orders",
+                    moduleSpecific: true,
+                    moduleName: 'Order',
+                },
+            ]
+        },
+        {
+            name: "Customer",
+            icon: "fa fa-file-lines",
+            subActivePaths: ["customer"],
+            moduleSpecific: true,
+            moduleName: 'Customer',
+            sub: [
+                {
+                    name: "Customer",
+                    icon: "fa fa-truck-moving",
+                    to: "customers",
+                    moduleSpecific: true,
+                    moduleName: 'Customer',
+                },
+                {
+                    name: "Create Customer",
+                    icon: "fa fa-plus",
+                    to: "create-customer",
+                },
+                {
+                    name: "Customer Visits",
+                    icon: "fa fa-boxes",
+                    to: "customer-visits",
+                    moduleSpecific: true,
+                    moduleName: 'CustomerVisit',
+                }
+            ]
         },
     ]
 };

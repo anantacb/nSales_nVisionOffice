@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TableField\GetCompanyAllTableFields;
+use App\Http\Requests\TableField\GetCompanySpecificTableFields;
 use App\Http\Requests\TableField\GetGeneralTableFields;
 use App\Http\Requests\TableField\GetTableFields;
 use App\Services\TableField\TableFieldServiceInterface;
@@ -27,6 +29,18 @@ class TableFieldController extends Controller
     public function getGeneralTableFields(GetGeneralTableFields $request): JsonResponse
     {
         $response = $this->service->getGeneralTableFields($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getCompanySpecificTableFields(GetCompanySpecificTableFields $request): JsonResponse
+    {
+        $response = $this->service->getCompanySpecificTableFields($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getCompanyAllTableFields(GetCompanyAllTableFields $request): JsonResponse
+    {
+        $response = $this->service->getCompanyAllTableFields($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

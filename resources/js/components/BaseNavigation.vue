@@ -2,9 +2,14 @@
 import {computed} from "vue";
 import {useRoute} from "vue-router";
 import {useTemplateStore} from "@/stores/templateStore";
+import {useCompanyStore} from "@/stores/companyStore";
+import useCompanyInfos from '@/composables/useCompanyInfos';
+
+let {isModuleEnabled} = useCompanyInfos();
 
 // Main store and Route
 const store = useTemplateStore();
+const companyStore = useCompanyStore();
 const route = useRoute();
 
 // Component properties
@@ -87,7 +92,7 @@ function linkClicked(e, submenu) {
             )
         ) {
             if (el.classList.contains("open")) {
-                // If submenu is open, close it..
+                // If submenu is open, close it.
                 el.classList.remove("open");
             } else {
                 // . else if submenu is closed, close all other (same level) submenus first before open it
@@ -105,37 +110,63 @@ function linkClicked(e, submenu) {
         }
     }
 }
+
 </script>
 
 <template>
     <ul :class="classContainer">
-        <li
-            v-for="(node, index) in nodes"
+        <li v-for="(node, index) in nodes"
             :key="`node-${index}`"
-            :class="{
-        'nav-main-heading': node.heading,
-        'nav-main-item': !node.heading,
-        open:
-          node.sub && node.subActivePaths
-            ? subIsActive(node.subActivePaths)
-            : false,
-      }"
-        >
+            :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub && node.subActivePaths ? subIsActive(node.subActivePaths) : false}">
             <!-- Heading -->
             {{ node.heading ? node.name : "" }}
-            <!-- Normal Link -->
-            <div v-if="!node.heading && !node.sub" @click="linkClicked($event)">
-                <!--        <RouterLink
-                          :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
-                          class="nav-main-link"
-                          :active-class="node.to && node.to !== '#' ? 'active' : ''"
 
-                        >-->
+            <!-- Normal Link -->
+            <div v-if="node.moduleSpecific && isModuleEnabled(node.moduleName) && (!node.heading && !node.sub)">
                 <a v-if="node.directLink"
                    :href="node.to"
                    :target="node.targetBlank ? `_blank` : ``"
-                   class="nav-main-link"
+                   class="nav-main-link">
+                    <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
+                    <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
+                </a>
+                <RouterLink v-else
+                            :active-class="node.to && node.to !== '#' ? 'active' : ''"
+                            :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
+                            class="nav-main-link"
                 >
+                    <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
+                    <span v-if="node.name" class="nav-main-link-name">
+                        {{ node.name }}
+                    </span>
+                    <span v-if="node.badge"
+                          :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
+                          class="nav-main-link-badge badge rounded-pill">
+                        {{ node.badge }}
+                    </span>
+                </RouterLink>
+            </div>
+            <!-- END Normal Link -->
+
+            <!-- Submenu Link -->
+            <a v-else-if="node.moduleSpecific && isModuleEnabled(node.moduleName) && (!node.heading && node.sub)"
+               class="nav-main-link nav-main-link-submenu"
+               href="#"
+               @click.prevent="linkClicked($event, true)">
+                <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
+                <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
+                <span v-if="node.badge"
+                      :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
+                      class="nav-main-link-badge badge rounded-pill">{{ node.badge }}</span>
+            </a>
+            <!-- END Submenu Link -->
+
+            <!-- Normal Link -->
+            <div v-else-if="!node.moduleSpecific && (!node.heading && !node.sub)" @click="linkClicked($event)">
+                <a v-if="node.directLink"
+                   :href="node.to"
+                   :target="node.targetBlank ? `_blank` : ``"
+                   class="nav-main-link">
                     <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
                     <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
                 </a>
@@ -150,29 +181,22 @@ function linkClicked(e, submenu) {
                         v-if="node.badge"
                         :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
                         class="nav-main-link-badge badge rounded-pill">
-                        {{ node.badge }}
-                    </span>
+                                    {{ node.badge }}
+                                </span>
                 </RouterLink>
             </div>
             <!-- END Normal Link -->
 
             <!-- Submenu Link -->
-            <a
-                v-else-if="!node.heading && node.sub"
-                class="nav-main-link nav-main-link-submenu"
-                href="#"
-                @click.prevent="linkClicked($event, true)"
-            >
+            <a v-else-if="!node.moduleSpecific && (!node.heading && node.sub)"
+               class="nav-main-link nav-main-link-submenu"
+               href="#"
+               @click.prevent="linkClicked($event, true)">
                 <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
                 <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
-                <span
-                    v-if="node.badge"
-                    :class="
-            node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'
-          "
-                    class="nav-main-link-badge badge rounded-pill"
-                >{{ node.badge }}</span
-                >
+                <span v-if="node.badge"
+                      :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
+                      class="nav-main-link-badge badge rounded-pill">{{ node.badge }}</span>
             </a>
             <!-- END Submenu Link -->
 

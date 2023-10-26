@@ -7,6 +7,7 @@ use App\Http\Requests\User\AssignToCompany;
 use App\Http\Requests\User\CreateCompanyUser;
 use App\Http\Requests\User\DetailsOrDelete;
 use App\Http\Requests\User\DetailsOrDeleteCompanyUser;
+use App\Http\Requests\User\GetAllCompanyUsers;
 use App\Http\Requests\User\Update;
 use App\Http\Requests\User\UpdateCompanyUser;
 use App\Services\User\UserServiceInterface;
@@ -29,7 +30,7 @@ class UserController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
-    public function getAllCompanyUsers(Request $request): JsonResponse
+    public function getAllCompanyUsers(GetAllCompanyUsers $request): JsonResponse
     {
         $response = $this->service->getAllCompanyUsers($request);
 

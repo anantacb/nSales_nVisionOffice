@@ -43,4 +43,15 @@ class TableFieldRepository extends BaseRepository implements TableFieldRepositor
                 $query->select('TableFieldId')->from('CompanyTableField');
             })->get();
     }
+
+    public function getCompanySpecificTableFields($tableId, $companyId, $selectColumns = "*")
+    {
+        return $this->model
+            ->select($selectColumns)
+            ->whereIn("Type", ["Server", "Both"])
+            ->where("TableId", $tableId)
+            ->whereHas('companyTableFields', function ($q) use ($companyId) {
+                $q->where('CompanyId', $companyId);
+            })->get();
+    }
 }

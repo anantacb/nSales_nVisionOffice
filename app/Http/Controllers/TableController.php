@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PaginatedDataRequest;
 use App\Http\Requests\Table\CreateTable;
+use App\Http\Requests\Table\DetailsByName;
 use App\Http\Requests\Table\DetailsOrDeleteTable;
 use App\Http\Requests\Table\UpdateTable;
 use App\Services\Table\TableServiceInterface;
@@ -29,6 +30,12 @@ class TableController extends Controller
     public function getDetails(DetailsOrDeleteTable $request): JsonResponse
     {
         $response = $this->service->getDetails($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getDetailsByName(DetailsByName $request): JsonResponse
+    {
+        $response = $this->service->getDetailsByName($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

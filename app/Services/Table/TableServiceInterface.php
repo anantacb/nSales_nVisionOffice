@@ -21,5 +21,7 @@ interface TableServiceInterface
 
     public function getDetails(Request $request): ServiceDto;
 
+    public function getDetailsByName(Request $request): ServiceDto;
+
     public function getByModule(Request $request): ServiceDto;
 }

@@ -14,6 +14,7 @@ import {useRoute} from "vue-router";
 const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 const companyStore = useCompanyStore();
+
 companyStore.fill();
 
 const route = useRoute();

@@ -4,6 +4,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ModuleController;
@@ -45,6 +46,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Table
     Route::post('/tables', [TableController::class, 'getTables']);
     Route::post('/table/details', [TableController::class, 'getDetails']);
+    Route::post('/table/details-by-name', [TableController::class, 'getDetailsByName']);
     Route::post('/table/delete', [TableController::class, 'delete']);
     Route::post('/table/update', [TableController::class, 'update']);
     Route::post('/table/get-by-module', [TableController::class, 'getByModule']);
@@ -59,6 +61,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/table-fields-operations-save-and-execute', [TableFieldController::class, 'tableFieldsOperationsSaveAndExecute']);
 
     Route::post('/general-table-fields', [TableFieldController::class, 'getGeneralTableFields']);
+    Route::post('/company-specific-table-fields', [TableFieldController::class, 'getCompanySpecificTableFields']);
+    Route::post('/company-all-table-fields', [TableFieldController::class, 'getCompanyAllTableFields']);
 
     // TableIndex
     Route::post('/table-indices', [TableIndexController::class, 'getTableIndices']);
@@ -109,6 +113,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Helpers
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
+    Route::post('/table-helper/get-column-distinct-values', [TableHelperController::class, 'getColumnDistinctValues']);
 
     // Role
     Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
@@ -159,15 +164,21 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Role
     Route::post('/roles/company-roles', [RoleController::class, 'getCompanyRoles']);
-    Route::post('/roles/create', [RoleController::class, 'create']);
-    Route::post('/roles/update', [RoleController::class, 'update']);
-    Route::post('/roles/delete', [RoleController::class, 'delete']);
-    Route::post('/roles/details', [RoleController::class, 'details']);
+    Route::post('/role/create', [RoleController::class, 'create']);
+    Route::post('/role/update', [RoleController::class, 'update']);
+    Route::post('/role/delete', [RoleController::class, 'delete']);
+    Route::post('/role/details', [RoleController::class, 'details']);
 
     Route::middleware(['company'])->group(function () {
         // Order
         Route::post('/orders', [OrderController::class, 'getOrders']);
         Route::post('/order/details', [OrderController::class, 'details']);
-    });
 
+        // Customer
+        Route::post('/customers', [CustomerController::class, 'getCustomers']);
+        Route::post('/customer/create', [CustomerController::class, 'create']);
+        Route::post('/customer/update', [CustomerController::class, 'update']);
+        Route::post('/customer/delete', [CustomerController::class, 'delete']);
+        Route::post('/customer/details', [CustomerController::class, 'details']);
+    });
 });

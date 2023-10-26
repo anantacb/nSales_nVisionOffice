@@ -38,10 +38,11 @@ export default class User {
         });
     }
 
-    static getAllCompanyUsers(CompanyId) {
+    static getAllCompanyUsers(CompanyId, ExcludeDevelopers = false) {
         return new Promise((resolve, reject) => {
             axios.post('/api/users/get-all-company-users', {
-                CompanyId: CompanyId
+                CompanyId: CompanyId,
+                ExcludeDevelopers: ExcludeDevelopers
             })
                 .then(({data}) => {
                     resolve(data);

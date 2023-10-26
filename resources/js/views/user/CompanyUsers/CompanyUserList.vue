@@ -17,6 +17,13 @@ let tableFields = [
         sortField: "Name"
     },
     {
+        name: "company_user",
+        title: "Initials",
+        formatter: (data) => {
+            return data.Initials;
+        }
+    },
+    {
         name: "Email",
         title: "Email",
         sortField: "Email"
