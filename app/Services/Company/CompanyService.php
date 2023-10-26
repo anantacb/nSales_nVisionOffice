@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyService implements CompanyServiceInterface
 {
@@ -237,6 +238,9 @@ class CompanyService implements CompanyServiceInterface
                 'CompanyUserId' => $companyUser->Id
             ]);
         }
+
+
+        Storage::disk('sync_ftp')->makeDirectory($company->DomainName);
 
         return new ServiceDto("Company Created Successfully.", 200, $company);
     }
