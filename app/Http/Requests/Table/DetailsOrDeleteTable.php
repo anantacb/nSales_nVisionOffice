@@ -24,7 +24,7 @@ class DetailsOrDeleteTable extends FormRequest
     public function rules()
     {
         return [
-            'tableId' => 'required|exists:mysql.Table,Id',
+            'TableId' => 'required|exists:mysql.Table,Id',
         ];
     }
 }

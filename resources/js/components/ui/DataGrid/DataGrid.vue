@@ -1,3 +1,159 @@
+<script setup>
+import {computed, onUpdated, ref, watch} from "vue";
+import DataGridFilter from "@/components/ui/DataGrid/DataGridFilter.vue";
+import DataGridPagination from "@/components/ui/DataGrid/DataGridPagination.vue";
+
+const props = defineProps({
+    height: {
+        type: String,
+        default: () => {
+            return "auto";
+        }
+    },
+    tableFields: {
+        type: [Object, Array]
+    },
+    tableData: {
+        type: [Object, Array]
+    },
+    expandable: {
+        type: Boolean,
+        default: () => {
+            return false;
+        }
+    },
+    searchable: {
+        type: Boolean,
+        default: () => {
+            return false;
+        }
+    },
+    searchString: {
+        type: String,
+        required: false,
+        default: () => {
+            return '';
+        }
+    },
+    pagination: {
+        type: Object,
+        default: () => {
+            return {
+                current_items_count: 0,
+                current_page_no: 0,
+                has_more_pages: false,
+                items_per_page: 0,
+                last_page_no: 0,
+                total: 6
+            }
+        }
+    }
+});
+
+const emit = defineEmits(['expand', 'sortBy', 'search', 'paginate']);
+
+let sortBy = ref("");
+let sortOrder = ref("");
+let gridHeaderHeight = ref("0px");
+let expandedElementIndex = ref(0);
+let searchText = ref("");
+
+const modifiedTableFields = computed(() => {
+    let tableFields = [...props.tableFields];
+    if (props.expandable) {
+        tableFields = [
+            {
+                name: "expand",
+                title: ` `,
+                width: "1.5rem",
+                dataClass: "data-grid-item-expand"
+            },
+            ...tableFields
+        ]
+    }
+    return tableFields;
+});
+
+const getContainerStyle = computed(() => {
+    let style = {};
+    style["height"] = props.height;
+    style["--scroll-track-margin-top"] = gridHeaderHeight.value;
+    return style;
+});
+
+const getGridStyle = computed(() => {
+    const style = {};
+    style["grid-template-columns"] = "";
+    for (let field in modifiedTableFields.value) {
+        if (field.width) {
+            style["grid-template-columns"] += `${field.width} `;
+        } else {
+            style["grid-template-columns"] += "minmax(100px, auto) ";
+        }
+    }
+    return style;
+});
+
+
+function getTitle(field) {
+    return field.title ? field.title : field.name;
+}
+
+function getRowClass(field, data) {
+    return (field.dataClass ? field.dataClass : '') + " " + (data.dataClass ? data.dataClass : '');
+}
+
+function getRowData(data, field) {
+    if (field.formatter) {
+        return field.formatter(data[field.name]);
+    }
+    return data[field.name];
+}
+
+function sortByField(field) {
+    if (sortBy.value === field.sortField && sortOrder.value !== "desc") {
+        sortOrder.value = "desc";
+    } else {
+        sortOrder.value = "asc";
+    }
+    sortBy.value = field.sortField;
+    emit("sortBy", {field: sortBy.value, order: sortOrder.value});
+}
+
+function randKey() {
+    return Math.random().toString(36).substr(2, 8);
+}
+
+function toggleExpandableElement(index) {
+    if (expandedElementIndex.value === index + 1) {
+        expandedElementIndex.value = 0;
+    } else {
+        expandedElementIndex.value = index + 1;
+    }
+    emit("expand", props.tableData[index]);
+}
+
+function searchBy(query) {
+    emit("search", query);
+}
+
+function goToPage(pageNo) {
+    emit("paginate", pageNo);
+    expandedElementIndex.value = 0;
+}
+
+
+onUpdated(() => {
+    const headItem = document.querySelector(".data-grid-head-item");
+    gridHeaderHeight.value = headItem.getBoundingClientRect().height + "px";
+});
+
+watch(() => props.searchString, () => {
+    searchText.value = props.searchString;
+});
+
+</script>
+
 <template>
     <div :style="getContainerStyle" class="data-grid-container scrollbar">
 
@@ -5,12 +161,12 @@
             <div class="data-grid-extra-filters">
                 <slot name="extra-filters"></slot>
             </div>
-            <DataGridFilter v-if="searchable" @search="searchBy"/>
+            <DataGridFilter v-if="props.searchable" v-model="searchText" @change="searchBy"/>
         </div>
 
         <div :style="getGridStyle" class="data-grid">
             <div
-                v-for="field in modifiedTablefields"
+                v-for="field in modifiedTableFields"
                 :key="'head-' + field.name"
                 :class="field.titleClass ? field.titleClass : ''"
                 class="data-grid-item data-grid-head-item"
@@ -38,10 +194,10 @@
                 </slot>
             </div>
 
-            <template v-if="tabledata && tabledata.length > 0">
-                <template v-for="(data, index) in tabledata">
+            <template v-if="props.tableData && props.tableData.length > 0">
+                <template v-for="(data, index) in props.tableData">
                     <div
-                        v-for="field in modifiedTablefields"
+                        v-for="field in modifiedTableFields"
                         :key="'body-' + randKey() + index + field.name"
                         :class="getRowClass(field, data)"
                         class="data-grid-item"
@@ -53,7 +209,7 @@
                                     v-bind:data="data"
                                     v-bind:index="index"
                                 >
-                                    <img v-if="expandedElementIndex === index+1" alt="expand"
+                                    <img v-if="expandedElementIndex === index + 1" alt="expand"
                                          src="/img/chevron-down.svg" title="expand"
                                          width="20"/>
                                     <img v-else alt="expand" src="/img/chevron-right.svg" title="expand" width="20"/>
@@ -87,138 +243,9 @@
             </template>
         </div>
 
-        <DataGridPagination v-if="pagination" :pagination="pagination" @paginate="goToPage"/>
+        <DataGridPagination v-if="props.pagination" :pagination="props.pagination" @paginate="goToPage"/>
     </div>
 </template>
-
-<script>
-import DataGridFilter from "@/components/ui/DataGrid/DataGridFilter.vue";
-import DataGridPagination from "./DataGridPagination.vue";
-
-export default {
-    components: {
-        DataGridFilter,
-        DataGridPagination
-    },
-    props: {
-        height: {
-            type: String,
-            default: "auto"
-        },
-        tablefields: [Object, Array],
-        tabledata: [Object, Array],
-        expandable: {
-            type: Boolean,
-            default: false
-        },
-        searchable: {
-            type: Boolean,
-            default: false
-        },
-        pagination: {
-            type: Object,
-            default: function () {
-                return {
-                    current_items_count: 0,
-                    current_page_no: 0,
-                    has_more_pages: false,
-                    items_per_page: 0,
-                    last_page_no: 0,
-                    total: 6
-                }
-            }
-        }
-    },
-    data() {
-        return {
-            sortBy: "",
-            sortOrder: "",
-            gridheaderheight: "0px",
-            expandedElementIndex: 0
-        };
-    },
-    computed: {
-        modifiedTablefields() {
-            let tablefields = [...this.tablefields]
-            if (this.expandable) {
-                tablefields = [
-                    {
-                        name: "expand",
-                        title: ` `,
-                        width: "1.5rem",
-                        dataClass: "data-grid-item-expand"
-                    },
-                    ...tablefields
-                ]
-            }
-            return tablefields
-        },
-        getContainerStyle() {
-            let style = {};
-            style["height"] = this.height;
-            style["--scroll-track-margin-top"] = this.gridheaderheight;
-            return style;
-        },
-        getGridStyle() {
-            const style = {};
-            style["grid-template-columns"] = "";
-            for (let field of this.modifiedTablefields) {
-                if (field.width) {
-                    style["grid-template-columns"] += `${field.width} `;
-                } else {
-                    style["grid-template-columns"] += "minmax(100px, auto) ";
-                }
-            }
-            return style;
-        },
-    },
-    methods: {
-        getTitle(field) {
-            return field.title ? field.title : field.name;
-        },
-        getRowClass(field, data) {
-            return (field.dataClass ? field.dataClass : '') + " " + (data.dataClass ? data.dataClass : '');
-        },
-        getRowData(data, field) {
-            if (field.formatter) {
-                return field.formatter(data[field.name]);
-            }
-            return data[field.name];
-        },
-        sortByField(field) {
-            if (this.sortBy === field.sortField && this.sortOrder !== "desc") {
-                this.sortOrder = "desc";
-            } else {
-                this.sortOrder = "asc";
-            }
-            this.sortBy = field.sortField;
-            this.$emit("sortBy", {field: this.sortBy, order: this.sortOrder});
-        },
-        randKey() {
-            return Math.random().toString(36).substr(2, 8);
-        },
-        toggleExpandableElement(index) {
-            if (this.expandedElementIndex === index + 1) {
-                this.expandedElementIndex = 0
-            } else {
-                this.expandedElementIndex = index + 1
-            }
-            this.$emit("expand", this.tabledata[index])
-        },
-        searchBy(query) {
-            this.$emit("search", query)
-        },
-        goToPage(pageNo) {
-            this.$emit("paginate", pageNo)
-            this.expandedElementIndex = 0
-        }
-    },
-    updated() {
-        const headelm = document.querySelector(".data-grid-head-item");
-        this.gridheaderheight = headelm.getBoundingClientRect().height + "px";
-    },
-};
-</script>
 
 <style lang="scss" scoped>
 .data-grid-container {

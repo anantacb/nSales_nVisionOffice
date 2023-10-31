@@ -295,7 +295,7 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->firstByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableId')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TableId')]
             ],
             ['companyTables.company', 'module.companies']
         );
@@ -348,7 +348,19 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->firstByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableId')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TableId')]
+            ],
+            ['companyTables.company', 'module.companies']
+        );
+
+        return new ServiceDto("Table Retrieved Successfully.", 200, $table);
+    }
+
+    public function getDetailsByName(Request $request): ServiceDto
+    {
+        $table = $this->tableRepository->firstByAttributes(
+            [
+                ['column' => 'Name', 'operand' => '=', 'value' => $request->get('TableName')]
             ],
             ['companyTables.company', 'module.companies']
         );

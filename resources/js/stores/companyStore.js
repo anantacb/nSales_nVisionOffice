@@ -1,17 +1,24 @@
 import {defineStore} from "pinia";
 import Company from "@/models/Office/Company";
+import _ from "lodash";
 
 export const useCompanyStore = defineStore('company', {
     state: () => ({
         companies: [],
-        selectedCompany: localStorage.getItem('selectedCompany') ? JSON.parse(localStorage.getItem('selectedCompany')) : {}
+        selectedCompany: localStorage.getItem('selectedCompany') ? JSON.parse(localStorage.getItem('selectedCompany')) : {},
+        selectedCompanyModules: [],
     }),
     actions: {
         setSelectedCompanyById(companyId) {
-            this.selectedCompany = this.companies.filter((company) => {
+            let tempCompany = this.companies.filter((company) => {
                 return company.Id === parseInt(companyId);
             })[0];
+
+            this.selectedCompany = _.omit(tempCompany, ['modules']);
             localStorage.setItem('selectedCompany', JSON.stringify(this.selectedCompany));
+
+            this.selectedCompanyModules = tempCompany.modules;
+            localStorage.setItem('selectedCompanyModules', JSON.stringify(tempCompany.modules));
         },
 
         async fill() {
@@ -36,6 +43,12 @@ export const useCompanyStore = defineStore('company', {
 
         getSelectedCompany() {
             return this.selectedCompany;
+        },
+
+        getSelectedCompanyModuleNames() {
+            return this.selectedCompanyModules.map((module) => {
+                return module.Name;
+            });
         }
     }
 });

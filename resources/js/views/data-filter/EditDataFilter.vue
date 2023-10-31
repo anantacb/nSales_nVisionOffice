@@ -11,7 +11,7 @@ import Company from "@/models/Office/Company";
 import Role from "@/models/Office/Role";
 import Table from "@/models/Office/Table";
 import DataFilter from "@/models/Office/DataFilter";
-import {onBeforeRouteUpdate, useRoute} from "vue-router";
+import {useRoute} from "vue-router";
 
 const route = useRoute();
 
@@ -343,12 +343,6 @@ async function getDataFilterDetails() {
     let {data} = await DataFilter.details(route.params.id);
     DataFilterModel.value = data;
 }
-
-onBeforeRouteUpdate((to, from) => {
-    console.log("onBeforeRouteUpdate");
-    console.log(to, from);
-});
-
 
 let backButtonRoute = localStorage.getItem('data-filter-back-route') ?? 'data-filters';
 

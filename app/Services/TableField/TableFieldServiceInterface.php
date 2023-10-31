@@ -11,6 +11,10 @@ interface TableFieldServiceInterface
 
     public function getGeneralTableFields(Request $request): ServiceDto;
 
+    public function getCompanySpecificTableFields(Request $request): ServiceDto;
+
+    public function getCompanyAllTableFields(Request $request): ServiceDto;
+
     public function getTableFieldsOperationPreviews(Request $request): ServiceDto;
 
     public function tableFieldsOperationsSaveAndExecute(Request $request): ServiceDto;

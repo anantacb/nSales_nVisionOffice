@@ -16,7 +16,7 @@ export default class Role {
 
     static create(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/roles/create', formData)
+            axios.post('/api/role/create', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -28,7 +28,7 @@ export default class Role {
 
     static update(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/roles/update', formData)
+            axios.post('/api/role/update', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -54,7 +54,7 @@ export default class Role {
 
     static delete(RoleId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/roles/delete', {
+            axios.post('/api/role/delete', {
                 RoleId: RoleId
             })
                 .then(({data}) => {
@@ -68,7 +68,7 @@ export default class Role {
 
     static details(RoleId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/roles/details', {
+            axios.post('/api/role/details', {
                 RoleId: RoleId
             })
                 .then(({data}) => {

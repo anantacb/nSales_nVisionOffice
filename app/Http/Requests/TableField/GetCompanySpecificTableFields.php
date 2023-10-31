@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Requests\TableField;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class GetCompanySpecificTableFields extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, mixed>
+     */
+    public function rules(): array
+    {
+        return [
+            'TableId' => 'required|exists:mysql.Table,Id',
+            'CompanyId' => 'required|exists:mysql.Company,Id',
+        ];
+    }
+}

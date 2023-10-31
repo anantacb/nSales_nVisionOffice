@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TableHelper\GetColumnDistinctValues;
 use App\Http\Requests\TableHelper\GetEnumValues;
 use App\Services\TableHelper\TableHelperServiceInterface;
 use App\Transformer\ApiResponseTransformer;
@@ -16,9 +17,10 @@ class TableHelperController extends Controller
         $this->tableHelperService = $tableHelperService;
     }
 
-    public function getColumnDistinctValues()
+    public function getColumnDistinctValues(GetColumnDistinctValues $request): JsonResponse
     {
-
+        $response = $this->tableHelperService->getColumnDistinctValues($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
     public function getEnumValues(GetEnumValues $request): JsonResponse
