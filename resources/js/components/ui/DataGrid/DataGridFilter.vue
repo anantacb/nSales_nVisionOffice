@@ -1,7 +1,29 @@
+<script setup>
+import _ from "lodash";
+
+const debounceSearch = _.debounce(function (value) {
+    emit("update:modelValue", value);
+    emit('change', value);
+}, 500);
+
+const emit = defineEmits(['update:modelValue', 'change'])
+
+const props = defineProps({
+    modelValue: {
+        type: String,
+        required: true,
+        default: () => {
+            return "";
+        }
+    }
+});
+
+</script>
+
 <template>
     <div class="data-grid-filter-wrapper">
         <div class="input-group search-input-group">
-            <input :value="search" aria-describedby="search-addon" aria-label="Search" class="form-control"
+            <input :value="props.modelValue" aria-describedby="search-addon" aria-label="Search" class="form-control"
                    name="Search" placeholder="Search..." type="text" @input="debounceSearch($event.target.value)">
             <span id="search-addon" class="input-group-text">
                     <i class="fa fa-search"></i>
@@ -9,22 +31,6 @@
         </div>
     </div>
 </template>
-
-<script>
-
-export default {
-    data() {
-        return {
-            search: ''
-        }
-    },
-    methods: {
-        debounceSearch: window._.debounce(function (searchString) {
-            this.$emit("search", searchString)
-        }, 500)
-    }
-}
-</script>
 
 <style lang="scss" scoped>
 .data-grid-filter-wrapper {

@@ -54,7 +54,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function getTableIndices(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $relations = [
             'companyTableIndices' => function ($q) {
                 $q->with([
@@ -74,7 +74,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function getTableIndicesOperationPreviews(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -189,7 +189,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function tableIndicesOperationsSaveAndExecute(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -389,7 +389,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function tableIndicesOperationsSaveWithoutExecuting(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]

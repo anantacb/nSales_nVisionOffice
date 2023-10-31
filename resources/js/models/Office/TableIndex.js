@@ -1,9 +1,9 @@
 export default class TableIndex {
 
-    static getTableIndices(tableId) {
+    static getTableIndices(TableId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table-indices', {
-                tableId: tableId
+                TableId: TableId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -14,10 +14,10 @@ export default class TableIndex {
         });
     }
 
-    static getTableIndicesOperationPreviews(tableId, formData) {
+    static getTableIndicesOperationPreviews(TableId, formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table-indices-operation-sql-previews', {
-                tableId: tableId,
+                TableId: TableId,
                 ...formData
             })
                 .then(({data}) => {
@@ -29,10 +29,10 @@ export default class TableIndex {
         });
     }
 
-    static tableIndicesOperationsSaveAndExecute(tableId, formData) {
+    static tableIndicesOperationsSaveAndExecute(TableId, formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table-indices-operations-save-and-execute', {
-                tableId: tableId,
+                TableId: TableId,
                 ...formData
             })
                 .then(({data}) => {
@@ -44,10 +44,10 @@ export default class TableIndex {
         });
     }
 
-    static tableIndicesOperationsSaveWithoutExecuting(tableId, formData) {
+    static tableIndicesOperationsSaveWithoutExecuting(TableId, formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table-indices-operations-save-without-executing', {
-                tableId: tableId,
+                TableId: TableId,
                 ...formData
             })
                 .then(({data}) => {

@@ -48,14 +48,16 @@ const Applications = () => import('@/views/application/Applications/Applications
 const CreateApplication = () => import('@/views/application/CreateApplication.vue');
 const EditApplication = () => import('@/views/application/EditApplication/EditApplication.vue');
 
-const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters/CompanyDataFilters.vue')
+const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters/CompanyDataFilters.vue');
 
 const Roles = () => import('@/views/roles/Roles/Roles.vue');
 const CreateRole = () => import('@/views/roles/CreateRole.vue');
 const EditRole = () => import('@/views/roles/EditRole.vue');
 
-
-const Orders = () => import('@/views/order/Orders/Orders.vue')
+const Orders = () => import('@/views/order/Orders/Orders.vue');
+const Customers = () => import('@/views/customer/Customers/Customers.vue');
+const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
+const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
 
 const NotFound = () => import('@/views/404View.vue');
 
@@ -424,6 +426,35 @@ const routes = [
                 path: "order/orders",
                 name: "orders",
                 component: Orders,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+
+            {
+                path: "customer/customers",
+                name: "customers",
+                component: Customers,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "customer/create",
+                name: "create-customer",
+                component: CreateCustomer,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+
+            {
+                path: "customer-visit/customer-visits",
+                name: "customer-visits",
+                component: CustomerVisits,
                 meta: {
                     authenticated: true,
                     company_specific: true

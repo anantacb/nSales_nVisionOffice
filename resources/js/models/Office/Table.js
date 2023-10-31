@@ -12,10 +12,24 @@ export default class Table {
         });
     }
 
-    static getDetails(tableId) {
+    static getDetails(TableId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table/details', {
-                tableId: tableId
+                TableId: TableId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getDetailsByName(TableName) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/table/details-by-name', {
+                TableName: TableName
             })
                 .then(({data}) => {
                     resolve(data);
@@ -62,10 +76,10 @@ export default class Table {
         });
     }
 
-    static delete(tableId) {
+    static delete(TableId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/table/delete', {
-                tableId: tableId
+                TableId: TableId
             })
                 .then(({data}) => {
                     resolve(data);

@@ -47,7 +47,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function getTableFields(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $relations = [
             'companyTableFields' => function ($q) {
                 $q->with([
@@ -81,16 +81,40 @@ class TableFieldService implements TableFieldServiceInterface
         return new ServiceDto("TableFields Retrieved Successfully.", 200, $tableFields);
     }
 
+    public function getCompanyAllTableFields(Request $request): ServiceDto
+    {
+        $tableId = $request->get('TableId');
+        $companyId = $request->get('CompanyId');
+        $generalTableFields = $this->tableFieldRepository->getGeneralTableFields($tableId);
+        $companySpecificTableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId);
+        return new ServiceDto("Company Specific TableFields Retrieved Successfully.", 200, [
+            'generalTableFields' => $generalTableFields,
+            'companySpecificTableFields' => $companySpecificTableFields
+        ]);
+    }
+
     public function getGeneralTableFields(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
-        $tableFields = $this->tableFieldRepository->getGeneralTableFields($tableId, ['Id', 'Name']);
+        $tableId = $request->get('TableId');
+        $tableFields = $this->tableFieldRepository->getGeneralTableFields($tableId, [
+            'Id', 'Name', 'DataType', 'Type', 'DefaultValue', 'TableId', 'CompanyId',
+        ]);
         return new ServiceDto("General TableFields Retrieved Successfully.", 200, $tableFields);
+    }
+
+    public function getCompanySpecificTableFields(Request $request): ServiceDto
+    {
+        $tableId = $request->get('TableId');
+        $companyId = $request->get('CompanyId');
+        $tableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId, [
+            'Id', 'Name', 'DataType', 'Type', 'DefaultValue', 'TableId', 'CompanyId'
+        ]);
+        return new ServiceDto("Company Specific TableFields Retrieved Successfully.", 200, $tableFields);
     }
 
     public function getTableFieldsOperationPreviews(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -316,7 +340,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function tableFieldsOperationsSaveAndExecute(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -627,7 +651,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function tableFieldsOperationsSaveWithoutExecuting(Request $request): ServiceDto
     {
-        $tableId = $request->get('tableId');
+        $tableId = $request->get('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]

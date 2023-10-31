@@ -76,8 +76,8 @@ class UserService implements UserServiceInterface
             ]
         ];
 
-        $companies = $this->userRepository->paginatedNonDevelopersData($request);
-        return new ServiceDto("Company Users retrieved!!!", 200, $companies);
+        $companyUsers = $this->userRepository->paginatedNonDevelopersData($request);
+        return new ServiceDto("Company Users retrieved!!!", 200, $companyUsers);
     }
 
     public function createCompanyUser(Request $request): ServiceDto
@@ -276,9 +276,16 @@ class UserService implements UserServiceInterface
                 $q->select(['Id', 'Name', 'Initials']);
             }
         ];
+
+        $filter_by_relation = [];
+        if ($request->get('ExcludeDevelopers')) {
+            $filter_by_relation = [
+                ["relation" => 'roles', "column" => "Type", "operator" => "!=", "values" => 'Developer'],
+            ];
+        }
         $companyUsers = $this->companyUserRepository->getByAttributes([
             ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
-        ], $relations, ['Id', 'UserId', 'CompanyId', 'Initials']);
+        ], $relations, ['Id', 'UserId', 'CompanyId', 'Initials'], '', false, $filter_by_relation);
 
         return new ServiceDto('Company Users Retrieved Successfully', 200, $companyUsers);
     }

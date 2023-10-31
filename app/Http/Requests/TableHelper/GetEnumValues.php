@@ -11,7 +11,7 @@ class GetEnumValues extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,13 +21,13 @@ class GetEnumValues extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'database_type' => 'required|in:Office,Company',
-            'domain' => 'required_if:database_type,Company',
-            'table' => 'required',
-            'column' => 'required',
+            'DatabaseType' => 'required|in:Office,Company',
+            'CompanyId' => 'required_if:database_type,Company',
+            'TableName' => 'required',
+            'ColumnName' => 'required',
         ];
     }
 }

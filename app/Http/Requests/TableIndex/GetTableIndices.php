@@ -24,7 +24,7 @@ class GetTableIndices extends FormRequest
     public function rules(): array
     {
         return [
-            'tableId' => 'required|exists:mysql.Table,Id',
+            'TableId' => 'required|exists:mysql.Table,Id',
         ];
     }
 }

@@ -1,0 +1,146 @@
+<script setup>
+import {onMounted, ref, watch} from "vue";
+import router from "@/router";
+import GeneralCreateForm from "@/components/ui/CreateForm/GeneralCreateForm.vue";
+import {useNotificationStore} from "@/stores/notificationStore";
+import {useCompanyStore} from "@/stores/companyStore";
+import {useFormErrors} from "@/composables/useFormErrors";
+import useCompanyInfos from "@/composables/useCompanyInfos";
+
+import Customer from "@/models/Company/Customer";
+import TableHelper from "@/models/TableHelper";
+import User from "@/models/Office/User";
+import useGeneralCreate from "@/composables/useGeneralCreate";
+
+const createCustomerRef = ref(null);
+const notificationStore = useNotificationStore();
+const companyStore = useCompanyStore();
+
+const {errors, setErrors, resetErrors} = useFormErrors();
+const {isModuleEnabled} = useCompanyInfos();
+
+const {
+    ModelObject,
+    GroupedTableFields,
+    setOverriddenProperties,
+    setExceptColumns,
+    setCustomSortKeys,
+    setNullHeaderText,
+    getTableDetails,
+    getCompanyAllTableFields
+} = useGeneralCreate();
+
+const PriceGroupOptions = ref([]);
+
+async function getPriceGroups() {
+    let {data} = await TableHelper.getColumnDistinctValues('Company', 'Pricegroup', 'Pricegroup', companyStore.selectedCompany.Id);
+    if (!!data.length) {
+        PriceGroupOptions.value.push({label: "Please Select", value: ""});
+        data.map((item) => {
+            PriceGroupOptions.value.push({label: item, value: item});
+        });
+    }
+}
+
+const CompanyUserOptions = ref([]);
+
+async function getAllCompanyUsers() {
+    const {data} = await User.getAllCompanyUsers(companyStore.selectedCompany.Id, true);
+
+    let options = [{label: 'Select User', value: ''}];
+
+    data.forEach((company_user) => {
+        let option = {label: company_user.user.Name, value: company_user.Initials};
+        options.push(option);
+    });
+
+    CompanyUserOptions.value = options;
+}
+
+function initFormValues() {
+    setExceptColumns(['Id', 'InsertTime', 'UpdateTime', 'DeleteTime', 'UUID', 'ImportTime']);
+    setNullHeaderText('Information');
+    setCustomSortKeys(['General', 'Account', 'Sales', 'Contact', 'Misc', 'Info']);
+    setOverriddenProperties({
+        'Account': {
+            HasTooltip: true,
+            TooltipText: "This is the Account number for this customer. This will be the identifier of the customer.",
+            InputRequired: true
+        },
+        'Currency': {
+            HasTooltip: true,
+            TooltipText: "This is the currency for this customer. This will make sure that the customer always see prices in the correct currency.",
+            InputRequired: true,
+            DefaultValue: 'DKK'
+        },
+        'Pricegroup': {
+            HasTooltip: true,
+            TooltipText: "This is the currency for this customer. This will make sure that the customer always see prices in the correct currency.",
+            SelectOptions: PriceGroupOptions.value
+        },
+        'Employee': {
+            SelectOptions: CompanyUserOptions.value
+        }
+    });
+}
+
+
+async function create() {
+    createCustomerRef.value.statusLoading();
+
+    let formData = {
+        CompanyId: companyStore.selectedCompany.Id,
+        ...ModelObject.value
+    };
+
+    try {
+        let {data, message} = await Customer.create(formData);
+        createCustomerRef.value.statusNormal();
+        await router.push({name: 'customers'});
+        notificationStore.showNotification(message);
+    } catch (error) {
+        setErrors(error.response.data.errors);
+        createCustomerRef.value.statusNormal();
+    }
+}
+
+onMounted(async () => {
+    createCustomerRef.value.statusLoading();
+    await getTableDetails('Customer');
+    isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
+    await getAllCompanyUsers();
+    initFormValues();
+    await getCompanyAllTableFields();
+    createCustomerRef.value.statusNormal();
+});
+
+watch(() => companyStore.getSelectedCompany, async () => {
+    createCustomerRef.value.statusLoading();
+    await getTableDetails('Customer');
+    isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
+    await getAllCompanyUsers();
+    initFormValues();
+    await getCompanyAllTableFields();
+    createCustomerRef.value.statusNormal();
+});
+
+</script>
+
+<template>
+    <div class="content">
+        <BaseBlock ref="createCustomerRef" :title="`Create Customer (${companyStore.selectedCompany.Name})`"
+                   content-full>
+            <template #options>
+                <router-link :to="{name:'customers'}" class="btn btn-sm btn-outline-info">
+                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                </router-link>
+            </template>
+            <GeneralCreateForm :Errors="errors"
+                               :GroupedTableFields="GroupedTableFields"
+                               :ModelObject="ModelObject"
+                               @create="create"
+                               @resetErrors="resetErrors">
+            </GeneralCreateForm>
+        </BaseBlock>
+    </div>
+</template>
