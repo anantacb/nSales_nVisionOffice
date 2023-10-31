@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
     modelValue: {},
     options: {
@@ -45,14 +44,12 @@ const props = defineProps({
         required: false
     }
 });
+const emit = defineEmits(['update:modelValue', 'change']);
 
 function change(value) {
     emit('update:modelValue', value);
     emit('change', value);
 }
-
-const emit = defineEmits(['update:modelValue', 'change']);
-
 </script>
 
 <template>

@@ -4,12 +4,28 @@ import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import Role from "@/models/Office/Role";
 import {useCompanyStore} from "@/stores/companyStore";
+import useGridManagement from "@/composables/useGridManagement";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
 
 let tableData = ref([]);
-let tableFields = [
+let paginationData = ref(null);
+let isLoading = ref(true);
+
+const {
+    tableFields,
+    bodyHeight,
+    request,
+    setTableFields,
+    setSearchColumns,
+    setSearchQuery,
+    setPageNo,
+    setSortBy,
+    resetRequest
+} = useGridManagement();
+
+setTableFields([
     {
         name: "Name",
         title: "Name",
@@ -35,43 +51,32 @@ let tableFields = [
         name: "Action",
         title: "Action"
     }
-];
-let bodyHeight = "100vh";
-let paginationData = ref(null);
-let isLoading = ref(true);
-let request = ref({
-    search_columns: ['Name', 'Type'],
-    //relations: [],
-    filters: null,
-    order: {},
-    pagination: {"page_no": 1, "per_page": 20},
-    query: null
-});
+]);
+setSearchColumns(['Name', 'Type']);
 
 onMounted(async () => {
     await getCompanyRoles();
 });
 
 watch(() => companyStore.getSelectedCompany, async () => {
+    resetRequest();
     await getCompanyRoles();
 });
 
 function goToPage(pageNo) {
-    request.value.pagination.page_no = pageNo;
+    setPageNo(pageNo);
     getCompanyRoles();
 }
 
 function sortBy({field, order}) {
-    request.value.order = [
-        {"column": field, "sort": order}
-    ];
-    request.value.pagination.page_no = 1;
+    setSortBy(field, order);
+    setPageNo(1);
     getCompanyRoles();
 }
 
 function search(query) {
-    request.value.query = query;
-    request.value.pagination.page_no = 1;
+    setSearchQuery(query);
+    setPageNo(1);
     getCompanyRoles();
 }
 
@@ -111,12 +116,13 @@ function deleteRole(companyUserRole, index) {
 <template>
     <DataGrid
         :expandable="false"
-        :height="`${bodyHeight - 115}px`"
+        :height="bodyHeight"
         :isLoading="isLoading"
         :pagination="paginationData"
+        :searchString="request.query"
         :searchable="true"
-        :tabledata="tableData"
-        :tablefields="tableFields"
+        :tableData="tableData"
+        :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
         @search="search"

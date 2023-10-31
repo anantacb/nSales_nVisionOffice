@@ -3,11 +3,26 @@ import {onMounted, ref} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import Application from "@/models/Office/Application";
+import useGridManagement from "@/composables/useGridManagement";
 
 const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
-let tableFields = [
+let paginationData = ref(null);
+let isLoading = ref(true);
+
+const {
+    tableFields,
+    bodyHeight,
+    request,
+    setTableFields,
+    setSearchColumns,
+    setSearchQuery,
+    setPageNo,
+    setSortBy
+} = useGridManagement();
+
+setTableFields([
     {
         name: "Name",
         title: "Name",
@@ -27,39 +42,28 @@ let tableFields = [
         name: "Action",
         title: "Action"
     }
-];
-let bodyHeight = "100vh";
-let paginationData = ref(null);
-let isLoading = ref(true);
-let request = ref({
-    search_columns: ["Name", "Platform", "OperatingSystem"],
-    //relations: [],
-    filters: null,
-    order: {},
-    pagination: {"page_no": 1, "per_page": 20},
-    query: null
-});
+]);
+
+setSearchColumns(["Name", "Platform", "OperatingSystem"]);
 
 onMounted(() => {
     getApplications();
 });
 
 function goToPage(pageNo) {
-    request.value.pagination.page_no = pageNo;
+    setPageNo(pageNo);
     getApplications();
 }
 
 function sortBy({field, order}) {
-    request.value.order = [
-        {"column": field, "sort": order}
-    ];
-    request.value.pagination.page_no = 1;
+    setSortBy(field, order);
+    setPageNo(1);
     getApplications();
 }
 
 function search(query) {
-    request.value.query = query;
-    request.value.pagination.page_no = 1;
+    setSearchQuery(query);
+    setPageNo(1);
     getApplications();
 }
 
@@ -99,12 +103,13 @@ function deleteApplication(application, index) {
 <template>
     <DataGrid
         :expandable="false"
-        :height="`${bodyHeight - 115}px`"
+        :height="bodyHeight"
         :isLoading="isLoading"
         :pagination="paginationData"
+        :searchString="request.query"
         :searchable="true"
-        :tabledata="tableData"
-        :tablefields="tableFields"
+        :tableData="tableData"
+        :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
         @search="search"

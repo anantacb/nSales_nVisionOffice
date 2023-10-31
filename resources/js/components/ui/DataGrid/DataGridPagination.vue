@@ -1,45 +1,47 @@
+<script setup>
+const props = defineProps({
+    pagination: {
+        type: Object
+    }
+});
+const emit = defineEmits(['paginate']);
+
+function paginate(pageNo) {
+    if (pageNo > 0 && pageNo <= props.pagination.last_page_no) {
+        emit("paginate", pageNo)
+    }
+}
+</script>
+
 <template>
-    <div v-if="pagination.total && pagination.last_page_no > 1" class="data-grid-pagination-wrapper">
+    <div v-if="props.pagination.total && props.pagination.last_page_no > 1" class="data-grid-pagination-wrapper">
         <div>
-            <small class="text-muted">Row per page: <b>{{ pagination.items_per_page }}</b></small>
+            <small class="text-muted">Row per page: <b>{{ props.pagination.items_per_page }}</b></small>
         </div>
         <div class="pagination-items">
             <small class="text-muted">Showing
-                {{ (pagination.current_page_no - 1) * pagination.items_per_page + 1 }}
+                {{ (props.pagination.current_page_no - 1) * props.pagination.items_per_page + 1 }}
                 -
-                {{ pagination.current_page_no * pagination.items_per_page }} of
-                <b>{{ pagination.total }}</b>
+                {{ props.pagination.current_page_no * props.pagination.items_per_page }} of
+                <b>{{ props.pagination.total }}</b>
             </small>
             <span
-                :class="{disabled:pagination.current_page_no <= 1}"
+                :class="{disabled: props.pagination.current_page_no <= 1}"
                 class="pagination-item pagination-item-previous"
-                @click="paginate(pagination.current_page_no-1)">
+                @click="paginate(props.pagination.current_page_no-1)">
                 <i class="fa fa-circle-left"></i>
                 Previous
             </span>
             <span
-                :class="{disabled:pagination.current_page_no === pagination.last_page_no}"
+                :class="{disabled: props.pagination.current_page_no === props.pagination.last_page_no}"
                 class="pagination-item pagination-item-next"
-                @click="paginate(pagination.current_page_no+1)">
+                @click="paginate(props.pagination.current_page_no + 1)">
                 Next
                 <i class="fa fa-circle-right"></i>
             </span>
         </div>
     </div>
 </template>
-
-<script>
-export default {
-    props: ['pagination'],
-    methods: {
-        paginate(pageNo) {
-            if (pageNo > 0 && pageNo <= this.pagination.last_page_no) {
-                this.$emit("paginate", pageNo)
-            }
-        }
-    }
-}
-</script>
 
 <style lang="scss" scoped>
 .data-grid-pagination-wrapper {
