@@ -36,7 +36,7 @@ class ItemDeleted extends BaseModel
 
     public function priceGroups(): HasMany
     {
-        return $this->hasMany(PriceGroup::class, 'ItemNumber', 'Number');
+        return $this->hasMany(Pricegroup::class, 'ItemNumber', 'Number');
     }
 
     public function itemAttributes(): HasMany
