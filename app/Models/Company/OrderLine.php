@@ -4,6 +4,7 @@ namespace App\Models\Company;
 
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Helpers\FileUrlGenerator;
 
 class OrderLine extends BaseModel
 {
@@ -12,7 +13,7 @@ class OrderLine extends BaseModel
     protected $connection = 'mysql_company';
     protected $table = 'Orderline';
     protected $primaryKey = "UUID";
-    //protected $appends = ['image_url'];
+    protected $appends = ['image_url'];
 
     protected $guarded = [];
 
@@ -28,6 +29,6 @@ class OrderLine extends BaseModel
 
     public function getImageUrlAttribute()
     {
-        //return FileUrlGenerator::imageUrlByElementNumber($this->ItemNumber);
+        return FileUrlGenerator::imageUrlByElementNumber($this->ItemNumber);
     }
 }

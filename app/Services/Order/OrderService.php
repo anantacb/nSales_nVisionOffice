@@ -4,6 +4,7 @@ namespace App\Services\Order;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
+use App\Services\Company\CompanyService;
 use Illuminate\Http\Request;
 
 class OrderService implements OrderServiceInterface
@@ -35,9 +36,23 @@ class OrderService implements OrderServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $order = $this->orderRepository->firstByAttributes([
+        $attributes = [
+            ['column' => 'UUID', 'operand' => '=', 'value' => $request->get('UUID')]
+        ];
 
-         ]);
+        if ($request->get('initials')) {
+            $attributes[] = ['column' => 'Employee', 'operand' => '=', 'value' => $request->get('initials')];
+        }
+
+        $relations = ['orderLines' => function ($q) {
+            $q->where('Type', '!=', 'Parent');
+        }];
+
+        if (CompanyService::isModuleEnabled('WSUser')) {
+            array_push($relations, 'webShopUser');
+        }
+
+        $order = $this->orderRepository->firstByAttributes($attributes, $relations);
         return new ServiceDto("Order Retrieved Successfully.", 200, $order);
     }
 }

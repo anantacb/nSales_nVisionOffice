@@ -13,10 +13,11 @@ export default class Order {
         });
     }
 
-    static details(ModuleId) {
+    static details(CompanyId, OrderUUID) {
         return new Promise((resolve, reject) => {
             axios.post('/api/order/details', {
-                ModuleId: ModuleId
+                UUID: OrderUUID,
+                CompanyId: CompanyId,
             })
                 .then(({data}) => {
                     resolve(data);

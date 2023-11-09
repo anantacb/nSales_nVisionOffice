@@ -149,10 +149,11 @@ function deleteOrder(module, index) {
         @sortBy="sortBy"
     >
         <template v-slot:body-Action="props">
-            <!--            <router-link :to="{name: 'order-details', params:{id: props.data.Id}}"
-                                     class="btn rounded-pill btn-alt-warning me-1">
-                            <i class="fa fa-pen-alt"></i>
-                        </router-link>-->
+            <router-link :to="{name: 'order-details', params:{id: props.data.UUID}}"
+                         class="btn rounded-pill btn-alt-warning me-1">
+                <i class="fa fa-clipboard-list"></i>
+            </router-link>
+
             <!--            <button class="btn rounded-pill btn-alt-danger me-1" type="button"
                                 @click="deleteOrder(props.data, props.index)">
                             <i class="fa fa-trash-alt"></i>

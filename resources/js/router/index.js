@@ -55,6 +55,7 @@ const CreateRole = () => import('@/views/roles/CreateRole.vue');
 const EditRole = () => import('@/views/roles/EditRole.vue');
 
 const Orders = () => import('@/views/order/Orders/Orders.vue');
+const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
 const Customers = () => import('@/views/customer/Customers/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
 const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
@@ -429,6 +430,15 @@ const routes = [
                 meta: {
                     authenticated: true,
                     company_specific: true
+                }
+            },
+            {
+                path: "order/:id",
+                name: "order-details",
+                component: OrderDetails,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
                 }
             },
 
