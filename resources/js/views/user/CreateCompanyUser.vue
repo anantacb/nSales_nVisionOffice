@@ -17,6 +17,7 @@ let Name = ref('');
 let Email = ref('');
 let PhoneNo = ref('');
 let MobileNo = ref('');
+let Disabled = ref(0);
 
 let CultureName = ref('da-DK');
 let Initials = ref('');
@@ -35,19 +36,21 @@ let SendMail = ref(1);
 const createCompanyUserRef = ref(null);
 
 async function getRoles() {
-    let {data} = await Role.getRolesByCompany(companyStore.selectedCompany.Id);
+    let {data} = await Role.getRolesByCompany(companyStore.selectedCompany.Id, true);
     RoleOptions.value = data;
 }
 
 async function createUser() {
     createCompanyUserRef.value.statusLoading();
 
+    console.log("ok");
     let formData = {
         Name: Name.value,
         Email: Email.value,
         PhoneNo: PhoneNo.value,
         MobileNo: MobileNo.value,
         CultureName: CultureName.value,
+        Disabled: Disabled.value,
 
         Initials: Initials.value,
         Territory: Territory.value,
@@ -179,6 +182,20 @@ watch(() => companyStore.getSelectedCompany, async () => {
                                        @keyup="resetErrors"/>
                                 <InputErrorMessages v-if="errors.MobileNo"
                                                     :errorMessages="errors.MobileNo"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Disabled">
+                                Disabled<span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <Select id="Disabled" v-model="Disabled" :options="booleanOptions"
+                                        :required="true"
+                                        :select-class="errors.Disabled ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="Disabled"
+                                        @change="resetErrors"/>
+                                <InputErrorMessages v-if="errors.Disabled"
+                                                    :errorMessages="errors.Disabled"></InputErrorMessages>
                             </div>
                         </div>
                     </div>
