@@ -25,6 +25,24 @@ class Order extends BaseModel
     protected $casts = [
         'SignatureImage' => Base64::class
     ];
+    protected $appends = ['CalculatedOrderOrigin', 'CalculatedOrderDate'];
+    public function getCalculatedOrderOriginAttribute()
+    {
+        $mapping = [
+            'nVisionMobile' => 'nVision Mobile',
+            'B2BWebshop' => 'B2B',
+            'B2BRetailApp' => 'Retail App',
+            'Shopify' => 'Shopify',
+        ];
+
+        return isset($mapping[$this->OrderOrigin]) ? $mapping[$this->OrderOrigin] : '';
+    }
+
+    public function getCalculatedOrderDateAttribute()
+    {
+        return $this->UpdateTime ? $this->UpdateTime : $this->InsertTime;
+    }
+
 
     public function customer(): BelongsTo
     {

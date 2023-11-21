@@ -27,4 +27,19 @@ export default class Order {
                 });
         });
     }
+
+    static getOrderOrigins(CompanyId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/order/origins-get', {
+                CompanyId: CompanyId,
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+
+    }
 }

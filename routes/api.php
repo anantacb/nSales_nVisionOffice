@@ -173,6 +173,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Order
         Route::post('/orders', [OrderController::class, 'getOrders']);
         Route::post('/order/details', [OrderController::class, 'details']);
+        Route::post('/order/origins-get', [OrderController::class, 'getOrderOriginOptions']);
 
         // Customer
         Route::post('/customers', [CustomerController::class, 'getCustomers']);
