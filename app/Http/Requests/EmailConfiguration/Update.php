@@ -11,7 +11,7 @@ class Update extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,7 +21,7 @@ class Update extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'Id' => 'required|exists:EmailConfiguration,Id',
@@ -37,6 +37,7 @@ class Update extends FormRequest
             'SendToUser' => 'required|boolean',
             'SendToCustomer' => 'required|boolean',
             'SendToSupplier' => 'required|boolean',
+            'SendToEmployee' => 'required|boolean',
             'Subject' => 'nullable',
             'Body' => 'nullable',
             'Description' => 'nullable',

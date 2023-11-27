@@ -28,6 +28,7 @@ let SendToCompany = ref(0);
 let SendToUser = ref(0);
 let SendToCustomer = ref(0);
 let SendToSupplier = ref(0);
+let SendToEmployee = ref(0);
 
 
 let Subject = ref("$\"Order Copy #\"+ Order.OrderNumber");
@@ -278,6 +279,7 @@ async function createEmailConfiguration() {
         SendToUser: SendToUser.value,
         SendToCustomer: SendToCustomer.value,
         SendToSupplier: SendToSupplier.value,
+        SendToEmployee: SendToEmployee.value,
         Subject: Subject.value,
         Body: Body.value,
         Description: Description.value,
@@ -488,6 +490,20 @@ onMounted(async () => {
                                         @change="resetErrors"/>
                                 <InputErrorMessages v-if="errors.SendToSupplier"
                                                     :errorMessages="errors.SendToSupplier"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="SendToEmployee">
+                                Employee
+                            </label>
+                            <div class="col-sm-8">
+                                <Select id="SendToEmployee" v-model="SendToEmployee" :options="booleanOptions"
+                                        :required="false"
+                                        :select-class="errors.SendToEmployee ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="SendToEmployee"
+                                        @change="resetErrors"/>
+                                <InputErrorMessages v-if="errors.SendToEmployee"
+                                                    :errorMessages="errors.SendToEmployee"></InputErrorMessages>
                             </div>
                         </div>
                     </div>
