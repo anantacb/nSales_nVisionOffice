@@ -253,6 +253,7 @@ async function updateEmailConfiguration() {
         SendToUser: EmailConfigurationModel.value.SendToUser,
         SendToCustomer: EmailConfigurationModel.value.SendToCustomer,
         SendToSupplier: EmailConfigurationModel.value.SendToSupplier,
+        SendToEmployee: EmailConfigurationModel.value.SendToEmployee,
         Subject: EmailConfigurationModel.value.Subject,
         Body: EmailConfigurationModel.value.Body,
         Description: EmailConfigurationModel.value.Description,
@@ -507,6 +508,21 @@ let backButtonRoute = localStorage.getItem('email-configuration-back-route') ?? 
                                         @change="resetErrors"/>
                                 <InputErrorMessages v-if="errors.SendToSupplier"
                                                     :errorMessages="errors.SendToSupplier"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="SendToEmployee">
+                                Employee
+                            </label>
+                            <div class="col-sm-8">
+                                <Select id="SendToEmployee" v-model="EmailConfigurationModel.SendToEmployee"
+                                        :options="booleanOptions"
+                                        :required="false"
+                                        :select-class="errors.SendToEmployee ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="SendToEmployee"
+                                        @change="resetErrors"/>
+                                <InputErrorMessages v-if="errors.SendToEmployee"
+                                                    :errorMessages="errors.SendToEmployee"></InputErrorMessages>
                             </div>
                         </div>
                     </div>
