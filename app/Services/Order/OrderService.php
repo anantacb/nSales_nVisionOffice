@@ -3,6 +3,7 @@
 namespace App\Services\Order;
 
 use App\Contracts\ServiceDto;
+use App\Repositories\Eloquent\Company\Order\OrderLineRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
 use App\Services\Company\CompanyService;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,15 +14,25 @@ use Illuminate\Support\Facades\Cache;
 class OrderService implements OrderServiceInterface
 {
     protected OrderRepositoryInterface $orderRepository;
+    protected OrderLineRepositoryInterface $orderLineRepository;
 
-    public function __construct(OrderRepositoryInterface $orderRepository)
+    public function __construct(OrderRepositoryInterface $orderRepository, OrderLineRepositoryInterface $orderLineRepository)
     {
         $this->orderRepository = $orderRepository;
+        $this->orderLineRepository = $orderLineRepository;
     }
 
     public function getOrders(Request $request): ServiceDto
     {
         $orders = $this->orderRepository->paginateWithSearchAndSort($request);
+        self::modifyOrderData($orders);
+
+        return new ServiceDto("Orders retrieved!!!", 200, $orders);
+    }
+
+    public function getOpenOrders(Request $request): ServiceDto
+    {
+        $orders = $this->orderRepository->paginateWithSearchAndSortOpenOrders($request);
         self::modifyOrderData($orders);
 
         return new ServiceDto("Orders retrieved!!!", 200, $orders);
@@ -73,6 +84,19 @@ class OrderService implements OrderServiceInterface
         $order = $this->orderRepository->firstByAttributes($attributes, $relations);
         return new ServiceDto("Order Retrieved Successfully.", 200, $order);
     }
+
+    public function delete(Request $request): ServiceDto
+    {
+        $this->orderLineRepository->deleteByAttributes([
+            ['column' => 'OrderUUID', 'operand' => '=', 'value' => $request->get('UUID')]
+        ]);
+        $this->orderRepository->deleteByAttributes([
+            ['column' => 'UUID', 'operand' => '=', 'value' => $request->get('UUID')]
+        ]);
+
+        return new ServiceDto("Order Deleted successfully.", 200, []);
+    }
+
 
     public function getOrderOriginOptions(): ServiceDto
     {

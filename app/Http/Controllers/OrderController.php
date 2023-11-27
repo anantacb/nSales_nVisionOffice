@@ -23,9 +23,21 @@ class OrderController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getOpenOrders(PaginatedDataRequest $request): JsonResponse
+    {
+        $response = $this->service->getOpenOrders($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function delete(DetailsOrDelete $request): JsonResponse
+    {
+        $response = $this->service->delete($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

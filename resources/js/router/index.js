@@ -55,6 +55,7 @@ const CreateRole = () => import('@/views/roles/CreateRole.vue');
 const EditRole = () => import('@/views/roles/EditRole.vue');
 
 const Orders = () => import('@/views/order/Orders/Orders.vue');
+const OpenOrders = () => import('@/views/order/Open-Orders/OpenOrders.vue');
 const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
 const Customers = () => import('@/views/customer/Customers/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
@@ -433,13 +434,28 @@ const routes = [
                 }
             },
             {
+                path: "order/open-orders",
+                name: "open-orders",
+                component: OpenOrders,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
                 path: "order/:id",
                 name: "order-details",
                 component: OrderDetails,
                 meta: {
                     authenticated: true,
                     company_specific: false
-                }
+                },
+                beforeEnter: (to, from) => {
+                    if (['orders', 'open-orders'].includes(from.name)) {
+                        localStorage.setItem('order-details-back-route', from.name);
+                    }
+                    return true;
+                },
             },
 
             {

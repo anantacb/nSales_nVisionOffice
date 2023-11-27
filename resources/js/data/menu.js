@@ -234,7 +234,7 @@ export default {
                 {
                     name: "Open Orders",
                     icon: "fa fa-boxes",
-                    to: "orders",
+                    to: "open-orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
                 },
