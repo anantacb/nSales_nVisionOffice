@@ -367,4 +367,15 @@ class CompanyService implements CompanyServiceInterface
 
         return new ServiceDto("Companies Retrieved Successfully.", 200, $assignAbleCompanies);
     }
+    public static function isModuleEnabled(string $moduleName): bool
+    {
+        $selectedCompany = Cache::get('company_'.request()->get('CompanyId'));
+        $modules = $selectedCompany->modules->toArray();
+        return in_array($moduleName, array_column($modules, 'Name'));
+    }
+    public static function getSettingValue(string $moduleName, string $key)
+    {
+        $selectedCompany = Cache::get('company_'.request()->get('CompanyId'));
+        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
+    }
 }

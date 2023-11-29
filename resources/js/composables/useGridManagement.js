@@ -6,7 +6,7 @@ export default function useGridManagement() {
     let request = ref({
         search_columns: [],
         //relations: [],
-        filters: null,
+        filters: {},
         order: {},
         pagination: {"page_no": 1, "per_page": 20},
         query: ""
@@ -17,7 +17,7 @@ export default function useGridManagement() {
     }
 
     function resetRequest() {
-        request.value.filters = null;
+        request.value.filters = {};
         request.value.order = {};
         request.value.pagination = {"page_no": 1, "per_page": 20};
         request.value.query = "";

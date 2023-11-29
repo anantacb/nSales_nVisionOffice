@@ -234,14 +234,14 @@ export default {
                 {
                     name: "Open Orders",
                     icon: "fa fa-boxes",
-                    to: "orders",
+                    to: "open-orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
                 },
                 {
                     name: "Failed Orders",
                     icon: "fa fa-file-lines",
-                    to: "orders",
+                    to: "failed-orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
                 },

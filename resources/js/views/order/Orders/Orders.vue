@@ -1,9 +1,14 @@
 <script setup>
 import OrderList from "@/views/order/Orders/OrderList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
+import {ref} from "vue";
 
 const companyStore = useCompanyStore();
+let totalOrderCount =ref(0);
 
+function totalOrderCounter(totalCount) {
+    totalOrderCount.value = totalCount ?? totalOrderCount.value;
+}
 </script>
 
 <template>
@@ -23,8 +28,8 @@ const companyStore = useCompanyStore();
 
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock :title="`Orders (${companyStore.selectedCompany.Name})`">
-            <OrderList/>
+        <BaseBlock :title="`Orders (${totalOrderCount})`">
+            <OrderList @totalOrderCounter="totalOrderCounter"/>
         </BaseBlock>
     </div>
     <!-- END Page Content -->

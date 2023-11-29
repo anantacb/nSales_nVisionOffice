@@ -124,7 +124,7 @@ function search(query) {
 }
 
 function resetFilters() {
-    request.value.filters = {OrderOrigin: '', ExportStatus: '', general: ''};
+    request.value.filters = {OrderOrigin: '', general: ''};
 }
 
 function setFilters(filters) {
@@ -132,7 +132,7 @@ function setFilters(filters) {
 }
 
 async function getOrders() {
-    let {data, pagination} = await Order.getOrders(companyStore.selectedCompany.Id, request.value);
+    let {data, pagination} = await Order.getOpenOrders(companyStore.selectedCompany.Id, request.value);
     tableData.value = data;
     paginationData.value = pagination;
     emit('totalOrderCounter', paginationData.value.total);
@@ -151,22 +151,23 @@ function filtersOptionChange() {
 function deleteOrder(module, index) {
     Swal.fire({
         title: 'Are you sure? Delete Order?',
-        html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
-        input: 'text',
+        text: "You won't be able to revert this!",
+        // html: 'Are you sure? Delete Order?',
+        // input: 'text',
         inputAttributes: {
             autocapitalize: 'off'
         },
         showCancelButton: true,
         confirmButtonText: 'Delete',
         confirmButtonColor: 'red',
-        showLoaderOnConfirm: true,
-        preConfirm: (text) => {
-            return text === `Confirm`;
-        },
+        // showLoaderOnConfirm: true,
+        // preConfirm: (text) => {
+        //     return text === `Confirm`;
+        // },
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await Order.delete(module.Id);
+            let {data, message} = await Order.delete(companyStore.selectedCompany.Id, module.UUID);
             tableData.value.splice(index, 1);
             notificationStore.showNotification(message);
             emit('totalOrderCounter', --paginationData.value.total);
@@ -192,18 +193,6 @@ function deleteOrder(module, index) {
                     <option value="">Reset</option>
                 </select>
             </div>
-            <div class="col-3">
-                <select v-model="request.filters.ExportStatus"
-                        class="form-control fs-sm"
-                        @change="filtersOptionChange">
-                    <option value="">Export Status</option>
-                    <option v-for="(exportStatusLabel, exportStatusValue) in exportStatusOptions"
-                            :value="exportStatusValue"> {{ exportStatusLabel }}
-                    </option>
-                    <option value="">Reset</option>
-                </select>
-            </div>
-
             <div class="col-3">
                 <select v-model="request.filters.general"
                         class="form-control fs-sm"
@@ -239,10 +228,10 @@ function deleteOrder(module, index) {
                 <i class="fa fa-clipboard-list"></i>
             </router-link>
 
-            <!--            <button class="btn rounded-pill btn-alt-danger me-1" type="button"
-                                @click="deleteOrder(props.data, props.index)">
-                            <i class="fa fa-trash-alt"></i>
-                        </button>-->
+            <button class="btn rounded-pill btn-alt-danger me-1" type="button"
+                    @click="deleteOrder(props.data, props.index)">
+                <i class="fa fa-trash-alt"></i>
+            </button>
         </template>
     </DataGrid>
 </template>
