@@ -172,7 +172,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware(['company'])->group(function () {
         // Order
         Route::post('/orders', [OrderController::class, 'getOrders']);
+        Route::post('/open-orders', [OrderController::class, 'getOpenOrders']);
+        Route::post('/failed-orders', [OrderController::class, 'getFailedOrders']);
         Route::post('/order/details', [OrderController::class, 'details']);
+        Route::post('/order/delete', [OrderController::class, 'delete']);
+        Route::post('/order/origins-get', [OrderController::class, 'getOrderOriginOptions']);
 
         // Customer
         Route::post('/customers', [CustomerController::class, 'getCustomers']);

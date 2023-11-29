@@ -24,7 +24,7 @@ class DetailsOrDelete extends FormRequest
     public function rules()
     {
         return [
-            'UUID' => 'required|exists:Order,UUID'
+            'UUID' => 'required|exists:mysql_company.Orderhead,UUID'
         ];
     }
 }

@@ -10,4 +10,7 @@ interface OrderServiceInterface
     public function getOrders(Request $request): ServiceDto;
 
     public function details(Request $request): ServiceDto;
+
+    public function delete(Request $request): ServiceDto;
+
 }
