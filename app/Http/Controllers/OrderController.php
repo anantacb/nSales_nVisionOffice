@@ -29,6 +29,12 @@ class OrderController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getFailedOrders(PaginatedDataRequest $request): JsonResponse
+    {
+        $response = $this->service->getFailedOrders($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);

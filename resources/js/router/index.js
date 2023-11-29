@@ -56,6 +56,7 @@ const EditRole = () => import('@/views/roles/EditRole.vue');
 
 const Orders = () => import('@/views/order/Orders/Orders.vue');
 const OpenOrders = () => import('@/views/order/Open-Orders/OpenOrders.vue');
+const FailedOrders = () => import('@/views/order/Failed-Orders/FailedOrders.vue');
 const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
 const Customers = () => import('@/views/customer/Customers/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
@@ -443,6 +444,15 @@ const routes = [
                 }
             },
             {
+                path: "order/failed-orders",
+                name: "failed-orders",
+                component: FailedOrders,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
                 path: "order/:id",
                 name: "order-details",
                 component: OrderDetails,
@@ -451,7 +461,7 @@ const routes = [
                     company_specific: false
                 },
                 beforeEnter: (to, from) => {
-                    if (['orders', 'open-orders'].includes(from.name)) {
+                    if (['orders', 'open-orders', 'failed-orders'].includes(from.name)) {
                         localStorage.setItem('order-details-back-route', from.name);
                     }
                     return true;

@@ -27,6 +27,20 @@ export default class Order {
         });
     }
 
+    static getFailedOrders(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/failed-orders', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static details(CompanyId, OrderUUID) {
         return new Promise((resolve, reject) => {
             axios.post('/api/order/details', {

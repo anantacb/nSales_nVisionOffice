@@ -241,7 +241,7 @@ export default {
                 {
                     name: "Failed Orders",
                     icon: "fa fa-file-lines",
-                    to: "orders",
+                    to: "failed-orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
                 },

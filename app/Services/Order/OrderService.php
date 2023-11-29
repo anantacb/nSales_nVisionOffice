@@ -38,6 +38,14 @@ class OrderService implements OrderServiceInterface
         return new ServiceDto("Orders retrieved!!!", 200, $orders);
     }
 
+    public function getFailedOrders(Request $request): ServiceDto
+    {
+        $orders = $this->orderRepository->paginateWithSearchAndSortFailedOrders($request);
+        self::modifyOrderData($orders);
+
+        return new ServiceDto("Orders retrieved!!!", 200, $orders);
+    }
+
     /**
      * @param $orders array|Collection|LengthAwarePaginator|null
      */
