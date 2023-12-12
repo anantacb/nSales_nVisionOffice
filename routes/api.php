@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ModuleController;
@@ -184,5 +185,10 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/customer/update', [CustomerController::class, 'update']);
         Route::post('/customer/delete', [CustomerController::class, 'delete']);
         Route::post('/customer/details', [CustomerController::class, 'details']);
+
+        // Customer Visits
+        Route::post('/customer-visits', [CustomerVisitController::class, 'getCustomerVisits']);
+        Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
+
     });
 });
