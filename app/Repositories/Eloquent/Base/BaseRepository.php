@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent\Base;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 abstract class BaseRepository
 {
@@ -43,11 +44,49 @@ abstract class BaseRepository
         $query = $this->model;
 
         // Select only selected columns
+        $query = $this->getSelectedColumns($request, $query);
+
+        // Load relation with selected columns
+        $query = $this->getRelations($request, $query);
+
+        // Filter by table column
+        $query = $this->getFilters($request, $query);
+
+        // Filter by relation
+        $query = $this->getFilterByRelation($request, $query);
+
+        // Search
+        $query = $this->getSearch($request, $query);
+
+        // Order
+        $query = $this->getOrder($request, $query);
+
+        // pagination
+        return $this->getPagination($request, $query);
+    }
+
+    /**
+     * Select only selected columns
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getSelectedColumns(array|Request $request, $query): mixed
+    {
         if (isset($request["selected_columns"]) && $request["selected_columns"]) {
             $query = $query->select($request["selected_columns"]);
         }
+        return $query;
+    }
 
-        // Load relation with selected columns
+    /**
+     * Load relation with selected columns
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getRelations(array|Request $request, $query): mixed
+    {
         if (isset($request["relations"]) && count($request["relations"]) > 0) {
             foreach ($request['relations'] as $relation) {
                 if (isset($relation["columns"]) && is_array($relation["columns"]) && count($relation["columns"]) > 0) {
@@ -57,8 +96,17 @@ abstract class BaseRepository
                 }
             }
         }
+        return $query;
+    }
 
-        // Filter by table column
+    /**
+     * Filter by table column
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getFilters(array|Request $request, $query): mixed
+    {
         if (isset($request["filters"]) && count($request["filters"]) > 0) {
             foreach ($request["filters"] as $filter) {
                 if (is_array($filter["values"])) {
@@ -72,15 +120,33 @@ abstract class BaseRepository
                 }
             }
         }
+        return $query;
+    }
 
-        // Filter by relation
+    /**
+     * Filter by relation
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getFilterByRelation(array|Request $request, $query): mixed
+    {
         if (isset($request["filter_by_relation"]) && count($request["filter_by_relation"]) > 0) {
             foreach ($request["filter_by_relation"] as $filter) {
                 $query = $this->getWhereHas($query, $filter);
             }
         }
+        return $query;
+    }
 
-        // Search
+    /**
+     * Search By columns
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getSearch(array|Request $request, $query): mixed
+    {
         if (isset($request["query"]) && $request["query"] && isset($request["search_columns"])) {
             if (is_array($request["search_columns"])) {
                 $query = $query->where(function ($query) use ($request) {
@@ -97,21 +163,38 @@ abstract class BaseRepository
                 $query = $query->where($request["search_columns"], "like", "%" . $request["query"] . "%");
             }
         }
+        return $query;
+    }
 
-        // Order
+    /**
+     * OrderBy Columns
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getOrder(array|Request $request, $query): mixed
+    {
         if (isset($request["order"])) {
             foreach ($request["order"] as $order) {
                 $query = $query->orderBy($order["column"], $order["sort"] ?? "asc");
             }
         }
+        return $query;
+    }
 
-        // pagination
+    /**
+     * Pagination
+     * @param array|Request $request
+     * @param $query
+     * @return mixed
+     */
+    public function getPagination(array|Request $request, $query): mixed
+    {
         if (isset($request["pagination"])) {
             if ($request["pagination"]["page_no"]) {
                 return $query->paginate($request["pagination"]["per_page"] ?? 20, '*', 'page', $request["pagination"]["page_no"]);
             }
         }
-
         return $query->get();
     }
 
