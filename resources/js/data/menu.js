@@ -219,28 +219,28 @@ export default {
 
         {
             name: "Orders",
-            icon: "fa fa-file-lines",
+            icon: "fa fa-truck-moving",
             subActivePaths: ["order"],
             moduleSpecific: true,
             moduleName: 'Order',
             sub: [
                 {
                     name: "Orders",
-                    icon: "fa fa-truck-moving",
+                    icon: "fa fa-truck-arrow-right",
                     to: "orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
                 },
                 {
                     name: "Open Orders",
-                    icon: "fa fa-boxes",
+                    icon: "fa fa-cart-flatbed",
                     to: "open-orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
                 },
                 {
                     name: "Failed Orders",
-                    icon: "fa fa-file-lines",
+                    icon: "fa fa-shop-slash",
                     to: "failed-orders",
                     moduleSpecific: true,
                     moduleName: 'Order',
@@ -249,14 +249,14 @@ export default {
         },
         {
             name: "Customer",
-            icon: "fa fa-file-lines",
+            icon: "fa fa-users",
             subActivePaths: ["customer"],
             moduleSpecific: true,
             moduleName: 'Customer',
             sub: [
                 {
                     name: "Customer",
-                    icon: "fa fa-truck-moving",
+                    icon: "fa fa-users-line",
                     to: "customers",
                     moduleSpecific: true,
                     moduleName: 'Customer',
@@ -268,7 +268,7 @@ export default {
                 },
                 {
                     name: "Customer Visits",
-                    icon: "fa fa-boxes",
+                    icon: "fa fa-people-group",
                     to: "customer-visits",
                     moduleSpecific: true,
                     moduleName: 'CustomerVisit',
