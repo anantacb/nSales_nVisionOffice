@@ -131,9 +131,7 @@ watch(() => companyStore.getSelectedCompany, async () => {
         <BaseBlock ref="createCustomerRef" :title="`Create Customer (${companyStore.selectedCompany.Name})`"
                    content-full>
             <template #options>
-                <router-link :to="{name:'customers'}" class="btn btn-sm btn-outline-info">
-                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
-                </router-link>
+                <BackButton :routerName="`customers`"/>
             </template>
             <GeneralCreateForm :Errors="errors"
                                :GroupedTableFields="GroupedTableFields"
