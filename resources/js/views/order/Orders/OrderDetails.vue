@@ -37,9 +37,7 @@ onMounted(async () => {
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-alt">
                     <li class="mt-3 mt-md-0 ms-md-3 space-x-1">
-                        <router-link :to="{name: backButtonRoute}" class="btn btn-sm btn-outline-info">
-                            <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
-                        </router-link>
+                        <BackButton :routerName="backButtonRoute"/>
                     </li>
 
                 </ol>
