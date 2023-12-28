@@ -141,6 +141,12 @@ function deleteCustomer(customer, index) {
         @sortBy="sortBy"
     >
         <template v-slot:body-Action="props">
+            <ActionButton
+                :key="'details_'+props.data.Id"
+                :actionType="`details`"
+                :routeTo="{ name: 'customer-details', params: {id: props.data.Id} }"
+            />
+
             <!--            <router-link :to="{name: 'customer-details', params:{id: props.data.Id}}"
                                      class="btn rounded-pill btn-alt-warning me-1">
                             <i class="fa fa-pen-alt"></i>

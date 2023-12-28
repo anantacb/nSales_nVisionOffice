@@ -27,4 +27,11 @@ interface OrderRepositoryInterface extends BaseRepositoryInterface
      */
     public function paginateWithSearchAndSortFailedOrders(Request $request): Collection|LengthAwarePaginator;
 
+    /**
+     * @param Request $request
+     * @param int $ordersLimit
+     * @return Collection
+     */
+    public function latestOrdersByCustomer(Request $request, int $ordersLimit): Collection;
+
 }

@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, ref, watch} from "vue";
 import router from "@/router";
-import GeneralCreateForm from "@/components/ui/CreateForm/GeneralCreateForm.vue";
+import GeneralForm from "@/components/ui/FormElements/GeneralForm.vue";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import {useFormErrors} from "@/composables/useFormErrors";
@@ -84,8 +84,7 @@ function initFormValues() {
     });
 }
 
-
-async function create() {
+async function createCustomer() {
     createCustomerRef.value.statusLoading();
 
     let formData = {
@@ -133,12 +132,12 @@ watch(() => companyStore.getSelectedCompany, async () => {
             <template #options>
                 <BackButton :routerName="`customers`"/>
             </template>
-            <GeneralCreateForm :Errors="errors"
-                               :GroupedTableFields="GroupedTableFields"
-                               :ModelObject="ModelObject"
-                               @create="create"
-                               @resetErrors="resetErrors">
-            </GeneralCreateForm>
+            <GeneralForm :Errors="errors"
+                         :GroupedTableFields="GroupedTableFields"
+                         :ModelObject="ModelObject"
+                         @formAction="createCustomer"
+                         @resetErrors="resetErrors">
+            </GeneralForm>
         </BaseBlock>
     </div>
 </template>

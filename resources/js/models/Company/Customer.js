@@ -41,7 +41,8 @@ export default class Customer {
         return new Promise((resolve, reject) => {
             axios.post('/api/customer/details', {
                 CompanyId: CompanyId,
-                CustomerId: CustomerId
+                CustomerId: CustomerId,
+                //initials: initials
             })
                 .then(({data}) => {
                     resolve(data);

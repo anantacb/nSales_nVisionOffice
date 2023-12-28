@@ -12,7 +12,7 @@ let {numberFormat, dateFormat} = useFormatter();
 let OrderModel = ref({});
 let firstRowClass = ref('col-lg-6 col-xxl-6');
 let dateFormatStr = ref('DD, MMM YYYY');
-let backButtonRoute = localStorage.getItem('order-details-back-route') ?? 'orders';
+let backButtonRoute = localStorage.getItem('order-details-back-route') ?? '';
 
 async function getOrderDetails() {
     let {data} = await Order.details(companyStore.selectedCompany.Id, route.params.id);
@@ -225,7 +225,7 @@ onMounted(async () => {
         <BaseBlock title="Products">
             <template #content>
                 <div class="block-content block-content-full">
-                    <div class="table-responsive product-list-table">
+                    <div class="table-responsive order-line-table">
                         <table class="table table-striped table-vcenter ">
                             <thead>
                             <tr>
@@ -308,7 +308,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.product-list-table {
+.order-line-table {
     max-height: 300px;
     overflow: auto;
 }
