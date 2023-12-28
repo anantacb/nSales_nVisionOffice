@@ -141,14 +141,21 @@ function deleteCustomer(customer, index) {
         @sortBy="sortBy"
     >
         <template v-slot:body-Action="props">
+            <ActionButton
+                :key="'details_'+props.data.Id"
+                :actionType="`details`"
+                :routeTo="{ name: 'customer-details', params: {id: props.data.Id} }"
+            />
+
             <!--            <router-link :to="{name: 'customer-details', params:{id: props.data.Id}}"
                                      class="btn rounded-pill btn-alt-warning me-1">
                             <i class="fa fa-pen-alt"></i>
                         </router-link>-->
-            <button class="btn rounded-pill btn-alt-danger me-1" type="button"
-                    @click="deleteCustomer(props.data, props.index)">
-                <i class="fa fa-trash-alt"></i>
-            </button>
+            <ActionButton
+                :key="'delete_'+props.data.Id"
+                :actionType="`delete`"
+                @delete="deleteCustomer(props.data, props.index)"
+            />
         </template>
     </DataGrid>
 </template>

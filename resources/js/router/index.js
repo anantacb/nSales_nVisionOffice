@@ -60,6 +60,7 @@ const FailedOrders = () => import('@/views/order/Failed-Orders/FailedOrders.vue'
 const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
 const Customers = () => import('@/views/customer/Customers/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
+const CustomerDetails = () => import('@/views/customer/CustomerDetails.vue');
 const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
 
 const NotFound = () => import('@/views/404View.vue');
@@ -75,7 +76,7 @@ const routes = [
                 component: Home,
                 meta: {
                     authenticated: true,
-                    company_specific: false
+                    company_specific: true
                 }
             },
             {
@@ -485,6 +486,21 @@ const routes = [
                     authenticated: true,
                     company_specific: true
                 }
+            },
+            {
+                path: "customer/:id",
+                name: "customer-details",
+                component: CustomerDetails,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                },
+                beforeEnter: (to, from) => {
+                    if (['customers'].includes(from.name)) {
+                        localStorage.setItem('customer-details-back-route', from.name);
+                    }
+                    return true;
+                },
             },
 
             {
