@@ -15,6 +15,10 @@ export default function useGeneralCreate() {
         TableModel.value = data;
     }
 
+    function setModelObject(value) {
+        ModelObject.value = value;
+    }
+
     const ExceptColumns = ref(['Id', 'InsertTime', 'UpdateTime', 'DeleteTime', 'UUID', 'ImportTime']);
 
     function setExceptColumns(value) {
@@ -50,14 +54,14 @@ export default function useGeneralCreate() {
                 item.isCompanySpecific = false;
                 let formattedTableField = getFormattedTableField(item);
                 TableFields.push(formattedTableField);
-                ModelObject.value[formattedTableField.Name] = formattedTableField.DefaultValue;
+                ModelObject.value[formattedTableField.Name] = ModelObject.value[formattedTableField.Name] ?? formattedTableField.DefaultValue;
             }
         });
         data.companySpecificTableFields.forEach((item) => {
             item.isCompanySpecific = true;
             let formattedTableField = getFormattedTableField(item);
             TableFields.push(formattedTableField);
-            ModelObject.value[formattedTableField.Name] = formattedTableField.DefaultValue;
+            ModelObject.value[formattedTableField.Name] = ModelObject.value[formattedTableField.Name] ?? formattedTableField.DefaultValue;
         });
 
         const UnFormattedGroupedTableFields = _.groupBy(TableFields, 'GroupName');
@@ -120,6 +124,7 @@ export default function useGeneralCreate() {
         ModelObject,
         GroupedTableFields,
         setOverriddenProperties,
+        setModelObject,
         setExceptColumns,
         setCustomSortKeys,
         setNullHeaderText,

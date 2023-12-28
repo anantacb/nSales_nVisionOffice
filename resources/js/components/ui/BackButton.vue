@@ -4,12 +4,12 @@ import router from "@/router";
 const props = defineProps({
     routerName: {
         type: String,
-        default: "noBackRoute"
+        default: ""
     }
 });
 
 function goBack() {
-    return props.routerName !== "noBackRoute" ? router.push({name: props.routerName}) : router.go(-1);
+    return props.routerName ? router.push({name: props.routerName}) : router.go(-1);
 }
 
 </script>

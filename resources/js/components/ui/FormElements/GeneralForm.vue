@@ -21,23 +21,30 @@ const props = defineProps({
         required: false,
         default: () => {
         }
+    },
+    FormType: {
+        type: String,
+        required: false,
+        default: () => {
+            return "Save";
+        }
     }
 });
 
-function create() {
-    emit('create', props.ModelObject);
+function formAction() {
+    emit('formAction', props.ModelObject);
 }
 
 function resetErrors() {
     emit('resetErrors');
 }
 
-const emit = defineEmits(['create', 'resetErrors']);
+const emit = defineEmits(['formAction', 'resetErrors']);
 
 </script>
 
 <template>
-    <form class="space-y-4" @submit.prevent="create">
+    <form class="space-y-4" @submit.prevent="formAction">
 
         <div class="row space-y-2">
             <div v-for="(TableFields, GroupName) of props.GroupedTableFields" class="col-lg-4 space-y-2">
@@ -59,6 +66,7 @@ const emit = defineEmits(['create', 'resetErrors']);
                             :id="TableField.Name"
                             v-model="props.ModelObject[TableField.Name]"
                             :class="{'is-invalid' : props.Errors[TableField.Name]}"
+                            :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :required="!!TableField.InputRequired"
                             autocomplete="off"
@@ -71,6 +79,7 @@ const emit = defineEmits(['create', 'resetErrors']);
                             :id="TableField.Name"
                             id="Disabled"
                             v-model="props.ModelObject[TableField.Name]"
+                            :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :options="TableField.SelectOptions"
                             :required="!!TableField.InputRequired"
@@ -82,6 +91,7 @@ const emit = defineEmits(['create', 'resetErrors']);
                                :id="TableField.Name"
                                v-model="props.ModelObject[TableField.Name]"
                                :class="{'is-invalid' : props.Errors[TableField.Name]}"
+                               :disabled="!!TableField.InputLocked"
                                :name="TableField.Name"
                                :required="!!TableField.InputRequired"
                                autocomplete="off"
@@ -93,6 +103,7 @@ const emit = defineEmits(['create', 'resetErrors']);
                                :id="TableField.Name"
                                v-model="props.ModelObject[TableField.Name]"
                                :class="{'is-invalid' : props.Errors[TableField.Name]}"
+                               :disabled="!!TableField.InputLocked"
                                :name="TableField.Name"
                                :required="!!TableField.InputRequired"
                                autocomplete="off"
@@ -106,18 +117,20 @@ const emit = defineEmits(['create', 'resetErrors']);
                             :id="TableField.Name"
                             v-model="props.ModelObject[TableField.Name]"
                             :class="{'is-invalid' : props.Errors[TableField.Name]}"
+                            :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :required="!!TableField.InputRequired"
                             class="form-control form-control-sm"
                             rows="3"
                         >
-                                </textarea>
+                        </textarea>
 
                         <FlatPicker
                             v-else-if="['timestamp','datetime'].includes(TableField.DataType)"
                             :id="TableField.Name"
                             v-model="props.ModelObject[TableField.Name]"
                             :class="{'is-invalid' : props.Errors[TableField.Name]}"
+                            :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :required="!!TableField.InputRequired"
                             class="form-control form-control-sm"
@@ -129,6 +142,7 @@ const emit = defineEmits(['create', 'resetErrors']);
                             :id="TableField.Name"
                             id="Disabled"
                             v-model="props.ModelObject[TableField.Name]"
+                            :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :options="booleanOptions"
                             :required="!!TableField.InputRequired"
@@ -141,6 +155,7 @@ const emit = defineEmits(['create', 'resetErrors']);
                             :id="TableField.Name"
                             id="Disabled"
                             v-model="props.ModelObject[TableField.Name]"
+                            :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :options="TableField.SelectOptions"
                             :required="!!TableField.InputRequired"
@@ -155,7 +170,7 @@ const emit = defineEmits(['create', 'resetErrors']);
             </div>
         </div>
 
-        <button class="btn btn-outline-primary btn-sm col-2" type="submit">Save</button>
+        <button class="btn btn-outline-primary btn-sm col-2" type="submit">{{ props.FormType }}</button>
 
     </form>
 </template>
