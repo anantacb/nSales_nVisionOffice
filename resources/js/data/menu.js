@@ -255,7 +255,7 @@ export default {
             moduleName: 'Customer',
             sub: [
                 {
-                    name: "Customer",
+                    name: "Customers",
                     icon: "fa fa-users-line",
                     to: "customers",
                     moduleSpecific: true,

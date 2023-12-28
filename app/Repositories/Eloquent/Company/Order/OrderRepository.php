@@ -33,29 +33,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     /**
      * @param Request $request
-     * @return Collection|LengthAwarePaginator
-     */
-    public function paginateWithSearchAndSortOpenOrders(Request $request): Collection|LengthAwarePaginator
-    {
-        $query = $this->getBaseQuery($request);
-        $query = $query->whereIn('Status', ['Open']);
-        return $this->getFilteredQueryAndPaginatedResult($request, $query);
-    }
-
-    /**
-     * @param Request $request
-     * @return Collection|LengthAwarePaginator
-     */
-    public function paginateWithSearchAndSortFailedOrders(Request $request): Collection|LengthAwarePaginator
-    {
-        $query = $this->getBaseQuery($request);
-        $query = $query->whereIn('Status', ['Sent', 'Closed'])
-            ->where('ExportStatus', 'Error');
-        return $this->getFilteredQueryAndPaginatedResult($request, $query);
-    }
-
-    /**
-     * @param Request $request
      * @return mixed
      */
     private function getBaseQuery(Request $request): mixed
@@ -72,29 +49,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
 
         // Search
-        if (isset($request["query"]) && $request["query"] && isset($request["search_columns"])) {
-            if (is_array($request["search_columns"])) {
-                $query = $query->where(function ($query) use ($request) {
-                    foreach ($request["search_columns"] as $key => $column) {
-                        if ($key === 0) {
-                            $query = $query->where($column, "like", "%" . $request["query"] . "%");
-                        } else {
-                            $query = $query->orWhere($column, "like", "%" . $request["query"] . "%");
-                        }
-                    }
-                    return $query;
-                });
-            } else {
-                $query = $query->where($request["search_columns"], "like", "%" . $request["query"] . "%");
-            }
-        }
+        $query = $this->getSearch($request, $query);
 
         // Order
-        if (isset($request["order"])) {
-            foreach ($request["order"] as $order) {
-                $query = $query->orderBy($order["column"], $order["sort"] ?? "asc");
-            }
-        }
+        $query = $this->getOrder($request, $query);
 
         return $query;
     }
@@ -147,12 +105,49 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
 
         //pagination
-        if (isset($request["pagination"])) {
-            if ($request["pagination"]["page_no"]) {
-                return $query->paginate($request["pagination"]["per_page"] ?? 20, '*', 'page', $request["pagination"]["page_no"]);
-            }
-        }
-        return $query->get();
+        return $this->getPagination($request, $query);
+    }
+
+    /**
+     * @param Request $request
+     * @return Collection|LengthAwarePaginator
+     */
+    public function paginateWithSearchAndSortOpenOrders(Request $request): Collection|LengthAwarePaginator
+    {
+        $query = $this->getBaseQuery($request);
+        $query = $query->whereIn('Status', ['Open']);
+        return $this->getFilteredQueryAndPaginatedResult($request, $query);
+    }
+
+    /**
+     * @param Request $request
+     * @return Collection|LengthAwarePaginator
+     */
+    public function paginateWithSearchAndSortFailedOrders(Request $request): Collection|LengthAwarePaginator
+    {
+        $query = $this->getBaseQuery($request);
+        $query = $query->whereIn('Status', ['Sent', 'Closed'])
+            ->where('ExportStatus', 'Error');
+        return $this->getFilteredQueryAndPaginatedResult($request, $query);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $ordersLimit
+     * @return Collection
+     */
+    public function latestOrdersByCustomer(Request $request, int $ordersLimit = 20): Collection
+    {
+        return $this->model->select('UUID', 'OrderDate', 'TotalExVat', 'OrderNumber', 'ExportStatus', 'Type', 'CustomerCurrency')
+            ->whereHas('customer', function ($query) use ($request) {
+                $query->where('Id', $request->get('CustomerId'));
+            })
+            /*->where(function ($q) use ($request) {
+                if ($request->get('initials')) {
+                    $q->where('Employee', $request->get('initials'));
+                }
+            })*/
+            ->latest()->limit($ordersLimit)->get();
     }
 
 }

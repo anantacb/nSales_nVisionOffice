@@ -22,6 +22,8 @@ import BaseBlock from "@/components/BaseBlock.vue";
 import BaseBackground from "@/components/BaseBackground.vue";
 import BasePageHeading from "@/components/BasePageHeading.vue";
 import BaseContentHeading from "@/components/BaseContentHeading.vue";
+import BackButton from "@/components/ui/BackButton.vue";
+import ActionButton from "@/components/ui/ActionButton.vue";
 
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import Select from "@/components/ui/FormElements/Select.vue";
@@ -44,6 +46,8 @@ app.component("BaseBlock", BaseBlock);
 app.component("BaseBackground", BaseBackground);
 app.component("BasePageHeading", BasePageHeading);
 app.component("BaseContentHeading", BaseContentHeading);
+app.component("BackButton", BackButton);
+app.component("ActionButton", ActionButton);
 
 app.component("DataGrid", DataGrid);
 app.component("InputErrorMessages", InputErrorMessages);

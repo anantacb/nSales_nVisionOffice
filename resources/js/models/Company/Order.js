@@ -83,6 +83,23 @@ export default class Order {
                     reject(error);
                 });
         });
+    }
+
+    // Get latest Orders by Customer
+    static getLatestOrdersByCustomer(CompanyId, CustomerId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/customer/latest/orders', {
+                CompanyId: CompanyId,
+                CustomerId: CustomerId,
+                //initials: initials
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
 
     }
 }
