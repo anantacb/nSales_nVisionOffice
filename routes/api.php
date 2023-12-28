@@ -10,6 +10,7 @@ use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
+use App\Http\Controllers\OrderByCustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableController;
@@ -178,6 +179,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/order/details', [OrderController::class, 'details']);
         Route::post('/order/delete', [OrderController::class, 'delete']);
         Route::post('/order/origins-get', [OrderController::class, 'getOrderOriginOptions']);
+
+        // Order By Customer
+        Route::post('/customer/latest/orders', [OrderByCustomerController::class, 'latestOrdersByCustomer']);
 
         // Customer
         Route::post('/customers', [CustomerController::class, 'getCustomers']);

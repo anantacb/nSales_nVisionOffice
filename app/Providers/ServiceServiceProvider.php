@@ -20,6 +20,8 @@ use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
+use App\Services\Order\OrderByCustomerService;
+use App\Services\Order\OrderByCustomerServiceInterface;
 use App\Services\Order\OrderService;
 use App\Services\Order\OrderServiceInterface;
 use App\Services\Role\RoleService;
@@ -68,6 +70,7 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(EmailConfigurationServiceInterface::class, EmailConfigurationService::class);
         $this->app->bind(DataFilterServiceInterface::class, DataFilterService::class);
         $this->app->bind(OrderServiceInterface::class, OrderService::class);
+        $this->app->bind(OrderByCustomerServiceInterface::class, OrderByCustomerService::class);
         $this->app->bind(ApplicationModuleServiceInterface::class, ApplicationModuleService::class);
         $this->app->bind(CustomerServiceInterface::class, CustomerService::class);
         $this->app->bind(CustomerVisitServiceInterface::class, CustomerVisitService::class);
