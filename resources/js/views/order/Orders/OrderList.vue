@@ -6,6 +6,7 @@ import Order from "@/models/Company/Order";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
 import {useFormatter} from "@/composables/useFormatter";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -148,6 +149,28 @@ function filtersOptionChange() {
     getOrders();
 }
 
+function reExportOrder(module, index) {
+    Swal.fire({
+        title: 'Do you want to re-export the Order?',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Re-Export',
+        confirmButtonColor: 'red',
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            let {data, message} = await Order.reExportOrder(companyStore.selectedCompany.Id, module.UUID);
+            let index = _.findIndex(tableData.value, function (item) {
+                return item.UUID === data.UUID;
+            });
+            tableData.value[index].ExportStatus = null;
+            notificationStore.showNotification(message);
+        }
+    });
+}
+
 function deleteOrder(module, index) {
     Swal.fire({
         title: 'Are you sure? Delete Order?',
@@ -240,6 +263,14 @@ function deleteOrder(module, index) {
                 actionType="details"
                 content="Details"
             />
+            <PopOverButton
+                v-if="props.data.ExportStatus==='Exported'"
+                btnClass="btn rounded-pill me-1 btn-alt-primary"
+                content="Re-Export"
+                iconClass="fa fa-rotate-right fa-flip-horizontal"
+                @click="reExportOrder(props.data, props.index)">
+                >
+            </PopOverButton>
 
             <!--            <button class="btn rounded-pill btn-alt-danger me-1" type="button"
                                 @click="deleteOrder(props.data, props.index)">

@@ -127,6 +127,18 @@ class OrderService implements OrderServiceInterface
         return new ServiceDto("Order Origin Filter Options retrieved successfully.", 200, ['orderOriginsOptions' => $origins]);
     }
 
+    public function reExportOrder(Request $request): ServiceDto
+    {
+        $order = $this->orderRepository->firstByAttributes([
+            ['column' => 'UUID', 'operand' => '=', 'value' => $request->get('UUID')]
+        ]);
+
+        $this->orderRepository->update($order, [
+            'ExportStatus' => null
+        ]);
+        return new ServiceDto("Order Re-exported successfully.", 200, $order);
+    }
+
     public function latestOrdersByCustomer(Request $request): ServiceDto
     {
         $orders = $this->orderRepository->latestOrdersByCustomer($request, 20);
