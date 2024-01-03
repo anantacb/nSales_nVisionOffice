@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Order\DetailsOrDelete;
 use App\Http\Requests\Order\PaginatedDataRequest;
+use App\Http\Requests\Order\ReExportOrExportPdf;
 use App\Services\Order\OrderServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
@@ -52,4 +53,11 @@ class OrderController extends Controller
         $response = $this->service->getOrderOriginOptions();
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
+
+    public function reExportOrder(ReExportOrExportPdf $request): JsonResponse
+    {
+        $response = $this->service->reExportOrder($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
 }

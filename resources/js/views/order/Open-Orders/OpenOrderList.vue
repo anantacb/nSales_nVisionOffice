@@ -225,13 +225,15 @@ function deleteOrder(module, index) {
         <template v-slot:body-Action="props">
             <ActionButton
                 :key="'details_'+props.data.UUID"
-                :actionType="`details`"
                 :routeTo="{ name: 'order-details', params: {id: props.data.UUID} }"
+                actionType="details"
+                content="Details"
             />
 
             <ActionButton
                 :key="'delete_'+props.data.UUID"
-                :actionType="`delete`"
+                actionType="delete"
+                content="Delete"
                 @delete="deleteOrder(props.data, props.index)"
             />
         </template>

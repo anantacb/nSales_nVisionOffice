@@ -44,8 +44,8 @@ export default class Order {
     static details(CompanyId, OrderUUID) {
         return new Promise((resolve, reject) => {
             axios.post('/api/order/details', {
-                UUID: OrderUUID,
                 CompanyId: CompanyId,
+                UUID: OrderUUID,
             })
                 .then(({data}) => {
                     resolve(data);
@@ -59,8 +59,8 @@ export default class Order {
     static delete(CompanyId, OrderUUID) {
         return new Promise((resolve, reject) => {
             axios.post('/api/order/delete', {
-                UUID: OrderUUID,
                 CompanyId: CompanyId,
+                UUID: OrderUUID,
             })
                 .then(({data}) => {
                     resolve(data);
@@ -100,6 +100,21 @@ export default class Order {
                     reject(error);
                 });
         });
-
     }
+
+    static reExportOrder(CompanyId, OrderUUID) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/order/re-export', {
+                CompanyId: CompanyId,
+                UUID: OrderUUID,
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }
