@@ -179,6 +179,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/order/details', [OrderController::class, 'details']);
         Route::post('/order/delete', [OrderController::class, 'delete']);
         Route::post('/order/origins-get', [OrderController::class, 'getOrderOriginOptions']);
+        Route::post('/order/re-export', [OrderController::class, 'reExportOrder']);
 
         // Order By Customer
         Route::post('/customer/latest/orders', [OrderByCustomerController::class, 'latestOrdersByCustomer']);
