@@ -1,5 +1,8 @@
 <script setup>
 
+import router from "@/router";
+import {ref} from "vue";
+
 const props = defineProps({
     actionType: {
         type: String,
@@ -8,6 +11,10 @@ const props = defineProps({
             // The value must match one of these actions
             return ['details', 'edit', 'delete'].includes(value);
         }
+    },
+    content: {
+        type: String,
+        required: false,
     },
     // routeTo: {name: 'string|RouteName', params: object|{id: id}}
     routeTo: {
@@ -19,29 +26,44 @@ const props = defineProps({
 
 const emit = defineEmits(['delete']);
 
+let classObj = ref({
+    'details': {
+        'btn': 'btn-alt-info',
+        'icon': 'fa fa-file-invoice',
+    },
+    'edit': {
+        'btn': 'btn-alt-warning',
+        'icon': 'fa fa-pen-alt',
+    },
+    'delete': {
+        'btn': 'btn-alt-danger',
+        'icon': 'fa fa-trash-alt',
+    },
+});
+
+let btnContent = ref(props.content ?? props.actionType.charAt(0).toUpperCase() + props.actionType.slice(1));
+
+function btnAction() {
+    if (props.actionType === 'delete') {
+        emit('delete');
+    } else {
+        router.push(props.routeTo);
+    }
+}
+
 </script>
 
 <template>
 
-    <!-- For Details, Edit Button -->
-    <router-link
-        v-if="['details','edit'].includes(props.actionType)"
-        :class="props.actionType === 'edit' ? 'btn-alt-warning' : 'btn-alt-info'"
-        :to="props.routeTo"
+    <!-- For Button -->
+    <PopOverButton
+        :btnClass="classObj[props.actionType]['btn']"
+        :content="btnContent"
+        :iconClass="classObj[props.actionType]['icon']"
         class="btn rounded-pill me-1"
-    >
-        <i :class="props.actionType === 'edit' ? 'fa-pen-alt' : 'fa-file-invoice'" class="fa"></i>
-    </router-link>
-
-    <!-- For Delete Button -->
-    <button
-        v-if="props.actionType === 'delete'"
-        class="btn rounded-pill btn-alt-danger me-1"
-        type="button"
-        @click="$emit('delete')"
-    >
-        <i class="fa fa-trash-alt"></i>
-    </button>
+        @click="btnAction">
+        >
+    </PopOverButton>
 
 </template>
 
