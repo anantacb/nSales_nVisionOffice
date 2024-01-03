@@ -225,14 +225,15 @@ function deleteOrder(module, index) {
         <template v-slot:body-Action="props">
             <ActionButton
                 :key="'details_'+props.data.UUID"
-                :actionType="`details`"
                 :routeTo="{ name: 'order-details', params: {id: props.data.UUID} }"
+                actionType="details"
+                content="Details"
             />
 
-        <!-- <button class="btn rounded-pill btn-alt-danger me-1" type="button"
-                    @click="deleteOrder(props.data, props.index)">
-                <i class="fa fa-trash-alt"></i>
-            </button>-->
+            <!-- <button class="btn rounded-pill btn-alt-danger me-1" type="button"
+                        @click="deleteOrder(props.data, props.index)">
+                    <i class="fa fa-trash-alt"></i>
+                </button>-->
         </template>
     </DataGrid>
 </template>
