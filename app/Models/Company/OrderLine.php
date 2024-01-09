@@ -13,7 +13,7 @@ class OrderLine extends BaseModel
     protected $connection = 'mysql_company';
     protected $table = 'Orderline';
     protected $primaryKey = "UUID";
-    protected $appends = ['image_url'];
+    protected $appends = ['image_urls'];
 
     protected $guarded = [];
 
@@ -27,8 +27,8 @@ class OrderLine extends BaseModel
         return $this->belongsTo(Item::class, 'ItemNumber', 'Number');
     }
 
-    public function getImageUrlAttribute()
+    public function getImageUrlsAttribute()
     {
-        return FileUrlGenerator::imageUrlByElementNumber($this->ItemNumber);
+        return FileUrlGenerator::getItemImageUrlByElementNumber($this->ItemNumber);
     }
 }

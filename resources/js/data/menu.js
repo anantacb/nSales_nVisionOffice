@@ -275,5 +275,27 @@ export default {
                 }
             ]
         },
+        {
+            name: "Product",
+            icon: "fa fa-gift",
+            subActivePaths: ["product"],
+            moduleSpecific: true,
+            moduleName: 'Item',
+            sub: [
+                {
+                    name: "Products",
+                    icon: "fa fa-gifts",
+                    to: "items",
+                    moduleSpecific: true,
+                    moduleName: 'Item',
+                },
+                /*{
+                    name: "Create Product",
+                    icon: "fa fa-plus",
+                    to: "create-customer",
+                },*/
+
+            ]
+        },
     ]
 };
