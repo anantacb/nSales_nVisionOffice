@@ -58,10 +58,13 @@ const Orders = () => import('@/views/order/Orders/Orders.vue');
 const OpenOrders = () => import('@/views/order/Open-Orders/OpenOrders.vue');
 const FailedOrders = () => import('@/views/order/Failed-Orders/FailedOrders.vue');
 const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
+
 const Customers = () => import('@/views/customer/Customers/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
 const CustomerDetails = () => import('@/views/customer/CustomerDetails.vue');
 const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
+
+const Items = () => import('@/views/item/Items/Items.vue');
 
 const NotFound = () => import('@/views/404View.vue');
 
@@ -502,7 +505,6 @@ const routes = [
                     return true;
                 },
             },
-
             {
                 path: "customer-visit/customer-visits",
                 name: "customer-visits",
@@ -512,6 +514,16 @@ const routes = [
                     company_specific: true
                 }
             },
+            {
+                path: "item/items",
+                name: "items",
+                component: Items,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+
         ],
     },
 

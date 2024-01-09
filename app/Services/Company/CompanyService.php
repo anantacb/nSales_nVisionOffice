@@ -129,6 +129,27 @@ class CompanyService implements CompanyServiceInterface
         DB::connection('mysql_company')->reconnect();
     }
 
+    public static function isModuleEnabled(string $moduleName): bool
+    {
+        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        $modules = $selectedCompany->modules->toArray();
+        return in_array($moduleName, array_column($modules, 'Name'));
+    }
+
+    public static function getSettingValue(string $moduleName, string $key)
+    {
+        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
+    }
+
+    public static function getSettingsKeys(string $moduleName, string $keyLike): array
+    {
+        $selectedCompanySettings = array_keys(Cache::get('company_' . request()->get('CompanyId'))->module_settings[$moduleName]);
+        return array_filter($selectedCompanySettings, function ($value) use ($keyLike) {
+            return (stripos($value, $keyLike) !== false);
+        });
+    }
+
     public function getAllCompanies(Request $request): ServiceDto
     {
         $companies = $this->companyRepository->getByAttributes(
@@ -366,16 +387,5 @@ class CompanyService implements CompanyServiceInterface
         ], '', ['Id', 'Name', 'CompanyName']);
 
         return new ServiceDto("Companies Retrieved Successfully.", 200, $assignAbleCompanies);
-    }
-    public static function isModuleEnabled(string $moduleName): bool
-    {
-        $selectedCompany = Cache::get('company_'.request()->get('CompanyId'));
-        $modules = $selectedCompany->modules->toArray();
-        return in_array($moduleName, array_column($modules, 'Name'));
-    }
-    public static function getSettingValue(string $moduleName, string $key)
-    {
-        $selectedCompany = Cache::get('company_'.request()->get('CompanyId'));
-        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
     }
 }

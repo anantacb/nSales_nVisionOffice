@@ -8,6 +8,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\OrderByCustomerController;
@@ -194,6 +195,9 @@ Route::middleware(['auth:api'])->group(function () {
         // Customer Visits
         Route::post('/customer-visits', [CustomerVisitController::class, 'getCustomerVisits']);
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
+
+        // Items or items
+        Route::post('/items', [ItemController::class, 'getItems']);
 
     });
 });

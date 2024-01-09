@@ -16,6 +16,8 @@ use App\Services\DataFilter\DataFilterService;
 use App\Services\DataFilter\DataFilterServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
+use App\Services\Item\ItemService;
+use App\Services\Item\ItemServiceInterface;
 use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
@@ -74,5 +76,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ApplicationModuleServiceInterface::class, ApplicationModuleService::class);
         $this->app->bind(CustomerServiceInterface::class, CustomerService::class);
         $this->app->bind(CustomerVisitServiceInterface::class, CustomerVisitService::class);
+        $this->app->bind(ItemServiceInterface::class, ItemService::class);
     }
 }
