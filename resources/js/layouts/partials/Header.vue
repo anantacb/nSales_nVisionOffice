@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {onBeforeMount, ref} from "vue";
 import {useTemplateStore} from "@/stores/templateStore";
 import {useAuthStore} from "@/stores/authStore";
 import User from "@/models/Office/User";
@@ -15,7 +15,6 @@ const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 const companyStore = useCompanyStore();
 
-companyStore.fill();
 
 const route = useRoute();
 
@@ -34,6 +33,12 @@ async function logout() {
 function companyChanged(companyId) {
     companyStore.setSelectedCompanyById(companyId);
 }
+
+onBeforeMount(async () => {
+    templateStore.pageLoader({mode: 'on'});
+    await companyStore.fill();
+    templateStore.pageLoader({mode: 'off'});
+})
 
 </script>
 
