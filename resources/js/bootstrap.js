@@ -29,6 +29,7 @@ window.axios.interceptors.response.use(
         if (error.response.status === 401) {
             const authStore = useAuthStore();
             authStore.logout();
+            console.log(router.currentRoute);
             router.push({name: 'login'})
         }
         return Promise.reject(error);

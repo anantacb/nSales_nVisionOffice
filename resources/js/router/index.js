@@ -564,12 +564,17 @@ router.beforeEach((to, from, next) => {
         if (isAuthenticated) {
             next();
         } else {
-            localStorage.setItem('expected_route', to.name);
-            router.push({name: 'login'})
+            delete axios.defaults.headers.common['Authorization'];
+            router.push({
+                name: 'login',
+                query: {
+                    'redirect_to': to.path
+                }
+            });
         }
     } else {
         if (isAuthenticated && to.name !== 'not_found') {
-            router.push({name: 'home'})
+            router.push({name: 'home'});
         } else {
             next();
         }
