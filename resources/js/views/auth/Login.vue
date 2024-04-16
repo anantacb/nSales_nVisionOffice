@@ -52,10 +52,11 @@ async function login() {
 
     try {
         let {data} = await User.login(state.email, state.password);
+        console.log(data);
         await authStore.setToken(data);
-        await router.push({name: localStorage.getItem('expected_route') ? localStorage.getItem('expected_route') : 'home'});
-        localStorage.removeItem('expected_route');
+        await router.push({path: router.currentRoute.value.query.redirect_to ? router.currentRoute.value.query.redirect_to : '/'});
     } catch (exception) {
+        console.log(exception.response, exception);
         login_error_message.value = exception.response.data.message;
     }
 }
