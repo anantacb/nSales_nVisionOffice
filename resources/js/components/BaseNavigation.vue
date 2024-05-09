@@ -74,7 +74,11 @@ function subIsActive(paths) {
     const activePaths = Array.isArray(paths) ? paths : [paths];
 
     return activePaths.some((path) => {
-        return route.path.indexOf(path) === 1; // current path starts with this path string
+        let path_splits = route.path.split('/');
+        if (path_splits[1] === path) {
+            return true;
+        }
+        //return route.path.indexOf(path) === 1; // current path starts with this path string
     });
 }
 

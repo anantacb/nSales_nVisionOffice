@@ -3,7 +3,13 @@ import NProgress from "nprogress/nprogress.js";
 
 import LayoutBackend from "@/layouts/variations/Backend.vue";
 import LayoutSimple from "@/layouts/variations/Simple.vue";
+
 import {useAuthStore} from "@/stores/authStore";
+import {useCompanyStore} from "@/stores/companyStore";
+
+import useCompanyInfos from "@/composables/useCompanyInfos";
+
+const {isModuleEnabled} = useCompanyInfos();
 
 const Login = () => import("@/views/auth/Login.vue");
 const Home = () => import("@/views/Home.vue");
@@ -63,6 +69,21 @@ const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
 const CustomerDetails = () => import('@/views/customer/CustomerDetails.vue');
 const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
 
+const Languages = () => import('@/views/language/Languages/Languages.vue');
+const CreateLanguage = () => import('@/views/language/CreateLanguage.vue');
+const EditLanguage = () => import('@/views/language/EditLanguage.vue');
+
+const Translations = () => import('@/views/translation/Translations/Translations.vue');
+const CreateTranslation = () => import('@/views/translation/CreateTranslation.vue');
+const EditTranslation = () => import('@/views/translation/EditTranslation.vue');
+
+const CompanyLanguages = () => import('@/views/company-language/CompanyLanguages/CompanyLanguages.vue');
+
+
+const CompanyTranslations = () => import('@/views/company-translation/CompanyTranslations/CompanyTranslations.vue');
+const CreateCompanyTranslation = () => import('@/views/company-translation/CreateCompanyTranslation.vue');
+const EditCompanyTranslation = () => import('@/views/company-translation/EditCompanyTranslation.vue');
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -70,6 +91,7 @@ const routes = [
         path: "",
         component: LayoutBackend,
         children: [
+            // Office Routes
             {
                 path: "",
                 name: "home",
@@ -427,6 +449,64 @@ const routes = [
             },
 
             {
+                path: "language/languages",
+                name: "languages",
+                component: Languages,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "language/create",
+                name: "create-language",
+                component: CreateLanguage,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "language/:id/edit",
+                name: "edit-language",
+                component: EditLanguage,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+
+            {
+                path: "translation/translations",
+                name: "translations",
+                component: Translations,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "translation/create",
+                name: "create-translation",
+                component: CreateTranslation,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "translation/:id/edit",
+                name: "edit-translation",
+                component: EditTranslation,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+
+
+            // Company Routes
+            {
                 path: "order/orders",
                 name: "orders",
                 component: Orders,
@@ -512,6 +592,45 @@ const routes = [
                     company_specific: true
                 }
             },
+
+            {
+                path: "company-language/company-languages",
+                name: "company-languages",
+                component: CompanyLanguages,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+
+            {
+                path: "company-translation/company-translations",
+                name: "company-translations",
+                component: CompanyTranslations,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "company-translation/create",
+                name: "create-company-translation",
+                component: CreateCompanyTranslation,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "company-translation/:id/edit",
+                name: "edit-company-translation",
+                component: EditCompanyTranslation,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+
         ],
     },
 
@@ -559,6 +678,7 @@ NProgress.configure({showSpinner: true});
 
 router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
+    const companyStore = useCompanyStore();
     const isAuthenticated = authStore.isAuthenticated();
     if (to.meta.authenticated) {
         if (isAuthenticated) {
