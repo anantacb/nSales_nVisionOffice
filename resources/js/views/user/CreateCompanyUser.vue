@@ -42,8 +42,6 @@ async function getRoles() {
 
 async function createUser() {
     createCompanyUserRef.value.statusLoading();
-
-    console.log("ok");
     let formData = {
         Name: Name.value,
         Email: Email.value,

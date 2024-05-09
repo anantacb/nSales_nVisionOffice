@@ -4,10 +4,13 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyLanguageController;
+use App\Http\Controllers\CompanyTranslationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\OrderByCustomerController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
 use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\TableIndexController;
+use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -146,6 +150,21 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/application/delete', [ApplicationController::class, 'delete']);
     Route::post('/application/details', [ApplicationController::class, 'details']);
 
+    // Language
+    Route::post('languages/all', [LanguageController::class, 'getAllLanguages']);
+    Route::post('/languages', [LanguageController::class, 'getLanguages']);
+    Route::post('/language/create', [LanguageController::class, 'create']);
+    Route::post('/language/update', [LanguageController::class, 'update']);
+    Route::post('/language/delete', [LanguageController::class, 'delete']);
+    Route::post('/language/details', [LanguageController::class, 'details']);
+
+    // Translation
+    Route::post('/translations', [TranslationController::class, 'getTranslations']);
+    Route::post('/translation/create', [TranslationController::class, 'create']);
+    Route::post('/translation/update', [TranslationController::class, 'update']);
+    Route::post('/translation/delete', [TranslationController::class, 'delete']);
+    Route::post('/translation/details', [TranslationController::class, 'details']);
+
     // EmailConfiguration
     Route::post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);
     Route::post('/email-configurations/company-email-configurations', [EmailConfigurationController::class, 'getCompanyEmailConfigurations']);
@@ -194,6 +213,20 @@ Route::middleware(['auth:api'])->group(function () {
         // Customer Visits
         Route::post('/customer-visits', [CustomerVisitController::class, 'getCustomerVisits']);
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
+
+        // Company Language
+        Route::post('company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
+        Route::post('/company-languages', [CompanyLanguageController::class, 'getCompanyLanguages']);
+        Route::post('/company-language/delete', [CompanyLanguageController::class, 'delete']);
+        Route::post('/company-language/set-as-default-language', [CompanyLanguageController::class, 'setAsDefaultLanguage']);
+        Route::post('/company-language/add-company-language', [CompanyLanguageController::class, 'addCompanyLanguage']);
+
+        // Company Translation
+        Route::post('/company-translations', [CompanyTranslationController::class, 'getCompanyTranslations']);
+        Route::post('/company-translation/create', [CompanyTranslationController::class, 'create']);
+        Route::post('/company-translation/update', [CompanyTranslationController::class, 'update']);
+        Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
+        Route::post('/company-translation/details', [CompanyTranslationController::class, 'details']);
 
     });
 });
