@@ -13,6 +13,9 @@ abstract class BaseModel extends Model
 
     public const CREATED_AT = "InsertTime";
     public const UPDATED_AT = "UpdateTime";
+
+    public const DELETED_AT = "DeleteTime";
+
     protected $primaryKey = "Id";
     protected $guarded = [];
 

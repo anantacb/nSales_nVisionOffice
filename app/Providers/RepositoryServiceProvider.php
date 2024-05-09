@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepository;
+use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepository;
+use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepositoryInterface;
 use App\Repositories\Eloquent\Company\Customer\CustomerRepository;
 use App\Repositories\Eloquent\Company\Customer\CustomerRepositoryInterface;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepository;
@@ -32,6 +36,8 @@ use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepository;
 use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepository;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
+use App\Repositories\Eloquent\Office\Language\LanguageRepository;
+use App\Repositories\Eloquent\Office\Language\LanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepository;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepository;
@@ -48,6 +54,8 @@ use App\Repositories\Eloquent\Office\TableField\TableFieldRepository;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepository;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepositoryInterface;
+use App\Repositories\Eloquent\Office\Translation\TranslationRepository;
+use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepository;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -106,5 +114,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OrderLineRepositoryInterface::class, OrderLineRepository::class);
         $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
         $this->app->bind(CustomerVisitRepositoryInterface::class, CustomerVisitRepository::class);
+
+        $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
+        $this->app->bind(TranslationRepositoryInterface::class, TranslationRepository::class);
+
+        $this->app->bind(CompanyLanguageRepositoryInterface::class, CompanyLanguageRepository::class);
+        $this->app->bind(CompanyTranslationRepositoryInterface::class, CompanyTranslationRepository::class);
     }
 }
