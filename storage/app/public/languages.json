@@ -1,0 +1,44 @@
+[
+    {
+        "Name": "English",
+        "Code": "en",
+        "Locale": "en-US",
+        "IsDefault": 1
+    },
+    {
+        "Name": "Danish",
+        "Code": "da",
+        "Locale": "da-DK",
+        "IsDefault": 0
+    },
+    {
+        "Name": "German",
+        "Code": "de",
+        "Locale": "de-DE",
+        "IsDefault": 0
+    },
+    {
+        "Name": "French",
+        "Code": "fr",
+        "Locale": "fr-FR",
+        "IsDefault": 0
+    },
+    {
+        "Name": "Spanish",
+        "Code": "es",
+        "Locale": "es-ES",
+        "IsDefault": 0
+    },
+    {
+        "Name": "Swedish",
+        "Code": "sv",
+        "Locale": "sv-SE",
+        "IsDefault": 0
+    },
+    {
+        "Name": "Norwegian",
+        "Code": "no",
+        "Locale": "no-NO",
+        "IsDefault": 0
+    }
+]

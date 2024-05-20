@@ -15,8 +15,6 @@ class OrderLine extends BaseModel
     protected $primaryKey = "UUID";
     protected $appends = ['image_urls'];
 
-    protected $guarded = [];
-
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'OrderUUID', 'UUID');

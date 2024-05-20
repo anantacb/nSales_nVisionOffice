@@ -9,8 +9,6 @@ class Pricegroup extends BaseModel
 {
     protected $connection = 'mysql_company';
     protected $table = 'Pricegroup';
-    protected $primaryKey = 'Id';
-    protected $guarded = [];
 
     public function item(): BelongsTo
     {

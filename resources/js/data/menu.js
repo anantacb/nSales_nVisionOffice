@@ -205,6 +205,34 @@ export default {
         },
 
         {
+            name: "Language",
+            icon: "fa fa-language",
+            subActivePaths: ["language", 'translation'],
+            sub: [
+                {
+                    name: "Languages",
+                    icon: "fa fa-language",
+                    to: "languages",
+                },
+                {
+                    name: "Create Language",
+                    icon: "fa fa-plus",
+                    to: "create-language",
+                },
+                {
+                    name: "Translations",
+                    icon: "fa fa-language",
+                    to: "translations",
+                },
+                {
+                    name: "Create Translation",
+                    icon: "fa fa-plus",
+                    to: "create-translation",
+                }
+            ],
+        },
+
+        {
             name: "Log Viewer",
             to: "/log-viewer",
             icon: "far fa-eye",
@@ -247,6 +275,7 @@ export default {
                 },
             ]
         },
+
         {
             name: "Customer",
             icon: "fa fa-users",
@@ -265,6 +294,8 @@ export default {
                     name: "Create Customer",
                     icon: "fa fa-plus",
                     to: "create-customer",
+                    moduleSpecific: true,
+                    moduleName: 'Customer',
                 },
                 {
                     name: "Customer Visits",
@@ -294,7 +325,37 @@ export default {
                     icon: "fa fa-plus",
                     to: "create-customer",
                 },*/
+            ]
+        },
 
+        {
+            name: "Language",
+            icon: "fa fa-language",
+            subActivePaths: ["company-language", "company-translation"],
+            moduleSpecific: true,
+            moduleName: 'Translation',
+            sub: [
+                {
+                    name: "Languages",
+                    icon: "fa fa-language",
+                    to: "company-languages",
+                    moduleSpecific: true,
+                    moduleName: 'Translation',
+                },
+                {
+                    name: "Translations",
+                    icon: "fa fa-shop-slash",
+                    to: "company-translations",
+                    moduleSpecific: true,
+                    moduleName: 'Translation',
+                },
+                {
+                    name: "Create Translation",
+                    icon: "fa fa-plus",
+                    to: "create-company-translation",
+                    moduleSpecific: true,
+                    moduleName: 'Translation',
+                }
             ]
         },
     ]

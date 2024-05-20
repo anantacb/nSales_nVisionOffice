@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import Company from "@/models/Office/Company";
-import _ from "lodash";
+import Module from "@/models/Office/Module";
 
 export const useCompanyStore = defineStore('company', {
     state: () => ({
@@ -9,25 +9,26 @@ export const useCompanyStore = defineStore('company', {
         selectedCompanyModules: [],
     }),
     actions: {
-        setSelectedCompanyById(companyId) {
+        async setSelectedCompanyById(companyId) {
             let tempCompany = this.companies.filter((company) => {
                 return company.Id === parseInt(companyId);
             })[0];
 
-            this.selectedCompany = _.omit(tempCompany, ['modules']);
+            this.selectedCompany = tempCompany;
             localStorage.setItem('selectedCompany', JSON.stringify(this.selectedCompany));
 
-            this.selectedCompanyModules = tempCompany.modules;
-            localStorage.setItem('selectedCompanyModules', JSON.stringify(tempCompany.modules));
+            let {data} = await Module.getActivatedModulesByCompany(tempCompany.Id);
+            this.selectedCompanyModules = data;
+            localStorage.setItem('selectedCompanyModules', JSON.stringify(data));
         },
 
         async fill() {
             let {data} = await Company.getAllCompanies();
             this.companies = data;
             if (localStorage.getItem('selectedCompany')) {
-                this.setSelectedCompanyById(JSON.parse(localStorage.getItem('selectedCompany')).Id);
+                await this.setSelectedCompanyById(JSON.parse(localStorage.getItem('selectedCompany')).Id);
             } else {
-                this.setSelectedCompanyById(this.companies[0].Id);
+                await this.setSelectedCompanyById(this.companies[0].Id);
             }
         }
     },
