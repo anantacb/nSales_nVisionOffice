@@ -8,6 +8,10 @@ use App\Services\ApplicationModule\ApplicationModuleService;
 use App\Services\ApplicationModule\ApplicationModuleServiceInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
+use App\Services\CompanyLanguage\CompanyLanguageService;
+use App\Services\CompanyLanguage\CompanyLanguageServiceInterface;
+use App\Services\CompanyTranslation\CompanyTranslationService;
+use App\Services\CompanyTranslation\CompanyTranslationServiceInterface;
 use App\Services\Customer\CustomerService;
 use App\Services\Customer\CustomerServiceInterface;
 use App\Services\CustomerVisit\CustomerVisitService;
@@ -18,6 +22,8 @@ use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
 use App\Services\Item\ItemService;
 use App\Services\Item\ItemServiceInterface;
+use App\Services\Language\LanguageService;
+use App\Services\Language\LanguageServiceInterface;
 use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
@@ -36,6 +42,8 @@ use App\Services\TableHelper\TableHelperService;
 use App\Services\TableHelper\TableHelperServiceInterface;
 use App\Services\TableIndex\TableIndexService;
 use App\Services\TableIndex\TableIndexServiceInterface;
+use App\Services\Translation\TranslationService;
+use App\Services\Translation\TranslationServiceInterface;
 use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
 use Illuminate\Support\ServiceProvider;
@@ -77,5 +85,9 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(CustomerServiceInterface::class, CustomerService::class);
         $this->app->bind(CustomerVisitServiceInterface::class, CustomerVisitService::class);
         $this->app->bind(ItemServiceInterface::class, ItemService::class);
+        $this->app->bind(LanguageServiceInterface::class, LanguageService::class);
+        $this->app->bind(TranslationServiceInterface::class, TranslationService::class);
+        $this->app->bind(CompanyLanguageServiceInterface::class, CompanyLanguageService::class);
+        $this->app->bind(CompanyTranslationServiceInterface::class, CompanyTranslationService::class);
     }
 }

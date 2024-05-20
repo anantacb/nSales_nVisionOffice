@@ -10,6 +10,8 @@ interface BaseRepositoryInterface
 {
     public function getModel();
 
+    public function updateAll(array $data);
+
     /**
      *
      * @return Collection
@@ -56,7 +58,7 @@ interface BaseRepositoryInterface
      * @param $value
      * @return Collection
      */
-    public function getByAttribute(string $attribute, $operator, $value);
+    public function getByAttribute(string $attribute, string $operator, $value);
 
     /**
      * Find resource by criteria or relation

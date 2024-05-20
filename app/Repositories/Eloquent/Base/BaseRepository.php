@@ -140,6 +140,29 @@ abstract class BaseRepository
     }
 
     /**
+     * @param mixed $model
+     * @param $relation
+     * @return mixed
+     */
+    protected function getWhereHas(mixed $model, $relation): mixed
+    {
+        $model = $model->whereHas($relation["relation"], function ($query) use ($relation) {
+            if ($relation["values"]) {
+                if (is_array($relation["values"])) {
+                    if ($relation["operator"] === "!=") {
+                        return $query->whereNotIn($relation["column"], $relation["values"]);
+                    } else {
+                        return $query->whereIn($relation["column"], $relation["values"]);
+                    }
+                } else {
+                    return $query->where($relation["column"], $relation["operator"], $relation["values"]);
+                }
+            }
+        });
+        return $model;
+    }
+
+    /**
      * Search By columns
      * @param array|Request $request
      * @param $query
@@ -196,29 +219,6 @@ abstract class BaseRepository
             }
         }
         return $query->get();
-    }
-
-    /**
-     * @param mixed $model
-     * @param $relation
-     * @return mixed
-     */
-    protected function getWhereHas(mixed $model, $relation): mixed
-    {
-        $model = $model->whereHas($relation["relation"], function ($query) use ($relation) {
-            if ($relation["values"]) {
-                if (is_array($relation["values"])) {
-                    if ($relation["operator"] === "!=") {
-                        return $query->whereNotIn($relation["column"], $relation["values"]);
-                    } else {
-                        return $query->whereIn($relation["column"], $relation["values"]);
-                    }
-                } else {
-                    return $query->where($relation["column"], $relation["operator"], $relation["values"]);
-                }
-            }
-        });
-        return $model;
     }
 
     /**
@@ -303,7 +303,7 @@ abstract class BaseRepository
      * @param $value
      * @return Collection
      */
-    public function getByAttribute(string $attribute, $operator, $value)
+    public function getByAttribute(string $attribute, string $operator, $value)
     {
         return $this->model->where($attribute, $operator, $value)->get();
     }
@@ -336,6 +336,15 @@ abstract class BaseRepository
     public function getModel()
     {
         return $this->model;
+    }
+
+    /**
+     * @param array $data
+     * @return int
+     */
+    public function updateAll(array $data)
+    {
+        return $this->getModel()->query()->update($data);
     }
 
     /**
