@@ -10,11 +10,13 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
+use App\Http\Controllers\ItemAttributeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\OrderByCustomerController;
+use App\Http\Controllers\OrderByItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\TableIndexController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebShopLanguageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -204,6 +207,12 @@ Route::middleware(['auth:api'])->group(function () {
         // Order By Customer
         Route::post('/customer/latest/orders', [OrderByCustomerController::class, 'latestOrdersByCustomer']);
 
+        // Order By Item
+        Route::post('/item/total-sales-yearly', [OrderByItemController::class, 'totalSalesYearlyByItem']);
+        Route::post('/item/total-sales-monthly', [OrderByItemController::class, 'totalSalesMonthlyByItem']);
+        Route::post('/item/quantity-orders-yearly', [OrderByItemController::class, 'totalQuantityYearlyByItem']);
+        Route::post('/item/quantity-orders-monthly', [OrderByItemController::class, 'totalQuantityMonthlyByItem']);
+
         // Customer
         Route::post('/customers', [CustomerController::class, 'getCustomers']);
         Route::post('/customer/create', [CustomerController::class, 'create']);
@@ -215,8 +224,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/customer-visits', [CustomerVisitController::class, 'getCustomerVisits']);
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
 
-        // Items or items
+        // Items or Products
         Route::post('/items', [ItemController::class, 'getItems']);
+        Route::post('/item/details', [ItemController::class, 'details']);
+
+        // Item attributes
+        Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem']);
+
         // Company Language
         Route::post('company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
         Route::post('/company-languages', [CompanyLanguageController::class, 'getCompanyLanguages']);
@@ -230,6 +244,10 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/company-translation/update', [CompanyTranslationController::class, 'update']);
         Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
         Route::post('/company-translation/details', [CompanyTranslationController::class, 'details']);
+
+        // Web Shop Language
+        Route::post('web-shop-languages/all', [WebShopLanguageController::class, 'getAllWebShopLanguages']);
+
 
     });
 });

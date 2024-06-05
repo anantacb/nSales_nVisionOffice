@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Item\DetailsOrDelete;
 use App\Http\Requests\PaginatedDataRequest;
 use App\Services\Item\ItemServiceInterface;
 use App\Transformer\ApiResponseTransformer;
@@ -19,6 +20,12 @@ class ItemController extends Controller
     public function getItems(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getItems($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function details(DetailsOrDelete $request): JsonResponse
+    {
+        $response = $this->service->details($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

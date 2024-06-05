@@ -171,14 +171,14 @@ function deleteCustomer(customer, index) {
         </template>
 
         <template v-slot:body-Action="props">
-            <!--            <ActionButton
+                        <ActionButton
                             :key="'details_'+props.data.Id"
-                            :routeTo="{ name: 'customer-details', params: {id: props.data.Id} }"
+                            :routeTo="{ name: 'item-details', params: {id: props.data.Id} }"
                             actionType="details"
                             content="Details"
                         />
 
-                        <ActionButton
+<!--                        <ActionButton
                             :key="'delete_'+props.data.Id"
                             actionType="delete"
                             content="Delete"
