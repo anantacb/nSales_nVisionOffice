@@ -71,6 +71,8 @@ const CustomerDetails = () => import('@/views/customer/CustomerDetails.vue');
 const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
 
 const Items = () => import('@/views/item/Items/Items.vue');
+const ItemDetails = () => import('@/views/item/ItemDetails/ItemDetails.vue');
+
 const Languages = () => import('@/views/language/Languages/Languages.vue');
 const CreateLanguage = () => import('@/views/language/CreateLanguage.vue');
 const EditLanguage = () => import('@/views/language/EditLanguage.vue');
@@ -597,6 +599,25 @@ const routes = [
                 path: "item/items",
                 name: "items",
                 component: Items,
+                meta: {
+                    authenticated: true,
+                    company_specific: true
+                }
+            },
+            {
+                path: "item/:id",
+                name: "item-details",
+                component: ItemDetails,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                },
+                beforeEnter: (to, from) => {
+                    if (['items'].includes(from.name)) {
+                        localStorage.setItem('item-details-back-route', from.name);
+                    }
+                    return true;
+                },
             },
 
             {

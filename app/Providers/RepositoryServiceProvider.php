@@ -12,10 +12,14 @@ use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepository;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepositoryInterface;
 use App\Repositories\Eloquent\Company\Item\ItemRepository;
 use App\Repositories\Eloquent\Company\Item\ItemRepositoryInterface;
+use App\Repositories\Eloquent\Company\ItemAttribute\ItemAttributeRepository;
+use App\Repositories\Eloquent\Company\ItemAttribute\ItemAttributeRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepository;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderRepository;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepository;
+use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
@@ -117,13 +121,16 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
         $this->app->bind(CustomerVisitRepositoryInterface::class, CustomerVisitRepository::class);
-
         $this->app->bind(ItemRepositoryInterface::class, ItemRepository::class);
+        $this->app->bind(ItemAttributeRepositoryInterface::class, ItemAttributeRepository::class);
 
         $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
         $this->app->bind(TranslationRepositoryInterface::class, TranslationRepository::class);
 
         $this->app->bind(CompanyLanguageRepositoryInterface::class, CompanyLanguageRepository::class);
         $this->app->bind(CompanyTranslationRepositoryInterface::class, CompanyTranslationRepository::class);
+
+        $this->app->bind(WebShopLanguageRepositoryInterface::class, WebShopLanguageRepository::class);
+
     }
 }

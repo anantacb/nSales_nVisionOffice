@@ -52,7 +52,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                 <div v-for="TableField in TableFields" class="row">
                     <label :class="{ 'text-info': TableField.isCompanySpecific }" :for="TableField.Name"
                            class="col-sm-4 col-form-label col-form-label-sm">
-                        {{ TableField.Name }}
+                        {{ TableField.Title ?? TableField.Name }}
                         <span v-if="TableField.InputRequired" class="text-danger">*</span>
                         <PopOverButton v-if="TableField.HasTooltip"
                                        :content="TableField.TooltipText"

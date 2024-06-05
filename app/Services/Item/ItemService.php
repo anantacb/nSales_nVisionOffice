@@ -4,6 +4,7 @@ namespace App\Services\Item;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\Item\ItemRepositoryInterface;
+use App\Repositories\Eloquent\Company\Item\WebShopLanguageRepositoryInterface;
 use Illuminate\Http\Request;
 
 class ItemService implements ItemServiceInterface
@@ -26,7 +27,7 @@ class ItemService implements ItemServiceInterface
 
     public function create(Request $request): ServiceDto
     {
-        $item = $this->repository->create($request->except(['CompanyId']));
+        $item = $this->repository->create($request->except(['ItemId']));
         return new ServiceDto("Item Created Successfully.", 200, $item);
     }
 
@@ -34,7 +35,7 @@ class ItemService implements ItemServiceInterface
     {
         $item = $this->repository->findByIdAndUpdate(
             $request->get('Id'),
-            $request->except(['CompanyId'])
+            $request->except(['ItemId'])
         );
         return new ServiceDto("Item Updated Successfully.", 200, $item);
     }
@@ -48,14 +49,10 @@ class ItemService implements ItemServiceInterface
     public function details(Request $request): ServiceDto
     {
         $attributes = [
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CustomerId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('ItemId')]
         ];
-        /*if ($request->get('initials')) {
-            $attributes[] = ['column' => 'Employee', 'operand' => '=', 'value' => $request->get('initials')];
-        }*/
-
         $item = $this->repository->firstByAttributes($attributes);
 
-        return new ServiceDto("Item Retrieved Successfully.", 200, $item);
+        return new ServiceDto("Item Details Retrieved Successfully.", 200, $item);
     }
 }
