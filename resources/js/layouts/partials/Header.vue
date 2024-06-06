@@ -34,12 +34,6 @@ function companyChanged(companyId) {
     companyStore.setSelectedCompanyById(companyId);
 }
 
-onBeforeMount(async () => {
-    templateStore.pageLoader({mode: 'on'});
-    await companyStore.fill();
-    templateStore.pageLoader({mode: 'off'});
-})
-
 </script>
 
 <template>
