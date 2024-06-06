@@ -8,6 +8,7 @@ import {useAuthStore} from "@/stores/authStore";
 import {useCompanyStore} from "@/stores/companyStore";
 
 import useCompanyInfos from "@/composables/useCompanyInfos";
+import _ from "lodash";
 
 const {isModuleEnabled} = useCompanyInfos();
 
@@ -703,16 +704,19 @@ const router = createRouter({
 /*eslint-disable no-unused-vars*/
 NProgress.configure({showSpinner: true});
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
     const companyStore = useCompanyStore();
     const isAuthenticated = authStore.isAuthenticated();
     if (to.meta.authenticated) {
         if (isAuthenticated) {
+            if (_.isEmpty(companyStore.selectedCompanyModules)) {
+                await companyStore.fill();
+            }
             next();
         } else {
             delete axios.defaults.headers.common['Authorization'];
-            router.push({
+            await router.push({
                 name: 'login',
                 query: {
                     'redirect_to': to.path
@@ -721,7 +725,8 @@ router.beforeEach((to, from, next) => {
         }
     } else {
         if (isAuthenticated && to.name !== 'not_found') {
-            router.push({name: 'home'});
+            await router.push({name: 'home'});
+            next();
         } else {
             next();
         }
