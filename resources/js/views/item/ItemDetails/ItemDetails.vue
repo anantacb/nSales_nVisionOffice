@@ -1,8 +1,8 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
-import ItemInfo from "@/views/item/ItemDetails/ItemInfo.vue";
 import ItemOverview from "@/views/item/ItemDetails/ItemOverview.vue";
+import ItemTabs from "@/views/item/ItemDetails/ItemTabs.vue";
 
 const route = useRoute();
 let backButtonRoute = localStorage.getItem('item-details-back-route') ?? 'items';
@@ -38,9 +38,9 @@ onMounted(async () => {
         >
         </ItemOverview>
 
-        <ItemInfo
+        <ItemTabs
             @setProductInfo="setProductInfo"
-        ></ItemInfo>
+        ></ItemTabs>
 
     </div>
 </template>
