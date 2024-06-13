@@ -10,9 +10,11 @@ use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
+use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
+use App\Repositories\Plugin\BunnyCdn\BunnyCdnRepository;
 use App\Services\Traits\ModuleHelperTrait;
 use Carbon\Carbon;
 use Exception;
@@ -22,6 +24,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class CompanyService implements CompanyServiceInterface
 {
@@ -35,14 +39,20 @@ class CompanyService implements CompanyServiceInterface
     protected UserRepositoryInterface $userRepository;
     protected CompanyUserRoleRepositoryInterface $companyUserRoleRepository;
 
+    protected BunnyCdnRepository $bunnyCdnRepository;
+
+    protected ImageHostAccountRepositoryInterface $imageHostAccountRepository;
+
     public function __construct(
-        CompanyRepositoryInterface         $companyRepository,
-        ModulePackageRepositoryInterface   $modulePackageRepository,
-        CompanyModuleRepositoryInterface   $companyModuleRepository,
-        RoleRepositoryInterface            $roleRepository,
-        CompanyUserRepositoryInterface     $companyUserRepository,
-        UserRepositoryInterface            $userRepository,
-        CompanyUserRoleRepositoryInterface $companyUserRoleRepository
+        CompanyRepositoryInterface          $companyRepository,
+        ModulePackageRepositoryInterface    $modulePackageRepository,
+        CompanyModuleRepositoryInterface    $companyModuleRepository,
+        RoleRepositoryInterface             $roleRepository,
+        CompanyUserRepositoryInterface      $companyUserRepository,
+        UserRepositoryInterface             $userRepository,
+        CompanyUserRoleRepositoryInterface  $companyUserRoleRepository,
+        BunnyCdnRepository                  $bunnyCdnRepository,
+        ImageHostAccountRepositoryInterface $imageHostAccountRepository
     )
     {
         $this->companyRepository = $companyRepository;
@@ -52,6 +62,8 @@ class CompanyService implements CompanyServiceInterface
         $this->companyUserRepository = $companyUserRepository;
         $this->userRepository = $userRepository;
         $this->companyUserRoleRepository = $companyUserRoleRepository;
+        $this->bunnyCdnRepository = $bunnyCdnRepository;
+        $this->imageHostAccountRepository = $imageHostAccountRepository;
     }
 
     /**
@@ -129,6 +141,10 @@ class CompanyService implements CompanyServiceInterface
         DB::connection('mysql_company')->reconnect();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public static function isModuleEnabled(string $moduleName): bool
     {
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
@@ -136,6 +152,10 @@ class CompanyService implements CompanyServiceInterface
         return in_array($moduleName, array_column($modules, 'Name'));
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public static function getSettingValue(string $moduleName, string $key)
     {
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
@@ -258,10 +278,51 @@ class CompanyService implements CompanyServiceInterface
             ]);
         }
 
-
         Storage::disk('sync_ftp')->makeDirectory($company->DomainName);
 
+        $this->setUpImageHosting($company);
+
         return new ServiceDto("Company Created Successfully.", 200, $company);
+    }
+
+    private function setUpImageHosting($company): void
+    {
+        $baseName = $company->DomainName;
+        $attempt = 0;
+        $max_attempts = 3;
+        while ($attempt < $max_attempts) {
+            $attempt++;
+            $name = $this->generateAlternativeStorageName($baseName, $attempt);
+            $newStorageZone = $this->bunnyCdnRepository->addStorageZone($name);
+            if ($newStorageZone["code"] == 400 && isset($newStorageZone['message']) && str_contains(strtolower($newStorageZone['message']), 'name is already taken')) {
+                sleep(1);  // Optional: wait before retrying
+            } else if ($newStorageZone["code"] == 201) {
+                $newPullZone = $this->bunnyCdnRepository->addPullZone($name, $newStorageZone['data']['Id']);
+                $this->imageHostAccountRepository->create([
+                    'FTPDomainName' => $newStorageZone["data"]["StorageHostname"],
+                    'FTPUserName' => $newStorageZone["data"]["Name"],
+                    'FTPPassword' => $newStorageZone["data"]["Password"],
+                    'Home' => "https://{$newPullZone["data"]["Hostnames"][0]["Value"]}",
+                    'CompanyId' => $company->Id,
+                    'FTPRootPath' => $newStorageZone["data"]["Name"],
+                    'PullZoneId' => $newPullZone["data"]["Id"],
+                    'StorageZoneId' => $newStorageZone["data"]["Id"],
+                    "UserName" => $newStorageZone["data"]["Name"],
+                    "UserEmail" => "mly@nsales.dk",
+                ]);
+                $attempt = $max_attempts;
+            }
+        }
+    }
+
+    private function generateAlternativeStorageName($base_name, $attempt): string
+    {
+        if ($attempt !== 1) {
+            // Generate a random suffix to append to the base name
+            $suffix = substr(md5(uniqid(rand(), true)), 0, 3);
+            return "$base_name$attempt$suffix";
+        }
+        return $base_name;
     }
 
     public function update(Request $request): ServiceDto
@@ -351,14 +412,16 @@ class CompanyService implements CompanyServiceInterface
     {
         $company = $this->companyRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyId')]
-        ]);
+        ], ["imageHostAccount"]);
         $sqlQuery = MysqlQueryGenerator::getDropDatabaseSql($company->DatabaseName);
         try {
             DB::statement($sqlQuery);
         } catch (Exception $exception) {
-            Log::error("Update Company Rename Database Error. Message: {$exception->getMessage()}");
+            Log::error("Delete Company Database Error. Message: {$exception->getMessage()}");
         }
-
+        if ($company->imageHostAccount) {
+            $this->bunnyCdnRepository->deleteStorageZone($company->imageHostAccount->StorageZoneId);
+        }
         $this->companyRepository->findByIdAndDelete($company->Id);
         return new ServiceDto("Company Deleted Successfully.", 200, []);
     }
