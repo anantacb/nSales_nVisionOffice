@@ -74,7 +74,7 @@ export default {
         {
             name: "Module",
             icon: "fa fa-box",
-            subActivePaths: "module",
+            subActivePaths: ["module", "module-package"],
             sub: [
                 {
                     name: "Modules",
@@ -90,6 +90,17 @@ export default {
                     name: "Activate Module",
                     icon: "fa fa-box-open",
                     to: "activate-module",
+                },
+
+                {
+                    name: "ModulePackages",
+                    icon: "fa fa-mobile",
+                    to: "module-packages",
+                },
+                {
+                    name: "Create ModulePackage",
+                    icon: "fa fa-plus",
+                    to: "create-module-package",
                 }
             ],
         },

@@ -4,6 +4,7 @@ namespace App\Models\Office;
 
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ModuleSetting extends BaseModel
@@ -13,6 +14,11 @@ class ModuleSetting extends BaseModel
     public function setting(): HasOne
     {
         return $this->hasOne(Setting::class, 'ModuleSettingId', 'Id');
+    }
+
+    public function settings(): HasMany
+    {
+        return $this->hasMany(Setting::class, 'ModuleSettingId', 'Id');
     }
 
     public function module(): BelongsTo
