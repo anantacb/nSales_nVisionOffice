@@ -84,6 +84,10 @@ const CompanyTranslations = () => import('@/views/company-translation/CompanyTra
 const CreateCompanyTranslation = () => import('@/views/company-translation/CreateCompanyTranslation.vue');
 const EditCompanyTranslation = () => import('@/views/company-translation/EditCompanyTranslation.vue');
 
+const ModulePackages = () => import('@/views/module-package/ModulePackages/ModulePackages.vue');
+const CreateModulePackage = () => import('@/views/module-package/CreateModulePackage.vue');
+const EditModulePackage = () => import('@/views/module-package/EditModulePackage/EditModulePackage.vue');
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -414,6 +418,34 @@ const routes = [
                 path: "application/:id/edit",
                 name: "edit-application",
                 component: EditApplication,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+
+            {
+                path: "module-package/module-packages",
+                name: "module-packages",
+                component: ModulePackages,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "module-package/create",
+                name: "create-module-package",
+                component: CreateModulePackage,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "module-package/:id/edit",
+                name: "edit-module-package",
+                component: EditModulePackage,
                 meta: {
                     authenticated: true,
                     company_specific: false

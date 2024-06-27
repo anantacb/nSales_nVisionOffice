@@ -12,6 +12,8 @@ use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\ModulePackageController;
+use App\Http\Controllers\ModulePackageModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\OrderByCustomerController;
 use App\Http\Controllers\OrderController;
@@ -89,12 +91,16 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module/deactivate-module', [ModuleController::class, 'deactivateModule']);
     Route::post('/module/get-by-application', [ModuleController::class, 'getModulesByApplication']);
     Route::post('/module/get-assignable-modules-by-application', [ModuleController::class, 'getAssignableModulesByApplication']);
+    Route::post('/module/get-assignable-modules-by-module-package', [ModuleController::class, 'getAssignableModulesByModulePackage']);
 
     // ApplicationModule
     Route::post('/application-module/create', [ApplicationModuleController::class, 'create']);
     Route::post('/application-module/delete', [ApplicationModuleController::class, 'delete']);
     Route::post('/application-module/update', [ApplicationModuleController::class, 'update']);
 
+    // ModulePackageModule
+    Route::post('/module-package-module/delete', [ModulePackageModuleController::class, 'delete']);
+    Route::post('/module-package-module/create', [ModulePackageModuleController::class, 'create']);
 
     // ModuleSetting
     Route::post('/module-settings', [ModuleSettingController::class, 'getModuleSettings']);
@@ -143,15 +149,23 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/users/get-all-company-users', [UserController::class, 'getAllCompanyUsers']);
 
     // Application
-    Route::post('applications/all', [ApplicationController::class, 'getAllApplications']);
+    Route::post('/applications/all', [ApplicationController::class, 'getAllApplications']);
     Route::post('/applications', [ApplicationController::class, 'getApplications']);
     Route::post('/application/create', [ApplicationController::class, 'create']);
     Route::post('/application/update', [ApplicationController::class, 'update']);
     Route::post('/application/delete', [ApplicationController::class, 'delete']);
     Route::post('/application/details', [ApplicationController::class, 'details']);
 
+    // ModulePackage
+    Route::post('/module-packages/all', [ModulePackageController::class, 'getAllModulePackages']);
+    Route::post('/module-packages', [ModulePackageController::class, 'getModulePackages']);
+    Route::post('/module-package/create', [ModulePackageController::class, 'create']);
+    Route::post('/module-package/update', [ModulePackageController::class, 'update']);
+    Route::post('/module-package/delete', [ModulePackageController::class, 'delete']);
+    Route::post('/module-package/details', [ModulePackageController::class, 'details']);
+
     // Language
-    Route::post('languages/all', [LanguageController::class, 'getAllLanguages']);
+    Route::post('/languages/all', [LanguageController::class, 'getAllLanguages']);
     Route::post('/languages', [LanguageController::class, 'getLanguages']);
     Route::post('/language/create', [LanguageController::class, 'create']);
     Route::post('/language/update', [LanguageController::class, 'update']);
@@ -215,7 +229,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
 
         // Company Language
-        Route::post('company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
+        Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
         Route::post('/company-languages', [CompanyLanguageController::class, 'getCompanyLanguages']);
         Route::post('/company-language/delete', [CompanyLanguageController::class, 'delete']);
         Route::post('/company-language/set-as-default-language', [CompanyLanguageController::class, 'setAsDefaultLanguage']);

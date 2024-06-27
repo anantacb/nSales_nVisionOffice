@@ -25,4 +25,9 @@ class Company extends BaseModel
     {
         return $this->hasOne(ImageHostAccount::class, 'CompanyId', 'Id');
     }
+
+    public function postmarkEmailServer(): HasOne
+    {
+        return $this->hasOne(PostmarkEmailServer::class, 'CompanyId', 'Id');
+    }
 }

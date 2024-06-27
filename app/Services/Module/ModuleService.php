@@ -8,6 +8,7 @@ use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleReposito
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
+use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepository;
 use App\Services\Traits\ModuleHelperTrait;
 use Exception;
 use Illuminate\Http\Request;
@@ -22,18 +23,21 @@ class ModuleService implements ModuleServiceInterface
     protected CompanyModuleRepositoryInterface $companyModuleRepository;
     protected CompanyRepositoryInterface $companyRepository;
     protected ApplicationModuleRepository $applicationModuleRepository;
+    protected ModulePackageModuleRepository $modulePackageModuleRepository;
 
     public function __construct(
         ModuleRepositoryInterface        $moduleRepository,
         CompanyModuleRepositoryInterface $companyModuleRepository,
         CompanyRepositoryInterface       $companyRepository,
-        ApplicationModuleRepository      $applicationModuleRepository
+        ApplicationModuleRepository      $applicationModuleRepository,
+        ModulePackageModuleRepository    $modulePackageModuleRepository
     )
     {
         $this->moduleRepository = $moduleRepository;
         $this->companyModuleRepository = $companyModuleRepository;
         $this->companyRepository = $companyRepository;
         $this->applicationModuleRepository = $applicationModuleRepository;
+        $this->modulePackageModuleRepository = $modulePackageModuleRepository;
 
     }
 
@@ -330,6 +334,20 @@ class ModuleService implements ModuleServiceInterface
         ], '', ['Id', 'Name'], 'Name');
 
         return new ServiceDto("Assignable Modules by Application retrieved!!!", 200, $modules);
+    }
+
+    public function getAssignableModulesByModulePackage(Request $request): ServiceDto
+    {
+        $moduleIds = $this->modulePackageModuleRepository->getByAttributes([
+            ['column' => 'ModulePackageId', 'operand' => '=', 'value' => $request->get('ModulePackageId')]
+        ])->pluck('ModuleId')->toArray();
+
+        $modules = $this->moduleRepository->getByAttributes([
+            ['column' => 'Id', 'operand' => '!=', 'value' => $moduleIds],
+            ['column' => 'Type', 'operand' => '!=', 'value' => ['Root', 'Package', 'Core']]
+        ], '', ['Id', 'Name'], 'Name');
+
+        return new ServiceDto("Assignable Modules by ModulePackage retrieved!!!", 200, $modules);
     }
 
     public function create(Request $request): ServiceDto
