@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Module\Create;
 use App\Http\Requests\Module\DetailsOrDelete;
 use App\Http\Requests\Module\GetModulesByApplication;
+use App\Http\Requests\Module\GetModulesByModulePackage;
 use App\Http\Requests\Module\Update;
 use App\Http\Requests\PaginatedDataRequest;
 use App\Services\Module\ModuleServiceInterface;
@@ -60,6 +61,12 @@ class ModuleController extends Controller
     public function getAssignableModulesByApplication(GetModulesByApplication $request): JsonResponse
     {
         $response = $this->service->getAssignableModulesByApplication($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getAssignableModulesByModulePackage(GetModulesByModulePackage $request): JsonResponse
+    {
+        $response = $this->service->getAssignableModulesByModulePackage($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
