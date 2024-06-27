@@ -44,8 +44,12 @@ use App\Repositories\Eloquent\Office\Module\ModuleRepository;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepository;
 use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepositoryInterface;
+use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepository;
+use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepository;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
+use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepository;
+use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepository;
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepository;
@@ -60,6 +64,8 @@ use App\Repositories\Eloquent\Office\Translation\TranslationRepository;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepository;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
+use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepository;
+use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -93,6 +99,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ModuleRepositoryInterface::class, ModuleRepository::class);
         $this->app->bind(CompanyModuleRepositoryInterface::class, CompanyModuleRepository::class);
         $this->app->bind(ModulePackageRepositoryInterface::class, ModulePackageRepository::class);
+        $this->app->bind(ModulePackageModuleRepositoryInterface::class, ModulePackageModuleRepository::class);
 
         $this->app->bind(ModuleSettingRepositoryInterface::class, ModuleSettingRepository::class);
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
@@ -124,5 +131,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CompanyTranslationRepositoryInterface::class, CompanyTranslationRepository::class);
 
         $this->app->bind(ImageHostAccountRepositoryInterface::class, ImageHostAccountRepository::class);
+
+        $this->app->bind(PostmarkEmailServerRepositoryInterface::class, PostmarkEmailServerRepository::class);
+        $this->app->bind(UserInvitationRepositoryInterface::class, UserInvitationRepository::class);
     }
 }
