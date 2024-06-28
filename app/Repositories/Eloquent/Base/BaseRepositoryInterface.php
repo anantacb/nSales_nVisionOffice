@@ -114,10 +114,11 @@ interface BaseRepositoryInterface
     public function create(array $data);
 
     /**
-     * @param array $data
-     * @return Model
+     * @param array $matchingData
+     * @param array $additionalData
+     * @return mixed
      */
-    public function firstOrCreate(array $data);
+    public function firstOrCreate(array $matchingData, array $additionalData = []);
 
     /**
      * @param array $data
