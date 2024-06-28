@@ -306,7 +306,7 @@ class UserService implements UserServiceInterface
         $companies = $this->companyRepository->getByAttributes([], $relations);
 
         foreach ($companies as $company) {
-            if ($company->roles) {
+            if ($company->roles->count() > 0) {
                 $companyUser = $this->companyUserRepository->firstOrCreate([
                     'CompanyId' => $company->Id,
                     'UserId' => $user->Id,
