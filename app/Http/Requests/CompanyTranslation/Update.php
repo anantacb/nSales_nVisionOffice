@@ -31,6 +31,7 @@ class Update extends FormRequest
             'ElementName' => [
                 'required',
                 Rule::unique('mysql_company.CompanyTranslation', 'ElementName')
+                    ->where('CompanyLanguageId', $this->input('CompanyLanguageId'))
                     ->ignore($this->input('Id'))
             ],
             'Translations' => 'required|array'
