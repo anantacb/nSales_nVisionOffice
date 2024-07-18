@@ -436,12 +436,13 @@ abstract class BaseRepository
     }
 
     /**
-     * @param array $data
-     * @return Model
+     * @param array $matchingData
+     * @param array $additionalData
+     * @return mixed
      */
-    public function firstOrCreate(array $data)
+    public function firstOrCreate(array $matchingData, array $additionalData = [])
     {
-        return $this->model->firstOrCreate($data);
+        return $this->model->firstOrCreate($matchingData, $additionalData);
     }
 
     /**

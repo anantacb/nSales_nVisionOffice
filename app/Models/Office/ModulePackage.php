@@ -3,6 +3,7 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ModulePackage extends BaseModel
@@ -12,5 +13,10 @@ class ModulePackage extends BaseModel
     public function modulePackageModules(): HasMany
     {
         return $this->hasMany(ModulePackageModule::class, 'ModulePackageId', 'Id');
+    }
+
+    public function modules(): BelongsToMany
+    {
+        return $this->belongsToMany(Module::class, ModulePackageModule::class, 'ModulePackageId', 'ModuleId');
     }
 }
