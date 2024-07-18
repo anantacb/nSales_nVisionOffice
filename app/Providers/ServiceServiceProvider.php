@@ -28,6 +28,10 @@ use App\Services\Language\LanguageService;
 use App\Services\Language\LanguageServiceInterface;
 use App\Services\Module\ModuleService;
 use App\Services\Module\ModuleServiceInterface;
+use App\Services\ModulePackage\ModulePackageService;
+use App\Services\ModulePackage\ModulePackageServiceInterface;
+use App\Services\ModulePackageModule\ModulePackageModuleService;
+use App\Services\ModulePackageModule\ModulePackageModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use App\Services\Order\OrderByCustomerService;
@@ -98,5 +102,7 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(CompanyLanguageServiceInterface::class, CompanyLanguageService::class);
         $this->app->bind(CompanyTranslationServiceInterface::class, CompanyTranslationService::class);
         $this->app->bind(WebShopLanguageServiceInterface::class, WebShopLanguageService::class);
+        $this->app->bind(ModulePackageServiceInterface::class, ModulePackageService::class);
+        $this->app->bind(ModulePackageModuleServiceInterface::class, ModulePackageModuleService::class);
     }
 }

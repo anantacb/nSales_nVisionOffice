@@ -51,6 +51,20 @@ export default class Module {
         });
     }
 
+    static getAssignableModulesByModulePackage(ModulePackageId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module/get-assignable-modules-by-module-package', {
+                ModulePackageId: ModulePackageId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static getActivatedAndAvailableModulesByCompany(CompanyId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/module/get-activated-and-available-modules-by-company', {

@@ -38,7 +38,7 @@ class Create extends FormRequest
             'State' => 'nullable',
             'Country' => 'required',
             'VATNo' => 'nullable',
-            'Email' => 'nullable',
+            'Email' => 'required',
             'PhoneNo' => 'nullable',
             'FaxNo' => 'nullable',
             'ContactPerson' => 'nullable',
@@ -53,7 +53,6 @@ class Create extends FormRequest
             'Note' => 'nullable',
             'ServiceUrl' => 'required',
             'GraphQLServiceURL' => 'required',
-
         ];
     }
 }

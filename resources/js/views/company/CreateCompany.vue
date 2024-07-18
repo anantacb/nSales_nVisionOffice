@@ -366,12 +366,13 @@ watch(Name, (newName, oldName) => {
                     <div class="col-lg-4 space-y-2">
                         <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="Email">
-                                Email
+                                Email<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
                                 <input id="Email" v-model="Email"
                                        :class="errors.Email ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       autocomplete="off" class="form-control" name="Email"
+                                       autocomplete="off"
+                                       class="form-control" name="Email" required
                                        type="text"/>
                                 <InputErrorMessages v-if="errors.Email"
                                                     :errorMessages="errors.Email"></InputErrorMessages>
