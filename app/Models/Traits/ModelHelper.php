@@ -13,34 +13,53 @@ trait ModelHelper
      */
     public function getEnumColumnValues($column): array
     {
-        $this->mapEnumToString();
-
+        $enum_values = [];
         $table = $this->getTable();
 
         $type = DB::connection($this->getConnectionName())
-            ->select(DB::raw("SHOW COLUMNS FROM $table WHERE Field = '{$column}'"))[0]->Type;
+            ->select("SHOW COLUMNS FROM $table WHERE Field = '{$column}'")[0]->Type;
 
         preg_match('/^enum\((.*)\)$/', $type, $matches);
 
-        $enum_values = [];
-
-        if (!$matches) {
-            return $enum_values;
-        }
-
-        foreach (explode(',', $matches[1]) as $value) {
-            $v = trim($value, "'");
-            $enum_values[] = $v;
+        if (isset($matches[1])) {
+            $enum_values = array_map(function ($value) {
+                return trim($value, " '");
+            }, explode(",", $matches[1]));
         }
         return $enum_values;
     }
 
-    private function mapEnumToString(): void
+    /**
+     * @return array
+     */
+    public function getTableColumnsWithType(): array
     {
-        DB::connection($this->getConnectionName())
-            ->getDoctrineSchemaManager()
-            ->getDatabasePlatform()
-            ->registerDoctrineTypeMapping('enum', 'string');
+        $column_with_types = [];
+        $columns = $this->getTableColumns();
+
+        foreach ($columns as $column) {
+            $type = $this
+                ->getConnection()
+                ->getSchemaBuilder()
+                ->getColumnType($this->getTable(), $column);
+            $column_with_types[] = [
+                'name' => $column,
+                'type' => $type
+            ];
+        }
+
+        return $column_with_types;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTableColumns(): array
+    {
+        return $this
+            ->getConnection()
+            ->getSchemaBuilder()
+            ->getColumnListing($this->getTable());
     }
 
     /**
@@ -58,10 +77,9 @@ trait ModelHelper
      */
     public function getColumnsByType(string $type): array
     {
-        $this->mapEnumToString();
-
         $columns = $this->getTableColumns();
         $columns_by_types = [];
+
         foreach ($columns as $column) {
             $column_type = $this
                 ->getConnection()
@@ -74,35 +92,4 @@ trait ModelHelper
         return $columns_by_types;
     }
 
-    /**
-     * @return array
-     */
-    public function getTableColumns(): array
-    {
-        return $this
-            ->getConnection()
-            ->getSchemaBuilder()
-            ->getColumnListing($this->getTable());
-    }
-
-    public function getTableColumnsWithType(): array
-    {
-        $this->mapEnumToString();
-
-        $columns = $this->getTableColumns();
-
-        $column_with_types = [];
-        foreach ($columns as $column) {
-            $type = $this
-                ->getConnection()
-                ->getSchemaBuilder()
-                ->getColumnType($this->getTable(), $column);
-            $column_with_types[] = [
-                'name' => $column,
-                'type' => $type
-            ];
-        }
-
-        return $column_with_types;
-    }
 }
