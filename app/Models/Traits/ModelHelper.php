@@ -23,7 +23,7 @@ trait ModelHelper
 
         if (isset($matches[1])) {
             $enum_values = array_map(function ($value) {
-                return trim($value, " '");
+                return trim($value, "'");
             }, explode(",", $matches[1]));
         }
         return $enum_values;
