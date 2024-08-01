@@ -29,6 +29,7 @@ local and set `CACHE_DRIVER=redis`**
 - composer install
 - php artisan key:generate
 - php artisan jwt:secret
+- php artisan log-viewer:publish
 
 ## Node
 
