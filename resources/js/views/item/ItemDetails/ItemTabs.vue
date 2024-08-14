@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import User from "@/models/Office/User";
 import TableHelper from "@/models/TableHelper";
 import Order from "@/models/Company/Order";
@@ -38,20 +38,20 @@ const Tabs = ref(['Details']);
 const currentTab = ref('Details');
 let productInfo = ref({});
 
-function setProductInfo(data) {
+async function setProductInfo(data) {
     productInfo.value = data;
-    console.log(data);
+    // console.log('ItemTabs'+data);
     emit('setProductInfo', data);
 }
 
 async function setTabs() {
     // Tabs.value.push('Details');
 
-    if (isModuleEnabled('ItemVariant')
-        // && productInfo.value.variant_exists
-    ) {
-        Tabs.value.push('Variants');
-    }
+    // if (isModuleEnabled('ItemVariant')
+    //     && productInfo.value.variant_exists
+    // ) {
+    //     Tabs.value.push('Variants');
+    // }
 
     if (isModuleEnabled('Itemattribute')) {
         Tabs.value.push('Attributes');
@@ -76,10 +76,20 @@ async function setTabs() {
     if (isModuleEnabled('ItemVariantDescription')) {
         Tabs.value.push('Special Variants');
     }
-
     // console.log(Tabs);
-
 }
+
+async function setVariantTab() {
+    if (isModuleEnabled('ItemVariant') && productInfo.value.variant_exists) {
+        // Tabs.value.push('Variants');
+        Tabs.value = [...Tabs.value.slice(0, 1), 'Variants', ...Tabs.value.slice(1)];
+    }
+    // console.log(Tabs);
+}
+
+watch(productInfo, async (newProductInfo) => {
+    await setVariantTab();
+});
 
 onMounted(async () => {
     await setTabs();

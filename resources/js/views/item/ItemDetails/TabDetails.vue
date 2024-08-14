@@ -141,23 +141,20 @@ async function getProductItemAttributes() {
     console.log(data);
 }
 
-async function updateCustomerInfo() {
-    alert('Under dev');
-    return 0;
-
+async function updateItemInfo() {
     let formData = {
         CompanyId: companyStore.selectedCompany.Id,
         ...ModelObject.value
     };
 
     try {
-        let {data, message} = await Customer.update(formData);
-        createProductRef.value.statusNormal();
-        await router.push({name: 'customers'});
+        let {data, message} = await Item.update(formData);
+        TabDetailsRef.value.statusNormal();
+        await router.push({name: 'items'});
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
-        createProductRef.value.statusNormal();
+        TabDetailsRef.value.statusNormal();
     }
 }
 
@@ -203,7 +200,7 @@ onMounted(async () => {
                      :FormType="`Update`"
                      :GroupedTableFields="GroupedTableFields"
                      :ModelObject="ModelObject"
-                     @formAction="updateCustomerInfo"
+                     @formAction="updateItemInfo"
                      @resetErrors="resetErrors">
         </GeneralForm>
     </BaseBlock>

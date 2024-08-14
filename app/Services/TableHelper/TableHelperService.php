@@ -42,7 +42,13 @@ class TableHelperService implements TableHelperServiceInterface
         return new ServiceDto("Distinct Column Values Retrieved Successfully.", 200, $values);
     }
 
-    public function getValidationArray($tableName, $exceptColumns, $companyId): array
+    /**
+     * @param String $tableName
+     * @param array $exceptColumns
+     * @param int $companyId
+     * @return array
+     */
+    public function getValidationArray(string $tableName, array $exceptColumns, int $companyId): array
     {
         $table = $this->tableRepository->firstByAttributes(
             [
@@ -68,7 +74,11 @@ class TableHelperService implements TableHelperServiceInterface
         return $validationRules;
     }
 
-    private function getValidationRule($tableField)
+    /**
+     * @param mixed $tableField
+     * @return string
+     */
+    private function getValidationRule(mixed $tableField): string
     {
         $required = 'nullable';
         $in = '';
