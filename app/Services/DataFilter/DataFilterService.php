@@ -239,7 +239,7 @@ class DataFilterService implements DataFilterServiceInterface
 
         $queryRowCount = "SELECT COUNT(*) as Count FROM `{$company->DatabaseName}`.`{$table->Name}` WHERE " . $raw_query;
 
-        $rowCount = DB::select(DB::raw($queryRowCount))[0]->Count;
+        $rowCount = DB::select($queryRowCount)[0]->Count;
 
         return new ServiceDto("DataFilter Result Retrieved Successfully.", 200, [
             'Query' => SqlFormatter::format($query),
