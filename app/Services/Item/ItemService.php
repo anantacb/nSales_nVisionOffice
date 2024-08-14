@@ -33,10 +33,15 @@ class ItemService implements ItemServiceInterface
 
     public function update(Request $request): ServiceDto
     {
+        $updateData = $request->except(['CompanyId', 'InsertTime', 'UpdateTime', 'DeleteTime', 'ImportTime',
+            'Number', 'image_urls', 'variant_exists'
+        ]);
+
         $item = $this->repository->findByIdAndUpdate(
             $request->get('Id'),
-            $request->except(['ItemId'])
+            $updateData
         );
+
         return new ServiceDto("Item Updated Successfully.", 200, $item);
     }
 

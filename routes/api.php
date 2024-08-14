@@ -241,6 +241,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Items or Products
         Route::post('/items', [ItemController::class, 'getItems']);
         Route::post('/item/details', [ItemController::class, 'details']);
+        Route::post('/item/update', [ItemController::class, 'update']);
 
         // Item attributes
         Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem']);
