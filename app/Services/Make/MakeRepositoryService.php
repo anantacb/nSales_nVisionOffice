@@ -57,6 +57,8 @@ class MakeRepositoryService
     {
         if ($type == 'office') {
             $path = 'App/Repositories/Eloquent/Office';
+        } else if ($type == 'admin') {
+            $path = 'App/Repositories/Eloquent/Admin';
         } else {
             $path = 'App/Repositories/Eloquent/Company';
         }
@@ -74,6 +76,12 @@ class MakeRepositoryService
                 $stub = $this->stubPath() . '/repositoryInterface.office.stub';
             } else {
                 $stub = $this->stubPath() . '/repository.office.stub';
+            }
+        } else if ($type == 'admin') {
+            if ($isInterface) {
+                $stub = $this->stubPath() . '/repositoryInterface.admin.stub';
+            } else {
+                $stub = $this->stubPath() . '/repository.admin.stub';
             }
         } else {
             if ($isInterface) {
@@ -105,6 +113,8 @@ class MakeRepositoryService
     {
         if ($type == 'office') {
             $namespace = "App\\Repositories\\Eloquent\\Office\\$model";
+        } else if ($type == 'admin') {
+            $namespace = "App\\Repositories\\Eloquent\\Admin\\$model";
         } else {
             $namespace = "App\\Repositories\\Eloquent\\Company\\$model";
         }
