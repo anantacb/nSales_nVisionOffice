@@ -6,6 +6,7 @@ use App\Contracts\ServiceDto;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Models\Office\Company;
 use App\Models\Office\Module;
+use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
@@ -26,6 +27,7 @@ use App\Services\Traits\ModuleHelperTrait;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -65,6 +67,8 @@ class CompanyService implements CompanyServiceInterface
 
     protected EmailConfigurationRepositoryInterface $emailConfigurationRepository;
 
+    protected FtpUserRepositoryInterface $ftpUserRepository;
+
     public function __construct(
         CompanyRepositoryInterface             $companyRepository,
         ModulePackageRepositoryInterface       $modulePackageRepository,
@@ -81,7 +85,8 @@ class CompanyService implements CompanyServiceInterface
         SettingRepositoryInterface             $settingRepository,
         ModuleRepositoryInterface              $moduleRepository,
         UserInvitationRepositoryInterface      $userInvitationRepository,
-        EmailConfigurationRepositoryInterface  $emailConfigurationRepository
+        EmailConfigurationRepositoryInterface  $emailConfigurationRepository,
+        FtpUserRepositoryInterface             $ftpUserRepository
     )
     {
         $this->companyRepository = $companyRepository;
@@ -100,6 +105,7 @@ class CompanyService implements CompanyServiceInterface
         $this->moduleRepository = $moduleRepository;
         $this->userInvitationRepository = $userInvitationRepository;
         $this->emailConfigurationRepository = $emailConfigurationRepository;
+        $this->ftpUserRepository = $ftpUserRepository;
     }
 
     /**
@@ -232,15 +238,16 @@ class CompanyService implements CompanyServiceInterface
 
     public function create(Request $request): ServiceDto
     {
-        // Entry In Database
         $company = $this->companyRepository->create($request->all());
         $this->setUpDatabase($company);
         list($developerRole, $adminRole) = $this->setUpRoles($company);
         $this->setUpDevelopers($company, $developerRole);
-        $this->setUpSyncFtp($company);
-        $this->setUpImageHosting($company);
-        $postmarkToken = $this->setUpPostmarkEmail($company);
-        $this->createInitialUserAndSendInvitation($company, $adminRole, $postmarkToken);
+        if (App::environment('production')) {
+            $this->setUpSyncFtp($company);
+            $this->setUpImageHosting($company);
+            $postmarkToken = $this->setUpPostmarkEmail($company);
+            $this->createInitialUserAndSendInvitation($company, $adminRole, $postmarkToken);
+        }
         $this->setUpEmailConfiguration($company);
         return new ServiceDto("Company Created Successfully.", 200, $company);
     }
@@ -345,9 +352,15 @@ class CompanyService implements CompanyServiceInterface
         foreach ($paths as $path) {
             Storage::disk('sync_ftp')->makeDirectory("$company->DomainName/$path");
         }
-        //TODO
-        // Create Ftp user with domain name and set pass
-        // Give permission to that specific directory
+        $password = generateRandomString(12);
+        $this->ftpUserRepository->create([
+            'userid' => $company->DomainName,
+            'passwd' => $password,
+            'uid' => 33,
+            'gid' => 100,
+            'homedir' => "/data/import_export/$company->DomainName/Data",
+            'shell' => '/bin/false',
+        ]);
     }
 
     private function setUpImageHosting($company): void
@@ -636,21 +649,28 @@ class CompanyService implements CompanyServiceInterface
             Log::error("Delete Company Database Error. Message: {$exception->getMessage()}");
         }
 
-        // Delete Sync Ftp Folder
-        Storage::disk('sync_ftp')->deleteDirectory("$company->DomainName");
+        if (App::environment('production')) {
+            // Delete Sync Ftp User and Folder
+            $this->ftpUserRepository->deleteByAttributes([
+                ['column' => 'userid', 'operand' => '=', 'value' => $company->DomainName]
+            ]);
+            Storage::disk('sync_ftp')->deleteDirectory("$company->DomainName");
 
-        if ($company->imageHostAccount) {
-            // Delete From DB
-            $this->imageHostAccountRepository->findByIdAndDelete($company->imageHostAccount->Id);
-            // Delete Image Hosting
-            $this->bunnyCdnRepository->deleteStorageZone($company->imageHostAccount->StorageZoneId);
-        }
+            // Delete Image Host Account (CDN)
+            if ($company->imageHostAccount) {
+                // Delete From DB
+                $this->imageHostAccountRepository->findByIdAndDelete($company->imageHostAccount->Id);
+                // Delete Image Hosting
+                $this->bunnyCdnRepository->deleteStorageZone($company->imageHostAccount->StorageZoneId);
+            }
 
-        if ($company->postmarkEmailServer) {
-            // Delete From DB
-            $this->postmarkEmailServerRepository->findByIdAndDelete($company->postmarkEmailServer->Id);
-            //TODO
-            // Delete PostMark Server
+            // Delete Mail Server
+            if ($company->postmarkEmailServer) {
+                // Delete From DB
+                $this->postmarkEmailServerRepository->findByIdAndDelete($company->postmarkEmailServer->Id);
+                //TODO
+                // Delete PostMark Server
+            }
         }
 
         $this->companyRepository->findByIdAndDelete($company->Id);
