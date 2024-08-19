@@ -4,8 +4,10 @@ import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import Company from "@/models/Office/Company";
 import useGridManagement from "@/composables/useGridManagement";
+import {useTemplateStore} from "@/stores/templateStore";
 
 const notificationStore = useNotificationStore();
+const templateStore = useTemplateStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
@@ -110,8 +112,10 @@ function deleteCompany(company, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
+            templateStore.pageLoader({mode: "on"});
             let {data, message} = await Company.delete(company.Id);
             tableData.value.splice(index, 1);
+            templateStore.pageLoader({mode: "off"});
             notificationStore.showNotification(message);
         }
     });

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepository;
+use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepository;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepository;
@@ -145,5 +147,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(PostmarkEmailServerRepositoryInterface::class, PostmarkEmailServerRepository::class);
         $this->app->bind(UserInvitationRepositoryInterface::class, UserInvitationRepository::class);
+
+        $this->app->bind(FtpUserRepositoryInterface::class, FtpUserRepository::class);
     }
 }
