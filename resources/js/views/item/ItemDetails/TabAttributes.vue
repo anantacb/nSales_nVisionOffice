@@ -35,34 +35,68 @@ let ItemAttributes = ref([]);
 let WebShopLanguages = ref([]);
 let WebShopLanguageOptions = ref([]);
 
-async function getProductItemAttributes() {
-    let {data} = await ItemAttribute.fetchByItem(companyStore.selectedCompany.Id, route.params.id);
-    ItemAttributes.value = data;
-}
+const props = defineProps({
+    productInfo: {
+        type: Object,
+        required: true,
+    },
+});
 
 async function getAllWebShopLanguages() {
     let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
     WebShopLanguages.value = data;
 
     let options = [{label: 'Select Language', value: ''}];
-
     data.forEach((language) => {
         options.push({label: language.Name, value: language.Code});
     });
-
     WebShopLanguageOptions.value = options;
+}
+
+async function getItemAttributes() {
+    let {data} = await ItemAttribute.fetchByItem(companyStore.selectedCompany.Id, route.params.id);
+    ItemAttributes.value = data;
 }
 
 function addItemAttribute() {
     ItemAttributes.value.push({
-        Id: "",
         TypeCode: "",
         Language: "",
         Value: ""
     });
 }
 
-function removeItemAttribute(itemAttribute, index) {        // Need to be added logic
+async function updateItemAttributes() {
+
+    if (_.isEmpty(ItemAttributes.value)) {
+        notificationStore.showNotification("Add at least one Attribute.", 'error');
+        return;
+    }
+    TabAttributesRef.value.statusLoading();
+
+    try {
+        let {data, message} = await ItemAttribute.updateItemAttributes(
+            companyStore.selectedCompany.Id, route.params.id,
+            props.productInfo.Number, ItemAttributes.value
+        );
+        ItemAttributes.value = data;
+        console.log(ItemAttributes.value);
+        notificationStore.showNotification(message);
+        TabAttributesRef.value.statusNormal();
+    } catch (error) {
+        console.log(error);
+        setErrors(error.response.data.errors);
+        TabAttributesRef.value.statusNormal();
+    }
+}
+
+function removeItemAttribute(itemAttribute, index) {
+
+    if (!itemAttribute.Id) {
+        ItemAttributes.value.splice(index, 1);
+        notificationStore.showNotification('Itemattribute deleted successfully.');
+        return;
+    }
 
     Swal.fire({
         title: 'Are you sure? Delete Attribute?',
@@ -81,31 +115,22 @@ function removeItemAttribute(itemAttribute, index) {        // Need to be added 
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            // let {data, message} = await Order.delete(module.Id);
-            // tableData.value.splice(index, 1);
+            TabAttributesRef.value.statusLoading();
+            let {data, message} = await ItemAttribute.delete(companyStore.selectedCompany.Id, itemAttribute.Id);
             ItemAttributes.value.splice(index, 1);
-            notificationStore.showNotification('message');
+            notificationStore.showNotification(message);
+            TabAttributesRef.value.statusNormal();
         }
     });
 
 }
-function updateItemAttributes() {
-    alert('Under dev');
-}
 
 onMounted(async () => {
 
-    console.log(_.isEmpty(ItemAttributes.value));
     if (_.isEmpty(ItemAttributes.value)) {
-        console.log('attributes');
-
         TabAttributesRef.value.statusLoading();
-        // await getAllWebShopLanguages();
-        // await getProductItemAttributes();
-
         isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguages.value = [];
-        isModuleEnabled('Itemattribute') ? await getProductItemAttributes() : ItemAttributes.value = [];
-
+        isModuleEnabled('Itemattribute') ? await getItemAttributes() : ItemAttributes.value = [];
         TabAttributesRef.value.statusNormal();
     }
 
@@ -114,10 +139,8 @@ onMounted(async () => {
 
 <template>
     <BaseBlock ref="TabAttributesRef" content-full>
-        <!--        <h4 class="fw-normal">Attributes Content</h4>-->
-        <!--        <p>...</p>-->
-
         <div class="table-responsive">
+            <!-- Need to be add Export Attribute -->
             <!--            <button v-if="userHasRole(`Administrator`) || userHasRole(`Developer`)"-->
             <!--                    class="btn btn-outline-info btn-sm float-right mb-2"-->
             <!--                    @click="exportItemAttributes">-->
@@ -136,44 +159,52 @@ onMounted(async () => {
                 <tbody>
                 <tr v-for="(ItemAttribute,index) in ItemAttributes">
                     <td>
-                        <input v-model="ItemAttribute.TypeCode" class="form-control form-control-sm"
-                               type="text">
+                        <input v-model="ItemAttribute.TypeCode"
+                               :class="{'is-invalid' : errors[`ItemAttributes.${index}.TypeCode`]}"
+                               class="form-control form-control-sm"
+                               type="text" @keyup="resetErrors">
 
-                        <!--                        <div v-if="errors.item_attributes[`item_attributes.${index}.TypeCode`]">-->
-                        <!--                            <small-->
-                        <!--                                v-for="error in errors.item_attributes[`item_attributes.${index}.TypeCode`]"-->
-                        <!--                                class="form-text text-danger"-->
-                        <!--                                v-text="error">-->
-                        <!--                            </small>-->
-                        <!--                        </div>-->
+                        <InputErrorMessages
+                            v-if="errors[`ItemAttributes.${index}.TypeCode`]"
+                            :errorMessages="errors[`ItemAttributes.${index}.TypeCode`]">
+                        </InputErrorMessages>
 
                     </td>
                     <td>
-                        <input v-model="ItemAttribute.Value" class="form-control form-control-sm" type="text">
+                        <input v-model="ItemAttribute.Value"
+                               :class="{'is-invalid' : errors[`ItemAttributes.${index}.Value`]}"
+                               class="form-control form-control-sm"
+                               type="text"
+                               @keyup="resetErrors">
+
+                        <InputErrorMessages
+                            v-if="errors[`ItemAttributes.${index}.Value`]"
+                            :errorMessages="errors[`ItemAttributes.${index}.Value`]">
+                        </InputErrorMessages>
                     </td>
 
                     <td>
                         <Select
-                            :modelValue="ItemAttribute.Language"
+                            v-model="ItemAttribute.Language"
                             :options="WebShopLanguageOptions"
                             :required="true"
+                            :select-class="errors[`ItemAttributes.${index}.Language`]
+                            ? `is-invalid form-control form-select-sm` : `form-control form-select-sm`"
                             name="Language"
-                            select-class="form-control form-select-sm"
+                            @change="resetErrors"
                         />
-                        <!--                                @change="companyChanged"-->
-                        <!--                        <select v-model="ItemAttribute.Language" class="form-control custom-select">-->
-                        <!--                            <option value="">Select Language</option>-->
-                        <!--                            <option v-for="language in WebShopLanguages"-->
-                        <!--                                    :value="language.Code">{{ language.Name }}-->
-                        <!--                            </option>-->
-                        <!--                        </select>-->
+
+                        <InputErrorMessages
+                            v-if="errors[`ItemAttributes.${index}.Language`]"
+                            :errorMessages="errors[`ItemAttributes.${index}.Language`]">
+                        </InputErrorMessages>
 
                     </td>
 
                     <td>
-                        <button class="btn btn-danger btn-sm"
-                                @click="removeItemAttribute(ItemAttribute,index)"><i
-                            class="fa fa-trash"></i></button>
+                        <button class="btn btn-danger btn-sm" @click="removeItemAttribute(ItemAttribute,index)">
+                            <i class="fa fa-trash"></i>
+                        </button>
                     </td>
 
                 </tr>
@@ -182,21 +213,13 @@ onMounted(async () => {
             </table>
         </div>
 
-        <button class="btn btn-outline-success btn-sm float-end mb-2"
-                type="submit"
-                @click="addItemAttribute"
-        >
+        <button class="btn btn-outline-success btn-sm float-end mb-2" type="submit" @click="addItemAttribute">
             Add More Attribute
         </button>
 
-        <button class="btn btn-outline-primary btn-sm col-2"
-                type="submit"
-                @click="updateItemAttributes"
-        >
-
+        <button class="btn btn-outline-primary btn-sm col-2" type="submit" @click="updateItemAttributes">
             Update Attributes
         </button>
-
 
     </BaseBlock>
 </template>

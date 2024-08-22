@@ -139,7 +139,9 @@ onMounted(async () => {
                         >
                         </TabDetails>
 
-                        <TabAttributes v-if="tab === 'Attributes' && currentTab === tab ">
+                        <TabAttributes v-if="tab === 'Attributes' && currentTab === tab "
+                                       :productInfo='productInfo'
+                        >
                         </TabAttributes>
 
                         <TabTranslations v-if="tab === 'Translations' && currentTab === tab ">
