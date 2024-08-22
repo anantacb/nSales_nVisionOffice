@@ -245,6 +245,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Item attributes
         Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem']);
+        Route::post('/item-attributes/by-item/update', [ItemAttributeController::class, 'updateItemAttributesByItem']);
+        Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete']);
 
         // Company Language
         Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
