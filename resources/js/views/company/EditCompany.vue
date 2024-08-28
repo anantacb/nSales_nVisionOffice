@@ -8,6 +8,7 @@ import slugify from "@sindresorhus/slugify";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
+import ModulePackage from "@/models/Office/ModulePackage";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -29,11 +30,11 @@ async function getOptions() {
         }
     });
 
-    let {data: integrationTypeData} = await TableHelper.getEnumValues('Office', `Company`, 'IntegrationType');
+    let {data: integrationTypeData} = await ModulePackage.getAllModulePackages();
     integrationTypeOptions.value = integrationTypeData.map((item) => {
         return {
-            label: item,
-            value: item,
+            label: item.Name,
+            value: item.Name,
         }
     });
 
