@@ -8,6 +8,7 @@ use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
+use App\Repositories\Plugin\B2bGqlApi\B2bGqlApiRepository;
 use Illuminate\Http\Request;
 
 class ModuleSettingService implements ModuleSettingServiceInterface
@@ -18,17 +19,21 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     protected SettingRepositoryInterface $settingRepository;
 
+    protected B2bGqlApiRepository $b2bGqlApiRepository;
+
     public function __construct(
         ModuleSettingRepositoryInterface $moduleSettingRepository,
         SettingRepositoryInterface       $settingRepository,
         ModuleRepositoryInterface        $moduleRepository,
-        CompanyRepositoryInterface       $companyRepository
+        CompanyRepositoryInterface       $companyRepository,
+        B2bGqlApiRepository              $b2bGqlApiRepository
     )
     {
         $this->moduleSettingRepository = $moduleSettingRepository;
         $this->moduleRepository = $moduleRepository;
         $this->companyRepository = $companyRepository;
         $this->settingRepository = $settingRepository;
+        $this->b2bGqlApiRepository = $b2bGqlApiRepository;
     }
 
     public function getAllModuleSettingsByCompanyId(Request $request): ServiceDto
@@ -140,6 +145,9 @@ class ModuleSettingService implements ModuleSettingServiceInterface
                 ]);
             }
         }
+
+        // Clear Cache of B2B GQL API Server
+        $this->b2bGqlApiRepository->cacheClear();
 
         return new ServiceDto("Settings Updated Successfully!!!", 200, []);
     }
