@@ -56,6 +56,8 @@ use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
 use App\Services\WebShopLanguage\WebShopLanguageService;
 use App\Services\WebShopLanguage\WebShopLanguageServiceInterface;
+use App\Services\WebShopText\WebShopTextService;
+use App\Services\WebShopText\WebShopTextServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class ServiceServiceProvider extends ServiceProvider
@@ -104,5 +106,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(WebShopLanguageServiceInterface::class, WebShopLanguageService::class);
         $this->app->bind(ModulePackageServiceInterface::class, ModulePackageService::class);
         $this->app->bind(ModulePackageModuleServiceInterface::class, ModulePackageModuleService::class);
+        $this->app->bind(WebShopTextServiceInterface::class, WebShopTextService::class);
     }
 }
