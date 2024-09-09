@@ -28,6 +28,7 @@ use App\Http\Controllers\TableIndexController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebShopLanguageController;
+use App\Http\Controllers\WebShopTextController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -247,6 +248,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem']);
         Route::post('/item-attributes/by-item/update', [ItemAttributeController::class, 'updateItemAttributesByItem']);
         Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete']);
+
+        //Webshoptext
+        Route::post('/web-shop-text/get-web-shop-texts-by-Item', [WebShopTextController::class, 'getByItem']);
 
         // Company Language
         Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);

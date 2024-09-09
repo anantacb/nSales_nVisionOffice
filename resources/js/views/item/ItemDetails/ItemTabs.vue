@@ -37,6 +37,9 @@ const emit = defineEmits(['setProductInfo']);
 const Tabs = ref(['Details']);
 const currentTab = ref('Details');
 let productInfo = ref({});
+let WebShopLanguages = ref([]);
+let WebShopLanguageOptions = ref([]);
+
 
 async function setProductInfo(data) {
     productInfo.value = data;
@@ -57,7 +60,7 @@ async function setTabs() {
         Tabs.value.push('Attributes');
     }
 
-    if (isModuleEnabled('WebShop')) {
+    if (isModuleEnabled('WSLanguage') && isModuleEnabled(`WSPage`)) {
         Tabs.value.push('Translations');
     }
 
@@ -87,12 +90,27 @@ async function setVariantTab() {
     // console.log(Tabs);
 }
 
+
+async function getAllWebShopLanguages() {
+    let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
+    WebShopLanguages.value = data;
+
+    let options = [{label: 'Select Language', value: ''}];
+    data.forEach((language) => {
+        options.push({label: language.Name, value: language.Code});
+    });
+    WebShopLanguageOptions.value = options;
+}
+
+
 watch(productInfo, async (newProductInfo) => {
     await setVariantTab();
 });
 
 onMounted(async () => {
     await setTabs();
+    isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguages.value = [];
+
 });
 
 </script>
@@ -141,10 +159,13 @@ onMounted(async () => {
 
                         <TabAttributes v-if="tab === 'Attributes' && currentTab === tab "
                                        :productInfo='productInfo'
+                                       :webShopLanguages='WebShopLanguages'
                         >
                         </TabAttributes>
 
-                        <TabTranslations v-if="tab === 'Translations' && currentTab === tab ">
+                        <TabTranslations v-if="tab === 'Translations' && currentTab === tab "
+                                         :productInfo='productInfo'
+                                         :webShopLanguages='WebShopLanguages'>
                         </TabTranslations>
 
                     </div>

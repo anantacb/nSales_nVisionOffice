@@ -40,14 +40,18 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    webShopLanguages: {
+        type: Array,
+        required: true,
+    },
 });
 
 async function getAllWebShopLanguages() {
-    let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
-    WebShopLanguages.value = data;
+    // let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
+    // WebShopLanguages.value = data;
 
     let options = [{label: 'Select Language', value: ''}];
-    data.forEach((language) => {
+    props.webShopLanguages.forEach((language) => {
         options.push({label: language.Name, value: language.Code});
     });
     WebShopLanguageOptions.value = options;
@@ -129,7 +133,7 @@ onMounted(async () => {
 
     if (_.isEmpty(ItemAttributes.value)) {
         TabAttributesRef.value.statusLoading();
-        isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguages.value = [];
+        isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguageOptions.value = [];
         isModuleEnabled('Itemattribute') ? await getItemAttributes() : ItemAttributes.value = [];
         TabAttributesRef.value.statusNormal();
     }
