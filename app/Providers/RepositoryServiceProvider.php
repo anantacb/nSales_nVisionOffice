@@ -16,6 +16,8 @@ use App\Repositories\Eloquent\Company\Order\OrderLineRepository;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderRepository;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepository;
+use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
@@ -131,6 +133,8 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(CompanyLanguageRepositoryInterface::class, CompanyLanguageRepository::class);
         $this->app->bind(CompanyTranslationRepositoryInterface::class, CompanyTranslationRepository::class);
+
+        $this->app->bind(WebShopLanguageRepositoryInterface::class, WebShopLanguageRepository::class);
 
         $this->app->bind(ImageHostAccountRepositoryInterface::class, ImageHostAccountRepository::class);
 
