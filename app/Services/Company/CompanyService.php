@@ -7,18 +7,22 @@ use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Models\Office\Company;
 use App\Models\Office\Module;
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
+use App\Repositories\Eloquent\Office\Language\LanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
+use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepositoryInterface;
 use App\Repositories\Plugin\BunnyCdn\BunnyCdnRepository;
@@ -69,6 +73,11 @@ class CompanyService implements CompanyServiceInterface
 
     protected FtpUserRepositoryInterface $ftpUserRepository;
 
+    protected LanguageRepositoryInterface $languageRepository;
+    protected TranslationRepositoryInterface $translationRepository;
+    protected CompanyLanguageRepositoryInterface $companyLanguageRepository;
+    protected CompanyTranslationRepositoryInterface $companyTranslationRepository;
+
     public function __construct(
         CompanyRepositoryInterface             $companyRepository,
         ModulePackageRepositoryInterface       $modulePackageRepository,
@@ -86,7 +95,11 @@ class CompanyService implements CompanyServiceInterface
         ModuleRepositoryInterface              $moduleRepository,
         UserInvitationRepositoryInterface      $userInvitationRepository,
         EmailConfigurationRepositoryInterface  $emailConfigurationRepository,
-        FtpUserRepositoryInterface             $ftpUserRepository
+        FtpUserRepositoryInterface             $ftpUserRepository,
+        LanguageRepositoryInterface            $languageRepository,
+        TranslationRepositoryInterface         $translationRepository,
+        CompanyLanguageRepositoryInterface     $companyLanguageRepository,
+        CompanyTranslationRepositoryInterface  $companyTranslationRepository
     )
     {
         $this->companyRepository = $companyRepository;
@@ -106,81 +119,10 @@ class CompanyService implements CompanyServiceInterface
         $this->userInvitationRepository = $userInvitationRepository;
         $this->emailConfigurationRepository = $emailConfigurationRepository;
         $this->ftpUserRepository = $ftpUserRepository;
-    }
-
-    /**
-     * @param int $company_id
-     * @return false|void
-     */
-    public static function setCompanyDatabaseConnection(int $company_id)
-    {
-        if (!$company_id) {
-            return false;
-        }
-
-        $company = Cache::remember(
-            'company_' . $company_id,
-            Carbon::now()->addHours(24),
-            function () use ($company_id) {
-                $company_data = Company::with([
-                    'imageHostAccount',
-                    'modules' => function ($q) use ($company_id) {
-                        $q->with(['moduleSettings' => function ($q) use ($company_id) {
-                            $q->with(['setting' => function ($q) use ($company_id) {
-                                $q->where('CompanyId', $company_id);
-                            }]);
-                        }]);
-                    }
-                ])
-                    ->find($company_id);
-
-                $formatted_module_settings = [];
-
-                foreach ($company_data->modules as $module) {
-                    $formatted_module_settings[$module->Name] = [];
-                    foreach ($module->moduleSettings as $module_setting) {
-                        if ($module_setting->setting) {
-                            $formatted_module_settings[$module->Name][$module_setting->Name] =
-                                $module_setting->setting->Value;
-                        } else {
-                            $formatted_module_settings[$module->Name][$module_setting->Name] =
-                                $module_setting->Value;
-                        }
-                    }
-                }
-
-                $default_modules = Module::with([
-                    'moduleSettings' => function ($q) use ($company_id) {
-                        $q->with(['setting' => function ($q) use ($company_id) {
-                            $q->where('CompanyId', $company_id);
-                        }]);
-                    }])->whereIn('Name', ['System'])->get();
-
-                foreach ($default_modules as $module) {
-                    $formatted_module_settings[$module->Name] = [];
-                    foreach ($module->moduleSettings as $module_setting) {
-                        if ($module_setting->setting) {
-                            $formatted_module_settings[$module->Name][$module_setting->Name] =
-                                $module_setting->setting->Value;
-                        } else {
-                            $formatted_module_settings[$module->Name][$module_setting->Name] =
-                                $module_setting->Value;
-                        }
-                    }
-                }
-
-                $company_data->module_settings = $formatted_module_settings;
-
-                return $company_data;
-            }
-        );
-
-        //Session::put('selected_company', $company);
-
-
-        Config::set('database.connections.mysql_company.database', $company->DatabaseName);
-
-        DB::connection('mysql_company')->reconnect();
+        $this->languageRepository = $languageRepository;
+        $this->translationRepository = $translationRepository;
+        $this->companyLanguageRepository = $companyLanguageRepository;
+        $this->companyTranslationRepository = $companyTranslationRepository;
     }
 
     /**
@@ -256,6 +198,7 @@ class CompanyService implements CompanyServiceInterface
             $postmarkToken = $this->setUpPostmarkEmail($company);
             $this->createInitialUserAndSendInvitation($company, $adminRole, $postmarkToken);
         }
+        $this->addDefaultLanguageAndTranslations($company);
         $this->setUpEmailConfiguration($company);
         return new ServiceDto("Company Created Successfully.", 200, $company);
     }
@@ -529,6 +472,104 @@ class CompanyService implements CompanyServiceInterface
         if (!$response['success']) {
             Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
         }
+    }
+
+    private function addDefaultLanguageAndTranslations($company): void
+    {
+        $language = $this->languageRepository->firstByAttributes([
+            ['column' => 'IsDefault', 'operand' => '=', 'value' => 1]
+        ]);
+        CompanyService::setCompanyDatabaseConnection($company->Id);
+        $companyLanguage = $this->companyLanguageRepository->firstOrCreate([
+            'Name' => $language->Name,
+            'Locale' => $language->Locale,
+            'Code' => $language->Code,
+            'IsDefault' => $language->IsDefault,
+        ]);
+        $translations = $this->translationRepository->getByAttribute('LanguageId', '=', $language->Id);
+        foreach ($translations as $translation) {
+            $this->companyTranslationRepository->create([
+                'CompanyLanguageId' => $companyLanguage->Id,
+                'Type' => $translation->Type,
+                'ElementName' => $translation->ElementName,
+                'Translations' => $translation->Translations,
+            ]);
+        }
+    }
+
+    /**
+     * @param int $company_id
+     * @return false|void
+     */
+    public static function setCompanyDatabaseConnection(int $company_id)
+    {
+        if (!$company_id) {
+            return false;
+        }
+
+        $company = Cache::remember(
+            'company_' . $company_id,
+            Carbon::now()->addHours(24),
+            function () use ($company_id) {
+                $company_data = Company::with([
+                    'imageHostAccount',
+                    'modules' => function ($q) use ($company_id) {
+                        $q->with(['moduleSettings' => function ($q) use ($company_id) {
+                            $q->with(['setting' => function ($q) use ($company_id) {
+                                $q->where('CompanyId', $company_id);
+                            }]);
+                        }]);
+                    }
+                ])
+                    ->find($company_id);
+
+                $formatted_module_settings = [];
+
+                foreach ($company_data->modules as $module) {
+                    $formatted_module_settings[$module->Name] = [];
+                    foreach ($module->moduleSettings as $module_setting) {
+                        if ($module_setting->setting) {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->setting->Value;
+                        } else {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->Value;
+                        }
+                    }
+                }
+
+                $default_modules = Module::with([
+                    'moduleSettings' => function ($q) use ($company_id) {
+                        $q->with(['setting' => function ($q) use ($company_id) {
+                            $q->where('CompanyId', $company_id);
+                        }]);
+                    }])->whereIn('Name', ['System'])->get();
+
+                foreach ($default_modules as $module) {
+                    $formatted_module_settings[$module->Name] = [];
+                    foreach ($module->moduleSettings as $module_setting) {
+                        if ($module_setting->setting) {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->setting->Value;
+                        } else {
+                            $formatted_module_settings[$module->Name][$module_setting->Name] =
+                                $module_setting->Value;
+                        }
+                    }
+                }
+
+                $company_data->module_settings = $formatted_module_settings;
+
+                return $company_data;
+            }
+        );
+
+        //Session::put('selected_company', $company);
+
+
+        Config::set('database.connections.mysql_company.database', $company->DatabaseName);
+
+        DB::connection('mysql_company')->reconnect();
     }
 
     private function setUpEmailConfiguration($company): void

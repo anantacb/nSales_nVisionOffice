@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import useGridManagement from "@/composables/useGridManagement";
@@ -84,6 +84,11 @@ function refresh() {
     resetRequest();
     getCompanyLanguages();
 }
+
+watch(() => companyStore.getSelectedCompany, () => {
+    resetRequest();
+    getCompanyLanguages();
+});
 
 async function getCompanyLanguages() {
     let {data, pagination} = await CompanyLanguage.getCompanyLanguages(companyStore.selectedCompany.Id, request.value);

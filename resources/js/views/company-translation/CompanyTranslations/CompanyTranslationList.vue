@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import useGridManagement from "@/composables/useGridManagement";
@@ -22,7 +22,8 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
-    setSortBy
+    setSortBy,
+    resetRequest
 } = useGridManagement();
 
 setTableFields([
@@ -107,6 +108,11 @@ function deleteCompanyTranslation(companyTranslation, index) {
         }
     });
 }
+
+watch(() => companyStore.getSelectedCompany, () => {
+    resetRequest();
+    getCompanyTranslations();
+});
 
 </script>
 
