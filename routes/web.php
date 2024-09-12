@@ -1,6 +1,5 @@
 <?php
 
-use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepositoryInterface;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,10 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/test', function (UserInvitationRepositoryInterface $userInvitationRepository) {
-    /*$repo = new PostmarkRepository();
-    $response = $repo->deleteServer(13595023);
-    dd($response);*/
+Route::get('/test', function () {
 });
 
 
