@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Company\CompanyTranslation;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepositoryInterface;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepositoryInterface;
@@ -13,6 +14,7 @@ use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Services\Company\CompanyService;
 use App\Services\Traits\ModuleHelperTrait;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 class AddLanguageAndTranslationToCompanies extends Command
 {
@@ -20,6 +22,10 @@ class AddLanguageAndTranslationToCompanies extends Command
 
     /**
      * The name and signature of the console command.
+     *
+     *  php artisan languageTranslation:add
+     *  php artisan languageTranslation:add -C821 -C943
+     *  php artisan languageTranslation:add --companyId=821 --companyId=943
      *
      * @var string
      */
@@ -40,17 +46,19 @@ class AddLanguageAndTranslationToCompanies extends Command
     protected CompanyLanguageRepositoryInterface $companyLanguageRepository;
     protected CompanyTranslationRepositoryInterface $companyTranslationRepository;
     protected WebShopLanguageRepositoryInterface $webShopLanguageRepository;
+    protected Collection $officeLanguages;
+    protected Collection $officeTranslations;
 
     /**
      * Execute the console command.
-     *
      * @return int
      */
     public function handle(): int
     {
         $this->init();
 
-        $moduleNames = ['Translation', 'WSLanguage'];
+        //$moduleNames = ['Translation', 'WSLanguage'];
+        $moduleNames = ['WSLanguage'];
         $inputCompanyIds = $this->option('companyId');
         $ignoredCompanyIds = ['691', '957'];        // skip Company: FLEYE, FLEYE TEST
 
@@ -59,92 +67,89 @@ class AddLanguageAndTranslationToCompanies extends Command
             ['column' => 'Type', 'operand' => '=', 'value' => ['Standard', 'Extension']],
         ])->pluck('Id')->toArray();
 
-        $installedCompanyIds = $this->companyModuleRepository->getByAttributes([
+        $wsLanguageCompanyIds = $this->companyModuleRepository->getByAttributes([
             ['column' => 'ModuleId', 'operand' => '=', 'value' => $moduleIds]
         ], [], ['CompanyId'])->pluck('CompanyId')->toArray();
 
-        $companies = $this->companyRepository->getByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => empty($inputCompanyIds) ? $installedCompanyIds : array_intersect($installedCompanyIds, $inputCompanyIds)],
+        $attributes = [
+            ['column' => 'Disabled', 'operand' => '=', 'value' => '0'],
             ['column' => 'Id', 'operand' => '!=', 'value' => $ignoredCompanyIds]
-        ]);
+        ];
+
+        if (!empty($inputCompanyIds)) {
+            $attributes[] = ['column' => 'Id', 'operand' => '=', 'value' => $inputCompanyIds];
+        }
+
+        $companies = $this->companyRepository->getByAttributes($attributes);
+        $this->officeLanguages = $this->languageRepository->all();
+        $this->officeTranslations = $this->translationRepository->all();
+
+        $bar = $this->output->createProgressBar($companies->count());
+        $bar->start();
+        $statusHeaders = ['Name', 'Id', 'isWSLanguageEnabled', 'Language', 'Translations', 'Status'];
+        $statusRows = [];
 
         /**
          * For Each Company
          */
         /**
-         * Language
-         *       ->compare WebShopLanguage table with CompanyLanguage
-         *       ->insert row if language is not present into CompanyLanguage table
+         *
+         * If Company has WSLanguage module
+         *      Language
+         *          ->compare WebShopLanguage table with CompanyLanguage
+         *          ->insert row if language is not present into CompanyLanguage table
+         *
          * Translation
-         *      ->delete all translations if language is not present in CompanyLanguage
-         *      ->compare Translation table with CompanyTranslation
-         *      ->insert row if Translation is not present into CompanyTranslation table
+         *      ->Truncate CompanyTranslation table
+         *      ->get all the languages from CompanyLanguage table
+         *      ->FOR EACH CompanyLanguage
+         *          ->get all the translations form Translations table
+         *          ->insert row into CompanyTranslation table for all CompanyLanguage
+         *
          */
 
-        $bar = $this->output->createProgressBar($companies->count());
-        $bar->start();
-
-        $statusHeaders = ['Name', 'Id', 'Language', 'Translations', 'Status'];
-        $statusRows = [];
-
-        $officeLanguages = $this->languageRepository->all();
-        $officeTranslations = $this->translationRepository->all();
-
         foreach ($companies as $company) {
-            CompanyService::setCompanyDatabaseConnection($company->Id);
-
-            $companyLanguages = $this->companyLanguageRepository->all();
-            $webShopLanguages = $this->webShopLanguageRepository->getByAttributes([
-                ['column' => 'Disabled', 'operand' => '=', 'value' => 0],
-            ]);
-
-            $filteredWebShopLanguages = $webShopLanguages->filter(function ($webShopLanguage) use ($companyLanguages) {
-                return !$companyLanguages->contains('Code', $webShopLanguage->Code);
-            });
-
-            // delete translations if language is not present in CompanyLanguage table
-//            $deletedTranslations = CompanyTranslation::whereNotIn('CompanyLanguageId', function ($query) {
-//                $query->select('Id')->from('CompanyLanguage');
-//            })->delete();
-
             $status = 'No Changes';
             $languageStatus = 'No Changes';
             $translationsStatus = 'No Changes';
-            $statusRow = [$company->Name, $company->Id, $languageStatus, $translationsStatus, $status];
+            $isWSLanguageEnabled = 'Not Active';
 
-            foreach ($filteredWebShopLanguages as $webShopLanguage) {
-                $language = $officeLanguages->where('Code', $webShopLanguage->Code)->first();
-                if ($language) {
-                    // insert Language into CompanyLanguage
-                    $insertedCompanyLanguage = $this->companyLanguageRepository->firstOrCreate([
-                        'Code' => $language->Code,
-                    ], [
-                        'Name' => $language->Name,
-                        'Locale' => $language->Locale,
-                        'IsDefault' => $language->IsDefault,
-                    ]);
+            CompanyService::setCompanyDatabaseConnection($company->Id);
 
-                    $languageStatus = $insertedCompanyLanguage ? 'Successful' : 'Failure';
-                    $translations = $officeTranslations->where('LanguageId', '=', $language->Id)->all();
+            // If Company has WSLanguage module
+            if (in_array($company->Id, $wsLanguageCompanyIds)) {
+                $isWSLanguageEnabled = 'Active';
+                $companyLanguages = $this->companyLanguageRepository->all();
+                $webShopLanguages = $this->webShopLanguageRepository->getByAttributes([
+                    ['column' => 'Disabled', 'operand' => '=', 'value' => 0],
+                ]);
 
-                    $insertedCompanyTranslation = false;
-                    foreach ($translations as $translation) {
-                        // insert Language into CompanyTranslation
-                        $insertedCompanyTranslation = $this->companyTranslationRepository->firstOrCreate([
-                            'CompanyLanguageId' => $insertedCompanyLanguage->Id,
-                            'Type' => $translation->Type,
-                            'ElementName' => $translation->ElementName
+                $filteredWebShopLanguages = $webShopLanguages->filter(function ($webShopLanguage) use ($companyLanguages) {
+                    return !$companyLanguages->contains('Code', $webShopLanguage->Code);
+                });
+
+                foreach ($filteredWebShopLanguages as $webShopLanguage) {
+                    $officeLanguage = $this->officeLanguages->where('Code', $webShopLanguage->Code)->first();
+                    if ($officeLanguage) {
+                        // insert Language into CompanyLanguage
+                        $insertedCompanyLanguage = $this->companyLanguageRepository->firstOrCreate([
+                            'Code' => $officeLanguage->Code,
                         ], [
-                            'Translations' => $translation->Translations
+                            'Name' => $officeLanguage->Name,
+                            'Locale' => $officeLanguage->Locale,
+                            'IsDefault' => $officeLanguage->IsDefault,
                         ]);
-                    }
-                    $translationsStatus = $insertedCompanyTranslation ? 'Successful' : 'Failure';
-                    $status = 'Successful';
-                }
 
-                $statusRow = [$company->Name, $company->Id, $languageStatus, $translationsStatus, $status];
+                        $languageStatus = $insertedCompanyLanguage ? 'Successful' : 'Failure';
+                    }
+                }
             }
-            $statusRows[] = $statusRow;
+
+            // For all Company Insert Translations
+            $translationsStatus = $this->insertCompanyTranslations();
+            $status = $this->getFinalStatus($languageStatus, $translationsStatus);
+
+            $statusRows[] = [$company->Name, $company->Id, $isWSLanguageEnabled, $languageStatus, $translationsStatus, $status];
             $bar->advance();
         }
 
@@ -166,4 +171,46 @@ class AddLanguageAndTranslationToCompanies extends Command
         $this->companyTranslationRepository = app(CompanyTranslationRepositoryInterface::class);
         $this->webShopLanguageRepository = app(WebShopLanguageRepositoryInterface::class);
     }
+
+    private function insertCompanyTranslations(): string
+    {
+        CompanyTranslation::query()->truncate();
+        $translationsStatus = 'Truncated';
+        $insertedCompanyTranslation = false;
+        $companyLanguages = $this->companyLanguageRepository->all();
+
+        foreach ($companyLanguages as $companyLanguage) {
+            $officeLanguage = $this->officeLanguages->where('Code', $companyLanguage->Code)->first();
+
+            if ($officeLanguage) {
+                $translations = $this->officeTranslations->where('LanguageId', '=', $officeLanguage->Id)->all();
+
+                foreach ($translations as $translation) {
+                    // Insert Language Into CompanyTranslation
+                    $insertedCompanyTranslation = $this->companyTranslationRepository->firstOrCreate([
+                        'CompanyLanguageId' => $companyLanguage->Id,
+                        'Type' => $translation->Type,
+                        'ElementName' => $translation->ElementName
+                    ], [
+                        'Translations' => $translation->Translations
+                    ]);
+                }
+            }
+        }
+
+        return $insertedCompanyTranslation ? 'Successful' : $translationsStatus;
+    }
+
+    private function getFinalStatus($languageStatus, $translationsStatus): string
+    {
+        if (($languageStatus === 'No Changes' && $translationsStatus === 'Successful') ||
+            ($languageStatus === 'Successful' && $translationsStatus === 'No Changes')) {
+            $status = 'Partially Success';
+        } elseif ($languageStatus === 'Successful' && $translationsStatus === 'Successful') {
+            $status = 'Successful';
+        }
+
+        return $status ?? 'Failure';
+    }
+
 }
