@@ -3,6 +3,7 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TableField extends BaseModel
@@ -19,5 +20,10 @@ class TableField extends BaseModel
     public function companyTableFields(): HasMany
     {
         return $this->hasMany(CompanyTableField::class, 'TableFieldId', 'Id');
+    }
+
+    public function table(): BelongsTo
+    {
+        return $this->belongsTo(Table::class, 'TableId', 'Id');
     }
 }
