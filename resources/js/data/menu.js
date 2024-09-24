@@ -29,8 +29,8 @@ export default {
                 },
                 {
                     name: "Copy To Dev",
-                    icon: "fa fa-plus",
-                    to: "create-table",
+                    icon: "fa fa-copy",
+                    to: "copy-database",
                 }
             ],
         },

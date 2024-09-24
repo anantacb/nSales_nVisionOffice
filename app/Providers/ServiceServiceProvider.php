@@ -16,6 +16,8 @@ use App\Services\Customer\CustomerService;
 use App\Services\Customer\CustomerServiceInterface;
 use App\Services\CustomerVisit\CustomerVisitService;
 use App\Services\CustomerVisit\CustomerVisitServiceInterface;
+use App\Services\Database\DatabaseService;
+use App\Services\Database\DatabaseServiceInterface;
 use App\Services\DataFilter\DataFilterService;
 use App\Services\DataFilter\DataFilterServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
@@ -92,5 +94,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(CompanyTranslationServiceInterface::class, CompanyTranslationService::class);
         $this->app->bind(ModulePackageServiceInterface::class, ModulePackageService::class);
         $this->app->bind(ModulePackageModuleServiceInterface::class, ModulePackageModuleService::class);
+        $this->app->bind(DatabaseServiceInterface::class, DatabaseService::class);
     }
 }
