@@ -258,7 +258,7 @@ export default {
         {
             name: "Horizon",
             to: "/horizon",
-            icon: "far fa-eye",
+            icon: "fa fa-tachometer-alt",
             directLink: true,
             targetBlank: true
         },
