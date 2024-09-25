@@ -3,7 +3,7 @@
 namespace App\Services\Database;
 
 use App\Contracts\ServiceDto;
-use App\Jobs\CopyDatabaseJob;
+use App\Jobs\CopyDatabaseProdToDev;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -34,9 +34,10 @@ class DatabaseService implements DatabaseServiceInterface
         $selectedDatabases = $request->get('selectedDatabases');
 
         foreach ($selectedDatabases as $database) {
-            $dbType = stripos($database, 'NVISION_OFFICE') !== false ? 'office' : 'company';
+            //$dbType = stripos($database, 'NVISION_OFFICE') !== false ? 'office' : 'company';
+            $dbType = strtoupper($database) === 'NVISION_OFFICE' ? 'office' : 'company';
 
-            CopyDatabaseJob::dispatch($dbType, $database)->onQueue('db-copy');
+            CopyDatabaseProdToDev::dispatch($dbType, $database)->onQueue('db-copy');
         }
 
         return new ServiceDto("Database copy jobs have been queued successfully!", 200);

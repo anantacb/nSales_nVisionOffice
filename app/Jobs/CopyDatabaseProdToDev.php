@@ -9,12 +9,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
 
-class CopyDatabaseJob implements ShouldQueue
+class CopyDatabaseProdToDev implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $dbType;
-    protected $dbName;
+    protected string $dbType;
+    protected string $dbName;
 
     /**
      * Create a new job instance.
