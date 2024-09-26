@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyLanguageController;
 use App\Http\Controllers\CompanyTranslationController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
+use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\ItemAttributeController;
@@ -116,6 +117,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
 
+    Route::post('/get-all-companies-with-db', [DatabaseController::class, 'getAllCompanies']);
+    Route::post('/copy-db-to-dev', [DatabaseController::class, 'copyDBtoDev']);
 
     // Company
     Route::post('/companies', [CompanyController::class, 'getCompanies']);
