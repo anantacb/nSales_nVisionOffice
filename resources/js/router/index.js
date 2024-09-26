@@ -21,6 +21,8 @@ const EditTable = () => import("@/views/database/EditTable.vue");
 const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
 const TableIndices = () => import("@/views/database/ManageTableIndices/TableIndices.vue");
 
+const CopyDatabase = () => import("@/views/database/CopyDatabase/CopyDatabase.vue");
+
 const ModuleSettings = () => import("@/views/setting/ModuleSettings/ModuleSettings.vue");
 const CreateModuleSetting = () => import("@/views/setting/CreateModuleSetting.vue");
 const EditModuleSetting = () => import("@/views/setting/EditModuleSetting.vue");
@@ -123,6 +125,15 @@ const routes = [
                 path: "database/table/create",
                 name: "create-table",
                 component: CreateTable,
+                meta: {
+                    authenticated: true,
+                    company_specific: false
+                }
+            },
+            {
+                path: "database/copy",
+                name: "copy-database",
+                component: CopyDatabase,
                 meta: {
                     authenticated: true,
                     company_specific: false

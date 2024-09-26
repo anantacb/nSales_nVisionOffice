@@ -26,6 +26,11 @@ export default {
                     name: "Create Table",
                     icon: "fa fa-plus",
                     to: "create-table",
+                },
+                {
+                    name: "Copy To Dev",
+                    icon: "fa fa-copy",
+                    to: "copy-database",
                 }
             ],
         },
@@ -247,6 +252,13 @@ export default {
             name: "Log Viewer",
             to: "/log-viewer",
             icon: "far fa-eye",
+            directLink: true,
+            targetBlank: true
+        },
+        {
+            name: "Horizon",
+            to: "/horizon",
+            icon: "fa fa-tachometer-alt",
             directLink: true,
             targetBlank: true
         },
