@@ -19,6 +19,7 @@ import WebShopLanguage from "@/models/Company/WebShopLanguage";
 import ItemAttribute from "@/models/Company/ItemAttribute";
 import BaseBlock from "@/components/BaseBlock.vue";
 import Swal from "sweetalert2";
+import {useCompanyLanguage} from "@/composables/useCompanyLanguage";
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -27,35 +28,36 @@ const notificationStore = useNotificationStore();
 
 let {numberFormat, dateFormat} = useFormatter();
 const {isModuleEnabled} = useCompanyInfos();
+let {CompanyLanguageOptions, getLanguageOptionsByCompanyLanguage} = useCompanyLanguage();
 const {errors, setErrors, resetErrors} = useFormErrors();
 const emit = defineEmits(['setProductInfo']);
 
 let TabAttributesRef = ref(null);
 let ItemAttributes = ref([]);
-let WebShopLanguages = ref([]);
-let WebShopLanguageOptions = ref([]);
+// let CompanyLanguages = ref([]);
+// let CompanyLanguageOptions = ref([]);
 
 const props = defineProps({
     productInfo: {
         type: Object,
         required: true,
     },
-    webShopLanguages: {
+    companyLanguages: {
         type: Array,
         required: true,
     },
 });
 
-async function getAllWebShopLanguages() {
-    // let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
-    // WebShopLanguages.value = data;
-
-    let options = [{label: 'Select Language', value: ''}];
-    props.webShopLanguages.forEach((language) => {
-        options.push({label: language.Name, value: language.Code});
-    });
-    WebShopLanguageOptions.value = options;
-}
+// async function getAllCompanyLanguages() {
+//     // let {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id, route.params.id);
+//     // CompanyLanguages.value = data;
+//
+//     let options = [{label: 'Select Language', value: ''}];
+//     props.companyLanguages.forEach((language) => {
+//         options.push({label: language.Name, value: language.Code});
+//     });
+//     CompanyLanguageOptions.value = options;
+// }
 
 async function getItemAttributes() {
     let {data} = await ItemAttribute.fetchByItem(companyStore.selectedCompany.Id, route.params.id);
@@ -133,7 +135,7 @@ onMounted(async () => {
 
     if (_.isEmpty(ItemAttributes.value)) {
         TabAttributesRef.value.statusLoading();
-        isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguageOptions.value = [];
+        isModuleEnabled('Translation') ? await getLanguageOptionsByCompanyLanguage(props.companyLanguages) : CompanyLanguageOptions.value = [];
         isModuleEnabled('Itemattribute') ? await getItemAttributes() : ItemAttributes.value = [];
         TabAttributesRef.value.statusNormal();
     }
@@ -190,7 +192,7 @@ onMounted(async () => {
                     <td>
                         <Select
                             v-model="ItemAttribute.Language"
-                            :options="WebShopLanguageOptions"
+                            :options="CompanyLanguageOptions"
                             :required="true"
                             :select-class="errors[`ItemAttributes.${index}.Language`]
                             ? `is-invalid form-control form-select-sm` : `form-control form-select-sm`"
