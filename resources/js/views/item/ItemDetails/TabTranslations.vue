@@ -8,6 +8,7 @@ import {useAuthStore} from "@/stores/authStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormatter} from "@/composables/useFormatter";
+import {useCompanyLanguage} from "@/composables/useCompanyLanguage";
 import {useFormErrors} from "@/composables/useFormErrors";
 import useGeneralCreate from "@/composables/useGeneralCreate";
 import GeneralForm from "@/components/ui/FormElements/GeneralForm.vue";
@@ -22,6 +23,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 import useCompanyInfos from "@/composables/useCompanyInfos";
 import {useRoute} from "vue-router";
+
 import router from "@/router";
 import Item from "@/models/Company/Item";
 import WebShopLanguage from "@/models/Company/WebShopLanguage";
@@ -42,7 +44,7 @@ const emit = defineEmits(['setProductInfo']);
 
 let TabTranslationsRef = ref(null);
 let ItemAttributes = ref([]);
-let WebShopLanguages = ref([]);
+// let CompanyLanguages = ref([]);
 let WebShopTexts = ref([]);
 let WebShopTextTypes = ref([
     "Header",
@@ -60,30 +62,18 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    webShopLanguages: {
+    companyLanguages: {
         type: Array,
         required: true,
     },
 });
 
-// async function getAllWebShopLanguages() {
-//     let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
-//     WebShopLanguages.value = data;
-//
-//     let options = [{label: 'Select Language', value: ''}];
-//
-//     data.forEach((language) => {
-//         options.push({label: language.Name, value: language.Code});
-//     });
-//
-//     WebShopLanguageOptions.value = options;
-// }
 
 async function getProductWebShopTexts() {
     let {data} = await WebShopText.fetchByItem(companyStore.selectedCompany.Id, route.params.id);
     console.log(data);
 
-    props.webShopLanguages.forEach((language) => {
+    props.companyLanguages.forEach((language) => {
         WebShopTextTypes.value.forEach((type) => {
             WebShopTexts.value.push({
                 ElementType: "Item",
@@ -162,10 +152,10 @@ onMounted(async () => {
     console.log('Translations');
     TabTranslationsRef.value.statusLoading();
 
-    // await getAllWebShopLanguages();
+    // await getAllCompanyLanguages();
     // await getProductItemAttributes();
 
-    // isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguages.value = [];
+    // isModuleEnabled('Translation') ? await getAllCompanyLanguages() : CompanyLanguages.value = [];
     // isModuleEnabled('Itemattribute') ? await getProductItemAttributes() : ItemAttributes.value = [];
     isModuleEnabled('WSPage') ? await getProductWebShopTexts() : WebShopTexts.value = [];
 
@@ -182,46 +172,46 @@ onMounted(async () => {
 
             <div class="col-lg-12 space-y-2">
 
-                <div v-for="(web_shop_text_form,index) of WebShopTexts"
+                <div v-for="(webShopTextForm,index) of WebShopTexts"
                      :key="index"
                      class="row ">
 
 
-                    <label class="col-sm-2 col-form-label col-form-label-sm">{{ web_shop_text_form.LanguageName }}
+                    <label class="col-sm-2 col-form-label col-form-label-sm">{{ webShopTextForm.LanguageName }}
                         Product
-                        {{ label_text(web_shop_text_form.Type) }}</label>
+                        {{ label_text(webShopTextForm.Type) }}</label>
 
                     <div class="col-sm-6">
                         <input
-                            v-if="web_shop_text_form.Type===`Header` || web_shop_text_form.Type===`SubHeader` || web_shop_text_form.Type===`Footer`"
-                            v-model="web_shop_text_form.Text"
-                            :placeholder="`Enter ${web_shop_text_form.LanguageName} Product ${label_text(web_shop_text_form.Type)}`"
+                            v-if="webShopTextForm.Type===`Header` || webShopTextForm.Type===`SubHeader` || webShopTextForm.Type===`Footer`"
+                            v-model="webShopTextForm.Text"
+                            :placeholder="`Enter ${webShopTextForm.LanguageName} Product ${label_text(webShopTextForm.Type)}`"
                             class="form-control form-control-sm"
                             type="text">
 
-                        <!--                        <textarea v-if="web_shop_text_form.Type===`Body`"-->
-                        <!--                                  v-model="web_shop_text_form.Text"-->
+                        <!--                        <textarea v-if="webShopTextForm.Type===`Body`"-->
+                        <!--                                  v-model="webShopTextForm.Text"-->
                         <!--                                  class="form-control form-control-sm"-->
                         <!--                        >-->
                         <!--                            </textarea>-->
-                        <!--                        <quill-editor v-if="web_shop_text_form.Type===`Body`"-->
-                        <!--                                      v-model="web_shop_text_form.Text">-->
+                        <!--                        <quill-editor v-if="webShopTextForm.Type===`Body`"-->
+                        <!--                                      v-model="webShopTextForm.Text">-->
                         <!--                        </quill-editor>-->
 
-                        <!--                        <ckeditor v-if="web_shop_text_form.Type===`Body`"-->
-                        <!--                                  v-model="web_shop_text_form.Text"-->
+                        <!--                        <ckeditor v-if="webShopTextForm.Type===`Body`"-->
+                        <!--                                  v-model="webShopTextForm.Text"-->
                         <!--                                  :config="editorConfig"-->
                         <!--                                  :editor="ClassicEditor"-->
                         <!--                        />-->
                         <!--                        <CkEditor-->
-                        <!--                            v-if="web_shop_text_form.Type === 'Body'"-->
-                        <!--                            v-model="web_shop_text_form.Text"-->
+                        <!--                            v-if="webShopTextForm.Type === 'Body'"-->
+                        <!--                            v-model="webShopTextForm.Text"-->
                         <!--                        />-->
 
-                        <CkEditor v-if="web_shop_text_form.Type===`Body`"
-                                  v-model="web_shop_text_form.Text"/>
+                        <CkEditor v-if="webShopTextForm.Type===`Body`"
+                                  v-model="webShopTextForm.Text"/>
                     </div>
-                    <div v-html="web_shop_text_form.Text"></div>
+<!--                    <div v-html="webShopTextForm.Text"></div>-->
 
 
                 </div>

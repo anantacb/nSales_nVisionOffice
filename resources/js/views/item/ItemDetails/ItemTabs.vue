@@ -8,6 +8,7 @@ import {useAuthStore} from "@/stores/authStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormatter} from "@/composables/useFormatter";
+import {useCompanyLanguage} from "@/composables/useCompanyLanguage";
 import {useFormErrors} from "@/composables/useFormErrors";
 import useGeneralCreate from "@/composables/useGeneralCreate";
 import GeneralForm from "@/components/ui/FormElements/GeneralForm.vue";
@@ -23,6 +24,7 @@ import ItemOverview from "@/views/item/ItemDetails/ItemOverview.vue";
 import TabDetails from "@/views/item/ItemDetails/TabDetails.vue";
 import TabAttributes from "@/views/item/ItemDetails/TabAttributes.vue";
 import TabTranslations from "@/views/item/ItemDetails/TabTranslations.vue";
+import CompanyLanguage from "@/models/Company/CompanyLanguage";
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -30,6 +32,7 @@ const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 
 let {numberFormat, dateFormat} = useFormatter();
+let {CompanyLanguages, CompanyLanguageOptions, getAllCompanyLanguages, getCompanyLanguageOptions} = useCompanyLanguage();
 const {isModuleEnabled} = useCompanyInfos();
 const {errors, setErrors, resetErrors} = useFormErrors();
 const emit = defineEmits(['setProductInfo']);
@@ -37,8 +40,8 @@ const emit = defineEmits(['setProductInfo']);
 const Tabs = ref(['Details']);
 const currentTab = ref('Details');
 let productInfo = ref({});
-let WebShopLanguages = ref([]);
-let WebShopLanguageOptions = ref([]);
+// let CompanyLanguages = ref([]);
+// let CompanyLanguageOptions = ref([]);
 
 
 async function setProductInfo(data) {
@@ -60,7 +63,7 @@ async function setTabs() {
         Tabs.value.push('Attributes');
     }
 
-    if (isModuleEnabled('WSLanguage') && isModuleEnabled(`WSPage`)) {
+    if (isModuleEnabled('Translation') && isModuleEnabled(`WSPage`)) {
         Tabs.value.push('Translations');
     }
 
@@ -91,16 +94,18 @@ async function setVariantTab() {
 }
 
 
-async function getAllWebShopLanguages() {
-    let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
-    WebShopLanguages.value = data;
-
-    let options = [{label: 'Select Language', value: ''}];
-    data.forEach((language) => {
-        options.push({label: language.Name, value: language.Code});
-    });
-    WebShopLanguageOptions.value = options;
-}
+// async function getAllCompanyLanguages() {
+//     // let {data} = await WebShopLanguage.fetchAll(companyStore.selectedCompany.Id, route.params.id);
+//     let {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id, route.params.id);
+//     console.log(data);
+//     CompanyLanguages.value = data;
+//
+//     let options = [{label: 'Select Language', value: ''}];
+//     data.forEach((language) => {
+//         options.push({label: language.Name, value: language.Code});
+//     });
+//     CompanyLanguageOptions.value = options;
+// }
 
 
 watch(productInfo, async (newProductInfo) => {
@@ -109,8 +114,7 @@ watch(productInfo, async (newProductInfo) => {
 
 onMounted(async () => {
     await setTabs();
-    isModuleEnabled('WSLanguage') ? await getAllWebShopLanguages() : WebShopLanguages.value = [];
-
+    isModuleEnabled('Translation') ? await getAllCompanyLanguages() : CompanyLanguages.value = [];
 });
 
 </script>
@@ -159,13 +163,13 @@ onMounted(async () => {
 
                         <TabAttributes v-if="tab === 'Attributes' && currentTab === tab "
                                        :productInfo='productInfo'
-                                       :webShopLanguages='WebShopLanguages'
+                                       :companyLanguages='CompanyLanguages'
                         >
                         </TabAttributes>
 
                         <TabTranslations v-if="tab === 'Translations' && currentTab === tab "
                                          :productInfo='productInfo'
-                                         :webShopLanguages='WebShopLanguages'>
+                                         :companyLanguages='CompanyLanguages'>
                         </TabTranslations>
 
                     </div>
