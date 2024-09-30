@@ -7,6 +7,8 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import {useRoute} from "vue-router";
 import CompaniesTable from "@/views/module/EditModule/CompaniesTable.vue";
 import ApplicationsTable from "@/views/module/EditModule/ApplicationsTable.vue";
+import TablesTable from "@/views/module/EditModule/TablesTable.vue";
+import SubModulesTable from "@/views/module/EditModule/SubModulesTable.vue";
 
 const notificationStore = useNotificationStore();
 
@@ -399,6 +401,28 @@ onMounted(async () => {
                                     Companies
                                 </button>
                             </li>
+                            <li class="nav-item">
+                                <button id="tables-tab"
+                                        aria-controls="tables"
+                                        aria-selected="false"
+                                        class="nav-link"
+                                        data-bs-target="#tables"
+                                        data-bs-toggle="tab"
+                                        role="tab">
+                                    Tables
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button id="subModules-tab"
+                                        aria-controls="subModules"
+                                        aria-selected="false"
+                                        class="nav-link"
+                                        data-bs-target="#subModules"
+                                        data-bs-toggle="tab"
+                                        role="tab">
+                                    Sub Modules
+                                </button>
+                            </li>
                         </ul>
                         <div class="block-content tab-content">
                             <div id="applications"
@@ -414,6 +438,20 @@ onMounted(async () => {
                                  role="tabpanel"
                                  tabindex="0">
                                 <CompaniesTable :companies="ModuleModel.companies"></CompaniesTable>
+                            </div>
+                            <div id="tables"
+                                 aria-labelledby="tables-tab"
+                                 class="tab-pane"
+                                 role="tabpanel"
+                                 tabindex="0">
+                                <TablesTable :tables="ModuleModel.tables"></TablesTable>
+                            </div>
+                            <div id="subModules"
+                                 aria-labelledby="subModules-tab"
+                                 class="tab-pane"
+                                 role="tabpanel"
+                                 tabindex="0">
+                                <SubModulesTable :sub-modules="ModuleModel.sub_modules"></SubModulesTable>
                             </div>
                         </div>
                     </template>

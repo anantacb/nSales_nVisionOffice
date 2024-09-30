@@ -147,7 +147,7 @@ async function getTableDetails() {
                                 >
                                     <template #search="{attributes, events}">
                                         <input
-                                            :required="!module"
+                                            :required="!TableModel.module"
                                             class="vs__search"
                                             v-bind="attributes"
                                             v-on="events"

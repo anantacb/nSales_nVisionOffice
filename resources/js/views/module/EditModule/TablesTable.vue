@@ -4,7 +4,7 @@ import {onMounted} from "vue";
 import {useJQueryDatatableTable} from "@/composables/useJQueryDatatableTable";
 
 const props = defineProps({
-    applications: {
+    tables: {
         type: Array,
         required: false,
         default: () => []
@@ -20,19 +20,17 @@ setColumns([
         sort: ""
     },
     {
-        name: "Platform",
-        field: "Platform",
-
+        name: "Type",
+        field: "Type"
     },
     {
-        name: "OS",
-        field: "OperatingSystem",
-
+        name: "Database",
+        field: "Database"
     },
     {
         name: "Action",
         field: "Action"
-    },
+    }
 ]);
 
 onMounted(() => {
@@ -47,12 +45,12 @@ onMounted(() => {
         </template>
         <Dataset
             v-slot="{ ds }"
-            :ds-data="props.applications"
-            :ds-search-in="['Name', 'Platform', 'OperatingSystem']"
+            :ds-data="props.tables"
+            :ds-search-in="['Name', 'Type', 'Database']"
             :ds-sortby="sortBy"
         >
             <div :data-page-count="ds.dsPagecount" class="row">
-                <div id="datasetLengthApplications" class="datasetLength col-md-8 py-2">
+                <div id="datasetLengthCompanies" class="datasetLength datatable-dataset-show col-md-8 py-2">
                     <DatasetShow/>
                 </div>
                 <div class="col-md-4 py-2">
@@ -84,7 +82,7 @@ onMounted(() => {
                                         <th scope="row">{{ rowIndex + 1 }}</th>
                                         <td v-for="column in columns">
                                             <template v-if="column.field === `Action`">
-                                                <a :href="`/application/${row.Id}/edit`"
+                                                <a :href="`/database/table/${row.Id}/edit`"
                                                    class="btn rounded-pill btn-alt-warning me-1"><i
                                                     class="fa fa-pen-alt"></i></a>
                                             </template>
