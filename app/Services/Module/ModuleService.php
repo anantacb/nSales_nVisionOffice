@@ -407,7 +407,9 @@ class ModuleService implements ModuleServiceInterface
     {
         $relations = [
             'companies',
-            'applications'
+            'applications',
+            'tables',
+            'subModules'
         ];
         $module = $this->moduleRepository
             ->firstByAttributes([
