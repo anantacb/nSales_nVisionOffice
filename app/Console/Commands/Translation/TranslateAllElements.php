@@ -67,7 +67,7 @@ class TranslateAllElements extends Command
                         if (!isset($otherLanguageTranslation['Translations'][$key])) {
                             Log::debug("Missing Key: $key Element: {$baseLanguageTranslation['ElementName']} Language: {$otherLanguage["Name"]} Code: {$otherLanguage["Code"]}");
                             $newTranslation = $otherLanguageTranslation['Translations'];
-                            $newTranslation[$key] = $this->translateText($baseLanguageTranslation['Translations'][$key], $otherLanguage['Code']); // Todo
+                            $newTranslation[$key] = $this->translateText($baseLanguageTranslation['Translations'][$key], $otherLanguage['Code']);
                             $otherLanguageTranslation->update([
                                 'Translations' => $newTranslation
                             ]);
@@ -77,7 +77,7 @@ class TranslateAllElements extends Command
                     Log::debug("Missing Element: {$baseLanguageTranslation['ElementName']} Language: {$otherLanguage["Name"]} Code: {$otherLanguage["Code"]}");
                     $newTranslations = [];
                     foreach ($baseLanguageTranslation['Translations'] as $key => $translation) {
-                        $newTranslations[$key] = $translation;
+                        $newTranslations[$key] = $this->translateText($translation, $otherLanguage['Code']);
                     }
 
                     $this->translationRepository->create([
