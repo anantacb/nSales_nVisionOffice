@@ -120,27 +120,17 @@ async function getProductWebShopTexts() {
 
 }
 
-function label_text(type) {
-    if (type === "Header") {
-        return "Name";
-    } else if (type === "SubHeader") {
-        return "SubHeader";
-    } else if (type === "Body") {
-        return "Description";
-    } else if (type === "Footer") {
-        return "Footer";
-    } else if (type === "SEOTitle") {
-        return "Title";
-    } else if (type === "SEODescription") {
-        return "Description";
-    } else if (type === "SEOKeyword") {
-        return "Keywords";
-    } else if (type === "SEOOgImage") {
-        return "OG Image";
-    } else if (type === "SEORobot") {
-        return "Robot";
-    }
-}
+const LabelText = ref({
+    'Header': 'Name',
+    'SubHeader': 'Subheader',
+    'Body': 'Description',
+    'Footer': 'Footer',
+    'SEOTitle': 'Title',
+    'SEODescription': 'Description',
+    'SEOKeyword': 'Keywords',
+    'SEOOgImage': 'OG Image',
+    'SEORobot': 'Robot'
+});
 
 function updateItemWebShopTexts() {
     console.log(WebShopTexts.value);
@@ -176,10 +166,9 @@ onMounted(async () => {
                      :key="index"
                      class="row ">
 
-
-                    <label class="col-sm-2 col-form-label col-form-label-sm">{{ webShopTextForm.LanguageName }}
-                        Product
-                        {{ label_text(webShopTextForm.Type) }}</label>
+                    <label class="col-sm-2 col-form-label col-form-label-sm">
+                        {{ `${webShopTextForm.LanguageName} Product ${LabelText[webShopTextForm.Type]}` }}
+                    </label>
 
                     <div class="col-sm-6">
                         <input
@@ -211,7 +200,7 @@ onMounted(async () => {
                         <CkEditor v-if="webShopTextForm.Type===`Body`"
                                   v-model="webShopTextForm.Text"/>
                     </div>
-<!--                    <div v-html="webShopTextForm.Text"></div>-->
+                    <!--                    <div v-html="webShopTextForm.Text"></div>-->
 
 
                 </div>
