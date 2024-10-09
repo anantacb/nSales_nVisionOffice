@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\ModuleSetting;
 
+use App\Rules\ModuleSettingDataType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -35,10 +36,7 @@ class Update extends FormRequest
             ],
             'DataType' => [
                 'required',
-                Rule::in([
-                    'Boolean', 'Double', 'Int32', 'String',
-                    "regex:^Enum\((('\w+'),*)+\)$"
-                ])
+                new ModuleSettingDataType()
             ],
             'Options' => 'nullable',
             'Disabled' => 'required|boolean',
