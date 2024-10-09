@@ -63,16 +63,16 @@ class TranslateAllElements extends Command
                 if ($otherLanguageTranslation) {
                     // Check for missing keys
                     // If any get the translation
+                    $newTranslation = $otherLanguageTranslation['Translations'];
                     foreach ($baseLanguageTranslation['Translations'] as $key => $translation) {
                         if (!isset($otherLanguageTranslation['Translations'][$key])) {
                             Log::debug("Missing Key: $key Element: {$baseLanguageTranslation['ElementName']} Language: {$otherLanguage["Name"]} Code: {$otherLanguage["Code"]}");
-                            $newTranslation = $otherLanguageTranslation['Translations'];
                             $newTranslation[$key] = $this->translateText($baseLanguageTranslation['Translations'][$key], $otherLanguage['Code']);
-                            $otherLanguageTranslation->update([
-                                'Translations' => $newTranslation
-                            ]);
                         }
                     }
+                    $otherLanguageTranslation->update([
+                        'Translations' => $newTranslation
+                    ]);
                 } else {
                     Log::debug("Missing Element: {$baseLanguageTranslation['ElementName']} Language: {$otherLanguage["Name"]} Code: {$otherLanguage["Code"]}");
                     $newTranslations = [];

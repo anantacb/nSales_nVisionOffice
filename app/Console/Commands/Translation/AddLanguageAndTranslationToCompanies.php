@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Translation;
 
 use App\Models\Company\CompanyTranslation;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
@@ -23,13 +23,13 @@ class AddLanguageAndTranslationToCompanies extends Command
     /**
      * The name and signature of the console command.
      *
-     *  php artisan languageTranslation:add
-     *  php artisan languageTranslation:add -C821 -C943
-     *  php artisan languageTranslation:add --companyId=821 --companyId=943
+     *  php artisan script:add-language-translation
+     *  php artisan script:add-language-translation -C821 -C943
+     *  php artisan script:add-language-translation --companyId=821 --companyId=943
      *
      * @var string
      */
-    protected $signature = 'languageTranslation:add {--C|companyId=*}';
+    protected $signature = 'script:add-language-translation {--C|companyId=*}';
 
     /**
      * The console command description.
