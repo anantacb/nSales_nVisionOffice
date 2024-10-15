@@ -22,8 +22,11 @@ setColumns([
     {
         name: "Domain",
         field: "DomainName",
-
-    }
+    },
+    {
+        name: "Action",
+        field: "Action"
+    },
 ]);
 
 onMounted(() => {
@@ -73,8 +76,14 @@ onMounted(() => {
                                 <template #default="{ row, rowIndex }">
                                     <tr>
                                         <th scope="row">{{ rowIndex + 1 }}</th>
-                                        <td>{{ row.Name }}</td>
-                                        <td>{{ row.DomainName }}</td>
+                                        <td v-for="column in columns">
+                                            <template v-if="column.field === `Action`">
+                                                <a :href="`/company/${row.Id}/edit`"
+                                                   class="btn rounded-pill btn-alt-warning me-1"><i
+                                                    class="fa fa-pen-alt"></i></a>
+                                            </template>
+                                            <template v-else>{{ row[column.field] }}</template>
+                                        </td>
                                     </tr>
                                 </template>
                             </DatasetItem>
