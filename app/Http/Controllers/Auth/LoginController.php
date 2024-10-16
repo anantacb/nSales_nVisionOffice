@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Office\User;
 use App\Providers\RouteServiceProvider;
 use App\Transformer\ApiResponseTransformer;
-use Carbon\Carbon;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -98,7 +97,7 @@ class LoginController extends Controller
             ];
         }
 
-        $roles = [];
+        /*$roles = [];
         $user->companyUsers->pluck('roles')->each(function ($roleArr) use (&$roles) {
             $roleArr->pluck('Type')->each(function ($role) use (&$roles) {
                 $roles[$role] = $role;
@@ -109,7 +108,7 @@ class LoginController extends Controller
                 'message' => 'You are not developer in any company.',
                 'status' => false,
             ];
-        }
+        }*/
 
         $psw = sha1($user->Salt . $request->get('password'));
         $psw = strtoupper($psw);

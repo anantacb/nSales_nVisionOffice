@@ -1,20 +1,19 @@
 <script setup>
-import {onBeforeMount, ref} from "vue";
-import {useTemplateStore} from "@/stores/templateStore";
-import {useAuthStore} from "@/stores/authStore";
+import {ref} from "vue";
 import User from "@/models/Office/User";
-import router from "@/router";
+import {useTemplateStore} from "@/stores/templateStore";
 import {useCompanyStore} from "@/stores/companyStore";
+import {useAuthStore} from "@/stores/authStore";
 import {useRoute} from "vue-router";
+import router from "@/router";
+import useCheckAccess from "@/composables/useCheckAccess";
 
-// Grab example data
-//import notifications from "@/data/notifications";
+const {checkAccess} = useCheckAccess();
 
 // Main Template Store and Router
 const templateStore = useTemplateStore();
 const authStore = useAuthStore();
 const companyStore = useCompanyStore();
-
 
 const route = useRoute();
 
@@ -30,9 +29,16 @@ async function logout() {
     }
 }
 
-function companyChanged(companyId) {
-    companyStore.setSelectedCompanyById(companyId);
+async function companyChanged(companyId) {
+    await companyStore.setSelectedCompanyById(companyId);
+    await checkAccess(route.meta.roles, route.meta.module);
 }
+
+/*onBeforeMount(async () => {
+    templateStore.pageLoader({mode: 'on'});
+    await companyStore.fill();
+    templateStore.pageLoader({mode: 'off'});
+});*/
 
 </script>
 
