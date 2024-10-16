@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import Company from "@/models/Office/Company";
 import Module from "@/models/Office/Module";
+import {useAuthStore} from "@/stores/authStore";
 
 export const useCompanyStore = defineStore('company', {
     state: () => ({
@@ -15,7 +16,11 @@ export const useCompanyStore = defineStore('company', {
             })[0];
 
             this.selectedCompany = tempCompany;
+
             localStorage.setItem('selectedCompany', JSON.stringify(this.selectedCompany));
+
+            const authStore = useAuthStore();
+            authStore.setRoles(this.selectedCompany.roles);
 
             let {data} = await Module.getActivatedModulesByCompany(tempCompany.Id);
             this.selectedCompanyModules = data;
@@ -23,13 +28,20 @@ export const useCompanyStore = defineStore('company', {
         },
 
         async fill() {
-            let {data} = await Company.getAllCompanies();
+            //let {data} = await Company.getAllCompanies();
+            let {data} = await Company.getAuthUserCompanies();
             this.companies = data;
             if (localStorage.getItem('selectedCompany')) {
                 await this.setSelectedCompanyById(JSON.parse(localStorage.getItem('selectedCompany')).Id);
             } else {
                 await this.setSelectedCompanyById(this.companies[0].Id);
             }
+        },
+
+        clearStorage() {
+            this.companies = [];
+            this.selectedCompany = {};
+            this.selectedCompanyModules = [];
         }
     },
     getters: {

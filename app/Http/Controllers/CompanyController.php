@@ -28,6 +28,12 @@ class CompanyController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getAuthUserCompanies(Request $request): JsonResponse
+    {
+        $response = $this->service->getAuthUserCompanies($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function getModuleEnabledCompanies(ModuleEnabledCompanies $request): JsonResponse
     {
         $response = $this->service->getModuleEnabledCompanies($request);

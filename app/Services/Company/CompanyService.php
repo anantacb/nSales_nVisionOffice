@@ -158,6 +158,31 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Companies retrieved!!!", 200, $companies);
     }
 
+    public function getAuthUserCompanies(Request $request): ServiceDto
+    {
+        $authUserId = Auth::id();
+        $companies = $this->companyRepository->getByAttributes([], [
+            'companyUsers' => function ($query) use ($authUserId) {
+                $query->with(['roles'])->where('UserId', $authUserId);
+            }
+        ], ['Id', 'Name', 'CompanyName'], 'Name', false,
+            [
+                [
+                    "relation" => "companyUsers", "column" => "UserId", "operator" => "=", "values" => $authUserId
+                ]
+            ]
+        );
+
+
+        $companies = $companies->map(function ($company) {
+            $formattedCompany = collect($company)->only(['Id', 'Name', 'CompanyName'])->toArray();
+            $formattedCompany['roles'] = collect($company->companyUsers[0]->roles)->pluck('Type')->toArray();
+            return $formattedCompany;
+        });
+
+        return new ServiceDto("Companies retrieved!!!", 200, $companies);
+    }
+
     public function getModuleEnabledCompanies(Request $request): ServiceDto
     {
         $companies = $this->companyRepository->getByAttributes([], '', ['Id', 'Name', 'CompanyName'], 'Name', false, [
