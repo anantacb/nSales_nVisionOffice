@@ -30,4 +30,9 @@ class Company extends BaseModel
     {
         return $this->hasOne(PostmarkEmailServer::class, 'CompanyId', 'Id');
     }
+
+    public function companyUsers(): HasMany
+    {
+        return $this->hasMany(CompanyUser::class, 'CompanyId', 'Id');
+    }
 }

@@ -1,13 +1,15 @@
 import {defineStore} from "pinia";
 import User from "@/models/Office/User";
 import {useCookies} from "vue3-cookies";
+import {useCompanyStore} from "@/stores/companyStore";
 
 const {cookies} = useCookies();
 
 // Main Pinia Store
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {}
+        user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
+        roles: []
     }),
 
     actions: {
@@ -18,11 +20,17 @@ export const useAuthStore = defineStore('auth', {
             await this.getAuthUserDetails();
         },
 
+        setRoles(payload) {
+            this.roles = payload;
+        },
+
         logout() {
             cookies.remove("token");
             localStorage.clear();
             delete axios.defaults.headers.common['Authorization'];
-            this.user = {};
+            this.clearStorage();
+            const companyStore = useCompanyStore();
+            companyStore.clearStorage();
         },
 
         async getAuthUserDetails() {
@@ -38,11 +46,19 @@ export const useAuthStore = defineStore('auth', {
         isAuthenticated() {
             return !!cookies.get('token');
         },
+
+        clearStorage() {
+            this.user = {};
+            this.roles = [];
+        }
     },
 
     getters: {
         getUser() {
             return this.user;
         },
+        getRoles() {
+            return this.roles;
+        }
     }
 });

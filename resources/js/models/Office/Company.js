@@ -11,6 +11,18 @@ export default class Company {
         });
     }
 
+    static getAuthUserCompanies() {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/auth-user-companies')
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static getModuleEnabledCompanies(moduleId) {
         return new Promise((resolve, reject) => {
             axios.post('/api/company/by-module-enabled', {

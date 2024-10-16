@@ -120,6 +120,7 @@ async function assignUserToCompany() {
         await getUserDetails();
         await getAssignAbleCompanies();
         resetAssignUserToCompanyForm();
+        updateUserRef.value.statusNormal();
     } catch (error) {
         setErrorsAssignForm(error.response.data.errors);
         assignToCompanyRef.value.statusNormal();

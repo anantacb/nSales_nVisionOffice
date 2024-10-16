@@ -126,7 +126,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/update', [CompanyController::class, 'update']);
     Route::post('/company/details', [CompanyController::class, 'details']);
     Route::post('/company/delete', [CompanyController::class, 'delete']);
+
     Route::post('/company/all', [CompanyController::class, 'getAllCompanies']);
+    Route::post('/auth-user-companies', [CompanyController::class, 'getAuthUserCompanies']);
+
     Route::post('/company/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
     Route::post('/company/assignable-companies-by-user', [CompanyController::class, 'getAssignableCompaniesByUser']);
 
