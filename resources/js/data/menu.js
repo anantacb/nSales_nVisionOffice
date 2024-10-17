@@ -388,6 +388,7 @@ export default {
             subActivePaths: ["product"],
             moduleSpecific: true,
             moduleName: 'Item',
+            roles: ["Developer", "Administrator", "Employee"],
             sub: [
                 {
                     name: "Products",
@@ -395,6 +396,7 @@ export default {
                     to: "items",
                     moduleSpecific: true,
                     moduleName: 'Item',
+                    roles: ["Developer", "Administrator", "Employee"],
                 },
                 /*{
                     name: "Create Product",
