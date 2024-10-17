@@ -706,7 +706,9 @@ const routes = [
                 component: Items,
                 meta: {
                     authenticated: true,
-                    company_specific: true
+                    company_specific: true,
+                    roles: ['Developer', 'Administrator', 'Employee'],
+                    module: 'Item'
                 }
             },
             {
@@ -715,7 +717,9 @@ const routes = [
                 component: ItemDetails,
                 meta: {
                     authenticated: true,
-                    company_specific: false
+                    company_specific: false,
+                    roles: ['Developer', 'Administrator', 'Employee'],
+                    module: 'Item'
                 },
                 beforeEnter: (to, from) => {
                     if (['items'].includes(from.name)) {
