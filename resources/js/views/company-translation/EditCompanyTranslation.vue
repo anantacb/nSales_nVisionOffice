@@ -11,6 +11,7 @@ import CompanyTranslation from "@/models/Company/CompanyTranslation";
 import {useCompanyStore} from "@/stores/companyStore";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
 import router from "@/router";
+import _ from "lodash";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -87,9 +88,11 @@ onMounted(async () => {
     updateCompanyTranslationRef.value.statusNormal();
 });
 
-watch(() => companyStore.selectedCompany, (value, oldValue) => {
-    if (value.Id !== oldValue.Id) {
-        router.push({name: 'home'});
+watch(() => companyStore.selectedCompany, (newSelectedCompany, oldSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        if (newSelectedCompany.Id !== oldSelectedCompany.Id) {
+            router.push({name: 'home'});
+        }
     }
 });
 

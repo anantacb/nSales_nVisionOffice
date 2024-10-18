@@ -6,6 +6,7 @@ import Order from "@/models/Company/Order";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
 import {useFormatter} from "@/composables/useFormatter";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -99,11 +100,13 @@ onMounted(() => {
     resetFilters();
 });
 
-watch(() => companyStore.getSelectedCompany, () => {
-    resetRequest();
-    resetFilters();
-    //getOrderOrigins();
-    getOrders();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        resetFilters();
+        //getOrderOrigins();
+        getOrders();
+    }
 });
 
 function goToPage(pageNo) {

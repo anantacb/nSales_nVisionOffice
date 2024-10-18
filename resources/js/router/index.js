@@ -103,8 +103,8 @@ const routes = [
                 name: "home",
                 component: Home,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: []
                 }
             },
@@ -113,8 +113,8 @@ const routes = [
                 name: "tables",
                 component: Tables,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -123,8 +123,8 @@ const routes = [
                 name: "create-table",
                 component: CreateTable,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -133,8 +133,8 @@ const routes = [
                 name: "copy-database",
                 component: CopyDatabase,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -143,8 +143,8 @@ const routes = [
                 name: "manage-table-fields",
                 component: TableFields,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -153,8 +153,8 @@ const routes = [
                 name: "manage-table-indices",
                 component: TableIndices,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -163,8 +163,8 @@ const routes = [
                 name: "edit-table",
                 component: EditTable,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -173,8 +173,8 @@ const routes = [
                 name: "settings",
                 component: ModuleSettings,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -183,8 +183,8 @@ const routes = [
                 name: "create-setting",
                 component: CreateModuleSetting,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -193,8 +193,8 @@ const routes = [
                 name: "edit-setting",
                 component: EditModuleSetting,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -203,8 +203,8 @@ const routes = [
                 name: "update-setting",
                 component: UpdateSetting,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -215,8 +215,8 @@ const routes = [
                 name: "modules",
                 component: Modules,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -225,8 +225,8 @@ const routes = [
                 name: "create-module",
                 component: CreateModule,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -235,8 +235,8 @@ const routes = [
                 name: "edit-module",
                 component: EditModule,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -245,8 +245,8 @@ const routes = [
                 name: "activate-module",
                 component: ActivateModule,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -257,8 +257,8 @@ const routes = [
                 name: "companies",
                 component: Companies,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -267,8 +267,8 @@ const routes = [
                 name: "create-company",
                 component: CreateCompany,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -277,8 +277,8 @@ const routes = [
                 name: "edit-company",
                 component: EditCompany,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -289,8 +289,8 @@ const routes = [
                 name: "users",
                 component: Users,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -299,8 +299,8 @@ const routes = [
                 name: "edit-user",
                 component: EditUser,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -309,8 +309,8 @@ const routes = [
                 name: "developers",
                 component: Developers,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -319,8 +319,8 @@ const routes = [
                 name: "company-users",
                 component: CompanyUsers,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -329,8 +329,8 @@ const routes = [
                 name: "create-company-user",
                 component: CreateCompanyUser,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -339,8 +339,8 @@ const routes = [
                 name: "edit-company-user",
                 component: EditCompanyUser,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -350,8 +350,8 @@ const routes = [
                 name: "email-configurations",
                 component: EmailConfigurations,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -360,8 +360,8 @@ const routes = [
                 name: "company-email-configurations",
                 component: CompanyEmailConfigurations,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -370,8 +370,8 @@ const routes = [
                 name: "create-email-configuration",
                 component: CreateEmailConfiguration,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -380,8 +380,8 @@ const routes = [
                 name: "edit-email-configuration",
                 component: EditEmailConfiguration,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 },
                 beforeEnter: (to, from) => {
@@ -397,8 +397,8 @@ const routes = [
                 name: "data-filters",
                 component: DataFilters,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -407,8 +407,8 @@ const routes = [
                 name: "create-data-filter",
                 component: CreateDataFilter,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -417,8 +417,8 @@ const routes = [
                 name: "edit-data-filter",
                 component: EditDataFilter,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 },
                 beforeEnter: (to, from) => {
@@ -433,8 +433,8 @@ const routes = [
                 name: "company-data-filters",
                 component: CompanyDataFilters,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -444,8 +444,8 @@ const routes = [
                 name: "applications",
                 component: Applications,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -454,8 +454,8 @@ const routes = [
                 name: "create-application",
                 component: CreateApplication,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -464,8 +464,8 @@ const routes = [
                 name: "edit-application",
                 component: EditApplication,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -475,8 +475,8 @@ const routes = [
                 name: "module-packages",
                 component: ModulePackages,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -485,8 +485,8 @@ const routes = [
                 name: "create-module-package",
                 component: CreateModulePackage,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -495,8 +495,8 @@ const routes = [
                 name: "edit-module-package",
                 component: EditModulePackage,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -506,8 +506,8 @@ const routes = [
                 name: "roles",
                 component: Roles,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -516,8 +516,8 @@ const routes = [
                 name: "create-role",
                 component: CreateRole,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },
@@ -526,8 +526,8 @@ const routes = [
                 name: "edit-role",
                 component: EditRole,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -537,8 +537,8 @@ const routes = [
                 name: "languages",
                 component: Languages,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -547,8 +547,8 @@ const routes = [
                 name: "create-language",
                 component: CreateLanguage,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -557,8 +557,8 @@ const routes = [
                 name: "edit-language",
                 component: EditLanguage,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -568,8 +568,8 @@ const routes = [
                 name: "translations",
                 component: Translations,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -578,8 +578,8 @@ const routes = [
                 name: "create-translation",
                 component: CreateTranslation,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -588,8 +588,8 @@ const routes = [
                 name: "edit-translation",
                 component: EditTranslation,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer']
                 }
             },
@@ -601,9 +601,9 @@ const routes = [
                 name: "orders",
                 component: Orders,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator', 'Employee'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Order'
                 }
             },
@@ -612,9 +612,9 @@ const routes = [
                 name: "open-orders",
                 component: OpenOrders,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator', 'Employee'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Order'
                 }
             },
@@ -623,9 +623,9 @@ const routes = [
                 name: "failed-orders",
                 component: FailedOrders,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator', 'Employee'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Order'
                 }
             },
@@ -634,9 +634,9 @@ const routes = [
                 name: "order-details",
                 component: OrderDetails,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
-                    roles: ['Developer', 'Administrator', 'Employee'],
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Order'
                 },
                 beforeEnter: (to, from) => {
@@ -652,8 +652,8 @@ const routes = [
                 name: "customers",
                 component: Customers,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'Customer'
                 }
@@ -663,9 +663,9 @@ const routes = [
                 name: "create-customer",
                 component: CreateCustomer,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Customer'
                 }
             },
@@ -674,9 +674,9 @@ const routes = [
                 name: "customer-details",
                 component: CustomerDetails,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
-                    roles: ['Developer', 'Administrator'],
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Customer'
                 },
                 beforeEnter: (to, from) => {
@@ -692,8 +692,8 @@ const routes = [
                 name: "customer-visits",
                 component: CustomerVisits,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'CustomerVisit'
                 }
@@ -704,9 +704,9 @@ const routes = [
                 name: "company-languages",
                 component: CompanyLanguages,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
                 }
             },
@@ -716,9 +716,9 @@ const routes = [
                 name: "company-translations",
                 component: CompanyTranslations,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
                 }
             },
@@ -727,9 +727,9 @@ const routes = [
                 name: "create-company-translation",
                 component: CreateCompanyTranslation,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
                 }
             },
@@ -738,9 +738,9 @@ const routes = [
                 name: "edit-company-translation",
                 component: EditCompanyTranslation,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
-                    roles: ['Developer', 'Administrator'],
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
                 }
             },
@@ -757,7 +757,7 @@ const routes = [
                 name: "login",
                 component: Login,
                 meta: {
-                    authenticated: false,
+                    requiresAuth: false,
                     roles: []
                 }
             }
@@ -770,8 +770,8 @@ const routes = [
         name: "not_found",
         component: NotFound,
         meta: {
-            authenticated: false,
-            company_specific: false,
+            requiresAuth: false,
+            requiresCompany: false,
             roles: []
         }
     }
@@ -796,20 +796,19 @@ router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
     const companyStore = useCompanyStore();
     const isAuthenticated = authStore.isAuthenticated();
-    if (to.meta.authenticated) {
+    const {roles, requiresAuth, module} = to.meta;
+    if (requiresAuth) {
         if (isAuthenticated) {
             if (_.isEmpty(companyStore.companies)) {
                 await companyStore.fill();
             }
-            await checkAccess(to.meta.roles, to.meta.module);
+            await checkAccess(roles, module);
             next();
         } else {
             delete axios.defaults.headers.common['Authorization'];
-            await router.push({
+            next({
                 name: 'login',
-                query: {
-                    'redirect_to': to.path
-                }
+                query: {'redirect_to': to.path}
             });
         }
     } else {
@@ -817,7 +816,7 @@ router.beforeEach(async (to, from, next) => {
             if (_.isEmpty(companyStore.companies)) {
                 await companyStore.fill();
             }
-            await router.push({name: 'home'});
+            next({name: 'home'});
         } else {
             next();
         }

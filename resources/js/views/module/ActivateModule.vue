@@ -6,13 +6,16 @@ import {useTemplateStore} from "@/stores/templateStore";
 import {useNotificationStore} from "@/stores/notificationStore";
 import Module from "@/models/Office/Module";
 import Swal from "sweetalert2";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const templateStore = useTemplateStore();
 const notificationStore = useNotificationStore();
 
-watch(() => companyStore.getSelectedCompany, () => {
-    getCompanyModules();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        getCompanyModules();
+    }
 });
 
 onMounted(() => {
