@@ -8,6 +8,7 @@ import VueSelect from 'vue-select';
 import Role from "@/models/Office/Role";
 import User from "@/models/Office/User";
 import {useFormErrors} from "@/composables/useFormErrors";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -96,12 +97,14 @@ function resetForm() {
     SendMail.value = 1;
 }
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    createCompanyUserRef.value.statusLoading();
-    await getRoles();
-    resetErrors();
-    resetForm();
-    createCompanyUserRef.value.statusNormal();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        createCompanyUserRef.value.statusLoading();
+        await getRoles();
+        resetErrors();
+        resetForm();
+        createCompanyUserRef.value.statusNormal();
+    }
 });
 
 </script>

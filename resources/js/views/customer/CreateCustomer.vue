@@ -11,6 +11,7 @@ import Customer from "@/models/Company/Customer";
 import TableHelper from "@/models/TableHelper";
 import User from "@/models/Office/User";
 import useGeneralCreate from "@/composables/useGeneralCreate";
+import _ from "lodash";
 
 const createCustomerRef = ref(null);
 const notificationStore = useNotificationStore();
@@ -113,14 +114,16 @@ onMounted(async () => {
     createCustomerRef.value.statusNormal();
 });
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    createCustomerRef.value.statusLoading();
-    await getTableDetails('Customer');
-    isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
-    await getAllCompanyUsers();
-    initFormValues();
-    await getCompanyAllTableFields();
-    createCustomerRef.value.statusNormal();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        createCustomerRef.value.statusLoading();
+        await getTableDetails('Customer');
+        isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
+        await getAllCompanyUsers();
+        initFormValues();
+        await getCompanyAllTableFields();
+        createCustomerRef.value.statusNormal();
+    }
 });
 
 </script>

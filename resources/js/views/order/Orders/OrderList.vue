@@ -100,11 +100,13 @@ onMounted(() => {
     resetFilters();
 });
 
-watch(() => companyStore.getSelectedCompany, () => {
-    resetRequest();
-    resetFilters();
-    //getOrderOrigins();
-    getOrders();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        resetFilters();
+        //getOrderOrigins();
+        getOrders();
+    }
 });
 
 function goToPage(pageNo) {

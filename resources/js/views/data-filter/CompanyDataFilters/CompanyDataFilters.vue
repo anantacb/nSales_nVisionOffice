@@ -5,6 +5,7 @@ import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import User from "@/models/Office/User";
 import {onMounted, ref, watch} from "vue";
 import DataFilter from "@/models/Office/DataFilter";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 
@@ -66,8 +67,10 @@ onMounted(async () => {
     await getAllCompanyUsers();
 });
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    await getAllCompanyUsers();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        await getAllCompanyUsers();
+    }
 });
 
 </script>

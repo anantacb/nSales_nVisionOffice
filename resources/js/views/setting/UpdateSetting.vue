@@ -7,14 +7,17 @@ import Swal from "sweetalert2";
 import JsonEditorVue from 'json-editor-vue';
 import {useTemplateStore} from "@/stores/templateStore";
 import {useNotificationStore} from "@/stores/notificationStore";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const templateStore = useTemplateStore();
 const notificationStore = useNotificationStore();
 
-watch(() => companyStore.getSelectedCompany, () => {
-    updatedSettings.value = [];
-    getModuleSettings();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        updatedSettings.value = [];
+        getModuleSettings();
+    }
 });
 
 onMounted(() => {
