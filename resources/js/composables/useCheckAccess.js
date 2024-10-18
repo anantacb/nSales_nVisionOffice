@@ -20,7 +20,7 @@ export default function useCheckAccess() {
             await router.push({
                 name: 'home'
             });
-            notificationStore.showNotification("Module Not Enabled.", "error");
+            notificationStore.showNotification(`${module} Module Not Enabled.`, "error");
         }
     }
 
