@@ -6,6 +6,7 @@ import useGridManagement from "@/composables/useGridManagement";
 import Language from "@/models/Office/Language";
 import CompanyTranslation from "@/models/Company/CompanyTranslation";
 import {useCompanyStore} from "@/stores/companyStore";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -109,9 +110,11 @@ function deleteCompanyTranslation(companyTranslation, index) {
     });
 }
 
-watch(() => companyStore.getSelectedCompany, () => {
-    resetRequest();
-    getCompanyTranslations();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        getCompanyTranslations();
+    }
 });
 
 </script>
