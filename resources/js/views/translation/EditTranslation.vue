@@ -36,8 +36,6 @@ async function updateTranslation() {
         ElementName: TranslationModel.value.ElementName,
         Translations: translations
     };
-
-    console.log(formData);
     try {
         let {data, message} = await Translation.update(formData);
         notificationStore.showNotification(message);

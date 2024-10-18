@@ -5,6 +5,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import Customer from "@/models/Company/Customer";
 import useGridManagement from "@/composables/useGridManagement";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -70,9 +71,11 @@ onMounted(() => {
     getCustomers();
 });
 
-watch(() => companyStore.getSelectedCompany, () => {
-    resetRequest();
-    getCustomers();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        getCustomers();
+    }
 });
 
 function goToPage(pageNo) {
