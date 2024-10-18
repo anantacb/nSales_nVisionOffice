@@ -72,7 +72,7 @@ async function companyChanged(companyId) {
                             </button>
                             <!-- END Toggle Mini Sidebar -->
 
-                            <Select v-if="route.meta.company_specific" id="HeaderDatabase"
+                            <Select v-if="route.meta.requiresCompany" id="HeaderDatabase"
                                     :modelValue="companyStore.getSelectedCompany.Id"
                                     :options="companyStore.getCompaniesForDropDownOptions"
                                     :required="true"
