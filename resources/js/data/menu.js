@@ -298,6 +298,7 @@ export default {
             directLink: true,
             targetBlank: true
         },
+
         {
             name: "Horizon",
             to: "/horizon",
@@ -351,7 +352,7 @@ export default {
         {
             name: "Customer",
             icon: "fa fa-users",
-            subActivePaths: ["customer"],
+            subActivePaths: ["customer", "customer-visit"],
             moduleSpecific: true,
             moduleName: 'Customer',
             roles: ["Developer", "Administrator", "Employee"],

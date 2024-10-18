@@ -5,6 +5,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import EmailConfiguration from "@/models/Office/EmailConfiguration";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -80,9 +81,11 @@ onMounted(() => {
     getEmailConfigurations();
 });
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    resetRequest();
-    await getEmailConfigurations();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        await getEmailConfigurations();
+    }
 });
 
 function goToPage(pageNo) {

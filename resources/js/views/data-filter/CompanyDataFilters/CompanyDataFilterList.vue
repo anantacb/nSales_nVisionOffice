@@ -5,6 +5,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import DataFilter from "@/models/Office/DataFilter";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
+import _ from "lodash";
 
 const emit = defineEmits(['showFilterResultModal']);
 
@@ -102,9 +103,11 @@ onMounted(async () => {
     await getDataFilters();
 });
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    resetRequest();
-    await getDataFilters();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        await getDataFilters();
+    }
 });
 
 function goToPage(pageNo) {

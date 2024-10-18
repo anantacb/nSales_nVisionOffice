@@ -4,6 +4,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import User from "@/models/Office/User";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -93,9 +94,11 @@ async function getCompanyUsers() {
     paginationData.value = pagination;
 }
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    resetRequest();
-    await getCompanyUsers();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        await getCompanyUsers();
+    }
 });
 
 </script>
