@@ -9,6 +9,7 @@ import Role from "@/models/Office/Role";
 import User from "@/models/Office/User";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -102,9 +103,11 @@ async function getCompanyUserDetails() {
     Devices.value = data.devices;
 }
 
-watch(() => companyStore.getSelectedCompany, async (newValue, oldValue) => {
-    if (newValue.Id !== oldValue.Id) {
-        await router.push({name: 'company-users'});
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany, oldSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        if (newSelectedCompany.Id !== oldSelectedCompany.Id) {
+            await router.push({name: 'company-users'});
+        }
     }
 });
 

@@ -5,6 +5,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import Role from "@/models/Office/Role";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
+import _ from "lodash";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
@@ -58,9 +59,11 @@ onMounted(async () => {
     await getCompanyRoles();
 });
 
-watch(() => companyStore.getSelectedCompany, async () => {
-    resetRequest();
-    await getCompanyRoles();
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        await getCompanyRoles();
+    }
 });
 
 function goToPage(pageNo) {

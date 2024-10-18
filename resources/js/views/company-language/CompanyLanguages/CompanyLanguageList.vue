@@ -5,6 +5,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import useGridManagement from "@/composables/useGridManagement";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
 import {useCompanyStore} from "@/stores/companyStore";
+import _ from "lodash";
 
 defineExpose({
     refresh
@@ -85,9 +86,11 @@ function refresh() {
     getCompanyLanguages();
 }
 
-watch(() => companyStore.getSelectedCompany, () => {
-    resetRequest();
-    getCompanyLanguages();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)){
+        resetRequest();
+        getCompanyLanguages();
+    }
 });
 
 async function getCompanyLanguages() {

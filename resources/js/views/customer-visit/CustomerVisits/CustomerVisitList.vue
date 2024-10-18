@@ -87,11 +87,13 @@ onMounted(() => {
     getFilterOptions();
 });
 
-watch(() => companyStore.getSelectedCompany, () => {
-    resetRequest();
-    resetFilterLists();
-    getCustomerVisits();
-    getFilterOptions();
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        resetFilterLists();
+        getCustomerVisits();
+        getFilterOptions();
+    }
 });
 
 function goToPage(pageNo) {
@@ -233,16 +235,16 @@ function deleteOrder(module, index) {
                         v-model="filterLists.DateStart"
                         :config="configForFlatPicker"
                         class="form-control fs-sm"
-                        placeholder="Start Date"
                         name="DateStart"
+                        placeholder="Start Date"
                         @onChange="filtersOptionChange"
                     />
                     <div class="input-group-append">
-                        <button class="btn btn-default" type="button" title="Toggle" data-toggle>
+                        <button class="btn btn-default" data-toggle title="Toggle" type="button">
                             <i class="fa fa-calendar"/>
                             <span aria-hidden="true" class="sr-only">Toggle</span>
                         </button>
-                        <button class="btn btn-default" type="button" title="Clear" data-clear @click="clearDateStart">
+                        <button class="btn btn-default" data-clear title="Clear" type="button" @click="clearDateStart">
                             <i class="fa fa-times"/>
                             <span aria-hidden="true" class="sr-only">Clear</span>
                         </button>
