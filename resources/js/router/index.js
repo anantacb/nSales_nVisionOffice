@@ -705,8 +705,8 @@ const routes = [
                 name: "items",
                 component: Items,
                 meta: {
-                    authenticated: true,
-                    company_specific: true,
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'Item'
                 }
@@ -716,8 +716,8 @@ const routes = [
                 name: "item-details",
                 component: ItemDetails,
                 meta: {
-                    authenticated: true,
-                    company_specific: false,
+                    requiresAuth: true,
+                    requiresCompany: false,
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'Item'
                 },
