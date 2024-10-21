@@ -1,6 +1,7 @@
 <script setup>
-import {onMounted, ref, watch} from 'vue';
+import {onMounted, ref, watch, onUnmounted} from 'vue';
 import Swal from 'sweetalert2';
+import _, {debounce} from 'lodash';  // Use lodash-es for better tree-shaking
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import Item from "@/models/Company/Item";
@@ -9,11 +10,11 @@ import {useFormatter} from "@/composables/useFormatter";
 
 const notificationStore = useNotificationStore();
 const companyStore = useCompanyStore();
-let {numberFormat} = useFormatter();
+const {numberFormat} = useFormatter();
 
-let tableData = ref([]);
-let paginationData = ref(null);
-let isLoading = ref(true);
+const tableData = ref([]);
+const paginationData = ref(null);
+const isLoading = ref(true);
 
 const {
     tableFields,
@@ -25,8 +26,9 @@ const {
     setSearchQuery,
     setPageNo,
     setSortBy
-} = useGridManagement()
+} = useGridManagement();
 
+// Table configuration
 setTableFields([
     {
         name: "image_url",
@@ -36,7 +38,6 @@ setTableFields([
         name: "Number",
         title: "SKU",
         sortField: "Number",
-
     },
     {
         name: "Barcode",
@@ -65,9 +66,7 @@ setTableFields([
         name: "Price",
         title: "Price",
         sortField: "Price",
-        formatter: (data) => {
-            return numberFormat(data);
-        }
+        formatter: numberFormat
     },
     {
         name: "Stock",
@@ -86,11 +85,28 @@ onMounted(() => {
     setPageNo(1);
     getItems();
 });
-
-watch(() => companyStore.getSelectedCompany, () => {
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (_.isEmpty(newSelectedCompany)) {
+        return;
+    }
     resetRequest();
     getItems();
 });
+
+// Methods
+async function getItems() {
+    try {
+        isLoading.value = true;
+        const {data, pagination} = await Item.getItems(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    } catch (error) {
+        notificationStore.showNotification('Error fetching items', 'error');
+        console.error('Failed to fetch items:', error);
+    } finally {
+        isLoading.value = false;
+    }
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -103,42 +119,48 @@ function sortBy({field, order}) {
     getItems();
 }
 
-function search(query) {
+const debouncedSearch = debounce((query) => {
     setSearchQuery(query);
     setPageNo(1);
     getItems();
+}, 300);
+
+function search(query) {
+    debouncedSearch(query);
 }
 
-async function getItems() {
-    let {data, pagination} = await Item.getItems(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
-}
+async function deleteItem(customer, index) {
+    try {
+        const result = await Swal.fire({
+            title: 'Are you sure? Delete Item?',
+            html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: 'red',
+            showLoaderOnConfirm: true,
+            preConfirm: (text) => text === 'Confirm',
+            allowOutsideClick: () => !Swal.isLoading()
+        });
 
-function deleteCustomer(customer, index) {
-    Swal.fire({
-        title: 'Are you sure? Delete Item?',
-        html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
-        input: 'text',
-        inputAttributes: {
-            autocapitalize: 'off'
-        },
-        showCancelButton: true,
-        confirmButtonText: 'Delete',
-        confirmButtonColor: 'red',
-        showLoaderOnConfirm: true,
-        preConfirm: (text) => {
-            return text === `Confirm`;
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-    }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await Item.delete(companyStore.selectedCompany.Id, customer.Id);
-            tableData.value.splice(index, 1);
+            const {message} = await Item.delete(companyStore.selectedCompany.Id, customer.Id);
+            tableData.value = tableData.value.filter((_, i) => i !== index);
             notificationStore.showNotification(message);
         }
-    });
+    } catch (error) {
+        notificationStore.showNotification('Error deleting item', 'error');
+        console.error('Failed to delete item:', error);
+    }
 }
+
+// Cleanup
+onUnmounted(() => {
+    debouncedSearch.cancel();
+});
 
 </script>
 
@@ -158,32 +180,35 @@ function deleteCustomer(customer, index) {
         @sortBy="sortBy"
     >
         <template v-slot:body-image_url="props">
-            <img v-lazy="props.data.image_urls.ThumbnailSmall"
-                 class="img-responsive"
-                 width="75">
+            <img
+                v-lazy="props.data.image_urls.ThumbnailSmall"
+                v-memo="[props.data.image_urls.ThumbnailSmall]"
+                :alt="props.data.Name1"
+                class="img-responsive"
+                width="75"
+            >
         </template>
 
         <template v-slot:body-Number="props">
-            <div>
+            <div v-memo="[props.data.Number, props.data.variant_exists]">
                 <i v-if="props.data.variant_exists" class="fa fa-th"></i>
                 {{ props.data.Number }}
             </div>
         </template>
 
         <template v-slot:body-Action="props">
-                        <ActionButton
-                            :key="'details_'+props.data.Id"
-                            :routeTo="{ name: 'item-details', params: {id: props.data.Id} }"
-                            actionType="details"
-                            content="Details"
-                        />
-
-<!--                        <ActionButton
-                            :key="'delete_'+props.data.Id"
-                            actionType="delete"
-                            content="Delete"
-                            @delete="deleteCustomer(props.data, props.index)"
-                        />-->
+            <ActionButton
+                :key="`details_${props.data.Id}`"
+                :routeTo="{ name: 'item-details', params: {id: props.data.Id} }"
+                actionType="details"
+                content="Details"
+            />
+            <!--<ActionButton
+            :key="'delete_'+props.data.Id"
+            actionType="delete"
+            content="Delete"
+            @delete="deleteItem(props.data, props.index)"
+            />-->
         </template>
     </DataGrid>
 </template>
