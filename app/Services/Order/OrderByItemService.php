@@ -3,143 +3,137 @@
 namespace App\Services\Order;
 
 use App\Contracts\ServiceDto;
+use App\Helpers\Helpers;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
 use App\Services\Currency\CurrencyService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class OrderByItemService extends OrderHelperService implements OrderByItemServiceInterface
 {
-    protected OrderRepositoryInterface $orderRepository;
-    protected OrderLineRepositoryInterface $orderLineRepository;
+    private const TIMEZONE = 'CET';
 
-    public function __construct(OrderRepositoryInterface $orderRepository, OrderLineRepositoryInterface $orderLineRepository)
+    public function __construct(
+        protected OrderRepositoryInterface     $orderRepository,
+        protected OrderLineRepositoryInterface $orderLineRepository
+    )
     {
-        $this->orderRepository = $orderRepository;
-        $this->orderLineRepository = $orderLineRepository;
     }
 
-    /**
-     * @param Request $request
-     * @return ServiceDto
-     */
     public function totalSalesYearly(Request $request): ServiceDto
     {
-//        $currentYearSales = null;
-//        $lastYearSales = null;
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        $companyDefaultCurrency = CurrencyService::formattedCurrency($selectedCompany->DefaultCurrency);
+        ['currency' => $currency, 'date' => $now] = $this->getCompanyData();
 
-        list("startDate" => $startDate, "endDate" => $endDate) = yearIntervalDates(Carbon::now('CET'));
-        $currentYearSalesQuery = $this->orderLineRepository->salesByDatesByItem($request, $startDate, $endDate);
-        $currentYearSalesAmount = $this->totalAmount($currentYearSalesQuery, $companyDefaultCurrency);
+        $data = $this->processYearlyData(
+            $request,
+            $now,
+            fn($query) => $this->formatSalesAmount($this->totalAmount($query, $currency), $currency)
+        );
 
-        list("startDate" => $startDate, "endDate" => $endDate) = yearIntervalDates(Carbon::now('CET')->subYear());
-        $lastYearSalesQuery = $this->orderLineRepository->salesByDatesByItem($request, $startDate, $endDate);
-        $lastYearSalesAmount = $this->totalAmount($lastYearSalesQuery, $companyDefaultCurrency);
-
-//        if ($currentYearSalesAmount) {
-//            $currentYearSales = $this->amountCurrencyFormat($currentYearSalesAmount, $companyDefaultCurrency);
-//        }
-//
-//        if ($lastYearSalesAmount) {
-//            $lastYearSales = $this->amountCurrencyFormat($lastYearSalesAmount, $companyDefaultCurrency);
-//        }
-
-        $data = [
-            'currentYearSales' => $currentYearSalesAmount ?
-                $this->amountCurrencyFormat($currentYearSalesAmount, $companyDefaultCurrency) : null,
-            'lastYearSales' => $lastYearSalesAmount ?
-                $this->amountCurrencyFormat($lastYearSalesAmount, $companyDefaultCurrency) : null,
-        ];
-
-        return new ServiceDto("Yearly sales retrieved successfully.", 200, $data);
+        return new ServiceDto('Yearly sales retrieved successfully.', 200,
+            [
+                'currentYearSales' => $data['current'],
+                'lastYearSales' => $data['last']
+            ]
+        );
     }
 
-    /**
-     * @param Request $request
-     * @return ServiceDto
-     */
+    private function getCompanyData(): array
+    {
+        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        return [
+            'company' => $selectedCompany,
+            'currency' => CurrencyService::formattedCurrency($selectedCompany->DefaultCurrency),
+            'date' => Carbon::now(self::TIMEZONE)
+        ];
+    }
+
+    private function processYearlyData(Request $request, Carbon $date, callable $formatter): array
+    {
+        $currentData = $this->getSalesData('yearIntervalDates', $request, $date);
+        $lastData = $this->getSalesData('yearIntervalDates', $request, $date->copy()->subYear());
+
+        return [
+            'current' => $formatter($currentData),
+            'last' => $formatter($lastData)
+        ];
+    }
+
+    private function getSalesData($intervalMethod, Request $request, Carbon $date): ?Collection
+    {
+        ['startDate' => $startDate, 'endDate' => $endDate] = Helpers::$intervalMethod($date);
+        return $this->orderLineRepository->salesByDatesByItem($request, $startDate, $endDate);
+    }
+
+    private function formatSalesAmount(?float $amount, string $currency): ?array
+    {
+        return $amount ? $this->amountCurrencyFormat($amount, $currency) : null;
+    }
+
     public function totalSalesMonthly(Request $request): ServiceDto
     {
-//        $currentYearCurrentMonthSales = null;
-//        $lastYearCurrentMonthSales = null;
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        $companyDefaultCurrency = CurrencyService::formattedCurrency($selectedCompany->DefaultCurrency);
+        ['currency' => $currency, 'date' => $now] = $this->getCompanyData();
 
-        list("startDate" => $startDate, "endDate" => $endDate) = monthIntervalDates(Carbon::now('CET'));
-        $currentYearCurrentMonthSalesQuery = $this->orderLineRepository->salesByDatesByItem($request, $startDate, $endDate);
-        $currentYearCurrentMonthSalesAmount = $this->totalAmount($currentYearCurrentMonthSalesQuery, $companyDefaultCurrency);
+        $data = $this->processMonthlyData(
+            $request,
+            $now,
+            fn($query) => $this->formatSalesAmount($this->totalAmount($query, $currency), $currency)
+        );
 
-        list("startDate" => $startDate, "endDate" => $endDate) = monthIntervalDates(Carbon::now('CET')->subYear());
-        $lastYearCurrentMonthSalesQuery = $this->orderLineRepository->salesByDatesByItem($request, $startDate, $endDate);
-        $lastYearCurrentMonthSalesAmount = $this->totalAmount($lastYearCurrentMonthSalesQuery, $companyDefaultCurrency);
-
-//        if ($currentYearCurrentMonthSalesAmount) {
-//            $currentYearCurrentMonthSales = $this->amountCurrencyFormat($currentYearCurrentMonthSalesAmount, $companyDefaultCurrency);
-//        }
-//
-//        if ($lastYearCurrentMonthSalesAmount) {
-//            $lastYearCurrentMonthSales = $this->amountCurrencyFormat($lastYearCurrentMonthSalesAmount, $companyDefaultCurrency);
-//        }
-
-        $data = [
-            'currentYearCurrentMonthSales' => $currentYearCurrentMonthSalesAmount ?
-                $this->amountCurrencyFormat($currentYearCurrentMonthSalesAmount, $companyDefaultCurrency) : null,
-            'lastYearCurrentMonthSales' => $lastYearCurrentMonthSalesAmount ?
-                $this->amountCurrencyFormat($lastYearCurrentMonthSalesAmount, $companyDefaultCurrency) : null,
-        ];
-
-        return new ServiceDto("Monthly sales retrieved successfully.", 200, $data);
+        return new ServiceDto('Monthly sales retrieved successfully.', 200,
+            [
+                'currentYearCurrentMonthSales' => $data['current'],
+                'lastYearCurrentMonthSales' => $data['last']
+            ]
+        );
     }
 
-    /**
-     * @param Request $request
-     * @return ServiceDto
-     */
+    private function processMonthlyData(Request $request, Carbon $date, callable $formatter): array
+    {
+        $currentData = $this->getSalesData('monthIntervalDates', $request, $date);
+        $lastData = $this->getSalesData('monthIntervalDates', $request, $date->copy()->subYear());
+
+        return [
+            'current' => $formatter($currentData),
+            'last' => $formatter($lastData)
+        ];
+    }
+
     public function totalQuantityYearly(Request $request): ServiceDto
     {
-        list("startDate" => $startDate, "endDate" => $endDate) = yearIntervalDates(Carbon::now('CET'));
-        $currentYearOrders = $this->orderLineRepository->quantityOrderedByDatesByItem($request, $startDate, $endDate);
+        $now = Carbon::now(self::TIMEZONE);
+        $currentYearOrders = $this->getQuantityData('yearIntervalDates', $request, $now);
+        $lastYearOrders = $this->getQuantityData('yearIntervalDates', $request, $now->copy()->subYear());
 
-        list("startDate" => $startDate, "endDate" => $endDate) = yearIntervalDates(Carbon::now('CET')->subYear());
-        $lastYearOrders = $this->orderLineRepository->quantityOrderedByDatesByItem($request, $startDate, $endDate);
-
-        $data = [
-            'currentYearOrders' => [
-                "Total" => $currentYearOrders
-            ],
-            'lastYearOrders' => [
-                "Total" => $lastYearOrders
-            ],
-        ];
-
-        return new ServiceDto("Products yearly ordered quantity retrieved successfully.", 200, $data);
+        return new ServiceDto('Products yearly ordered quantity retrieved successfully.', 200,
+            [
+                'currentYearOrders' => ['Total' => $currentYearOrders],
+                'lastYearOrders' => ['Total' => $lastYearOrders]
+            ]
+        );
     }
 
-    /**
-     * @param Request $request
-     * @return ServiceDto
-     */
+    private function getQuantityData($intervalMethod, Request $request, Carbon $date): float
+    {
+        ['startDate' => $startDate, 'endDate' => $endDate] = Helpers::$intervalMethod($date);
+        return $this->orderLineRepository->quantityOrderedByDatesByItem($request, $startDate, $endDate);
+    }
+
     public function totalQuantityMonthly(Request $request): ServiceDto
     {
-        list("startDate" => $startDate, "endDate" => $endDate) = monthIntervalDates(Carbon::now('CET'));
-        $currentYearCurrentMonthOrders = $this->orderLineRepository->quantityOrderedByDatesByItem($request, $startDate, $endDate);
+        $now = Carbon::now(self::TIMEZONE);
+        $currentMonthOrders = $this->getQuantityData('monthIntervalDates', $request, $now);
+        $lastYearMonthOrders = $this->getQuantityData('monthIntervalDates', $request, $now->copy()->subYear());
 
-        list("startDate" => $startDate, "endDate" => $endDate) = monthIntervalDates(Carbon::now('CET')->subYear());
-        $lastYearCurrentMonthOrders = $this->orderLineRepository->quantityOrderedByDatesByItem($request, $startDate, $endDate);
-
-        $data = [
-            'currentYearCurrentMonthOrders' => [
-                "Total" => $currentYearCurrentMonthOrders
-            ],
-            'lastYearCurrentMonthOrders' => [
-                "Total" => $lastYearCurrentMonthOrders
-            ],
-        ];
-
-        return new ServiceDto("Products yearly ordered quantity retrieved successfully.", 200, $data);
+        return new ServiceDto('Products monthly ordered quantity retrieved successfully.', 200,
+            [
+                'currentYearCurrentMonthOrders' => ['Total' => $currentMonthOrders],
+                'lastYearCurrentMonthOrders' => ['Total' => $lastYearMonthOrders]
+            ]
+        );
     }
+
 }
