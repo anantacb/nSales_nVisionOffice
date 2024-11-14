@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Order\ByProduct;
+namespace App\Http\Requests\Order\ByItem;
 
 use Illuminate\Foundation\Http\FormRequest;
 

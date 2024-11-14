@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Order\ByProduct\SalesOrOrders;
+use App\Http\Requests\Order\ByItem\SalesOrOrders;
 use App\Services\Order\OrderByItemServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
