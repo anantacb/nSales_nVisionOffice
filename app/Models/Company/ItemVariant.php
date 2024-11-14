@@ -29,7 +29,7 @@ class ItemVariant extends BaseModel
         return $this->hasOne(ItemVariantDimension::class, ['Code', 'GroupCode'], ['DimensionCode', 'DimensionGroupCode']);
     }
 
-    public function product(): BelongsTo
+    public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'ItemNo', 'Number');
     }

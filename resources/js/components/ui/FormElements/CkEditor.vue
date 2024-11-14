@@ -27,7 +27,7 @@ onMounted(() => {
 function onEditorReady(editor) {
     editor.model.document.on('change:data', () => {
         const data = editor.getData();
-        console.log('Editor data changed:', data);
+        // console.log('Editor data changed:', data);
         emit('update:modelValue', data);
         emit('change', data);
     });

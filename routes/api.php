@@ -256,7 +256,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete']);
 
         //Webshoptext
-        Route::post('/web-shop-text/get-web-shop-texts-by-Item', [WebShopTextController::class, 'getByItem']);
+        Route::post('/web-shop-text/get-web-shop-texts-by-item', [WebShopTextController::class, 'getByItem']);
+        Route::post('/web-shop-text/update-by-item', [WebShopTextController::class, 'updateByItem']);
 
         // Company Language
         Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
