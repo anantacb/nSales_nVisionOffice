@@ -3,6 +3,7 @@
 namespace App\Services\Translation;
 
 use App\Contracts\ServiceDto;
+use App\Jobs\SyncTranslations;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -67,5 +68,11 @@ class TranslationService implements TranslationServiceInterface
         ], $relations);
 
         return new ServiceDto("Translation Retrieved Successfully.", 200, $translation);
+    }
+
+    public function sync(): ServiceDto
+    {
+        SyncTranslations::dispatch()->onQueue('translations');
+        return new ServiceDto("Translations will be available for all elements and companies in a few moments. Please check after sometime.", 200, []);
     }
 }
