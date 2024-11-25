@@ -184,6 +184,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/translation/update', [TranslationController::class, 'update']);
     Route::post('/translation/delete', [TranslationController::class, 'delete']);
     Route::post('/translation/details', [TranslationController::class, 'details']);
+    Route::post('/translations/sync', [TranslationController::class, 'sync']);
 
     // EmailConfiguration
     Route::post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);

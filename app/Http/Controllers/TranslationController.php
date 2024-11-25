@@ -43,6 +43,12 @@ class TranslationController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function sync(): JsonResponse
+    {
+        $response = $this->service->sync();
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
