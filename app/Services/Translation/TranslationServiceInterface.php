@@ -13,6 +13,8 @@ interface TranslationServiceInterface
 
     public function details(Request $request): ServiceDto;
 
+    public function sync(): ServiceDto;
+
     public function update(Request $request): ServiceDto;
 
     public function delete(Request $request): ServiceDto;
