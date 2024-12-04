@@ -291,6 +291,21 @@ export default {
         },
 
         {
+            name: "Onboard",
+            icon: "fa fa-wand-magic-sparkles",
+            subActivePaths: ["onboard"],
+            roles: ["Developer"],
+            sub: [
+                {
+                    name: "Webshop",
+                    icon: "fa fa-window-maximize",
+                    to: "onboardWebshop",
+                    roles: ["Developer"],
+                }
+            ]
+        },
+
+        {
             name: "Log Viewer",
             to: "/log-viewer",
             roles: ["Developer"],
