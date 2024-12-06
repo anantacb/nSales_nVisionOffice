@@ -1,6 +1,6 @@
 <template>
     <div class="ui-loader position-absolute" v-if="isLoading" :class="[size]">
-        <i class="fa fa-circle-o-notch fa-spin spinner"></i>
+        <i class="fa fa-circle-notch fa-spin spinner"></i>
     </div>
 </template>
 

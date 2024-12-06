@@ -50,6 +50,8 @@ use App\Services\Translation\TranslationService;
 use App\Services\Translation\TranslationServiceInterface;
 use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
+use App\Services\WebShopUser\WebShopUserService;
+use App\Services\WebShopUser\WebShopUserServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class ServiceServiceProvider extends ServiceProvider
@@ -95,5 +97,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ModulePackageServiceInterface::class, ModulePackageService::class);
         $this->app->bind(ModulePackageModuleServiceInterface::class, ModulePackageModuleService::class);
         $this->app->bind(DatabaseServiceInterface::class, DatabaseService::class);
+        $this->app->bind(WebShopUserServiceInterface::class, WebShopUserService::class);
     }
 }
