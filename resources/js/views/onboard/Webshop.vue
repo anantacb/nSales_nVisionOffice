@@ -10,6 +10,13 @@ const ModuleEnable = defineAsyncComponent(() => import('@/components/onboard/Mod
 const LanguageAndTranslations = defineAsyncComponent(() => import('@/components/onboard/LanguageAndTranslations.vue'))
 const WebshopUser = defineAsyncComponent(() => import('@/components/onboard/WebshopUser.vue'))
 const Item = defineAsyncComponent(() => import('@/components/onboard/Item.vue'))
+const PageBuilder = defineAsyncComponent(() => import('@/components/onboard/PageBuilder.vue'))
+const CustomLogicCheck = defineAsyncComponent(() => import('@/components/onboard/CustomLogicCheck.vue'))
+const EmailConfiguration = defineAsyncComponent(() => import('@/components/onboard/EmailConfiguration.vue'))
+const Settings = defineAsyncComponent(() => import('@/components/onboard/Settings.vue'))
+const Theme = defineAsyncComponent(() => import('@/components/onboard/Theme.vue'))
+const DocumentApi = defineAsyncComponent(() => import('@/components/onboard/DocumentApi.vue'))
+const GitBranch = defineAsyncComponent(() => import('@/components/onboard/GitBranch.vue'))
 
 const companyStore = useCompanyStore();
 const templateStore = useTemplateStore();
@@ -124,6 +131,20 @@ const componentToRender = computed(() => {
         return WebshopUser
     } else if (currentStep.value === "Item") {
         return Item
+    } else if (currentStep.value === "PageBuilder") {
+        return PageBuilder
+    } else if (currentStep.value === "CustomLogicCheck") {
+        return CustomLogicCheck
+    } else if (currentStep.value === "EmailConfiguration") {
+        return EmailConfiguration
+    } else if (currentStep.value === "Settings") {
+        return Settings
+    } else if (currentStep.value === "Theme") {
+        return Theme
+    } else if (currentStep.value === "DocumentApi") {
+        return DocumentApi
+    } else if (currentStep.value === "GitBranch") {
+        return GitBranch
     }
     return null
 })

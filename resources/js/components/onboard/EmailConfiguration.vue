@@ -1,6 +1,6 @@
 <template>
     <h4 class="d-flex justify-content-between">
-        Items
+        EmailConfiguration
     </h4>
 
 </template>
