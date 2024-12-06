@@ -1,6 +1,6 @@
 <template>
     <h4 class="d-flex justify-content-between">
-        Items
+        GitBranch
     </h4>
 
 </template>
