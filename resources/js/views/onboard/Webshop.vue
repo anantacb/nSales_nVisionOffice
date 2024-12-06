@@ -8,6 +8,8 @@ import Button from "@/components/ui/Button.vue";
 
 const ModuleEnable = defineAsyncComponent(() => import('@/components/onboard/ModuleEnable.vue'))
 const LanguageAndTranslations = defineAsyncComponent(() => import('@/components/onboard/LanguageAndTranslations.vue'))
+const WebshopUser = defineAsyncComponent(() => import('@/components/onboard/WebshopUser.vue'))
+const Item = defineAsyncComponent(() => import('@/components/onboard/Item.vue'))
 
 const companyStore = useCompanyStore();
 const templateStore = useTemplateStore();
@@ -23,6 +25,10 @@ const onboardingProgress = ref({
     },
     "LanguageAndTranslations": {
         "Title": "Language & Translations",
+        "IsCompleted": 0
+    },
+    "CreateUser": {
+        "Title": "Create User",
         "IsCompleted": 0
     },
     "Item": {
@@ -43,10 +49,6 @@ const onboardingProgress = ref({
     },
     "Settings": {
         "Title": "Settings",
-        "IsCompleted": 0
-    },
-    "CreateUser": {
-        "Title": "Create User",
         "IsCompleted": 0
     },
     "Theme": {
@@ -118,6 +120,10 @@ const componentToRender = computed(() => {
         return ModuleEnable
     } else if (currentStep.value === "LanguageAndTranslations") {
         return LanguageAndTranslations
+    } else if (currentStep.value === "CreateUser") {
+        return WebshopUser
+    } else if (currentStep.value === "Item") {
+        return Item
     }
     return null
 })

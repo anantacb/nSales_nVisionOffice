@@ -18,6 +18,8 @@ use App\Repositories\Eloquent\Company\Order\OrderRepository;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepository;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopUser\WebShopUserRepository;
+use App\Repositories\Eloquent\Company\WebShopUser\WebShopUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
@@ -142,5 +144,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(UserInvitationRepositoryInterface::class, UserInvitationRepository::class);
 
         $this->app->bind(FtpUserRepositoryInterface::class, FtpUserRepository::class);
+
+        $this->app->bind(WebShopUserRepositoryInterface::class, WebShopUserRepository::class);
     }
 }
