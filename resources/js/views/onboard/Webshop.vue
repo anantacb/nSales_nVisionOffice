@@ -17,6 +17,7 @@ const Settings = defineAsyncComponent(() => import('@/components/onboard/Setting
 const Theme = defineAsyncComponent(() => import('@/components/onboard/Theme.vue'))
 const DocumentApi = defineAsyncComponent(() => import('@/components/onboard/DocumentApi.vue'))
 const GitBranch = defineAsyncComponent(() => import('@/components/onboard/GitBranch.vue'))
+const Default = defineAsyncComponent(() => import('@/components/onboard/Default.vue'))
 
 const companyStore = useCompanyStore();
 const templateStore = useTemplateStore();
@@ -48,7 +49,7 @@ const onboardingProgress = ref({
     },
     "CustomLogicCheck": {
         "Title": "Custom Logic Check",
-        "IsCompleted": 0
+        "IsCompleted": 1
     },
     "EmailConfiguration": {
         "Title": "Email Configuration",
@@ -133,8 +134,6 @@ const componentToRender = computed(() => {
         return Item
     } else if (currentStep.value === "PageBuilder") {
         return PageBuilder
-    } else if (currentStep.value === "CustomLogicCheck") {
-        return CustomLogicCheck
     } else if (currentStep.value === "EmailConfiguration") {
         return EmailConfiguration
     } else if (currentStep.value === "Settings") {
@@ -146,7 +145,7 @@ const componentToRender = computed(() => {
     } else if (currentStep.value === "GitBranch") {
         return GitBranch
     }
-    return null
+    return Default
 })
 
 watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {

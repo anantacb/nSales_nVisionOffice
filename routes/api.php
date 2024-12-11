@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\B2bGqlApiController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyLanguageController;
 use App\Http\Controllers\CompanyTranslationController;
@@ -253,5 +254,8 @@ Route::middleware(['auth:api'])->group(function () {
         // WebShopUser
         Route::post('/web-shop-user/details', [WebShopUserController::class, 'details']);
         Route::post('/web-shop-user/create-test-user', [WebShopUserController::class, 'createTestUser']);
+
+        // B2bGqlApi
+        Route::post('/b2b-gql-api/get-itemgroups-item', [B2bGqlApiController::class, 'getItemGroupsAndItem']);
     });
 });
