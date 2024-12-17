@@ -18,6 +18,10 @@ use App\Repositories\Eloquent\Company\Order\OrderRepository;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepository;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopPage\WebShopPageRepository;
+use App\Repositories\Eloquent\Company\WebShopPage\WebShopPageRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopText\WebShopTextRepository;
+use App\Repositories\Eloquent\Company\WebShopText\WebShopTextRepositoryInterface;
 use App\Repositories\Eloquent\Company\WebShopUser\WebShopUserRepository;
 use App\Repositories\Eloquent\Company\WebShopUser\WebShopUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
@@ -146,5 +150,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(FtpUserRepositoryInterface::class, FtpUserRepository::class);
 
         $this->app->bind(WebShopUserRepositoryInterface::class, WebShopUserRepository::class);
+
+        $this->app->bind(WebShopPageRepositoryInterface::class, WebShopPageRepository::class);
+
+        $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
     }
 }

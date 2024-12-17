@@ -26,6 +26,7 @@ use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\TableIndexController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebShopPageController;
 use App\Http\Controllers\WebShopUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -254,6 +255,11 @@ Route::middleware(['auth:api'])->group(function () {
         // WebShopUser
         Route::post('/web-shop-user/details', [WebShopUserController::class, 'details']);
         Route::post('/web-shop-user/create-test-user', [WebShopUserController::class, 'createTestUser']);
+
+        // WebShopPage
+        Route::post('/web-shop-page/list', [WebShopPageController::class, 'list']);
+        Route::post('/web-shop-page/create-pages', [WebShopPageController::class, 'createPages']);
+        Route::post('/web-shop-page/create-pages-content-for-missing-languages', [WebShopPageController::class, 'createPagesContentForMissingLanguages']);
 
         // B2bGqlApi
         Route::post('/b2b-gql-api/get-itemgroups-item', [B2bGqlApiController::class, 'getItemGroupsAndItem']);

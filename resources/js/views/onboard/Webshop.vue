@@ -39,17 +39,30 @@ const onboardingProgress = ref({
         "Title": "Create User",
         "IsCompleted": 0
     },
-    "Item": {
-        "Title": "Item",
-        "IsCompleted": 0
-    },
     "PageBuilder": {
         "Title": "PageBuilder",
-        "IsCompleted": 0
+        "IsCompleted": 0,
+        "payload": {
+            "platform": "retailer",
+            "requiredPages": {
+                "frontpage-retailer": {
+                    "name": "Frontpage Retailer",
+                    "type": "Page"
+                },
+                "contact-us-retailer": {
+                    "name": "Contact us retailer",
+                    "type": "Page"
+                },
+                "about-us-retailer": {
+                    "name": "About us retailer",
+                    "type": "Page"
+                }
+            }
+        }
     },
     "CustomLogicCheck": {
         "Title": "Custom Logic Check",
-        "IsCompleted": 1
+        "IsCompleted": 0
     },
     "EmailConfiguration": {
         "Title": "Email Configuration",
@@ -65,6 +78,10 @@ const onboardingProgress = ref({
     },
     "DocumentApi": {
         "Title": "Document API",
+        "IsCompleted": 0
+    },
+    "Item": {
+        "Title": "Item",
         "IsCompleted": 0
     },
     "GitBranch": {
