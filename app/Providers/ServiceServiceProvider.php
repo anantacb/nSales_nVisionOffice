@@ -46,6 +46,8 @@ use App\Services\TableHelper\TableHelperService;
 use App\Services\TableHelper\TableHelperServiceInterface;
 use App\Services\TableIndex\TableIndexService;
 use App\Services\TableIndex\TableIndexServiceInterface;
+use App\Services\Theme\ThemeService;
+use App\Services\Theme\ThemeServiceInterface;
 use App\Services\Translation\TranslationService;
 use App\Services\Translation\TranslationServiceInterface;
 use App\Services\User\UserService;
@@ -101,5 +103,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(DatabaseServiceInterface::class, DatabaseService::class);
         $this->app->bind(WebShopUserServiceInterface::class, WebShopUserService::class);
         $this->app->bind(WebShopPageServiceInterface::class, WebShopPageService::class);
+        $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
     }
 }
