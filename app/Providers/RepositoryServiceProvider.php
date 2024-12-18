@@ -70,6 +70,8 @@ use App\Repositories\Eloquent\Office\TableField\TableFieldRepository;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepository;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepositoryInterface;
+use App\Repositories\Eloquent\Office\Theme\ThemeRepository;
+use App\Repositories\Eloquent\Office\Theme\ThemeRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepository;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepository;
@@ -154,5 +156,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(WebShopPageRepositoryInterface::class, WebShopPageRepository::class);
 
         $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
+
+        $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
+
     }
 }

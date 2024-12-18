@@ -215,6 +215,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/role/delete', [RoleController::class, 'delete']);
     Route::post('/role/details', [RoleController::class, 'details']);
 
+    // Company theme
+    Route::post('/company-theme', [\App\Http\Controllers\ThemeController::class, 'getCompanyTheme']);
+
     Route::middleware(['company'])->group(function () {
         // Order
         Route::post('/orders', [OrderController::class, 'getOrders']);
