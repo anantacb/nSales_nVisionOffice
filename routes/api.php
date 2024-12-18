@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
+use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
@@ -267,5 +268,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         // B2bGqlApi
         Route::post('/b2b-gql-api/get-itemgroups-item', [B2bGqlApiController::class, 'getItemGroupsAndItem']);
+
+        // Document api
+        Route::post('/company-document-api', [DocumentAPIController::class, 'getCompanyDocumentApi']);
     });
 });

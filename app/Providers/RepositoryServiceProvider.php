@@ -12,6 +12,8 @@ use App\Repositories\Eloquent\Company\Customer\CustomerRepository;
 use App\Repositories\Eloquent\Company\Customer\CustomerRepositoryInterface;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepository;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepositoryInterface;
+use App\Repositories\Eloquent\Company\DocumentApi\DocumentApiRepository;
+use App\Repositories\Eloquent\Company\DocumentApi\DocumentApiRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepository;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderRepository;
@@ -158,6 +160,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
 
         $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
+
+        $this->app->bind(DocumentApiRepositoryInterface::class, DocumentApiRepository::class);
 
     }
 }
