@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Company\DocumentApi;
 use App\Services\Application\ApplicationService;
 use App\Services\Application\ApplicationServiceInterface;
 use App\Services\ApplicationModule\ApplicationModuleService;
@@ -20,6 +21,8 @@ use App\Services\Database\DatabaseService;
 use App\Services\Database\DatabaseServiceInterface;
 use App\Services\DataFilter\DataFilterService;
 use App\Services\DataFilter\DataFilterServiceInterface;
+use App\Services\DocumentApi\DocumentApiService;
+use App\Services\DocumentApi\DocumentApiServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
 use App\Services\Language\LanguageService;
@@ -104,5 +107,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(WebShopUserServiceInterface::class, WebShopUserService::class);
         $this->app->bind(WebShopPageServiceInterface::class, WebShopPageService::class);
         $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
+        $this->app->bind(DocumentApiServiceInterface::class, DocumentApiService::class);
     }
 }
