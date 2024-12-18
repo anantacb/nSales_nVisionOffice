@@ -11,8 +11,6 @@ const LanguageAndTranslations = defineAsyncComponent(() => import('@/components/
 const WebshopUser = defineAsyncComponent(() => import('@/components/onboard/WebshopUser.vue'))
 const Item = defineAsyncComponent(() => import('@/components/onboard/Item.vue'))
 const PageBuilder = defineAsyncComponent(() => import('@/components/onboard/PageBuilder.vue'))
-const CustomLogicCheck = defineAsyncComponent(() => import('@/components/onboard/CustomLogicCheck.vue'))
-const EmailConfiguration = defineAsyncComponent(() => import('@/components/onboard/EmailConfiguration.vue'))
 const Settings = defineAsyncComponent(() => import('@/components/onboard/Settings.vue'))
 const Theme = defineAsyncComponent(() => import('@/components/onboard/Theme.vue'))
 const DocumentApi = defineAsyncComponent(() => import('@/components/onboard/DocumentApi.vue'))
@@ -70,7 +68,15 @@ const onboardingProgress = ref({
     },
     "Settings": {
         "Title": "Settings",
-        "IsCompleted": 0
+        "IsCompleted": 0,
+        "payload": {
+            "settings": [
+                "WebShop.FilterFields",
+                "Itemgroup.ItemConditions.DynamicItemSortOptions",
+                "Firebase.Credential",
+                "Notification.FirebaseCredential"
+            ]
+        }
     },
     "Theme": {
         "Title": "Theme Configuration",
@@ -151,8 +157,6 @@ const componentToRender = computed(() => {
         return Item
     } else if (currentStep.value === "PageBuilder") {
         return PageBuilder
-    } else if (currentStep.value === "EmailConfiguration") {
-        return EmailConfiguration
     } else if (currentStep.value === "Settings") {
         return Settings
     } else if (currentStep.value === "Theme") {

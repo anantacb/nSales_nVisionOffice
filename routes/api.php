@@ -114,6 +114,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module-setting/details', [ModuleSettingController::class, 'details']);
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
+    Route::post('/module-setting/by-name', [ModuleSettingController::class, 'getModuleSettingsByName']);
 
     Route::post('/get-all-companies-with-db', [DatabaseController::class, 'getAllCompanies']);
     Route::post('/copy-db-to-dev', [DatabaseController::class, 'copyDBtoDev']);
