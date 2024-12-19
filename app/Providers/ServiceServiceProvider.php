@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Company\DocumentApi;
 use App\Services\Application\ApplicationService;
 use App\Services\Application\ApplicationServiceInterface;
 use App\Services\ApplicationModule\ApplicationModuleService;
@@ -20,8 +21,12 @@ use App\Services\Database\DatabaseService;
 use App\Services\Database\DatabaseServiceInterface;
 use App\Services\DataFilter\DataFilterService;
 use App\Services\DataFilter\DataFilterServiceInterface;
+use App\Services\DocumentApi\DocumentApiService;
+use App\Services\DocumentApi\DocumentApiServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
+use App\Services\Git\GitService;
+use App\Services\Git\GitServiceInterface;
 use App\Services\Language\LanguageService;
 use App\Services\Language\LanguageServiceInterface;
 use App\Services\Module\ModuleService;
@@ -32,6 +37,8 @@ use App\Services\ModulePackageModule\ModulePackageModuleService;
 use App\Services\ModulePackageModule\ModulePackageModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
+use App\Services\Onboard\OnboardService;
+use App\Services\Onboard\OnboardServiceInterface;
 use App\Services\Order\OrderByCustomerService;
 use App\Services\Order\OrderByCustomerServiceInterface;
 use App\Services\Order\OrderService;
@@ -46,10 +53,16 @@ use App\Services\TableHelper\TableHelperService;
 use App\Services\TableHelper\TableHelperServiceInterface;
 use App\Services\TableIndex\TableIndexService;
 use App\Services\TableIndex\TableIndexServiceInterface;
+use App\Services\Theme\ThemeService;
+use App\Services\Theme\ThemeServiceInterface;
 use App\Services\Translation\TranslationService;
 use App\Services\Translation\TranslationServiceInterface;
 use App\Services\User\UserService;
 use App\Services\User\UserServiceInterface;
+use App\Services\WebShopPage\WebShopPageService;
+use App\Services\WebShopPage\WebShopPageServiceInterface;
+use App\Services\WebShopUser\WebShopUserService;
+use App\Services\WebShopUser\WebShopUserServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class ServiceServiceProvider extends ServiceProvider
@@ -95,5 +108,11 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ModulePackageServiceInterface::class, ModulePackageService::class);
         $this->app->bind(ModulePackageModuleServiceInterface::class, ModulePackageModuleService::class);
         $this->app->bind(DatabaseServiceInterface::class, DatabaseService::class);
+        $this->app->bind(WebShopUserServiceInterface::class, WebShopUserService::class);
+        $this->app->bind(WebShopPageServiceInterface::class, WebShopPageService::class);
+        $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
+        $this->app->bind(DocumentApiServiceInterface::class, DocumentApiService::class);
+        $this->app->bind(GitServiceInterface::class, GitService::class);
+        $this->app->bind(OnboardServiceInterface::class, OnboardService::class);
     }
 }

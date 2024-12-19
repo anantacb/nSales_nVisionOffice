@@ -13,6 +13,22 @@ export default class ModuleSetting {
         });
     }
 
+    static getModuleSettingsByName(CompanyId, Settings) {
+        console.log(CompanyId, Settings)
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module-setting/by-name', {
+                CompanyId: CompanyId,
+                Settings
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static getModuleSettings(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/module-settings', formData)

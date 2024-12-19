@@ -90,6 +90,9 @@ const ModulePackages = () => import('@/views/module-package/ModulePackages/Modul
 const CreateModulePackage = () => import('@/views/module-package/CreateModulePackage.vue');
 const EditModulePackage = () => import('@/views/module-package/EditModulePackage/EditModulePackage.vue');
 
+const OnboardWebshop = () => import("@/views/onboard/Webshop.vue");
+const OnboardRetailer = () => import("@/views/onboard/Retailer.vue");
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -593,7 +596,26 @@ const routes = [
                     roles: ['Developer']
                 }
             },
-
+            {
+                path: "onboard/webshop",
+                name: "onboardWebshop",
+                component: OnboardWebshop,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "onboard/retailer",
+                name: "OnboardRetailer",
+                component: OnboardRetailer,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
 
             // Company Routes
             {

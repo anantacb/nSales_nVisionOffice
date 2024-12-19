@@ -215,4 +215,60 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         $moduleSettings = $this->moduleSettingRepository->paginatedData($request);
         return new ServiceDto("Module Settings retrieved!!!", 200, $moduleSettings);
     }
+
+    public function getModuleSettingsByName(Request $request): ServiceDto
+    {
+        $companyId = $request->get('CompanyId');
+
+        $settings = $request->get("Settings");
+        $settings = array_map(function ($setting) {
+            $exploded = explode('.', $setting);
+            $moduleName = array_shift($exploded);
+            $settingName = implode(".", $exploded);
+
+            return [
+                "moduleName" => $moduleName,
+                "settingName" => $settingName
+            ];
+        }, $settings);
+
+        $uniqueModuleNames = array_unique(array_map(function ($setting) {
+            return $setting["moduleName"];
+        }, $settings));
+
+        $attributes = [[
+            "column" => 'Name', 'operand' => 'in', 'value' => $uniqueModuleNames
+        ]];
+        $modules = $this->moduleRepository->getByAttributes($attributes, [], ["Id", "Name"])
+            ->pluck("Id", "Name")
+            ->toArray();
+
+        $attributes = [
+            [
+                "column" => 'Name',
+                'operand' => '=',
+                'value' => array_map(function ($setting) {
+                    return $setting["settingName"];
+                }, $settings)
+            ], [
+                "column" => 'ModuleId',
+                'operand' => '=',
+                'value' => array_values($modules)
+            ]
+        ];
+        $relations = [
+            'setting' => function ($q) use ($companyId) {
+                $q->select(["Id", "ModuleSettingId", "Value", "CompanyId"])
+                    ->where('CompanyId', $companyId);
+            }
+        ];
+        $settings = $this->moduleSettingRepository->getByAttributes($attributes, $relations);
+
+        $formattedSettings = [];
+        foreach ($settings as $setting) {
+            $formattedSettings[] = $this->formatModuleSetting($setting);
+        }
+
+        return new ServiceDto("ModuleSettings retrieved!!!", 200, $formattedSettings);
+    }
 }
