@@ -29,12 +29,28 @@ const onboardingProgress = ref({
             "modules": ["WebShop", "CustomerAddress", "Retailer", "Firebase", "Notification"]
         }
     },
+    "Settings": {
+        "Title": "Settings",
+        "IsCompleted": 0,
+        "payload": {
+            "settings": [
+                "WebShop.FilterFields",
+                "Itemgroup.ItemConditions.DynamicItemSortOptions",
+                "Firebase.Credential",
+                "Notification.FirebaseCredential"
+            ]
+        }
+    },
     "LanguageAndTranslations": {
         "Title": "Language & Translations",
         "IsCompleted": 0
     },
     "CreateUser": {
         "Title": "Create User",
+        "IsCompleted": 0
+    },
+    "Item": {
+        "Title": "Item",
         "IsCompleted": 0
     },
     "PageBuilder": {
@@ -66,28 +82,12 @@ const onboardingProgress = ref({
         "Title": "Email Configuration",
         "IsCompleted": 0
     },
-    "Settings": {
-        "Title": "Settings",
-        "IsCompleted": 0,
-        "payload": {
-            "settings": [
-                "WebShop.FilterFields",
-                "Itemgroup.ItemConditions.DynamicItemSortOptions",
-                "Firebase.Credential",
-                "Notification.FirebaseCredential"
-            ]
-        }
-    },
     "Theme": {
         "Title": "Theme Configuration",
         "IsCompleted": 0
     },
     "DocumentApi": {
         "Title": "Document API",
-        "IsCompleted": 0
-    },
-    "Item": {
-        "Title": "Item",
         "IsCompleted": 0
     },
     "GitBranch": {

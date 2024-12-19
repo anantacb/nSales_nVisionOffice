@@ -25,6 +25,8 @@ use App\Services\DocumentApi\DocumentApiService;
 use App\Services\DocumentApi\DocumentApiServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
+use App\Services\Git\GitService;
+use App\Services\Git\GitServiceInterface;
 use App\Services\Language\LanguageService;
 use App\Services\Language\LanguageServiceInterface;
 use App\Services\Module\ModuleService;
@@ -108,5 +110,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(WebShopPageServiceInterface::class, WebShopPageService::class);
         $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
         $this->app->bind(DocumentApiServiceInterface::class, DocumentApiService::class);
+        $this->app->bind(GitServiceInterface::class, GitService::class);
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
+use App\Http\Controllers\GitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModulePackageController;
@@ -271,5 +272,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Document api
         Route::post('/company-document-api', [DocumentAPIController::class, 'getCompanyDocumentApi']);
+
+        // Git api
+        Route::post('/company-git-branches', [GitController::class, 'getCompanyBranches']);
+        Route::post('/company-git-branches/create', [GitController::class, 'createCompanyBranches']);
     });
 });
