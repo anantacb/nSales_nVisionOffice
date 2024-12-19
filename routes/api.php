@@ -19,6 +19,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModulePackageController;
 use App\Http\Controllers\ModulePackageModuleController;
 use App\Http\Controllers\ModuleSettingController;
+use App\Http\Controllers\OnboardController;
 use App\Http\Controllers\OrderByCustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
@@ -276,5 +277,9 @@ Route::middleware(['auth:api'])->group(function () {
         // Git api
         Route::post('/company-git-branches', [GitController::class, 'getCompanyBranches']);
         Route::post('/company-git-branches/create', [GitController::class, 'createCompanyBranches']);
+
+        // Onboard
+        Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);
+        Route::post('/company-onboard-status/update', [OnboardController::class, 'updateCompanyOnboardStatus']);
     });
 });
