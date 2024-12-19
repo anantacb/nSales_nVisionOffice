@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\B2bGqlApiController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyLanguageController;
 use App\Http\Controllers\CompanyTranslationController;
@@ -10,12 +11,15 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
+use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
+use App\Http\Controllers\GitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModulePackageController;
 use App\Http\Controllers\ModulePackageModuleController;
 use App\Http\Controllers\ModuleSettingController;
+use App\Http\Controllers\OnboardController;
 use App\Http\Controllers\OrderByCustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
@@ -25,6 +29,8 @@ use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\TableIndexController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebShopPageController;
+use App\Http\Controllers\WebShopUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -111,6 +117,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module-setting/details', [ModuleSettingController::class, 'details']);
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
+    Route::post('/module-setting/by-name', [ModuleSettingController::class, 'getModuleSettingsByName']);
 
     Route::post('/get-all-companies-with-db', [DatabaseController::class, 'getAllCompanies']);
     Route::post('/copy-db-to-dev', [DatabaseController::class, 'copyDBtoDev']);
@@ -211,6 +218,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/role/delete', [RoleController::class, 'delete']);
     Route::post('/role/details', [RoleController::class, 'details']);
 
+    // Company theme
+    Route::post('/company-theme', [\App\Http\Controllers\ThemeController::class, 'getCompanyTheme']);
+
     Route::middleware(['company'])->group(function () {
         // Order
         Route::post('/orders', [OrderController::class, 'getOrders']);
@@ -249,5 +259,27 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
         Route::post('/company-translation/details', [CompanyTranslationController::class, 'details']);
 
+        // WebShopUser
+        Route::post('/web-shop-user/details', [WebShopUserController::class, 'details']);
+        Route::post('/web-shop-user/create-test-user', [WebShopUserController::class, 'createTestUser']);
+
+        // WebShopPage
+        Route::post('/web-shop-page/list', [WebShopPageController::class, 'list']);
+        Route::post('/web-shop-page/create-pages', [WebShopPageController::class, 'createPages']);
+        Route::post('/web-shop-page/create-pages-content-for-missing-languages', [WebShopPageController::class, 'createPagesContentForMissingLanguages']);
+
+        // B2bGqlApi
+        Route::post('/b2b-gql-api/get-itemgroups-item', [B2bGqlApiController::class, 'getItemGroupsAndItem']);
+
+        // Document api
+        Route::post('/company-document-api', [DocumentAPIController::class, 'getCompanyDocumentApi']);
+
+        // Git api
+        Route::post('/company-git-branches', [GitController::class, 'getCompanyBranches']);
+        Route::post('/company-git-branches/create', [GitController::class, 'createCompanyBranches']);
+
+        // Onboard
+        Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);
+        Route::post('/company-onboard-status/update', [OnboardController::class, 'updateCompanyOnboardStatus']);
     });
 });

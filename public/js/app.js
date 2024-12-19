@@ -3159,7 +3159,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/compiler-core v3.4.22
+* @vue/compiler-core v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -5458,7 +5458,7 @@ function onCloseTag(el, end, isImplied = false) {
   if (isImplied) {
     setLocEnd(el.loc, backTrack(end, 60));
   } else {
-    setLocEnd(el.loc, lookAhead(end, 62) + 1);
+    setLocEnd(el.loc, end + 1);
   }
   if (tokenizer.inSFCRoot) {
     if (el.children.length) {
@@ -5552,12 +5552,6 @@ function onCloseTag(el, end, isImplied = false) {
       };
     }
   }
-}
-function lookAhead(index, c) {
-  let i = index;
-  while (currentInput.charCodeAt(i) !== c && i < currentInput.length - 1)
-    i++;
-  return i;
 }
 function backTrack(index, c) {
   let i = index;
@@ -7769,27 +7763,13 @@ const transformElement = (node, context) => {
 function resolveComponentType(node, context, ssr = false) {
   let { tag } = node;
   const isExplicitDynamic = isComponentTag(tag);
-  const isProp = findProp(
-    node,
-    "is",
-    false,
-    true
-    /* allow empty */
-  );
+  const isProp = findProp(node, "is");
   if (isProp) {
     if (isExplicitDynamic || isCompatEnabled(
       "COMPILER_IS_ON_ELEMENT",
       context
     )) {
-      let exp;
-      if (isProp.type === 6) {
-        exp = isProp.value && createSimpleExpression(isProp.value.content, true);
-      } else {
-        exp = isProp.exp;
-        if (!exp) {
-          exp = createSimpleExpression(`is`, false, isProp.loc);
-        }
-      }
+      const exp = isProp.type === 6 ? isProp.value && createSimpleExpression(isProp.value.content, true) : isProp.exp;
       if (exp) {
         return createCallExpression(context.helper(RESOLVE_DYNAMIC_COMPONENT), [
           exp
@@ -9024,7 +9004,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_compiler_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/compiler-core */ "./node_modules/@vue/compiler-core/dist/compiler-core.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/compiler-dom v3.4.22
+* @vue/compiler-dom v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -9843,7 +9823,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/reactivity v3.4.22
+* @vue/reactivity v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -10286,8 +10266,6 @@ function createArrayInstrumentations() {
   return instrumentations;
 }
 function hasOwnProperty(key) {
-  if (!(0,_vue_shared__WEBPACK_IMPORTED_MODULE_0__.isSymbol)(key))
-    key = String(key);
   const obj = toRaw(this);
   track(obj, "has", key);
   return obj.hasOwnProperty(key);
@@ -10640,16 +10618,23 @@ function createInstrumentations() {
     clear: createReadonlyMethod("clear"),
     forEach: createForEach(true, true)
   };
-  const iteratorMethods = [
-    "keys",
-    "values",
-    "entries",
-    Symbol.iterator
-  ];
+  const iteratorMethods = ["keys", "values", "entries", Symbol.iterator];
   iteratorMethods.forEach((method) => {
-    mutableInstrumentations2[method] = createIterableMethod(method, false, false);
-    readonlyInstrumentations2[method] = createIterableMethod(method, true, false);
-    shallowInstrumentations2[method] = createIterableMethod(method, false, true);
+    mutableInstrumentations2[method] = createIterableMethod(
+      method,
+      false,
+      false
+    );
+    readonlyInstrumentations2[method] = createIterableMethod(
+      method,
+      true,
+      false
+    );
+    shallowInstrumentations2[method] = createIterableMethod(
+      method,
+      false,
+      true
+    );
     shallowReadonlyInstrumentations2[method] = createIterableMethod(
       method,
       true,
@@ -10806,7 +10791,7 @@ function isShallow(value) {
   return !!(value && value["__v_isShallow"]);
 }
 function isProxy(value) {
-  return value ? !!value["__v_raw"] : false;
+  return isReactive(value) || isReadonly(value);
 }
 function toRaw(observed) {
   const raw = observed && observed["__v_raw"];
@@ -11236,7 +11221,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_reactivity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/reactivity */ "./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* @vue/runtime-core v3.4.22
+* @vue/runtime-core v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -11444,17 +11429,11 @@ function callWithAsyncErrorHandling(fn, instance, type, args) {
     }
     return res;
   }
-  if ((0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isArray)(fn)) {
-    const values = [];
-    for (let i = 0; i < fn.length; i++) {
-      values.push(callWithAsyncErrorHandling(fn[i], instance, type, args));
-    }
-    return values;
-  } else if (true) {
-    warn$1(
-      `Invalid value type passed to callWithAsyncErrorHandling(): ${typeof fn}`
-    );
+  const values = [];
+  for (let i = 0; i < fn.length; i++) {
+    values.push(callWithAsyncErrorHandling(fn[i], instance, type, args));
   }
+  return values;
 }
 function handleError(err, instance, type, throwInDev = true) {
   const contextVNode = instance ? instance.vnode : null;
@@ -11475,14 +11454,12 @@ function handleError(err, instance, type, throwInDev = true) {
     }
     const appErrorHandler = instance.appContext.config.errorHandler;
     if (appErrorHandler) {
-      (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.pauseTracking)();
       callWithErrorHandling(
         appErrorHandler,
         null,
         10,
         [err, exposedInstance, errorInfo]
       );
-      (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.resetTracking)();
       return;
     }
   }
@@ -11858,8 +11835,6 @@ const devtoolsComponentRemoved = (component) => {
     _devtoolsComponentRemoved(component);
   }
 };
-/*! #__NO_SIDE_EFFECTS__ */
-// @__NO_SIDE_EFFECTS__
 function createDevtoolsComponentHook(hook) {
   return (component) => {
     emit$1(
@@ -13965,7 +13940,7 @@ const KeepAliveImpl = {
     return () => {
       pendingCacheKey = null;
       if (!slots.default) {
-        return current = null;
+        return null;
       }
       const children = slots.default();
       const rawVNode = children[0];
@@ -14278,9 +14253,6 @@ const isReservedPrefix = (key) => key === "_" || key === "$";
 const hasSetupBinding = (state, key) => state !== _vue_shared__WEBPACK_IMPORTED_MODULE_1__.EMPTY_OBJ && !state.__isScriptSetup && (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.hasOwn)(state, key);
 const PublicInstanceProxyHandlers = {
   get({ _: instance }, key) {
-    if (key === "__v_skip") {
-      return true;
-    }
     const { ctx, setupState, data, props, accessCache, type, appContext } = instance;
     if ( true && key === "__isVue") {
       return true;
@@ -15248,10 +15220,10 @@ function hasInjectionContext() {
   return !!(currentInstance || currentRenderingInstance || currentApp);
 }
 
-const attrsProto = {};
 function initProps(instance, rawProps, isStateful, isSSR = false) {
   const props = {};
-  const attrs = Object.create(attrsProto);
+  const attrs = {};
+  (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.def)(attrs, InternalObjectKey, 1);
   instance.propsDefaults = /* @__PURE__ */ Object.create(null);
   setFullProps(instance, rawProps, props, attrs);
   for (const key in instance.propsOptions[0]) {
@@ -15366,7 +15338,7 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
     }
   }
   if (hasAttrsChanged) {
-    (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.trigger)(instance.attrs, "set", "");
+    (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.trigger)(instance, "set", "$attrs");
   }
   if (true) {
     validateProps(rawProps || {}, props, instance);
@@ -15702,7 +15674,7 @@ const initSlots = (instance, children) => {
     const type = children._;
     if (type) {
       instance.slots = (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.toRaw)(children);
-      (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.def)(instance.slots, "_", type);
+      (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.def)(children, "_", type);
     } else {
       normalizeObjectSlots(
         children,
@@ -15714,6 +15686,7 @@ const initSlots = (instance, children) => {
       normalizeVNodeSlots(instance, children);
     }
   }
+  (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.def)(instance.slots, InternalObjectKey, 1);
 };
 const updateSlots = (instance, children, optimized) => {
   const { vnode, slots } = instance;
@@ -15885,7 +15858,6 @@ function createHydrationFunctions(rendererInternals) {
     }
   };
   const hydrateNode = (node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized = false) => {
-    optimized = optimized || !!vnode.dynamicChildren;
     const isFragmentStart = isComment(node) && node.data === "[";
     const onMismatch = () => handleMismatch(
       node,
@@ -16133,7 +16105,7 @@ Server rendered element contains more child nodes than client vdom.`
       if (props) {
         if (true) {
           for (const key in props) {
-            if (( true) && propHasMismatch(el, key, props[key], vnode, parentComponent)) {
+            if ( true && propHasMismatch(el, key, props[key], vnode, parentComponent)) {
               hasMismatch = true;
             }
             if (forcePatch && (key.endsWith("value") || key === "indeterminate") || (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isOn)(key) && !(0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isReservedProp)(key) || // force hydrate v-bind with .prop modifiers
@@ -18339,6 +18311,7 @@ const createVNodeWithArgsTransform = (...args) => {
     ...vnodeArgsTransformer ? vnodeArgsTransformer(args, currentRenderingInstance) : args
   );
 };
+const InternalObjectKey = `__vInternal`;
 const normalizeKey = ({ key }) => key != null ? key : null;
 const normalizeRef = ({
   ref,
@@ -18471,7 +18444,7 @@ Component that was made reactive: `,
 function guardReactiveProps(props) {
   if (!props)
     return null;
-  return (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.isProxy)(props) || Object.getPrototypeOf(props) === attrsProto ? (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)({}, props) : props;
+  return (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.isProxy)(props) || InternalObjectKey in props ? (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.extend)({}, props) : props;
 }
 function cloneVNode(vnode, extraProps, mergeRef = false) {
   const { props, ref, patchFlag, children } = vnode;
@@ -18576,7 +18549,7 @@ function normalizeChildren(vnode, children) {
     } else {
       type = 32;
       const slotFlag = children._;
-      if (!slotFlag) {
+      if (!slotFlag && !(InternalObjectKey in children)) {
         children._ctx = currentRenderingInstance;
       } else if (slotFlag === 3 && currentRenderingInstance) {
         if (currentRenderingInstance.slots._ === 1) {
@@ -18812,7 +18785,7 @@ function setupStatefulComponent(instance, isSSR) {
     }
   }
   instance.accessCache = /* @__PURE__ */ Object.create(null);
-  instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers);
+  instance.proxy = (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.markRaw)(new Proxy(instance.ctx, PublicInstanceProxyHandlers));
   if (true) {
     exposePropsOnRenderContext(instance);
   }
@@ -18946,21 +18919,26 @@ function finishComponentSetup(instance, isSSR, skipOptions) {
     }
   }
 }
-const attrsProxyHandlers =  true ? {
-  get(target, key) {
-    markAttrsAccessed();
-    (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.track)(target, "get", "");
-    return target[key];
-  },
-  set() {
-    warn$1(`setupContext.attrs is readonly.`);
-    return false;
-  },
-  deleteProperty() {
-    warn$1(`setupContext.attrs is readonly.`);
-    return false;
-  }
-} : 0;
+function getAttrsProxy(instance) {
+  return instance.attrsProxy || (instance.attrsProxy = new Proxy(
+    instance.attrs,
+     true ? {
+      get(target, key) {
+        markAttrsAccessed();
+        (0,_vue_reactivity__WEBPACK_IMPORTED_MODULE_0__.track)(instance, "get", "$attrs");
+        return target[key];
+      },
+      set() {
+        warn$1(`setupContext.attrs is readonly.`);
+        return false;
+      },
+      deleteProperty() {
+        warn$1(`setupContext.attrs is readonly.`);
+        return false;
+      }
+    } : 0
+  ));
+}
 function getSlotsProxy(instance) {
   return instance.slotsProxy || (instance.slotsProxy = new Proxy(instance.slots, {
     get(target, key) {
@@ -18994,10 +18972,9 @@ function createSetupContext(instance) {
     instance.exposed = exposed || {};
   };
   if (true) {
-    let attrsProxy;
     return Object.freeze({
       get attrs() {
-        return attrsProxy || (attrsProxy = new Proxy(instance.attrs, attrsProxyHandlers));
+        return getAttrsProxy(instance);
       },
       get slots() {
         return getSlotsProxy(instance);
@@ -19342,7 +19319,7 @@ function isMemoSame(cached, memo) {
   return true;
 }
 
-const version = "3.4.22";
+const version = "3.4.21";
 const warn =  true ? warn$1 : 0;
 const ErrorTypeStrings = ErrorTypeStrings$1 ;
 const devtools =  true ? devtools$1 : 0;
@@ -19537,7 +19514,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /* harmony import */ var _vue_runtime_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/runtime-core */ "./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js");
 /**
-* @vue/runtime-dom v3.4.22
+* @vue/runtime-dom v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -19968,8 +19945,8 @@ function useCssVars(getter) {
     setVarsOnVNode(instance.subTree, vars);
     updateTeleports(vars);
   };
+  (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.watchPostEffect)(setVars);
   (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
-    (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.watchPostEffect)(setVars);
     const ob = new MutationObserver(setVars);
     ob.observe(instance.subTree.el.parentNode, { childList: true });
     (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(() => ob.disconnect());
@@ -20192,14 +20169,11 @@ function patchEvent(el, rawName, prevValue, nextValue, instance = null) {
   const invokers = el[veiKey] || (el[veiKey] = {});
   const existingInvoker = invokers[rawName];
   if (nextValue && existingInvoker) {
-    existingInvoker.value =  true ? sanitizeEventValue(nextValue, rawName) : 0;
+    existingInvoker.value = nextValue;
   } else {
     const [name, options] = parseName(rawName);
     if (nextValue) {
-      const invoker = invokers[rawName] = createInvoker(
-         true ? sanitizeEventValue(nextValue, rawName) : 0,
-        instance
-      );
+      const invoker = invokers[rawName] = createInvoker(nextValue, instance);
       addEventListener(el, name, invoker, options);
     } else if (existingInvoker) {
       removeEventListener(el, name, existingInvoker, options);
@@ -20242,16 +20216,6 @@ function createInvoker(initialValue, instance) {
   invoker.attached = getNow();
   return invoker;
 }
-function sanitizeEventValue(value, propName) {
-  if ((0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isFunction)(value) || (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isArray)(value)) {
-    return value;
-  }
-  (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.warn)(
-    `Wrong type passed as event handler to ${propName} - did you forget @ or : in front of your prop?
-Expected function or array of functions, received type ${typeof value}.`
-  );
-  return _vue_shared__WEBPACK_IMPORTED_MODULE_1__.NOOP;
-}
 function patchStopImmediatePropagation(e, value) {
   if ((0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.isArray)(value)) {
     const originalStop = e.stopImmediatePropagation;
@@ -20259,9 +20223,7 @@ function patchStopImmediatePropagation(e, value) {
       originalStop.call(e);
       e._stopped = true;
     };
-    return value.map(
-      (fn) => (e2) => !e2._stopped && fn && fn(e2)
-    );
+    return value.map((fn) => (e2) => !e2._stopped && fn && fn(e2));
   } else {
     return value;
   }
@@ -20462,7 +20424,7 @@ class VueElement extends BaseClass {
     }
   }
   _setAttr(key) {
-    let value = this.hasAttribute(key) ? this.getAttribute(key) : void 0;
+    let value = this.getAttribute(key);
     const camelKey = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.camelize)(key);
     if (this._numberProps && this._numberProps[camelKey]) {
       value = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.toNumber)(value);
@@ -20628,28 +20590,7 @@ const TransitionGroupImpl = {
       const rawProps = (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_2__.toRaw)(props);
       const cssTransitionProps = resolveTransitionProps(rawProps);
       let tag = rawProps.tag || _vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.Fragment;
-      prevChildren = [];
-      if (children) {
-        for (let i = 0; i < children.length; i++) {
-          const child = children[i];
-          if (child.el && child.el instanceof Element) {
-            prevChildren.push(child);
-            (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.setTransitionHooks)(
-              child,
-              (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.resolveTransitionHooks)(
-                child,
-                cssTransitionProps,
-                state,
-                instance
-              )
-            );
-            positionMap.set(
-              child,
-              child.el.getBoundingClientRect()
-            );
-          }
-        }
-      }
+      prevChildren = children;
       children = slots.default ? (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.getTransitionRawChildren)(slots.default()) : [];
       for (let i = 0; i < children.length; i++) {
         const child = children[i];
@@ -20660,6 +20601,16 @@ const TransitionGroupImpl = {
           );
         } else if (true) {
           (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.warn)(`<TransitionGroup> children must be keyed.`);
+        }
+      }
+      if (prevChildren) {
+        for (let i = 0; i < prevChildren.length; i++) {
+          const child = prevChildren[i];
+          (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.setTransitionHooks)(
+            child,
+            (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.resolveTransitionHooks)(child, cssTransitionProps, state, instance)
+          );
+          positionMap.set(child, child.el.getBoundingClientRect());
         }
       }
       return (0,_vue_runtime_core__WEBPACK_IMPORTED_MODULE_0__.createVNode)(tag, null, children);
@@ -20760,7 +20711,7 @@ const vModelText = {
     el[assignKey] = getModelAssigner(vnode);
     if (el.composing)
       return;
-    const elValue = (number || el.type === "number") && !/^0\d/.test(el.value) ? (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.looseToNumber)(el.value) : el.value;
+    const elValue = number || el.type === "number" ? (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.looseToNumber)(el.value) : el.value;
     const newValue = value == null ? "" : value;
     if (elValue === newValue) {
       return;
@@ -20863,14 +20814,14 @@ const vModelSelect = {
   // set value in mounted & updated because <select> relies on its children
   // <option>s.
   mounted(el, { value, modifiers: { number } }) {
-    setSelected(el, value);
+    setSelected(el, value, number);
   },
   beforeUpdate(el, _binding, vnode) {
     el[assignKey] = getModelAssigner(vnode);
   },
   updated(el, { value, modifiers: { number } }) {
     if (!el._assigning) {
-      setSelected(el, value);
+      setSelected(el, value, number);
     }
   }
 };
@@ -20890,7 +20841,9 @@ function setSelected(el, value, number) {
       if (isArrayValue) {
         const optionType = typeof optionValue;
         if (optionType === "string" || optionType === "number") {
-          option.selected = value.some((v) => String(v) === String(optionValue));
+          option.selected = value.includes(
+            number ? (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.looseToNumber)(optionValue) : optionValue
+          );
         } else {
           option.selected = (0,_vue_shared__WEBPACK_IMPORTED_MODULE_1__.looseIndexOf)(value, optionValue) > -1;
         }
@@ -21247,12 +21200,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   toTypeString: () => (/* binding */ toTypeString)
 /* harmony export */ });
 /**
-* @vue/shared v3.4.22
+* @vue/shared v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
-/*! #__NO_SIDE_EFFECTS__ */
-// @__NO_SIDE_EFFECTS__
 function makeMap(str, expectsLowerCase) {
   const set = new Set(str.split(","));
   return expectsLowerCase ? (val) => set.has(val.toLowerCase()) : (val) => set.has(val);
@@ -21734,11 +21685,7 @@ const replacer = (_key, val) => {
 };
 const stringifySymbol = (v, i = "") => {
   var _a;
-  return (
-    // Symbol.description in es2019+ so we need to cast here to pass
-    // the lib: es2016 check
-    isSymbol(v) ? `Symbol(${(_a = v.description) != null ? _a : i})` : v
-  );
+  return isSymbol(v) ? `Symbol(${(_a = v.description) != null ? _a : i})` : v;
 };
 
 
@@ -21805,7 +21752,7 @@ window.axios.interceptors.response.use(function (res) {
   if (error.response.status === 401) {
     var authStore = Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/stores/authStore.js'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())();
     authStore.logout();
-    Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/router'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())({
+    return Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/router'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())({
       name: 'login'
     });
   }
@@ -21846,17 +21793,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.mjs");
-/* harmony import */ var nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nprogress/nprogress.js */ "./node_modules/nprogress/nprogress.js");
-/* harmony import */ var nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.mjs");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! nprogress/nprogress.js */ "./node_modules/nprogress/nprogress.js");
+/* harmony import */ var nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_1__);
 Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/layouts/variations/Backend.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/layouts/variations/Simple.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/stores/authStore'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/stores/companyStore'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/composables/useCheckAccess'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw new Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw new Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 
 
 
 
+
+
+
+var _useCheckAccess = Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/composables/useCheckAccess'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())(),
+  checkAccess = _useCheckAccess.checkAccess;
 var Login = function Login() {
   return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/auth/Login.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
 };
@@ -21877,6 +21837,9 @@ var TableFields = function TableFields() {
 };
 var TableIndices = function TableIndices() {
   return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/database/ManageTableIndices/TableIndices.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var CopyDatabase = function CopyDatabase() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/database/CopyDatabase/CopyDatabase.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
 };
 var ModuleSettings = function ModuleSettings() {
   return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/setting/ModuleSettings/ModuleSettings.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
@@ -22013,227 +21976,286 @@ var CreateTranslation = function CreateTranslation() {
 var EditTranslation = function EditTranslation() {
   return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/translation/EditTranslation.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
 };
+var CompanyLanguages = function CompanyLanguages() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/company-language/CompanyLanguages/CompanyLanguages.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var CompanyTranslations = function CompanyTranslations() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/company-translation/CompanyTranslations/CompanyTranslations.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var CreateCompanyTranslation = function CreateCompanyTranslation() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/company-translation/CreateCompanyTranslation.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var EditCompanyTranslation = function EditCompanyTranslation() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/company-translation/EditCompanyTranslation.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var ModulePackages = function ModulePackages() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/module-package/ModulePackages/ModulePackages.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var CreateModulePackage = function CreateModulePackage() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/module-package/CreateModulePackage.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
+var EditModulePackage = function EditModulePackage() {
+  return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/module-package/EditModulePackage/EditModulePackage.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
+};
 var NotFound = function NotFound() {
   return Promise.resolve().then(function webpackMissingModule() { var e = new Error("Cannot find module '@/views/404View.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; });
 };
 var routes = [{
   path: "",
   component: Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/layouts/variations/Backend.vue'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()),
-  children: [{
+  children: [
+  // Office Routes
+  {
     path: "",
     name: "home",
     component: Home,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: []
     }
   }, {
     path: "database/tables",
     name: "tables",
     component: Tables,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "database/table/create",
     name: "create-table",
     component: CreateTable,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "database/copy",
+    name: "copy-database",
+    component: CopyDatabase,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "database/table/:id/table-fields",
     name: "manage-table-fields",
     component: TableFields,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "database/table/:id/table-indices",
     name: "manage-table-indices",
     component: TableIndices,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "database/table/:id/edit",
     name: "edit-table",
     component: EditTable,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "settings/settings",
     name: "settings",
     component: ModuleSettings,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "setting/create",
     name: "create-setting",
     component: CreateModuleSetting,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "setting/:id/edit",
     name: "edit-setting",
     component: EditModuleSetting,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "setting/update",
     name: "update-setting",
     component: UpdateSetting,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "module/modules",
     name: "modules",
     component: Modules,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "module/create",
     name: "create-module",
     component: CreateModule,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "module/:id/edit",
     name: "edit-module",
     component: EditModule,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "module/activate",
     name: "activate-module",
     component: ActivateModule,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "company/companies",
     name: "companies",
     component: Companies,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "company/create",
     name: "create-company",
     component: CreateCompany,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "company/:id/edit",
     name: "edit-company",
     component: EditCompany,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "user/users",
     name: "users",
     component: Users,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "user/:id/edit",
     name: "edit-user",
     component: EditUser,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "user/developers",
     name: "developers",
     component: Developers,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "user/company-users",
     name: "company-users",
     component: CompanyUsers,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "user/company-user/create",
     name: "create-company-user",
     component: CreateCompanyUser,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "user/company-user/:id/edit",
     name: "edit-company-user",
     component: EditCompanyUser,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "email-configuration/email-configurations",
     name: "email-configurations",
     component: EmailConfigurations,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "email-configuration/company-email-configurations",
     name: "company-email-configurations",
     component: CompanyEmailConfigurations,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "email-configuration/create",
     name: "create-email-configuration",
     component: CreateEmailConfiguration,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "email-configuration/:id/edit",
     name: "edit-email-configuration",
     component: EditEmailConfiguration,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     },
     beforeEnter: function beforeEnter(to, from) {
       if (['email-configurations', 'company-email-configurations'].includes(from.name)) {
@@ -22246,24 +22268,27 @@ var routes = [{
     name: "data-filters",
     component: DataFilters,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "data-filter/create",
     name: "create-data-filter",
     component: CreateDataFilter,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "data-filter/:id/edit",
     name: "edit-data-filter",
     component: EditDataFilter,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     },
     beforeEnter: function beforeEnter(to, from) {
       if (['data-filters', 'company-data-filters'].includes(from.name)) {
@@ -22276,88 +22301,186 @@ var routes = [{
     name: "company-data-filters",
     component: CompanyDataFilters,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "application/applications",
     name: "applications",
     component: Applications,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "application/create",
     name: "create-application",
     component: CreateApplication,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "application/:id/edit",
     name: "edit-application",
     component: EditApplication,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "module-package/module-packages",
+    name: "module-packages",
+    component: ModulePackages,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "module-package/create",
+    name: "create-module-package",
+    component: CreateModulePackage,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "module-package/:id/edit",
+    name: "edit-module-package",
+    component: EditModulePackage,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
     path: "role/roles",
     name: "roles",
     component: Roles,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "role/create",
     name: "create-role",
     component: CreateRole,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer']
     }
   }, {
     path: "role/:id/edit",
     name: "edit-role",
     component: EditRole,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
     }
   }, {
+    path: "language/languages",
+    name: "languages",
+    component: Languages,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "language/create",
+    name: "create-language",
+    component: CreateLanguage,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "language/:id/edit",
+    name: "edit-language",
+    component: EditLanguage,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "translation/translations",
+    name: "translations",
+    component: Translations,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "translation/create",
+    name: "create-translation",
+    component: CreateTranslation,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  }, {
+    path: "translation/:id/edit",
+    name: "edit-translation",
+    component: EditTranslation,
+    meta: {
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer']
+    }
+  },
+  // Company Routes
+  {
     path: "order/orders",
     name: "orders",
     component: Orders,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Order'
     }
   }, {
     path: "order/open-orders",
     name: "open-orders",
     component: OpenOrders,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Order'
     }
   }, {
     path: "order/failed-orders",
     name: "failed-orders",
     component: FailedOrders,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Order'
     }
   }, {
     path: "order/:id",
     name: "order-details",
     component: OrderDetails,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Order'
     },
     beforeEnter: function beforeEnter(to, from) {
       if (['orders', 'open-orders', 'failed-orders'].includes(from.name)) {
@@ -22370,24 +22493,30 @@ var routes = [{
     name: "customers",
     component: Customers,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', 'Employee'],
+      module: 'Customer'
     }
   }, {
     path: "customer/create",
     name: "create-customer",
     component: CreateCustomer,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Customer'
     }
   }, {
     path: "customer/:id",
     name: "customer-details",
     component: CustomerDetails,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: false,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Customer'
     },
     beforeEnter: function beforeEnter(to, from) {
       if (['customers'].includes(from.name)) {
@@ -22400,56 +22529,50 @@ var routes = [{
     name: "customer-visits",
     component: CustomerVisits,
     meta: {
-      authenticated: true,
-      company_specific: true
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', 'Employee'],
+      module: 'CustomerVisit'
     }
   }, {
-    path: "language/languages",
-    name: "languages",
-    component: Languages,
+    path: "company-language/company-languages",
+    name: "company-languages",
+    component: CompanyLanguages,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Translation'
     }
   }, {
-    path: "language/create",
-    name: "create-language",
-    component: CreateLanguage,
+    path: "company-translation/company-translations",
+    name: "company-translations",
+    component: CompanyTranslations,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Translation'
     }
   }, {
-    path: "language/:id/edit",
-    name: "edit-language",
-    component: EditLanguage,
+    path: "company-translation/create",
+    name: "create-company-translation",
+    component: CreateCompanyTranslation,
     meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Translation'
     }
   }, {
-    path: "translation/translations",
-    name: "translations",
-    component: Translations,
+    path: "company-translation/:id/edit",
+    name: "edit-company-translation",
+    component: EditCompanyTranslation,
     meta: {
-      authenticated: true,
-      company_specific: false
-    }
-  }, {
-    path: "translation/create",
-    name: "create-translation",
-    component: CreateTranslation,
-    meta: {
-      authenticated: true,
-      company_specific: false
-    }
-  }, {
-    path: "translation/:id/edit",
-    name: "edit-translation",
-    component: EditTranslation,
-    meta: {
-      authenticated: true,
-      company_specific: false
+      requiresAuth: true,
+      requiresCompany: true,
+      roles: ['Developer', 'Administrator', "Employee"],
+      module: 'Translation'
     }
   }]
 }, {
@@ -22460,7 +22583,8 @@ var routes = [{
     name: "login",
     component: Login,
     meta: {
-      authenticated: false
+      requiresAuth: false,
+      roles: []
     }
   }]
 }, {
@@ -22468,14 +22592,15 @@ var routes = [{
   name: "not_found",
   component: NotFound,
   meta: {
-    authenticated: false,
-    company_specific: false
+    requiresAuth: false,
+    requiresCompany: false,
+    roles: []
   }
 }];
 
 // Create Router
-var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.createRouter)({
-  history: (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.createWebHistory)(),
+var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createRouter)({
+  history: (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createWebHistory)(),
   linkActiveClass: "active",
   linkExactActiveClass: "",
   scrollBehavior: function scrollBehavior() {
@@ -22489,42 +22614,88 @@ var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.createRouter)({
 
 // NProgress
 /*eslint-disable no-unused-vars*/
-nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_0___default().configure({
+nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_1___default().configure({
   showSpinner: true
 });
-router.beforeEach(function (to, from, next) {
-  var authStore = Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/stores/authStore'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())();
-  var isAuthenticated = authStore.isAuthenticated();
-  if (to.meta.authenticated) {
-    if (isAuthenticated) {
-      next();
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-      router.push({
-        name: 'login',
-        query: {
-          'redirect_to': to.path
-        }
-      });
-    }
-  } else {
-    if (isAuthenticated && to.name !== 'not_found') {
-      router.push({
-        name: 'home'
-      });
-    } else {
-      next();
-    }
-  }
-});
+router.beforeEach( /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(to, from, next) {
+    var authStore, companyStore, isAuthenticated, _to$meta, roles, requiresAuth, module;
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          authStore = Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/stores/authStore'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())();
+          companyStore = Object(function webpackMissingModule() { var e = new Error("Cannot find module '@/stores/companyStore'"); e.code = 'MODULE_NOT_FOUND'; throw e; }())();
+          isAuthenticated = authStore.isAuthenticated();
+          _to$meta = to.meta, roles = _to$meta.roles, requiresAuth = _to$meta.requiresAuth, module = _to$meta.module;
+          if (!requiresAuth) {
+            _context.next = 18;
+            break;
+          }
+          if (!isAuthenticated) {
+            _context.next = 14;
+            break;
+          }
+          if (!lodash__WEBPACK_IMPORTED_MODULE_0___default().isEmpty(companyStore.companies)) {
+            _context.next = 9;
+            break;
+          }
+          _context.next = 9;
+          return companyStore.fill();
+        case 9:
+          _context.next = 11;
+          return checkAccess(roles, module);
+        case 11:
+          next();
+          _context.next = 16;
+          break;
+        case 14:
+          delete axios.defaults.headers.common['Authorization'];
+          next({
+            name: 'login',
+            query: {
+              'redirect_to': to.path
+            }
+          });
+        case 16:
+          _context.next = 26;
+          break;
+        case 18:
+          if (!(isAuthenticated && to.name !== 'not_found')) {
+            _context.next = 25;
+            break;
+          }
+          if (!lodash__WEBPACK_IMPORTED_MODULE_0___default().isEmpty(companyStore.companies)) {
+            _context.next = 22;
+            break;
+          }
+          _context.next = 22;
+          return companyStore.fill();
+        case 22:
+          next({
+            name: 'home'
+          });
+          _context.next = 26;
+          break;
+        case 25:
+          next();
+        case 26:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return function (_x, _x2, _x3) {
+    return _ref.apply(this, arguments);
+  };
+}());
 router.beforeResolve(function (to, from, next) {
   if (to.name) {
-    nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_0___default().start();
+    nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_1___default().start();
   }
   next();
 });
 router.afterEach(function () {
-  nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_0___default().done();
+  nprogress_nprogress_js__WEBPACK_IMPORTED_MODULE_1___default().done();
 });
 /*eslint-enable no-unused-vars*/
 
@@ -47566,14 +47737,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _App_vue_vue_type_template_id_f348271a__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App.vue?vue&type=template&id=f348271a */ "./resources/js/App.vue?vue&type=template&id=f348271a");
 Object(function webpackMissingModule() { var e = new Error("Cannot find module './App.vue?vue&type=style&index=0&id=f348271a&lang=scss'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
-/* harmony import */ var _Users_nsales_Projects_nVisionOffice_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+/* harmony import */ var _Users_shovhasaha_Projects_bs_23_nVisionOffice_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
 
 const script = {}
 
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,_Users_nsales_Projects_nVisionOffice_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(script, [['render',_App_vue_vue_type_template_id_f348271a__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/App.vue"]])
+const __exports__ = /*#__PURE__*/(0,_Users_shovhasaha_Projects_bs_23_nVisionOffice_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_2__["default"])(script, [['render',_App_vue_vue_type_template_id_f348271a__WEBPACK_IMPORTED_MODULE_0__.render],['__file',"resources/js/App.vue"]])
 /* hot reload */
 if (false) {}
 
@@ -47772,7 +47943,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vue_compiler_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @vue/compiler-dom */ "./node_modules/@vue/compiler-dom/dist/compiler-dom.esm-bundler.js");
 /* harmony import */ var _vue_shared__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @vue/shared */ "./node_modules/@vue/shared/dist/shared.esm-bundler.js");
 /**
-* vue v3.4.22
+* vue v3.4.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
