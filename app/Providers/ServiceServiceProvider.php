@@ -37,6 +37,8 @@ use App\Services\ModulePackageModule\ModulePackageModuleService;
 use App\Services\ModulePackageModule\ModulePackageModuleServiceInterface;
 use App\Services\ModuleSetting\ModuleSettingService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
+use App\Services\Onboard\OnboardService;
+use App\Services\Onboard\OnboardServiceInterface;
 use App\Services\Order\OrderByCustomerService;
 use App\Services\Order\OrderByCustomerServiceInterface;
 use App\Services\Order\OrderService;
@@ -111,5 +113,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
         $this->app->bind(DocumentApiServiceInterface::class, DocumentApiService::class);
         $this->app->bind(GitServiceInterface::class, GitService::class);
+        $this->app->bind(OnboardServiceInterface::class, OnboardService::class);
     }
 }

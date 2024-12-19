@@ -60,6 +60,8 @@ use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepo
 use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepository;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
+use App\Repositories\Eloquent\Office\OnboardStatus\OnboardStatusRepository;
+use App\Repositories\Eloquent\Office\OnboardStatus\OnboardStatusRepositoryInterface;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepository;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepository;
@@ -162,6 +164,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
 
         $this->app->bind(DocumentApiRepositoryInterface::class, DocumentApiRepository::class);
+
+        $this->app->bind(OnboardStatusRepositoryInterface::class, OnboardStatusRepository::class);
 
     }
 }

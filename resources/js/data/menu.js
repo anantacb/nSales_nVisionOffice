@@ -301,6 +301,12 @@ export default {
                     icon: "fa fa-window-maximize",
                     to: "onboardWebshop",
                     roles: ["Developer"],
+                },
+                {
+                    name: "Retailer",
+                    icon: "fa fa-mobile",
+                    to: "OnboardRetailer",
+                    roles: ["Developer"],
                 }
             ]
         },
