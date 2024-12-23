@@ -29,7 +29,7 @@ const notificationStore = useNotificationStore();
 let {numberFormat, dateFormat} = useFormatter();
 const {isModuleEnabled} = useCompanyInfos();
 const {errors, setErrors, resetErrors} = useFormErrors();
-const emit = defineEmits(['setProductInfo']);
+const emit = defineEmits(['setItemInfo']);
 
 let TabDetailsRef = ref(null);
 
@@ -127,7 +127,7 @@ async function getItemDetails() {
     // productInfoRef.value.statusLoading();
     let {data} = await Item.details(companyStore.selectedCompany.Id, route.params.id);
     setModelObject(data);
-    emit('setProductInfo', data);
+    emit('setItemInfo', data);
     // productInfoRef.value.statusNormal();
 }
 

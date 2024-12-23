@@ -7,10 +7,10 @@ import ItemTabs from "@/views/item/ItemDetails/ItemTabs.vue";
 const route = useRoute();
 let backButtonRoute = localStorage.getItem('item-details-back-route') ?? 'items';
 
-let productInfo = ref({});
+let itemInfo = ref({});
 
-function setProductInfo(data) {
-    productInfo.value = data;
+function setItemInfo(data) {
+    itemInfo.value = data;
 }
 
 onMounted(async () => {
@@ -20,7 +20,7 @@ onMounted(async () => {
 
 <template>
     <!-- Content Heading -->
-    <BaseContentHeading :subtitle="productInfo.Name1" iconForSubTitle="fa fa-check-to-slot">
+    <BaseContentHeading :subtitle="itemInfo.Name1" iconForSubTitle="fa fa-check-to-slot">
         <template #extra>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-alt">
@@ -39,7 +39,7 @@ onMounted(async () => {
         </ItemOverview>
 
         <ItemTabs
-            @setProductInfo="setProductInfo"
+            @setItemInfo="setItemInfo"
         ></ItemTabs>
 
     </div>

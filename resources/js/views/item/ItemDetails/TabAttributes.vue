@@ -30,7 +30,7 @@ let {numberFormat, dateFormat} = useFormatter();
 const {isModuleEnabled} = useCompanyInfos();
 let {CompanyLanguageOptions, getLanguageOptionsByCompanyLanguage} = useCompanyLanguage();
 const {errors, setErrors, resetErrors} = useFormErrors();
-const emit = defineEmits(['setProductInfo']);
+const emit = defineEmits(['setItemInfo']);
 
 let TabAttributesRef = ref(null);
 let ItemAttributes = ref([]);
@@ -38,7 +38,7 @@ let ItemAttributes = ref([]);
 // let CompanyLanguageOptions = ref([]);
 
 const props = defineProps({
-    productInfo: {
+    itemInfo: {
         type: Object,
         required: true,
     },
@@ -83,7 +83,7 @@ async function updateItemAttributes() {
     try {
         let {data, message} = await ItemAttribute.updateItemAttributes(
             companyStore.selectedCompany.Id, route.params.id,
-            props.productInfo.Number, ItemAttributes.value
+            props.itemInfo.Number, ItemAttributes.value
         );
         ItemAttributes.value = data;
         console.log(ItemAttributes.value);
