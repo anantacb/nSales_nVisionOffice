@@ -25,6 +25,7 @@ import TabDetails from "@/views/item/ItemDetails/TabDetails.vue";
 import TabAttributes from "@/views/item/ItemDetails/TabAttributes.vue";
 import TabTranslations from "@/views/item/ItemDetails/TabTranslations.vue";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
+import TabSeo from "@/views/item/ItemDetails/TabSeo.vue";
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -32,29 +33,34 @@ const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 
 let {numberFormat, dateFormat} = useFormatter();
-let {CompanyLanguages, CompanyLanguageOptions, getAllCompanyLanguages, getCompanyLanguageOptions} = useCompanyLanguage();
+let {
+    CompanyLanguages,
+    CompanyLanguageOptions,
+    getAllCompanyLanguages,
+    getCompanyLanguageOptions
+} = useCompanyLanguage();
 const {isModuleEnabled} = useCompanyInfos();
 const {errors, setErrors, resetErrors} = useFormErrors();
-const emit = defineEmits(['setProductInfo']);
+const emit = defineEmits(['setItemInfo']);
 
 const Tabs = ref(['Details']);
 const currentTab = ref('Details');
-let productInfo = ref({});
+let itemInfo = ref({});
 // let CompanyLanguages = ref([]);
 // let CompanyLanguageOptions = ref([]);
 
 
-async function setProductInfo(data) {
-    productInfo.value = data;
+async function setItemInfo(data) {
+    itemInfo.value = data;
     // console.log('ItemTabs'+data);
-    emit('setProductInfo', data);
+    emit('setItemInfo', data);
 }
 
 async function setTabs() {
     // Tabs.value.push('Details');
 
     // if (isModuleEnabled('ItemVariant')
-    //     && productInfo.value.variant_exists
+    //     && itemInfo.value.variant_exists
     // ) {
     //     Tabs.value.push('Variants');
     // }
@@ -86,7 +92,7 @@ async function setTabs() {
 }
 
 async function setVariantTab() {
-    if (isModuleEnabled('ItemVariant') && productInfo.value.variant_exists) {
+    if (isModuleEnabled('ItemVariant') && itemInfo.value.variant_exists) {
         // Tabs.value.push('Variants');
         Tabs.value = [...Tabs.value.slice(0, 1), 'Variants', ...Tabs.value.slice(1)];
     }
@@ -108,7 +114,7 @@ async function setVariantTab() {
 // }
 
 
-watch(productInfo, async (newProductInfo) => {
+watch(itemInfo, async (newItemInfo) => {
     await setVariantTab();
 });
 
@@ -157,20 +163,25 @@ onMounted(async () => {
                         <!--                        <p>...</p>-->
 
                         <TabDetails v-if="tab === 'Details' && currentTab === tab "
-                                    @setProductInfo="setProductInfo"
+                                    @setItemInfo="setItemInfo"
                         >
                         </TabDetails>
 
                         <TabAttributes v-if="tab === 'Attributes' && currentTab === tab "
-                                       :productInfo='productInfo'
                                        :companyLanguages='CompanyLanguages'
+                                       :itemInfo='itemInfo'
                         >
                         </TabAttributes>
 
                         <TabTranslations v-if="tab === 'Translations' && currentTab === tab "
-                                         :productInfo='productInfo'
-                                         :companyLanguages='CompanyLanguages'>
+                                         :companyLanguages='CompanyLanguages'
+                                         :itemInfo='itemInfo'>
                         </TabTranslations>
+
+                        <TabSeo v-if="tab === 'SEO' && currentTab === tab "
+                                         :companyLanguages='CompanyLanguages'
+                                         :itemInfo='itemInfo'>
+                        </TabSeo>
 
                     </div>
                 </template>

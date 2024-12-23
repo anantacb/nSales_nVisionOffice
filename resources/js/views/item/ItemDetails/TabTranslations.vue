@@ -22,7 +22,7 @@ const notificationStore = useNotificationStore();
 let {numberFormat, dateFormat} = useFormatter();
 const {isModuleEnabled} = useCompanyInfos();
 const {errors, setErrors, resetErrors} = useFormErrors();
-const emit = defineEmits(['setProductInfo']);
+const emit = defineEmits(['setItemInfo']);
 
 let TabTranslationsRef = ref(null);
 let ItemAttributes = ref([]);
@@ -36,7 +36,7 @@ let WebShopTextTypes = ref([
 ]);
 
 const props = defineProps({
-    productInfo: {
+    itemInfo: {
         type: Object,
         required: true,
     },
@@ -118,7 +118,7 @@ async function updateItemWebShopTexts() {
     let formData = {
         CompanyId: companyStore.selectedCompany.Id,
         ItemId: route.params.id,
-        ItemNumber: props.productInfo.Number,
+        ItemNumber: props.itemInfo.Number,
         WebShopTexts: WebShopTexts.value,
     };
 
