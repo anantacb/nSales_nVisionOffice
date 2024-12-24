@@ -48,6 +48,8 @@ use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepository;
 use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepository;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepository;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepository;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
 use App\Repositories\Eloquent\Office\Language\LanguageRepository;
@@ -166,6 +168,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DocumentApiRepositoryInterface::class, DocumentApiRepository::class);
 
         $this->app->bind(OnboardStatusRepositoryInterface::class, OnboardStatusRepository::class);
+
+        $this->app->bind(EmailLayoutRepositoryInterface::class, EmailLayoutRepository::class);
 
     }
 }

@@ -291,6 +291,39 @@ export default {
         },
 
         {
+            name: "Email",
+            icon: "fa fa-envelope-open",
+            subActivePaths: ["layout", 'template'],
+            roles: ["Developer"],
+            sub: [
+                {
+                    name: "Layouts",
+                    icon: "fa fa-envelope",
+                    to: "email-layouts",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Create Layout",
+                    icon: "fa fa-plus",
+                    to: "create-email-layout",
+                    roles: ["Developer"],
+                },
+                // {
+                //     name: "Template",
+                //     icon: "fa fa-envelope",
+                //     to: "email-templates",
+                //     roles: ["Developer"],
+                // },
+                // {
+                //     name: "Create Template",
+                //     icon: "fa fa-plus",
+                //     to: "create-email-template",
+                //     roles: ["Developer"],
+                // }
+            ],
+        },
+
+        {
             name: "Onboard",
             icon: "fa fa-wand-magic-sparkles",
             subActivePaths: ["onboard"],
