@@ -93,6 +93,11 @@ const EditModulePackage = () => import('@/views/module-package/EditModulePackage
 const OnboardWebshop = () => import("@/views/onboard/Webshop.vue");
 const OnboardRetailer = () => import("@/views/onboard/Retailer.vue");
 
+const EmailLayouts = () => import('@/views/email-layout/EmailLayouts/EmailLayouts.vue');
+const CreateEmailLayout = () => import('@/views/email-layout/CreateEmailLayout.vue');
+const EditEmailLayout = () => import('@/views/email-layout/EditEmailLayout.vue');
+
+
 const NotFound = () => import('@/views/404View.vue');
 
 const routes = [
@@ -596,6 +601,69 @@ const routes = [
                     roles: ['Developer']
                 }
             },
+
+            {
+                path: "email-layout/layouts",
+                name: "email-layouts",
+                component: EmailLayouts,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-layout/create",
+                name: "create-email-layout",
+                component: CreateEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-layout/:id/edit",
+                name: "edit-email-layout",
+                component: EditEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+
+            // {
+            //     path: "email-template/templates",
+            //     name: "email-templates",
+            //     component: Templates,
+            //     meta: {
+            //         requiresAuth: true,
+            //         requiresCompany: false,
+            //         roles: ['Developer']
+            //     }
+            // },
+            // {
+            //     path: "email-template/create",
+            //     name: "create-email-template",
+            //     component: CreateTemplate,
+            //     meta: {
+            //         requiresAuth: true,
+            //         requiresCompany: false,
+            //         roles: ['Developer']
+            //     }
+            // },
+            // {
+            //     path: "email-template/:id/edit",
+            //     name: "edit-email-template",
+            //     component: EditTemplate,
+            //     meta: {
+            //         requiresAuth: true,
+            //         requiresCompany: false,
+            //         roles: ['Developer']
+            //     }
+            // },
+
             {
                 path: "onboard/webshop",
                 name: "onboardWebshop",
