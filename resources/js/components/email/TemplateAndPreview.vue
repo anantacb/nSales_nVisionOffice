@@ -1,9 +1,12 @@
 <script setup>
 import {defineProps, onMounted, ref, watch} from "vue";
 import CodeMirrorEditor from "@/components/ui/FormElements/CodeMirrorEditor.vue";
+import EmailLayout from "@/models/Office/EmailLayout";
 
 const emit = defineEmits(['updateEmailTemplate']);
 const tabsRef = ref(null);
+const previewTemplate = ref('');
+const previewSubject = ref('');
 
 const props = defineProps({
     PageType: {
@@ -18,20 +21,40 @@ const props = defineProps({
         type: String,
         default: ""
     },
+    LanguageId: {
+        type: [Number, String],
+        required: true,
+        default: ''
+    },
 });
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
-async function previewTemplate() {
+async function getDataForPreview() {
     console.log('previewTemplate');
     tabsRef.value.statusLoading();
-    await delay(5000);
-    console.log("Waited 5s");
+
+    let formData = {
+        LanguageId: props.LanguageId,
+        Template: props.Template,
+        // TemplateObject: props.templateObject,
+    };
+    console.log(formData)
+
+    try {
+        let {data} = await EmailLayout.getDataForPreview(formData);
+        // console.log(data);
+        previewTemplate.value = data.template;
+
+    } catch (error) {
+        console.log('error');
+        console.log(error);
+    }
+    // EmailLayoutModel.value = data;
+
     tabsRef.value.statusNormal();
 }
 
 onMounted(async () => {
-    // console.log(props.Template);
+    console.log(props.LanguageId);
 });
 </script>
 
@@ -64,7 +87,7 @@ onMounted(async () => {
                                 data-bs-toggle="tab"
                                 href="#btabs-static-preview"
                                 role="tab"
-                                @click="previewTemplate"
+                                @click="getDataForPreview"
                             >
                                 Preview
                             </a>
@@ -110,7 +133,17 @@ onMounted(async () => {
                             tabindex="0"
                         >
                             <h4 class="fw-normal">Preview Content</h4>
-                            <p>...</p>
+                            <div class="row">
+                                <div v-if="pageType==='template'" class="col-12">
+                                    <label><strong>Subject: </strong></label>
+                                    <span v-html="previewSubject"></span>
+                                </div>
+
+                                <div class="col-12 mt-2">
+                                    <label><strong>Body: </strong></label>
+                                    <iframe :srcdoc="previewTemplate" class="preview-iframe"></iframe>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -121,3 +154,12 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.preview-iframe {
+    border: none;
+    width: 100%;
+    height: 65vh;
+}
+
+</style>

@@ -31,8 +31,8 @@ class DetailsOrDelete extends FormRequest
     public function messages()
     {
         return [
-            'EmailLayoutId.required' => 'CompanyEmailLayout Id field is required.',
-            'EmailLayoutId.exists' => 'CompanyEmailLayout Id is not exists.',
+            'EmailLayoutId.required' => 'EmailLayout Id field is required.',
+            'EmailLayoutId.exists' => 'EmailLayout Id is not exists.',
         ];
     }
 }

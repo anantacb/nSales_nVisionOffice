@@ -135,6 +135,7 @@ onMounted(async () => {
 
             <TemplateAndPreview
                 v-if="EmailLayoutModel && EmailLayoutModel.Template"
+                :LanguageId="EmailLayoutModel.LanguageId"
                 :Template="EmailLayoutModel.Template"
                 PageType="layout"
                 @updateEmailTemplate="updateTemplate"

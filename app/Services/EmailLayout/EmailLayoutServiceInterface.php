@@ -17,4 +17,6 @@ interface EmailLayoutServiceInterface
     public function update(Request $request): ServiceDto;
 
     public function delete(Request $request): ServiceDto;
+
+    public function getDataForPreview(Request $request): ServiceDto;
 }

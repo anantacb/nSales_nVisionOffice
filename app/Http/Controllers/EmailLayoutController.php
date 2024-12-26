@@ -9,6 +9,7 @@ use App\Http\Requests\PaginatedDataRequest;
 use App\Services\EmailLayout\EmailLayoutServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EmailLayoutController extends Controller
 {
@@ -54,4 +55,11 @@ class EmailLayoutController extends Controller
         $response = $this->service->delete($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
+
+    public function getDataForPreview(Request $request): JsonResponse
+    {
+        $response = $this->service->getDataForPreview($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
 }
