@@ -63,4 +63,17 @@ export default class EmailLayout {
                 });
         });
     }
+
+    static getDataForPreview(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-layout/get-data-for-preview', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }

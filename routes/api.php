@@ -16,7 +16,6 @@ use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\EmailLayoutController;
 use App\Http\Controllers\GitController;
 use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModulePackageController;
 use App\Http\Controllers\ModulePackageModuleController;
@@ -232,6 +231,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/details', [EmailLayoutController::class, 'details']);
         Route::post('/update', [EmailLayoutController::class, 'update']);
         Route::post('/delete', [EmailLayoutController::class, 'delete']);
+        Route::post('/get-data-for-preview', [EmailLayoutController::class, 'getDataForPreview']);
     });
 
     Route::middleware(['company'])->group(function () {
