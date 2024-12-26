@@ -1,10 +1,13 @@
 <script setup>
 import {onMounted, ref} from "vue";
+import _ from "lodash";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
 import Language from "@/models/Office/Language";
 import EmailLayout from "@/models/Office/EmailLayout";
+import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
+import Loader from "@/components/ui/Loader/Loader.vue";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -13,6 +16,7 @@ let {errors, setErrors, resetErrors} = useFormErrors();
 let LanguageOptions = ref([]);
 let EmailLayoutModel = ref({});
 const updateEmailLayoutRef = ref(null);
+const isLoading = ref(false)
 
 async function updateEmailLayout() {
     updateEmailLayoutRef.value.statusLoading();
@@ -33,11 +37,14 @@ async function updateEmailLayout() {
 }
 
 async function getEmailLayoutDetails() {
+    isLoading.value = true;
     let {data} = await EmailLayout.details(route.params.id);
     EmailLayoutModel.value = data;
+    isLoading.value = false;
 }
 
 async function getAllLanguages() {
+    isLoading.value = true;
     const {data} = await Language.getAllLanguages();
     let options = [{label: 'Select Language', value: ''}];
     data.forEach((language) => {
@@ -45,29 +52,42 @@ async function getAllLanguages() {
         options.push(option);
     });
     LanguageOptions.value = options;
+    isLoading.value = false;
+}
+
+function updateTemplate(newEditorValue) {
+    console.log('edit updateTemplate');
+    // this.$emit('value-change', newCode.toString());
+    EmailLayoutModel.value.Template = newEditorValue;
+
+    // console.log(newEditorValue);
 }
 
 onMounted(async () => {
-    updateEmailLayoutRef.value.statusLoading();
+    // updateEmailLayoutRef.value.statusLoading();
+    // isLoading.value = true;
     await getEmailLayoutDetails();
-    await getAllLanguages()
-    updateEmailLayoutRef.value.statusNormal();
+    await getAllLanguages();
+    // updateEmailLayoutRef.value.statusNormal();
+    // isLoading.value = false;
 });
 
 </script>
 
 <template>
     <div class="content">
+        <Loader :is-loading="isLoading"></Loader>
+        <!--        <form v-if="!_.isEmpty(EmailLayoutModel)" class="space-y-4" @submit.prevent="updateEmailLayout">-->
+        <form class="space-y-4" @submit.prevent="updateEmailLayout">
 
-        <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Language">
+            <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Email layout">
+                <template #options>
+                    <router-link :to="{name:'email-layouts'}" class="btn btn-sm btn-outline-info">
+                        <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                    </router-link>
+                </template>
 
-            <template #options>
-                <router-link :to="{name:'email-layouts'}" class="btn btn-sm btn-outline-info">
-                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
-                </router-link>
-            </template>
-
-            <form class="space-y-4" @submit.prevent="updateEmailLayout">
+                <!--            <form v-if="!_.isEmpty(EmailLayoutModel)" class="space-y-4" >-->
 
                 <div class="row">
                     <div class="col-lg-6 space-y-2">
@@ -109,11 +129,20 @@ onMounted(async () => {
 
                 </div>
 
-                <button class="btn btn-outline-primary btn-sm col-2" type="submit">Update</button>
+                <!--                <button class="btn btn-outline-primary btn-sm col-2" type="submit" @click="updateEmailLayout">Update</button>-->
 
-            </form>
+            </BaseBlock>
 
-        </BaseBlock>
+            <TemplateAndPreview
+                v-if="EmailLayoutModel && EmailLayoutModel.Template"
+                :Template="EmailLayoutModel.Template"
+                PageType="layout"
+                @updateEmailTemplate="updateTemplate"
+            >
+            </TemplateAndPreview>
+
+            <button class="btn btn-outline-primary btn-sm col-2 mb-5" type="submit">Update</button>
+        </form>
 
     </div>
 </template>
