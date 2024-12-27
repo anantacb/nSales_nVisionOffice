@@ -1,22 +1,26 @@
 <script setup>
-import {onMounted, ref} from "vue";
-import {booleanOptions} from "@/data/dropDownOptions";
+import {onMounted, ref, nextTick} from "vue";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import EmailLayout from "@/models/Office/EmailLayout";
 import Language from "@/models/Office/Language";
+import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
+import Loader from "@/components/ui/Loader/Loader.vue";
 
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
 
 const createEmailLayoutRef = ref(null);
 let LanguageOptions = ref([]);
+const isLoading = ref(false)
 
 let Name = ref('');
 let LanguageId = ref('');
+let Template = ref('');
 
 async function getAllLanguages() {
+    isLoading.value = true;
     const {data} = await Language.getAllLanguages();
     let options = [{label: 'Select Language', value: ''}];
     data.forEach((language) => {
@@ -24,45 +28,59 @@ async function getAllLanguages() {
         options.push(option);
     });
     LanguageOptions.value = options;
+    isLoading.value = false;
 }
 
-
 async function createEmailLayout() {
-    createEmailLayoutRef.value.statusLoading();
+    isLoading.value = true;
     let formData = {
         Name: Name.value,
         LanguageId: LanguageId.value,
+        Template: Template.value,
     };
 
     try {
         let {data, message} = await EmailLayout.create(formData);
-        await router.push({name: 'email-layouts'});
+        isLoading.value = false;
         notificationStore.showNotification(message);
+
+        await nextTick();
+        await router.push({name: 'email-layouts'});
     } catch (error) {
-        setErrors(error.response.data.errors);
-        createEmailLayoutRef.value.statusNormal();
+        if (error.status === 422) {
+            setErrors(error.response.data.errors);
+        }
+    } finally {
+        isLoading.value = false;
     }
+
+}
+
+function setTemplate(newEditorValue) {
+    Template.value = newEditorValue;
+    resetErrors();
+}
+
+function setNewErrors(newErrors) {
+    setErrors(newErrors);
 }
 
 onMounted(async () => {
-    createEmailLayoutRef.value.statusLoading();
     await getAllLanguages();
-    createEmailLayoutRef.value.statusNormal();
 });
 </script>
 
 <template>
     <div class="content">
+        <Loader :is-loading="isLoading"></Loader>
 
-        <BaseBlock ref="createEmailLayoutRef" content-full title="Create Email Layout">
-
-            <template #options>
-                <router-link :to="{name:'email-layouts'}" class="btn btn-sm btn-outline-info">
-                    <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
-                </router-link>
-            </template>
-
-            <form class="space-y-4" @submit.prevent="createEmailLayout">
+        <form class="space-y-4" @submit.prevent="createEmailLayout">
+            <BaseBlock ref="createEmailLayoutRef" content-full title="Create Email layout">
+                <template #options>
+                    <router-link :to="{name:'email-layouts'}" class="btn btn-sm btn-outline-info">
+                        <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
+                    </router-link>
+                </template>
 
                 <div class="row">
                     <div class="col-lg-6 space-y-2">
@@ -77,6 +95,7 @@ onMounted(async () => {
                                        placeholder="Name"
                                        required
                                        type="text"
+                                       @keyup="resetErrors"
                                 />
                                 <InputErrorMessages v-if="errors.Name"
                                                     :errorMessages="errors.Name"></InputErrorMessages>
@@ -90,25 +109,33 @@ onMounted(async () => {
                                 Language<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Language" v-model="LanguageId" :options="LanguageOptions"
-                                        :required="true"
-                                        :select-class="errors.CompanyLanguage ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="Language"
+                                <Select
+                                    id="Language" v-model="LanguageId"
+                                    :options="LanguageOptions"
+                                    :required="true"
+                                    :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
+                                    name="Language"
                                 />
                                 <InputErrorMessages v-if="errors.LanguageId"
                                                     :errorMessages="errors.LanguageId"></InputErrorMessages>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
+            </BaseBlock>
 
-                <button class="btn btn-outline-primary btn-sm col-2" type="submit">Save</button>
+            <TemplateAndPreview
+                :LanguageId="LanguageId"
+                :Template="Template"
+                :errors="errors"
+                PageType="layout"
+                @setNewErrors="setNewErrors"
+                @setTemplate="setTemplate"
+            >
+            </TemplateAndPreview>
 
-            </form>
-
-        </BaseBlock>
+            <button class="btn btn-outline-primary btn-sm col-2 mb-5" type="submit">Save</button>
+        </form>
 
     </div>
 </template>

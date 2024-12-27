@@ -26,36 +26,6 @@ class EmailLayoutService implements EmailLayoutServiceInterface
         $this->translationRepository = $translationRepository;
     }
 
-    public static function renderTemplateOld($template, $data): array
-    {
-        try {
-            // Extract data to create local variables
-            extract($data);
-            // Start output buffering
-            ob_start();
-            // Evaluate the template
-            eval('?>' . $template);
-
-            // Get the rendered content and clean the buffer
-            return [
-                'template' => ob_get_clean(),
-                'status' => true
-            ];
-
-        } catch (Throwable $exception) {
-            // Clean the output buffer to prevent partial content
-            if (ob_get_level() > 0) {
-                ob_end_clean();
-            }
-
-            Log::error("Unable to render: " . $exception->getMessage());
-            return [
-                'template' => '',
-                'status' => false
-            ];
-        }
-    }
-
     public function getEmailLayouts(Request $request): ServiceDto
     {
         $request = $request->all();
@@ -73,8 +43,7 @@ class EmailLayoutService implements EmailLayoutServiceInterface
         $layout = $this->layoutRepository->create([
             'Name' => $request->get('Name'),
             'LanguageId' => $request->get('LanguageId'),
-//            'Template' => $request->get('Template')
-            'Template' => 'test'
+            'Template' => $request->get('Template')
         ]);
         return new ServiceDto("Email Layout Created Successfully.", 200, $layout);
     }
@@ -154,16 +123,6 @@ class EmailLayoutService implements EmailLayoutServiceInterface
         // Replace the @yield('content') in the layout
         $fullTemplate = str_replace("@yield('content')", $emailTemplate, $layout);
 
-//        $renderedTemplate = Blade::render($fullTemplate, $data);
-//
-//        // Get the compiled view path
-//        $compiledPath = Blade::getCompiledPath(md5($renderedTemplate));
-//
-//        // Purge the compiled file after rendering
-//        if (File::exists($compiledPath)) {
-//            dd($compiledPath);
-//            File::delete($compiledPath);
-//        }
         // Render the subject
         $renderedSubject = $this->renderTemplate($emailSubject, $data);
 
@@ -171,42 +130,18 @@ class EmailLayoutService implements EmailLayoutServiceInterface
         $renderedTemplate = $this->renderTemplate($fullTemplate, $data);
 
         return [
-           'subject' => $renderedSubject,
+            'subject' => $renderedSubject,
             'template' => $renderedTemplate,
         ];
 
-
-
-//        try {
-//            // Render the subject
-//            $renderedSubject = $this->renderTemplate($emailSubject, $data);
-////            $renderedSubject = Blade::render($emailSubject, $data);
-////            $compiledSubject = Blade::compileString($emailSubject);
-////            $renderedSubjectObj = self::renderTemplate($compiledSubject, $data);
-////            $renderedSubject = $renderedSubjectObj['status'] ? $renderedSubjectObj['template'] : "";
-//
-//            // Render the template
-//            $renderedTemplate = $this->renderTemplate($fullTemplate, $data);
-//
-////            $compiledTemplate = Blade::compileString($fullTemplate);
-////            $renderedTemplateObj = self::renderTemplate($compiledTemplate, $data);
-////            $renderedTemplate = $renderedTemplateObj['status'] ? $renderedTemplateObj['template'] : "";
-//
-//            return [
-//                'subject' => $renderedSubject,
-//                'template' => $renderedTemplate,
-//            ];
-//
-//        } catch (Throwable $exception) {
-//            Log::error("Unable to compile: " . $exception->getMessage());
-//            return [
-//                'subject' => '',
-//                'template' => '',
-//            ];
-//        }
     }
 
-    public function renderTemplate($template, $data): string
+    /**
+     * @param string $template
+     * @param array $data
+     * @return string
+     */
+    public function renderTemplate(string $template, array $data): string
     {
         try {
             $renderedTemplate = Blade::render($template, $data);
@@ -230,9 +165,9 @@ class EmailLayoutService implements EmailLayoutServiceInterface
     public function delete(Request $request): ServiceDto
     {
 //        $this->translationRepository->deleteByAttributes([
-//            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('LanguageId')]
+//            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
 //        ]);
-        $this->layoutRepository->findByIdAndDelete($request->get('LanguageId'));
+        $this->layoutRepository->findByIdAndDelete($request->get('EmailLayoutId'));
         return new ServiceDto("Layout Deleted Successfully.", 200);
     }
 

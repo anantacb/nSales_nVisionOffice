@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EmailLayout\Create;
 use App\Http\Requests\EmailLayout\DetailsOrDelete;
+use App\Http\Requests\EmailLayout\PreviewTemplate;
 use App\Http\Requests\EmailLayout\Update;
 use App\Http\Requests\PaginatedDataRequest;
 use App\Services\EmailLayout\EmailLayoutServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class EmailLayoutController extends Controller
 {
@@ -19,12 +19,6 @@ class EmailLayoutController extends Controller
     {
         $this->service = $service;
     }
-
-//    public function getAllLanguages(Request $request): JsonResponse
-//    {
-//        $response = $this->service->getAllLanguages($request);
-//        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
-//    }
 
     public function getEmailLayouts(PaginatedDataRequest $request): JsonResponse
     {
@@ -56,7 +50,7 @@ class EmailLayoutController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
-    public function getDataForPreview(Request $request): JsonResponse
+    public function getDataForPreview(PreviewTemplate $request): JsonResponse
     {
         $response = $this->service->getDataForPreview($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);

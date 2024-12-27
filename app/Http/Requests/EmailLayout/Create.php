@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\EmailLayout;
 
+use App\Rules\ContainsYieldDirective;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,11 +33,11 @@ class Create extends FormRequest
                     return $query->where('LanguageId', $this->LanguageId);
                 }),
             ],
-//            'Template' => [
-//                'required',
-//                'string',
-////                new ContainsYieldDirective($this->Template)
-//            ]
+            'Template' => [
+                'required',
+                'string',
+                new ContainsYieldDirective($this->Template)
+            ]
         ];
     }
 

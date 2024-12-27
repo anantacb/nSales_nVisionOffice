@@ -19,7 +19,11 @@ const props = defineProps({
         type: String,
         default: "html",
         validator: (value) => ["html", "javascript", "css"].includes(value)
-    }
+    },
+    selectClass: {
+        type: String,
+        required: false
+    },
 });
 
 let Editor = ref(null);
@@ -59,11 +63,6 @@ function getValue() {
 }
 
 function editorSetup() {
-    // console.log(editorTextAreaRef.value);
-    // console.log(props);
-    // console.log('out');
-
-
     Editor.value = new EditorView({
         doc: props.InitialValue,
         extensions: [
@@ -88,7 +87,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div ref="editorTextAreaRef" class="codemirror-container"></div>
+    <div ref="editorTextAreaRef" :class="selectClass" class="codemirror-container"></div>
 </template>
 
 <style scoped>

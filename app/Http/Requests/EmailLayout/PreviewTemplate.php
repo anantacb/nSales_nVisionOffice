@@ -5,7 +5,7 @@ namespace App\Http\Requests\EmailLayout;
 use App\Rules\ContainsYieldDirective;
 use Illuminate\Foundation\Http\FormRequest;
 
-class Update extends FormRequest
+class PreviewTemplate extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +25,7 @@ class Update extends FormRequest
     public function rules()
     {
         return [
-            'Id' => 'required|exists:EmailLayout,Id',
-            'Name' => 'required',
+//            'TemplateObject' => 'required|array',
             'LanguageId' => 'required|exists:Language,Id',
             'Template' => [
                 'required',
@@ -39,11 +38,10 @@ class Update extends FormRequest
     public function messages()
     {
         return [
-            'Id.required' => 'EmailLayout Id field is required.',
-            'Id.exists' => 'EmailLayout Id is not exists.',
-            'Name.required' => 'Name is required.',
             'LanguageId.required' => 'Language is required.',
             'Template.required' => 'Template is required.',
+//            'TemplateObject.required' => 'Template Object is required.',
         ];
     }
+
 }
