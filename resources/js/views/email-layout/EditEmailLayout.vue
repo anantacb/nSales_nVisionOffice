@@ -19,7 +19,7 @@ const updateEmailLayoutRef = ref(null);
 const isLoading = ref(false)
 
 async function updateEmailLayout() {
-    updateEmailLayoutRef.value.statusLoading();
+    isLoading.value = true;
     let formData = {
         Id: EmailLayoutModel.value.Id,
         Name: EmailLayoutModel.value.Name,
@@ -31,9 +31,12 @@ async function updateEmailLayout() {
         let {data, message} = await EmailLayout.update(formData);
         notificationStore.showNotification(message);
     } catch (error) {
-        setErrors(error.response.data.errors);
+        if (error.status === 422) {
+            setErrors(error.response.data.errors);
+        }
+    } finally {
+        isLoading.value = false;
     }
-    updateEmailLayoutRef.value.statusNormal();
 }
 
 async function getEmailLayoutDetails() {
@@ -55,12 +58,13 @@ async function getAllLanguages() {
     isLoading.value = false;
 }
 
-function updateTemplate(newEditorValue) {
-    console.log('edit updateTemplate');
-    // this.$emit('value-change', newCode.toString());
+function setTemplate(newEditorValue) {
     EmailLayoutModel.value.Template = newEditorValue;
+    resetErrors();
+}
 
-    // console.log(newEditorValue);
+function setNewErrors(newErrors) {
+    setErrors(newErrors);
 }
 
 onMounted(async () => {
@@ -77,8 +81,8 @@ onMounted(async () => {
 <template>
     <div class="content">
         <Loader :is-loading="isLoading"></Loader>
-        <!--        <form v-if="!_.isEmpty(EmailLayoutModel)" class="space-y-4" @submit.prevent="updateEmailLayout">-->
-        <form class="space-y-4" @submit.prevent="updateEmailLayout">
+        <form v-if="!_.isEmpty(EmailLayoutModel)" class="space-y-4" @submit.prevent="updateEmailLayout">
+            <!--        <form class="space-y-4" @submit.prevent="updateEmailLayout">-->
 
             <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Email layout">
                 <template #options>
@@ -86,8 +90,6 @@ onMounted(async () => {
                         <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
                     </router-link>
                 </template>
-
-                <!--            <form v-if="!_.isEmpty(EmailLayoutModel)" class="space-y-4" >-->
 
                 <div class="row">
                     <div class="col-lg-6 space-y-2">
@@ -116,34 +118,32 @@ onMounted(async () => {
                                 Language<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Language" v-model="EmailLayoutModel.LanguageId" :options="LanguageOptions"
-                                        :required="true"
-                                        :select-class="errors.CompanyLanguage ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="Language"
+                                <Select
+                                    id="Language" v-model="EmailLayoutModel.LanguageId"
+                                    :options="LanguageOptions"
+                                    :required="true"
+                                    :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
+                                    name="Language"
                                 />
                                 <InputErrorMessages v-if="errors.LanguageId"
                                                     :errorMessages="errors.LanguageId"></InputErrorMessages>
                             </div>
                         </div>
                     </div>
-
                 </div>
-
-                <!--                <button class="btn btn-outline-primary btn-sm col-2" type="submit" @click="updateEmailLayout">Update</button>-->
-
             </BaseBlock>
 
             <TemplateAndPreview
-                v-if="EmailLayoutModel && EmailLayoutModel.Template"
                 :LanguageId="EmailLayoutModel.LanguageId"
                 :Template="EmailLayoutModel.Template"
+                :errors="errors"
                 PageType="layout"
-                @updateEmailTemplate="updateTemplate"
+                @setNewErrors="setNewErrors"
+                @setTemplate="setTemplate"
             >
             </TemplateAndPreview>
 
-            <button class="btn btn-outline-primary btn-sm col-2 mb-5" type="submit">Update</button>
+            <button class="btn btn-outline-primary btn-sm col-2 mb-5" type="submit">Save</button>
         </form>
-
     </div>
 </template>

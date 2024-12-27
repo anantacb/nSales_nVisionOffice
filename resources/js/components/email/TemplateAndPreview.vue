@@ -2,8 +2,10 @@
 import {defineProps, onMounted, ref, watch} from "vue";
 import CodeMirrorEditor from "@/components/ui/FormElements/CodeMirrorEditor.vue";
 import EmailLayout from "@/models/Office/EmailLayout";
+import {useNotificationStore} from "@/stores/notificationStore";
 
-const emit = defineEmits(['updateEmailTemplate']);
+const emit = defineEmits(['setTemplate', 'setNewErrors']);
+const notificationStore = useNotificationStore();
 const tabsRef = ref(null);
 const previewTemplate = ref('');
 const previewSubject = ref('');
@@ -17,6 +19,10 @@ const props = defineProps({
             return ['template', 'layout'].includes(value)
         }
     },
+    Subject: {
+        type: String,
+        default: ""
+    },
     Template: {
         type: String,
         default: ""
@@ -26,42 +32,56 @@ const props = defineProps({
         required: true,
         default: ''
     },
+    LayoutId: {
+        type: [Number, String],
+        default: ''
+    },
+    errors: {
+        type: Object,
+        default: {}
+    },
 });
+
+function resetPreview() {
+    previewSubject.value = '';
+    previewTemplate.value = '';
+}
 
 async function getDataForPreview() {
     console.log('previewTemplate');
     tabsRef.value.statusLoading();
 
+    resetPreview();
     let formData = {
         LanguageId: props.LanguageId,
         Template: props.Template,
         // TemplateObject: props.templateObject,
     };
-    console.log(formData)
+    // console.log(formData)
 
     try {
         let {data} = await EmailLayout.getDataForPreview(formData);
         // console.log(data);
         previewTemplate.value = data.template;
 
-    } catch (error) {
-        console.log('error');
-        console.log(error);
-    }
-    // EmailLayoutModel.value = data;
+        if (!previewTemplate.value) {
+            notificationStore.showNotification("Unable to preview", "error");
+        }
 
+    } catch (error) {
+        emit('setNewErrors', error.response.data.errors);
+    }
     tabsRef.value.statusNormal();
 }
 
 onMounted(async () => {
-    console.log(props.LanguageId);
+    // console.log(props.LanguageId);
 });
 </script>
 
 <template>
     <div class="row">
         <div class="col-lg-12">
-            <!-- Block Tabs Default Style -->
             <BaseBlock ref="tabsRef">
                 <template #content>
                     <ul class="nav nav-tabs nav-tabs-block" role="tablist">
@@ -93,7 +113,7 @@ onMounted(async () => {
                             </a>
                         </li>
                     </ul>
-                    <div class="block-content tab-content ">
+                    <div class="block-content tab-content pb-3">
                         <div
                             id="btabs-static-edit"
                             aria-labelledby="btabs-static-edit-tab"
@@ -109,9 +129,12 @@ onMounted(async () => {
                                     <div class="col-lg-12 space-y-2">
                                         <CodeMirrorEditor
                                             :InitialValue="Template"
-                                            @editorValueChange="emit('updateEmailTemplate', $event)"
+                                            :select-class="errors.Template ? `is-invalid form-select-sm` : `form-select-sm`"
+                                            @editorValueChange="emit('setTemplate', $event)"
                                         />
-                                        <!--                                        @editorValueChange="updateTemplate($event)"-->
+
+                                        <InputErrorMessages v-if="errors.Template"
+                                                            :errorMessages="errors.Template"></InputErrorMessages>
                                     </div>
                                 </div>
                                 <div class="col-3">
@@ -122,7 +145,6 @@ onMounted(async () => {
                                         sample object
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <div
@@ -132,14 +154,13 @@ onMounted(async () => {
                             role="tabpanel"
                             tabindex="0"
                         >
-                            <h4 class="fw-normal">Preview Content</h4>
                             <div class="row">
-                                <div v-if="pageType==='template'" class="col-12">
+                                <div v-if="PageType==='template'" class="col-12 mb-2">
                                     <label><strong>Subject: </strong></label>
                                     <span v-html="previewSubject"></span>
                                 </div>
 
-                                <div class="col-12 mt-2">
+                                <div class="col-12">
                                     <label><strong>Body: </strong></label>
                                     <iframe :srcdoc="previewTemplate" class="preview-iframe"></iframe>
                                 </div>
@@ -148,8 +169,6 @@ onMounted(async () => {
                     </div>
                 </template>
             </BaseBlock>
-
-            <!-- END Block Tabs Default Style -->
 
         </div>
     </div>

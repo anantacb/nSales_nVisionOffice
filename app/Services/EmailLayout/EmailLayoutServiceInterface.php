@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 interface EmailLayoutServiceInterface
 {
-
     public function getEmailLayouts(Request $request): ServiceDto;
 
     public function create(Request $request): ServiceDto;
