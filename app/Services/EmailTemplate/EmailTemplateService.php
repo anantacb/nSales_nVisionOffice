@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services\EmailLayout;
+namespace App\Services\EmailTemplate;
 
 use App\Contracts\ServiceDto;
-use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
+use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
@@ -12,21 +13,23 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class EmailLayoutService implements EmailLayoutServiceInterface
+class EmailTemplateService implements EmailTemplateServiceInterface
 {
-    protected EmailLayoutRepositoryInterface $layoutRepository;
+    protected EmailTemplateRepositoryInterface $templateRepository;
     protected TranslationRepositoryInterface $translationRepository;
 
     public function __construct(
-        EmailLayoutRepositoryInterface $layoutRepository,
-        TranslationRepositoryInterface $translationRepository
+        EmailTemplateRepositoryInterface $templateRepository,
+        ModuleSettingServiceInterface    $moduleSettingService,
+        TranslationRepositoryInterface   $translationRepository
     )
     {
-        $this->layoutRepository = $layoutRepository;
+        $this->templateRepository = $templateRepository;
+        $this->moduleSettingService = $moduleSettingService;
         $this->translationRepository = $translationRepository;
     }
 
-    public function getEmailLayouts(Request $request): ServiceDto
+    public function getEmailTemplates(Request $request): ServiceDto
     {
         $request = $request->all();
         $request['relations'] = [
@@ -34,55 +37,80 @@ class EmailLayoutService implements EmailLayoutServiceInterface
                 "name" => "language", "columns" => ['Id', 'Name']
             ]
         ];
-        $layouts = $this->layoutRepository->paginatedData($request);
-        return new ServiceDto("Layouts retrieved!!!", 200, $layouts);
+        $layouts = $this->templateRepository->paginatedData($request);
+        return new ServiceDto("Templates retrieved!!!", 200, $layouts);
     }
 
     public function create(Request $request): ServiceDto
     {
-        $layout = $this->layoutRepository->create([
-            'Name' => $request->get('Name'),
+        $layout = $this->templateRepository->create([
+            'ElementName' => $request->get('ElementName'),
+            'LayoutId' => $request->get('LayoutId'),
             'LanguageId' => $request->get('LanguageId'),
+            'Subject' => $request->get('Subject'),
             'Template' => $request->get('Template')
         ]);
-        return new ServiceDto("Email Layout Created Successfully.", 200, $layout);
+        return new ServiceDto("Email Template Created Successfully.", 200, $layout);
     }
 
     public function details(Request $request): ServiceDto
     {
         $relations = [];
 
-        $layout = $this->layoutRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+        $layout = $this->templateRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailTemplateId')]
         ], $relations);
 
-        return new ServiceDto("Layout Retrieved Successfully.", 200, $layout);
+        return new ServiceDto("Template Retrieved Successfully.", 200, $layout);
     }
 
     public function update(Request $request): ServiceDto
     {
-        $layout = $this->layoutRepository->findByIdAndUpdate(
+        $layout = $this->templateRepository->findByIdAndUpdate(
             $request->get('Id'),
             [
-                'Name' => $request->get('Name'),
+                'ElementName' => $request->get('ElementName'),
+                'LayoutId' => $request->get('LayoutId'),
                 'LanguageId' => $request->get('LanguageId'),
+                'Subject' => $request->get('Subject'),
                 'Template' => $request->get('Template')
             ]
         );
-        return new ServiceDto("Layout Updated Successfully.", 200, $layout);
+        return new ServiceDto("Template Updated Successfully.", 200, $layout);
     }
 
-    public function getEmailLayoutOptionsByLanguage(Request $request): ServiceDto
+
+    public function getEmailEvents(Request $request): ServiceDto
     {
-        $emailLayouts = $this->layoutRepository->getByAttributes(
-            [
-                ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('LanguageId')]
-            ]
-            , '', '', 'Name'
+        $emailEvents = $this->fetchEmailEvents();
+
+        return new ServiceDto("Email events retrieved!!!", 200, $emailEvents);
+    }
+
+    public function fetchEmailEvents()
+    {
+        list('LayoutFields' => $layoutFields, 'EmailEvents' => $emailEvents) = $this->moduleSettingService->getCoreModuleSettings(
+            'Email',
+            ['LayoutFields', 'EmailEvents']
         );
+        $layoutFields = json_decode(json_encode($layoutFields), true);
+        $emailEvents = json_decode(json_encode($emailEvents), true);
 
+        foreach ($emailEvents as $key => $emailEvent) {
+            $emailEvents[$key]['Fields'] = array_merge($layoutFields, $emailEvent['Fields']);
+            $emailEvents[$key]['templateObject'] = $this->getEventProperties(array_merge($layoutFields, $emailEvent['Fields']));
+        }
 
-        return new ServiceDto("Layouts retrieved!!!", 200, $emailLayouts);
+        return $emailEvents;
+    }
+
+    public function getEventProperties($fields): array
+    {
+        $properties = [];
+        foreach ($fields as $field) {
+            $properties[$field['Field']] = $field['Name'];
+        }
+        return $properties;
     }
 
     /**
@@ -178,10 +206,10 @@ class EmailLayoutService implements EmailLayoutServiceInterface
     public function delete(Request $request): ServiceDto
     {
 //        $this->translationRepository->deleteByAttributes([
-//            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+//            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('EmailTemplateId')]
 //        ]);
-        $this->layoutRepository->findByIdAndDelete($request->get('EmailLayoutId'));
-        return new ServiceDto("Layout Deleted Successfully.", 200);
+        $this->templateRepository->findByIdAndDelete($request->get('EmailTemplateId'));
+        return new ServiceDto("Template Deleted Successfully.", 200);
     }
 
 }

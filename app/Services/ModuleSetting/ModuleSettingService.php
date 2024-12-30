@@ -271,4 +271,40 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
         return new ServiceDto("ModuleSettings retrieved!!!", 200, $formattedSettings);
     }
+
+    public function getCoreModuleSettingsByName(Request $request): ServiceDto
+    {
+        $module = $request->get('Module');
+        $settingKeys = $request->get('SettingKeys');
+
+        $settings = $this->getCoreModuleSettings($module, $settingKeys);
+        return new ServiceDto("ModuleSettings retrieved!!!", 200, $settings);
+    }
+
+    public function getCoreModuleSettings(string $module, array $settingKeys): array
+    {
+        $formattedSettings = [];
+        $relations = [
+            'moduleSettings' => function ($q) use ($settingKeys) {
+                $q->whereIn('Name', $settingKeys);
+            }
+        ];
+
+        $module = $this->moduleRepository->firstByAttributes(
+            [
+                ["column" => 'Name', 'operand' => '=', 'value' => $module]
+            ],
+            $relations
+        );
+
+        if ($module->moduleSettings) {
+            foreach ($module->moduleSettings as $moduleSetting) {
+                $moduleSettingFor = $this->formatModuleSetting($moduleSetting);
+                $formattedSettings[$moduleSettingFor->Name] = $moduleSettingFor->Value;
+            }
+        }
+
+        return $formattedSettings;
+    }
+
 }

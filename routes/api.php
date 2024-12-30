@@ -14,6 +14,7 @@ use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\EmailLayoutController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\GitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
@@ -120,6 +121,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
     Route::post('/module-setting/by-name', [ModuleSettingController::class, 'getModuleSettingsByName']);
+    Route::post('/module-setting/core-settings-by-name', [ModuleSettingController::class, 'getCoreModuleSettingsByName']);
 
     Route::post('/get-all-companies-with-db', [DatabaseController::class, 'getAllCompanies']);
     Route::post('/copy-db-to-dev', [DatabaseController::class, 'copyDBtoDev']);
@@ -225,13 +227,24 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::prefix('email-layout')->group(function () {
         // Email Layout
-//        Route::post('/all', [LayoutController::class, 'getAllLanguages']);
         Route::post('/get-email-layouts', [EmailLayoutController::class, 'getEmailLayouts']);
         Route::post('/create', [EmailLayoutController::class, 'create']);
         Route::post('/details', [EmailLayoutController::class, 'details']);
         Route::post('/update', [EmailLayoutController::class, 'update']);
         Route::post('/delete', [EmailLayoutController::class, 'delete']);
         Route::post('/get-data-for-preview', [EmailLayoutController::class, 'getDataForPreview']);
+        Route::post('/get-email-layout-options-by-language', [EmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
+    });
+
+    Route::prefix('email-template')->group(function () {
+        // Email Template
+        Route::post('/get-email-templates', [EmailTemplateController::class, 'getEmailTemplates']);
+        Route::post('/create', [EmailTemplateController::class, 'create']);
+        Route::post('/details', [EmailTemplateController::class, 'details']);
+        Route::post('/update', [EmailTemplateController::class, 'update']);
+        Route::post('/delete', [EmailTemplateController::class, 'delete']);
+        Route::post('/get-email-events', [EmailTemplateController::class, 'getEmailEvents']);
+        Route::post('/get-data-for-preview', [EmailTemplateController::class, 'getDataForPreview']);
     });
 
     Route::middleware(['company'])->group(function () {

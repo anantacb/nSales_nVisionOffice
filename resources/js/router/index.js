@@ -97,6 +97,10 @@ const EmailLayouts = () => import('@/views/email-layout/EmailLayouts/EmailLayout
 const CreateEmailLayout = () => import('@/views/email-layout/CreateEmailLayout.vue');
 const EditEmailLayout = () => import('@/views/email-layout/EditEmailLayout.vue');
 
+const EmailTemplates = () => import('@/views/email-template/EmailTemplates/EmailTemplates.vue');
+const CreateEmailTemplate = () => import('@/views/email-template/CreateEmailTemplate.vue');
+const EditEmailTemplate = () => import('@/views/email-template/EditEmailTemplate.vue');
+
 
 const NotFound = () => import('@/views/404View.vue');
 
@@ -633,36 +637,36 @@ const routes = [
                 }
             },
 
-            // {
-            //     path: "email-template/templates",
-            //     name: "email-templates",
-            //     component: Templates,
-            //     meta: {
-            //         requiresAuth: true,
-            //         requiresCompany: false,
-            //         roles: ['Developer']
-            //     }
-            // },
-            // {
-            //     path: "email-template/create",
-            //     name: "create-email-template",
-            //     component: CreateTemplate,
-            //     meta: {
-            //         requiresAuth: true,
-            //         requiresCompany: false,
-            //         roles: ['Developer']
-            //     }
-            // },
-            // {
-            //     path: "email-template/:id/edit",
-            //     name: "edit-email-template",
-            //     component: EditTemplate,
-            //     meta: {
-            //         requiresAuth: true,
-            //         requiresCompany: false,
-            //         roles: ['Developer']
-            //     }
-            // },
+            {
+                path: "email-template/templates",
+                name: "email-templates",
+                component: EmailTemplates,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-template/create",
+                name: "create-email-template",
+                component: CreateEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-template/:id/edit",
+                name: "edit-email-template",
+                component: EditEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
 
             {
                 path: "onboard/webshop",

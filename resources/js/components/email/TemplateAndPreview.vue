@@ -3,9 +3,12 @@ import {defineProps, onMounted, ref, watch} from "vue";
 import CodeMirrorEditor from "@/components/ui/FormElements/CodeMirrorEditor.vue";
 import EmailLayout from "@/models/Office/EmailLayout";
 import {useNotificationStore} from "@/stores/notificationStore";
+import JsonEditorVue from "json-editor-vue";
+import {useTemplateStore} from "@/stores/templateStore";
 
 const emit = defineEmits(['setTemplate', 'setNewErrors']);
 const notificationStore = useNotificationStore();
+const templateStore = useTemplateStore();
 const tabsRef = ref(null);
 const previewTemplate = ref('');
 const previewSubject = ref('');
@@ -26,6 +29,10 @@ const props = defineProps({
     Template: {
         type: String,
         default: ""
+    },
+    TemplateObject: {
+        type: Object,
+        default: () => ({})
     },
     LanguageId: {
         type: [Number, String],
@@ -142,7 +149,17 @@ onMounted(async () => {
                                         Sample Data
                                     </label>
                                     <div>
-                                        sample object
+
+                                        <JsonEditorVue
+                                            :modelValue="TemplateObject"
+                                            :class="templateStore.settings.darkMode ? `jse-theme-dark` : ``"
+                                            :main-menu-bar="false"
+                                            :status-bar="false"
+                                            :read-only="true"
+                                            mode="text"
+                                        >
+                                        </JsonEditorVue>
+
                                     </div>
                                 </div>
                             </div>

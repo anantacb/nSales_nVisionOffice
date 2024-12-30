@@ -26,6 +26,8 @@ use App\Services\EmailConfiguration\EmailConfigurationService;
 use App\Services\EmailConfiguration\EmailConfigurationServiceInterface;
 use App\Services\EmailLayout\EmailLayoutService;
 use App\Services\EmailLayout\EmailLayoutServiceInterface;
+use App\Services\EmailTemplate\EmailTemplateService;
+use App\Services\EmailTemplate\EmailTemplateServiceInterface;
 use App\Services\Git\GitService;
 use App\Services\Git\GitServiceInterface;
 use App\Services\Language\LanguageService;
@@ -116,5 +118,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(GitServiceInterface::class, GitService::class);
         $this->app->bind(OnboardServiceInterface::class, OnboardService::class);
         $this->app->bind(EmailLayoutServiceInterface::class, EmailLayoutService::class);
+        $this->app->bind(EmailTemplateServiceInterface::class, EmailTemplateService::class);
     }
 }

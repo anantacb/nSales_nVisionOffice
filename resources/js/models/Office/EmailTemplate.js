@@ -1,8 +1,8 @@
-export default class EmailLayout {
+export default class EmailTemplate {
 
-    static getEmailLayouts(formData) {
+    static getEmailTemplates(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/get-email-layouts', formData)
+            axios.post('/api/email-template/get-email-templates', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -14,7 +14,7 @@ export default class EmailLayout {
 
     static create(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/create', formData)
+            axios.post('/api/email-template/create', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -26,7 +26,7 @@ export default class EmailLayout {
 
     static update(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/update', formData)
+            axios.post('/api/email-template/update', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -36,10 +36,10 @@ export default class EmailLayout {
         });
     }
 
-    static details(EmailLayoutId) {
+    static details(EmailTemplateId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/details', {
-                EmailLayoutId: EmailLayoutId
+            axios.post('/api/email-template/details', {
+                EmailTemplateId: EmailTemplateId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -50,11 +50,23 @@ export default class EmailLayout {
         });
     }
 
-    static delete(EmailLayoutId) {
+    static delete(EmailTemplateId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/delete', {
-                EmailLayoutId: EmailLayoutId
+            axios.post('/api/email-template/delete', {
+                EmailTemplateId: EmailTemplateId
             })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getEmailEvents(EmailTemplateId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-template/get-email-events', )
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -66,21 +78,7 @@ export default class EmailLayout {
 
     static getDataForPreview(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/get-data-for-preview', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static getLayoutOptionsByLanguage(LanguageId) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/email-layout/get-email-layout-options-by-language', {
-                LanguageId:LanguageId
-            })
+            axios.post('/api/email-template/get-data-for-preview', formData)
                 .then(({data}) => {
                     resolve(data);
                 })

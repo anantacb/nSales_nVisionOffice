@@ -14,11 +14,25 @@ export default class ModuleSetting {
     }
 
     static getModuleSettingsByName(CompanyId, Settings) {
-        console.log(CompanyId, Settings)
         return new Promise((resolve, reject) => {
             axios.post('/api/module-setting/by-name', {
                 CompanyId: CompanyId,
                 Settings
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getCodeModuleSettingsByName(Module, SettingKeys) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/module-setting/core-settings-by-name', {
+                Module: Module,
+                SettingKeys: SettingKeys,
             })
                 .then(({data}) => {
                     resolve(data);
