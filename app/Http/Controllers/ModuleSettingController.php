@@ -39,6 +39,12 @@ class ModuleSettingController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getCoreModuleSettingsByName(Request $request)
+    {
+        $response = $this->service->getCoreModuleSettingsByName($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function updateModuleSettingsByCompany(Request $request): JsonResponse
     {
         $response = $this->service->updateModuleSettingsByCompanyId($request);

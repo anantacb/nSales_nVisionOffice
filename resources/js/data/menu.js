@@ -308,18 +308,18 @@ export default {
                     to: "create-email-layout",
                     roles: ["Developer"],
                 },
-                // {
-                //     name: "Template",
-                //     icon: "fa fa-envelope",
-                //     to: "email-templates",
-                //     roles: ["Developer"],
-                // },
-                // {
-                //     name: "Create Template",
-                //     icon: "fa fa-plus",
-                //     to: "create-email-template",
-                //     roles: ["Developer"],
-                // }
+                {
+                    name: "Templates",
+                    icon: "fa fa-envelope",
+                    to: "email-templates",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Create Template",
+                    icon: "fa fa-plus",
+                    to: "create-email-template",
+                    roles: ["Developer"],
+                }
             ],
         },
 
