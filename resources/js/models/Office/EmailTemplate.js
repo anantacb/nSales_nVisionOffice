@@ -64,9 +64,9 @@ export default class EmailTemplate {
         });
     }
 
-    static getEmailEvents(EmailTemplateId) {
+    static getEmailEvents() {
         return new Promise((resolve, reject) => {
-            axios.post('/api/email-template/get-email-events', )
+            axios.post('/api/email-template/get-email-events')
                 .then(({data}) => {
                     resolve(data);
                 })

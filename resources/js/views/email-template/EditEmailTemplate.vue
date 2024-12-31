@@ -9,7 +9,6 @@ import EmailLayout from "@/models/Office/EmailLayout";
 import EmailTemplate from "@/models/Office/EmailTemplate";
 import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
 import Loader from "@/components/ui/Loader/Loader.vue";
-import ModuleSetting from "@/models/Office/ModuleSetting";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -23,7 +22,6 @@ let EmailEvents = ref([]);
 const updateEmailLayoutRef = ref(null);
 const isLoading = ref(false)
 
-
 function setTemplate(newEditorValue) {
     EmailTemplateModel.value.Template = newEditorValue;
     resetErrors();
@@ -32,7 +30,6 @@ function setTemplate(newEditorValue) {
 function setNewErrors(newErrors) {
     setErrors(newErrors);
 }
-
 
 async function updateEmailTemplate() {
     isLoading.value = true;
@@ -64,28 +61,6 @@ async function getEmailTemplateDetails() {
     isLoading.value = false;
 }
 
-// async function getCodeModuleSettingsByName() {
-//     let {data} = await ModuleSetting.getCodeModuleSettingsByName('Email', ['EmailEvents','LayoutFields']);
-//     console.log(data);
-//     console.log(data.EmailEvents);
-//     console.log(data.LayoutFields);
-// }
-
-async function getEmailEvents() {
-    isLoading.value = true;
-    let {data} = await EmailTemplate.getEmailEvents(route.params.id);
-    EmailEvents.value = data;
-    let options = [{label: 'Select Element Name', value: ''}];
-
-    Object.entries(EmailEvents.value).forEach(([emailEventKey, emailEvent]) => {
-        let option = {label: emailEvent.Title, value: emailEventKey};
-        options.push(option);
-    });
-
-    EmailEventOptions.value = options;
-    isLoading.value = false;
-}
-
 async function getAllLanguages() {
     isLoading.value = true;
     const {data} = await Language.getAllLanguages();
@@ -95,6 +70,21 @@ async function getAllLanguages() {
         options.push(option);
     });
     LanguageOptions.value = options;
+    isLoading.value = false;
+}
+
+async function getEmailEvents() {
+    isLoading.value = true;
+    let {data} = await EmailTemplate.getEmailEvents();
+    EmailEvents.value = data;
+    let options = [{label: 'Select Element Name', value: ''}];
+
+    Object.entries(EmailEvents.value).forEach(([emailEventKey, emailEvent]) => {
+        let option = {label: emailEvent.Title, value: emailEventKey};
+        options.push(option);
+    });
+
+    EmailEventOptions.value = options;
     isLoading.value = false;
 }
 
@@ -116,7 +106,7 @@ async function getLayoutOptionsByLanguage(initialLoad = false) {
 const EmailTemplateObject = computed(() => {
     let emailEvent = EmailEvents.value[EmailTemplateModel.value.ElementName];
     return emailEvent && emailEvent.templateObject ? emailEvent.templateObject : {};
-})
+});
 
 onMounted(async () => {
     // updateEmailLayoutRef.value.statusLoading();
@@ -134,8 +124,7 @@ onMounted(async () => {
 <template>
     <div class="content">
         <Loader :is-loading="isLoading"></Loader>
-        <form v-if="!_.isEmpty(EmailTemplateModel)" class="space-y-4" @submit.prevent="updateEmailTemplate">
-            <!--        <form class="space-y-4" @submit.prevent="updateEmailTemplate">-->
+        <form v-if="!_.isEmpty(EmailTemplateModel)" @submit.prevent="updateEmailTemplate">
 
             <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Email Template">
                 <template #options>
@@ -144,78 +133,112 @@ onMounted(async () => {
                     </router-link>
                 </template>
 
-                <div class="row">
+                <div class="space-y-2">
 
-                    <div class="col-lg-4 space-y-2">
-                        <div class="row">
-                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Name">
-                                Element Name<span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-8">
-                                <Select
-                                    id="ElementName"
-                                    v-model="EmailTemplateModel.ElementName"
-                                    :options="EmailEventOptions"
-                                    :required="true"
-                                    :select-class="errors.ElementName ? `is-invalid form-select-sm` : `form-select-sm`"
-                                    name="ElementName"
-                                />
-                                <InputErrorMessages v-if="errors.ElementName"
-                                                    :errorMessages="errors.ElementName"></InputErrorMessages>
+                    <div class="row">
+                        <div class="col-lg-4 space-y-2 ">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="ElementName">
+                                    Element Name<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="ElementName"
+                                        v-model="EmailTemplateModel.ElementName"
+                                        :options="EmailEventOptions"
+                                        :required="true"
+                                        :select-class="errors.ElementName ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="ElementName"
+                                        @change="resetErrors"
+                                    />
+                                    <InputErrorMessages v-if="errors.ElementName"
+                                                        :errorMessages="errors.ElementName"></InputErrorMessages>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-lg-4 space-y-2">
-                        <div class="row">
-                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Language">
-                                Language<span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-8">
-                                <Select
-                                    id="LanguageId"
-                                    v-model="EmailTemplateModel.LanguageId"
-                                    :options="LanguageOptions"
-                                    :required="true"
-                                    :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
-                                    name="Language"
-                                    @change="getLayoutOptionsByLanguage"
-                                />
-                                <InputErrorMessages v-if="errors.LanguageId"
-                                                    :errorMessages="errors.LanguageId"></InputErrorMessages>
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="Language">
+                                    Language<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="LanguageId"
+                                        v-model="EmailTemplateModel.LanguageId"
+                                        :options="LanguageOptions"
+                                        :required="true"
+                                        :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="Language"
+                                        @change="getLayoutOptionsByLanguage"
+                                    />
+                                    <InputErrorMessages v-if="errors.LanguageId"
+                                                        :errorMessages="errors.LanguageId"></InputErrorMessages>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-lg-4 space-y-2">
-                        <div class="row">
-                            <label class="col-sm-4 col-form-label col-form-label-sm" for="LayoutId">
-                                Layout<span class="text-danger">*</span>
-                            </label>
-                            <div class="col-sm-8">
-                                <Select
-                                    id="LayoutId"
-                                    v-model="EmailTemplateModel.LayoutId"
-                                    :options="LayoutOptions"
-                                    :required="true"
-                                    :select-class="errors.LayoutId ? `is-invalid form-select-sm` : `form-select-sm`"
-                                    name="LayoutId"
-                                />
-                                <InputErrorMessages v-if="errors.LayoutId"
-                                                    :errorMessages="errors.LayoutId"></InputErrorMessages>
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="LayoutId">
+                                    Layout<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="LayoutId"
+                                        v-model="EmailTemplateModel.LayoutId"
+                                        :options="LayoutOptions"
+                                        :required="true"
+                                        :select-class="errors.LayoutId ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="LayoutId"
+                                        @change="resetErrors"
+                                    />
+                                    <InputErrorMessages v-if="errors.LayoutId"
+                                                        :errorMessages="errors.LayoutId"></InputErrorMessages>
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
+
+                    <div class="row">
+                        <div class="col-lg-12 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-1 col-form-label col-form-label-sm" for="Subject">
+                                    Subject<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-11">
+                                    <input
+                                        id="Subject"
+                                        v-model="EmailTemplateModel.Subject"
+                                        :class="errors.Subject ? `is-invalid form-control-sm` : `form-control-sm`"
+                                        autocomplete="off" class="form-control" name="Subject"
+                                        placeholder="Subject"
+                                        required
+                                        type="text"
+                                        @keyup="resetErrors"
+                                    />
+                                    <InputErrorMessages v-if="errors.Subject"
+                                                        :errorMessages="errors.Subject"></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+
+
             </BaseBlock>
 
             <TemplateAndPreview
                 :LanguageId="EmailTemplateModel.LanguageId"
+                :LayoutId="EmailTemplateModel.LayoutId"
+                :Subject="EmailTemplateModel.Subject"
                 :Template="EmailTemplateModel.Template"
                 :TemplateObject="EmailTemplateObject"
                 :errors="errors"
-                PageType="layout"
+                PageType="template"
                 @setNewErrors="setNewErrors"
                 @setTemplate="setTemplate"
             >

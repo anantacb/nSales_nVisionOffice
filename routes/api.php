@@ -234,6 +234,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/delete', [EmailLayoutController::class, 'delete']);
         Route::post('/get-data-for-preview', [EmailLayoutController::class, 'getDataForPreview']);
         Route::post('/get-email-layout-options-by-language', [EmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
+        Route::post('/get-preview-template-object', [EmailLayoutController::class, 'getPreviewTemplateObject']);
     });
 
     Route::prefix('email-template')->group(function () {

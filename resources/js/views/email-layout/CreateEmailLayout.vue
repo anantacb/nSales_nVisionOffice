@@ -13,7 +13,8 @@ let {errors, setErrors, resetErrors} = useFormErrors();
 
 const createEmailLayoutRef = ref(null);
 let LanguageOptions = ref([]);
-const isLoading = ref(false)
+let PreviewTemplateObject = ref({});
+const isLoading = ref(false);
 
 let Name = ref('');
 let LanguageId = ref('');
@@ -56,6 +57,13 @@ async function createEmailLayout() {
 
 }
 
+async function getPreviewTemplateObjectForLayout() {
+    isLoading.value = true;
+    let {data} = await EmailLayout.getPreviewTemplateObjectForLayout();
+    PreviewTemplateObject.value = data;
+    isLoading.value = false;
+}
+
 function setTemplate(newEditorValue) {
     Template.value = newEditorValue;
     resetErrors();
@@ -67,6 +75,7 @@ function setNewErrors(newErrors) {
 
 onMounted(async () => {
     await getAllLanguages();
+    await getPreviewTemplateObjectForLayout();
 });
 </script>
 
@@ -115,6 +124,7 @@ onMounted(async () => {
                                     :required="true"
                                     :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
                                     name="Language"
+                                    @change="resetErrors"
                                 />
                                 <InputErrorMessages v-if="errors.LanguageId"
                                                     :errorMessages="errors.LanguageId"></InputErrorMessages>
@@ -127,6 +137,7 @@ onMounted(async () => {
             <TemplateAndPreview
                 :LanguageId="LanguageId"
                 :Template="Template"
+                :TemplateObject="PreviewTemplateObject"
                 :errors="errors"
                 PageType="layout"
                 @setNewErrors="setNewErrors"

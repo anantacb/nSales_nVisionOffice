@@ -70,7 +70,7 @@ async function getEmailTemplates() {
     paginationData.value = pagination;
 }
 
-function deleteTemplate(layout, index) {
+function deleteTemplate(template, index) {
     Swal.fire({
         title: 'Are you sure? Delete Template?',
         html: 'Please type <code class="text-danger">Confirm</code> and press delete.',
@@ -88,7 +88,7 @@ function deleteTemplate(layout, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await EmailTemplate.delete(layout.Id);
+            let {data, message} = await EmailTemplate.delete(template.Id);
             tableData.value.splice(index, 1);
             notificationStore.showNotification(message);
         }

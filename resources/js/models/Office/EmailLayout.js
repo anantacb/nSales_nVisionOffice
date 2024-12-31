@@ -90,4 +90,16 @@ export default class EmailLayout {
         });
     }
 
+    static getPreviewTemplateObjectForLayout() {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-layout/get-preview-template-object')
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }

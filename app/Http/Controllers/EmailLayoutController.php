@@ -64,4 +64,10 @@ class EmailLayoutController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getPreviewTemplateObject(): JsonResponse
+    {
+        $response = $this->service->getPreviewTemplateObject();
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
 }
