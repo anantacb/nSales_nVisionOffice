@@ -25,7 +25,7 @@ class PreviewTemplate extends FormRequest
     public function rules()
     {
         return [
-//            'TemplateObject' => 'required|array',
+            'TemplateObject' => 'required|array',
             'LanguageId' => 'required|exists:Language,Id',
             'Template' => [
                 'required',
@@ -40,7 +40,7 @@ class PreviewTemplate extends FormRequest
         return [
             'LanguageId.required' => 'Language is required.',
             'Template.required' => 'Template is required.',
-//            'TemplateObject.required' => 'Template Object is required.',
+            'TemplateObject.required' => 'Template Object is required.',
         ];
     }
 

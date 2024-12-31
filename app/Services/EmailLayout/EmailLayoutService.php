@@ -5,24 +5,24 @@ namespace App\Services\EmailLayout;
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
+use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
-use Throwable;
 
-class EmailLayoutService implements EmailLayoutServiceInterface
+class EmailLayoutService extends EmailHelperService implements EmailLayoutServiceInterface
 {
     protected EmailLayoutRepositoryInterface $layoutRepository;
+    protected ModuleSettingServiceInterface $moduleSettingService;
     protected TranslationRepositoryInterface $translationRepository;
 
     public function __construct(
         EmailLayoutRepositoryInterface $layoutRepository,
+        ModuleSettingServiceInterface  $moduleSettingService,
         TranslationRepositoryInterface $translationRepository
     )
     {
         $this->layoutRepository = $layoutRepository;
+        $this->moduleSettingService = $moduleSettingService;
         $this->translationRepository = $translationRepository;
     }
 
@@ -90,89 +90,14 @@ class EmailLayoutService implements EmailLayoutServiceInterface
      */
     public function getDataForPreview(Request $request): ServiceDto
     {
-        // Prepare the data to be passed to the template
-        $data = [
-            'ProductName' => 'test',
-            'ProductUrl' => 'test',
-            'company_name' => 'company_name',    //$selectedCompany->module_settings['WebShop']['CompanyName'],
-            'CompanyName' => 'CompanyName',    //$selectedCompany->module_settings['WebShop']['CompanyName'],
-            'ShopName' => 'ShopName',    // $selectedCompany->module_settings['WebShop']['ShopTitle'],
-            'ShopLink' => 'ShopLink',    // $selectedCompany->module_settings['WebShop']['PublicUrl'],
-            'CompanyStreet' => 'CompanyStreet',    // $selectedCompany->Street,
-            'CompanyZipCode' => 'CompanyZipCode',    // $selectedCompany->ZipCode,
-            'CompanyCity' => 'CompanyCity',    // $selectedCompany->City,
-            'CompanyEmail' => 'CompanyEmail',    // $selectedCompany->Email,
-            'CompanyAddress' => 'CompanyAddress',    // $selectedCompany->Street . ', ' . $selectedCompany->ZipCode . ', ' . $selectedCompany->City,
-            'Name' => 'test Name',
-            'Login' => 'test Login',
-            'Password' => 'test Password',
-        ];
-
         $preview = $this->renderTemplateAndSubject(
             $request['Template'],
             "Content Goes here",
             "",
-            $data
+            $request['TemplateObject']
         );
 
         return new ServiceDto("Preview data retrieved Successfully.", 200, $preview);
-    }
-
-    /**
-     * @param string $layout
-     * @param string $emailTemplate
-     * @param string $emailSubject
-     * @param array $data
-     * @return array|string[]
-     * @throws Exception
-     */
-    public function renderTemplateAndSubject(string $layout, string $emailTemplate, string $emailSubject, array $data): array
-    {
-        // Ensure the layout contains @yield('content')
-        if (!str_contains($layout, "@yield('content')")) {
-            throw new Exception("The layout does not contain a @yield('content') directive.");
-        }
-
-        // Replace the @yield('content') in the layout
-        $fullTemplate = str_replace("@yield('content')", $emailTemplate, $layout);
-
-        // Render the subject
-        $renderedSubject = $this->renderTemplate($emailSubject, $data);
-
-        // Render the template
-        $renderedTemplate = $this->renderTemplate($fullTemplate, $data);
-
-        return [
-            'subject' => $renderedSubject,
-            'template' => $renderedTemplate,
-        ];
-
-    }
-
-    /**
-     * @param string $template
-     * @param array $data
-     * @return string
-     */
-    public function renderTemplate(string $template, array $data): string
-    {
-        try {
-            $renderedTemplate = Blade::render($template, $data);
-
-            // Purge the compiled file after rendering
-            $compiledPath = Blade::getCompiledPath(md5($renderedTemplate));
-            if (File::exists($compiledPath)) {
-                File::delete($compiledPath);
-                Log::info("Deleted compiled file: $compiledPath");
-            }
-
-            return $renderedTemplate;
-
-        } catch (Throwable $exception) {
-            Log::error("Unable to render: " . $exception->getMessage());
-            return "";
-        }
-
     }
 
     public function delete(Request $request): ServiceDto
@@ -182,6 +107,19 @@ class EmailLayoutService implements EmailLayoutServiceInterface
 //        ]);
         $this->layoutRepository->findByIdAndDelete($request->get('EmailLayoutId'));
         return new ServiceDto("Layout Deleted Successfully.", 200);
+    }
+
+    public function getPreviewTemplateObject(): ServiceDto
+    {
+        list('LayoutFields' => $layoutFields) = $this->moduleSettingService->getCoreModuleSettings(
+            'Email',
+            ['LayoutFields']
+        );
+
+        $layoutFields = json_decode(json_encode($layoutFields), true);
+        $previewTemplateObject = $this->getEventProperties($layoutFields);
+
+        return new ServiceDto("Preview template data retrieved successfully.", 200, $previewTemplateObject);
     }
 
 }

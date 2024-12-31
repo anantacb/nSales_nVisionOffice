@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\EmailTemplate;
 
-use App\Rules\ContainsYieldDirective;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,19 +25,22 @@ class Create extends FormRequest
     public function rules()
     {
         return [
+            'LayoutId' => 'required|exists:EmailLayout,Id',
             'LanguageId' => 'required|exists:Language,Id',
-            'Name' => [
+            'Subject' => 'required|string|max:255',
+            'Template' => [
                 'required',
-                Rule::unique('EmailLayout')->where(function ($query) {
+                'string'
+            ],
+//            'ElementName' => 'required',
+            'ElementName' => [
+                'required',
+                Rule::unique('EmailTemplate')->where(function ($query) {
                     return $query->where('LanguageId', $this->LanguageId);
                 }),
             ],
-            'Template' => [
-                'required',
-                'string',
-                new ContainsYieldDirective($this->Template)
-            ]
         ];
+
     }
 
     public function messages()

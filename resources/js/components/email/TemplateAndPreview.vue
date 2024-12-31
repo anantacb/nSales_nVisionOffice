@@ -5,6 +5,7 @@ import EmailLayout from "@/models/Office/EmailLayout";
 import {useNotificationStore} from "@/stores/notificationStore";
 import JsonEditorVue from "json-editor-vue";
 import {useTemplateStore} from "@/stores/templateStore";
+import EmailTemplate from "@/models/Office/EmailTemplate";
 
 const emit = defineEmits(['setTemplate', 'setNewErrors']);
 const notificationStore = useNotificationStore();
@@ -37,7 +38,7 @@ const props = defineProps({
     LanguageId: {
         type: [Number, String],
         required: true,
-        default: ''
+        // default: ''
     },
     LayoutId: {
         type: [Number, String],
@@ -55,30 +56,49 @@ function resetPreview() {
 }
 
 async function getDataForPreview() {
-    console.log('previewTemplate');
     tabsRef.value.statusLoading();
 
     resetPreview();
+
+    let model;
     let formData = {
         LanguageId: props.LanguageId,
         Template: props.Template,
-        // TemplateObject: props.templateObject,
+        TemplateObject: props.TemplateObject,
     };
+
+    if (props.PageType === 'template') {
+        formData.LayoutId = props.LayoutId;
+        formData.Subject = props.Subject;
+        model = EmailTemplate;
+        // let {data} = await EmailTemplate.getDataForPreview(formData);
+
+    } else if (props.PageType === 'layout') {
+        model = EmailLayout;
+
+        // let {data} = await EmailLayout.getDataForPreview(formData);
+    }
+    // console.log(model)
     // console.log(formData)
 
     try {
-        let {data} = await EmailLayout.getDataForPreview(formData);
+        // let {data} = await EmailLayout.getDataForPreview(formData);
+        let {data} = await model.getDataForPreview(formData);
         // console.log(data);
         previewTemplate.value = data.template;
+        previewSubject.value = data.subject;
 
         if (!previewTemplate.value) {
             notificationStore.showNotification("Unable to preview", "error");
         }
 
     } catch (error) {
-        emit('setNewErrors', error.response.data.errors);
+        if (error.status === 422) {
+            emit('setNewErrors', error.response.data.errors);
+        }
+    } finally {
+        tabsRef.value.statusNormal();
     }
-    tabsRef.value.statusNormal();
 }
 
 onMounted(async () => {
@@ -134,6 +154,7 @@ onMounted(async () => {
                                         Template<span class="text-danger">*</span>
                                     </label>
                                     <div class="col-lg-12 space-y-2">
+
                                         <CodeMirrorEditor
                                             :InitialValue="Template"
                                             :select-class="errors.Template ? `is-invalid form-select-sm` : `form-select-sm`"
@@ -151,11 +172,11 @@ onMounted(async () => {
                                     <div>
 
                                         <JsonEditorVue
-                                            :modelValue="TemplateObject"
                                             :class="templateStore.settings.darkMode ? `jse-theme-dark` : ``"
                                             :main-menu-bar="false"
-                                            :status-bar="false"
+                                            :modelValue="TemplateObject"
                                             :read-only="true"
+                                            :status-bar="false"
                                             mode="text"
                                         >
                                         </JsonEditorVue>
@@ -171,14 +192,14 @@ onMounted(async () => {
                             role="tabpanel"
                             tabindex="0"
                         >
-                            <div class="row">
+                            <div class="row fs-sm">
                                 <div v-if="PageType==='template'" class="col-12 mb-2">
-                                    <label><strong>Subject: </strong></label>
+                                    <span>Subject: </span>
                                     <span v-html="previewSubject"></span>
                                 </div>
 
                                 <div class="col-12">
-                                    <label><strong>Body: </strong></label>
+                                    <span>Body: </span>
                                     <iframe :srcdoc="previewTemplate" class="preview-iframe"></iframe>
                                 </div>
                             </div>

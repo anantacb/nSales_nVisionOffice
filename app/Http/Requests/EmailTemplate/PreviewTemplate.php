@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\EmailTemplate;
 
+use App\Models\Office\EmailLayout;
 use App\Rules\ContainsYieldDirective;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,12 +26,14 @@ class PreviewTemplate extends FormRequest
     public function rules()
     {
         return [
-//            'TemplateObject' => 'required|array',
+            'TemplateObject' => 'required|array',
             'LanguageId' => 'required|exists:Language,Id',
-            'Template' => [
+            'Subject' => 'required|string|max:250',
+            'Template' => 'required|string',
+            'LayoutId' => [
                 'required',
-                'string',
-                new ContainsYieldDirective($this->Template)
+                'exists:EmailLayout,Id',
+                new ContainsYieldDirective(EmailLayout::where('Id', $this->LayoutId)->value('Template'))
             ]
         ];
     }
@@ -38,9 +41,12 @@ class PreviewTemplate extends FormRequest
     public function messages()
     {
         return [
+            'TemplateObject.required' => 'Template Object is required.',
             'LanguageId.required' => 'Language is required.',
+            'Subject.required' => 'Subject is required.',
             'Template.required' => 'Template is required.',
-//            'TemplateObject.required' => 'Template Object is required.',
+            'LayoutId.required' => 'Layout is required.',
+            'LayoutId.exists' => 'Layout is not exist.',
         ];
     }
 

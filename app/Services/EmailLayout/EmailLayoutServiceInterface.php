@@ -21,4 +21,6 @@ interface EmailLayoutServiceInterface
 
     public function getEmailLayoutOptionsByLanguage(Request $request): ServiceDto;
 
+    public function getPreviewTemplateObject(): ServiceDto;
+
 }
