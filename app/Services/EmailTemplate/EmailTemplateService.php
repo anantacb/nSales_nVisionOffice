@@ -31,12 +31,22 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
     {
         $request = $request->all();
         $request['relations'] = [
-            [
-                "name" => "language", "columns" => ['Id', 'Name']
-            ]
+            ["name" => "language", "columns" => ['Id', 'Name']],
+            ["name" => "emailLayout", "columns" => ['Id', 'Name']]
         ];
-        $layouts = $this->templateRepository->paginatedData($request);
-        return new ServiceDto("Templates retrieved!!!", 200, $layouts);
+        $templates = $this->templateRepository->paginatedData($request);
+
+        list('EmailEvents' => $emailEvents) = $this->moduleSettingService->getCoreModuleSettings(
+            'Email', ['EmailEvents','LayoutFields1']
+        );
+        $emailEvents = json_decode(json_encode($emailEvents), true);
+
+        $templates = $templates->map(function ($template) use ($emailEvents) {
+            $template->ModifiedElementName = $emailEvents[$template->ElementName]['Title'] ?? $template->ElementName;
+            return $template;
+        });
+
+        return new ServiceDto("Templates retrieved!!!", 200, $templates);
     }
 
     public function create(Request $request): ServiceDto

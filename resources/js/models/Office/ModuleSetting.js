@@ -28,7 +28,7 @@ export default class ModuleSetting {
         });
     }
 
-    static getCodeModuleSettingsByName(Module, SettingKeys) {
+    static getCoreModuleSettingsByName(Module, SettingKeys) {
         return new Promise((resolve, reject) => {
             axios.post('/api/module-setting/core-settings-by-name', {
                 Module: Module,

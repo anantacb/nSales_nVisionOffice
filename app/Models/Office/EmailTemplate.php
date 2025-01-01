@@ -8,14 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class EmailTemplate extends BaseModel
 {
     protected $table = 'EmailTemplate';
-//    protected $appends = ['ElementNameValue'];
-
-
-//    public function getElementNameValueAttribute()
-//    {
-//        $emailEvents = json_decode(Helpers::getSettingByModuleAndKey('CompanyEmail', 'EmailEvents'), true);
-//        return $emailEvents[$this->ElementName]['Title'] ?? $this->ElementName;
-//    }
 
     public function language(): BelongsTo
     {

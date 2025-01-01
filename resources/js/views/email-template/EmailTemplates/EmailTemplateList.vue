@@ -24,7 +24,7 @@ const {
 
 setTableFields([
     {
-        name: "ElementName",
+        name: "ModifiedElementName",
         title: "Element Name",
         sortField: "ElementName"
     },
@@ -37,15 +37,20 @@ setTableFields([
         sortField: "LanguageId"
     },
     {
+        name: "email_layout",
+        title: "Layout",
+        formatter: (email_layout) => {
+            return email_layout ? email_layout.Name : '';
+        },
+        sortField: "LayoutId"
+    },
+    {
         name: "Action",
         title: "Action"
     }
 ]);
-setSearchColumns(['Name']);
 
-onMounted(() => {
-    getEmailTemplates();
-});
+setSearchColumns(['Name']);
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -69,6 +74,10 @@ async function getEmailTemplates() {
     tableData.value = data;
     paginationData.value = pagination;
 }
+
+onMounted(async () => {
+    await getEmailTemplates();
+});
 
 function deleteTemplate(template, index) {
     Swal.fire({
