@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepository;
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepository;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepository;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepository;
@@ -173,6 +175,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(EmailLayoutRepositoryInterface::class, EmailLayoutRepository::class);
         $this->app->bind(EmailTemplateRepositoryInterface::class, EmailTemplateRepository::class);
+        $this->app->bind(CompanyEmailLayoutRepositoryInterface::class, CompanyEmailLayoutRepository::class);
 
     }
 }

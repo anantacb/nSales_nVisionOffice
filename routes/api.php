@@ -5,6 +5,7 @@ use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\B2bGqlApiController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyEmailLayoutController;
 use App\Http\Controllers\CompanyLanguageController;
 use App\Http\Controllers\CompanyTranslationController;
 use App\Http\Controllers\CustomerController;
@@ -308,5 +309,19 @@ Route::middleware(['auth:api'])->group(function () {
         // Onboard
         Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);
         Route::post('/company-onboard-status/update', [OnboardController::class, 'updateCompanyOnboardStatus']);
+
+        Route::prefix('company-email-layout')->group(function () {
+            // Email Layout
+            Route::post('/get-email-layouts', [CompanyEmailLayoutController::class, 'getEmailLayouts']);
+            Route::post('/create', [CompanyEmailLayoutController::class, 'create']);
+            Route::post('/details', [CompanyEmailLayoutController::class, 'details']);
+            Route::post('/update', [CompanyEmailLayoutController::class, 'update']);
+            Route::post('/delete', [CompanyEmailLayoutController::class, 'delete']);
+            Route::post('/get-data-for-preview', [CompanyEmailLayoutController::class, 'getDataForPreview']);
+            Route::post('/get-email-layout-options-by-language', [CompanyEmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
+            Route::post('/get-preview-template-object', [CompanyEmailLayoutController::class, 'getPreviewTemplateObject']);
+        });
+
+
     });
 });

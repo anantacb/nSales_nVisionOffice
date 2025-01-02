@@ -1,28 +1,57 @@
 <script setup>
-import {onMounted, ref, nextTick} from "vue";
-import router from "@/router";
+import {onMounted, ref} from "vue";
+import _ from "lodash";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
-import EmailLayout from "@/models/Office/EmailLayout";
-import Language from "@/models/Office/Language";
+import {useRoute} from "vue-router";
 import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
 import Loader from "@/components/ui/Loader/Loader.vue";
+import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
+import {useCompanyStore} from "@/stores/companyStore";
+import CompanyLanguage from "@/models/Company/CompanyLanguage";
 
+const route = useRoute();
+const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
 
-const createEmailLayoutRef = ref(null);
 let LanguageOptions = ref([]);
+let CompanyEmailLayoutModel = ref({});
 let PreviewTemplateObject = ref({});
-const isLoading = ref(false);
+const updateEmailLayoutRef = ref(null);
+const isLoading = ref(false)
 
-let Name = ref('');
-let LanguageId = ref('');
-let Template = ref('');
+async function updateEmailLayout() {
+    isLoading.value = true;
+    let formData = {
+        Id: CompanyEmailLayoutModel.value.Id,
+        Name: CompanyEmailLayoutModel.value.Name,
+        LanguageId: CompanyEmailLayoutModel.value.LanguageId,
+        Template: CompanyEmailLayoutModel.value.Template,
+    };
+
+    try {
+        let {data, message} = await CompanyEmailLayout.update(companyStore.selectedCompany.Id, formData);
+        notificationStore.showNotification(message);
+    } catch (error) {
+        if (error.status === 422) {
+            setErrors(error.response.data.errors);
+        }
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+async function getEmailLayoutDetails() {
+    isLoading.value = true;
+    let {data} = await CompanyEmailLayout.details(companyStore.selectedCompany.Id, route.params.id);
+    CompanyEmailLayoutModel.value = data;
+    isLoading.value = false;
+}
 
 async function getAllLanguages() {
     isLoading.value = true;
-    const {data} = await Language.getAllLanguages();
+    const {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id);
     let options = [{label: 'Select Language', value: ''}];
     data.forEach((language) => {
         let option = {label: language.Name, value: language.Id};
@@ -32,40 +61,15 @@ async function getAllLanguages() {
     isLoading.value = false;
 }
 
-async function createEmailLayout() {
-    isLoading.value = true;
-    let formData = {
-        Name: Name.value,
-        LanguageId: LanguageId.value,
-        Template: Template.value,
-    };
-
-    try {
-        let {data, message} = await EmailLayout.create(formData);
-        isLoading.value = false;
-        notificationStore.showNotification(message);
-
-        await nextTick();
-        await router.push({name: 'email-layouts'});
-    } catch (error) {
-        if (error.status === 422) {
-            setErrors(error.response.data.errors);
-        }
-    } finally {
-        isLoading.value = false;
-    }
-
-}
-
 async function getPreviewTemplateObjectForLayout() {
     isLoading.value = true;
-    let {data} = await EmailLayout.getPreviewTemplateObjectForLayout();
+    let {data} = await CompanyEmailLayout.getPreviewTemplateObjectForLayout(companyStore.selectedCompany.Id);
     PreviewTemplateObject.value = data;
     isLoading.value = false;
 }
 
 function setTemplate(newEditorValue) {
-    Template.value = newEditorValue;
+    CompanyEmailLayoutModel.value.Template = newEditorValue;
     resetErrors();
 }
 
@@ -74,19 +78,25 @@ function setNewErrors(newErrors) {
 }
 
 onMounted(async () => {
+    // updateEmailLayoutRef.value.statusLoading();
+    // isLoading.value = true;
+    await getEmailLayoutDetails();
     await getAllLanguages();
     await getPreviewTemplateObjectForLayout();
+    // updateEmailLayoutRef.value.statusNormal();
+    // isLoading.value = false;
 });
+
 </script>
 
 <template>
     <div class="content">
         <Loader :is-loading="isLoading"></Loader>
+        <form v-if="!_.isEmpty(CompanyEmailLayoutModel)" class="space-y-4" @submit.prevent="updateEmailLayout">
 
-        <form class="space-y-4" @submit.prevent="createEmailLayout">
-            <BaseBlock ref="createEmailLayoutRef" content-full title="Create Email layout">
+            <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Email layout">
                 <template #options>
-                    <router-link :to="{name:'email-layouts'}" class="btn btn-sm btn-outline-info">
+                    <router-link :to="{name:'company-email-layouts'}" class="btn btn-sm btn-outline-info">
                         <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
                     </router-link>
                 </template>
@@ -98,18 +108,18 @@ onMounted(async () => {
                                 Name<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <input id="Name" v-model="Name"
+                                <input id="Name" v-model="CompanyEmailLayoutModel.Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
                                        autocomplete="off" class="form-control" name="Name"
                                        placeholder="Name"
                                        required
                                        type="text"
-                                       @keyup="resetErrors"
                                 />
                                 <InputErrorMessages v-if="errors.Name"
                                                     :errorMessages="errors.Name"></InputErrorMessages>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="col-lg-6 space-y-2">
@@ -119,7 +129,7 @@ onMounted(async () => {
                             </label>
                             <div class="col-sm-8">
                                 <Select
-                                    id="Language" v-model="LanguageId"
+                                    id="Language" v-model="CompanyEmailLayoutModel.LanguageId"
                                     :options="LanguageOptions"
                                     :required="true"
                                     :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
@@ -135,11 +145,11 @@ onMounted(async () => {
             </BaseBlock>
 
             <TemplateAndPreview
-                :LanguageId="LanguageId"
-                :Template="Template"
+                :LanguageId="CompanyEmailLayoutModel.LanguageId"
+                :Template="CompanyEmailLayoutModel.Template"
                 :TemplateObject="PreviewTemplateObject"
                 :errors="errors"
-                AppType="office"
+                AppType="company"
                 PageType="layout"
                 @setNewErrors="setNewErrors"
                 @setTemplate="setTemplate"
@@ -148,6 +158,5 @@ onMounted(async () => {
 
             <button class="btn btn-outline-primary btn-sm col-2 mb-5" type="submit">Save</button>
         </form>
-
     </div>
 </template>

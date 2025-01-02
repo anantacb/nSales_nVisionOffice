@@ -148,6 +148,7 @@ onMounted(async () => {
                 :Template="EmailLayoutModel.Template"
                 :TemplateObject="PreviewTemplateObject"
                 :errors="errors"
+                AppType="office"
                 PageType="layout"
                 @setNewErrors="setNewErrors"
                 @setTemplate="setTemplate"
