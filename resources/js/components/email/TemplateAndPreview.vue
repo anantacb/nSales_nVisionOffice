@@ -1,13 +1,16 @@
 <script setup>
 import {defineProps, onMounted, ref, watch} from "vue";
 import CodeMirrorEditor from "@/components/ui/FormElements/CodeMirrorEditor.vue";
-import EmailLayout from "@/models/Office/EmailLayout";
 import {useNotificationStore} from "@/stores/notificationStore";
 import JsonEditorVue from "json-editor-vue";
 import {useTemplateStore} from "@/stores/templateStore";
+import {useCompanyStore} from "@/stores/companyStore";
+import EmailLayout from "@/models/Office/EmailLayout";
 import EmailTemplate from "@/models/Office/EmailTemplate";
+import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 
 const emit = defineEmits(['setTemplate', 'setNewErrors']);
+const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 const templateStore = useTemplateStore();
 const tabsRef = ref(null);
@@ -15,6 +18,14 @@ const previewTemplate = ref('');
 const previewSubject = ref('');
 
 const props = defineProps({
+    AppType: {
+        type: String,
+        required: true,
+        // default: 'office',
+        validator: function (value) {
+            return ['office', 'company'].includes(value)
+        }
+    },
     PageType: {
         type: String,
         required: true,
@@ -57,34 +68,28 @@ function resetPreview() {
 
 async function getDataForPreview() {
     tabsRef.value.statusLoading();
-
     resetPreview();
 
-    let model;
-    let formData = {
+    const formData = {
         LanguageId: props.LanguageId,
         Template: props.Template,
         TemplateObject: props.TemplateObject,
+        LayoutId: props.PageType === 'template' ? props.LayoutId : undefined,
+        Subject: props.PageType === 'template' ? props.Subject : undefined,
     };
 
+    let model;
     if (props.PageType === 'template') {
-        formData.LayoutId = props.LayoutId;
-        formData.Subject = props.Subject;
-        model = EmailTemplate;
-        // let {data} = await EmailTemplate.getDataForPreview(formData);
-
+        model = props.AppType === 'company' ? 'CompanyEmailTemplate' : EmailTemplate;
     } else if (props.PageType === 'layout') {
-        model = EmailLayout;
-
-        // let {data} = await EmailLayout.getDataForPreview(formData);
+        model = props.AppType === 'company' ? CompanyEmailLayout : EmailLayout;
     }
-    // console.log(model)
-    // console.log(formData)
 
     try {
-        // let {data} = await EmailLayout.getDataForPreview(formData);
-        let {data} = await model.getDataForPreview(formData);
-        // console.log(data);
+        let {data} = await (props.AppType === 'company'
+            ? model.getDataForPreview(companyStore.selectedCompany.Id, formData)
+            : model.getDataForPreview(formData));
+
         previewTemplate.value = data.template;
         previewSubject.value = data.subject;
 
@@ -214,7 +219,7 @@ onMounted(async () => {
 
 <style scoped>
 .preview-iframe {
-    border: none;
+    border: 1px solid #2a384b;;
     width: 100%;
     height: 65vh;
 }

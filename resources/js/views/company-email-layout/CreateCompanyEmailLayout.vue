@@ -2,12 +2,14 @@
 import {onMounted, ref, nextTick} from "vue";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
+import {useCompanyStore} from "@/stores/companyStore";
 import {useFormErrors} from "@/composables/useFormErrors";
-import EmailLayout from "@/models/Office/EmailLayout";
-import Language from "@/models/Office/Language";
 import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
 import Loader from "@/components/ui/Loader/Loader.vue";
+import CompanyLanguage from "@/models/Company/CompanyLanguage";
+import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 
+const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
 
@@ -22,7 +24,7 @@ let Template = ref('');
 
 async function getAllLanguages() {
     isLoading.value = true;
-    const {data} = await Language.getAllLanguages();
+    const {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id);
     let options = [{label: 'Select Language', value: ''}];
     data.forEach((language) => {
         let option = {label: language.Name, value: language.Id};
@@ -41,12 +43,12 @@ async function createEmailLayout() {
     };
 
     try {
-        let {data, message} = await EmailLayout.create(formData);
+        let {data, message} = await CompanyEmailLayout.create(companyStore.selectedCompany.Id, formData);
         isLoading.value = false;
         notificationStore.showNotification(message);
 
         await nextTick();
-        await router.push({name: 'email-layouts'});
+        await router.push({name: 'company-email-layouts'});
     } catch (error) {
         if (error.status === 422) {
             setErrors(error.response.data.errors);
@@ -59,7 +61,7 @@ async function createEmailLayout() {
 
 async function getPreviewTemplateObjectForLayout() {
     isLoading.value = true;
-    let {data} = await EmailLayout.getPreviewTemplateObjectForLayout();
+    let {data} = await CompanyEmailLayout.getPreviewTemplateObjectForLayout(companyStore.selectedCompany.Id,);
     PreviewTemplateObject.value = data;
     isLoading.value = false;
 }
@@ -86,7 +88,7 @@ onMounted(async () => {
         <form class="space-y-4" @submit.prevent="createEmailLayout">
             <BaseBlock ref="createEmailLayoutRef" content-full title="Create Email layout">
                 <template #options>
-                    <router-link :to="{name:'email-layouts'}" class="btn btn-sm btn-outline-info">
+                    <router-link :to="{name:'company-email-layouts'}" class="btn btn-sm btn-outline-info">
                         <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back
                     </router-link>
                 </template>
@@ -139,7 +141,7 @@ onMounted(async () => {
                 :Template="Template"
                 :TemplateObject="PreviewTemplateObject"
                 :errors="errors"
-                AppType="office"
+                AppType="company"
                 PageType="layout"
                 @setNewErrors="setNewErrors"
                 @setTemplate="setTemplate"

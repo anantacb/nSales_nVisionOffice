@@ -15,8 +15,9 @@ class EmailLayout extends BaseModel
         return $this->belongsTo(Language::class, 'LanguageId', 'Id');
     }
 
-//    public function emailTemplate(): HasMany
-//    {
-//        return $this->hasMany(EmailTemplate::class, 'LayoutId', 'Id');
-//    }
+    public function emailTemplate(): HasMany
+    {
+        return $this->hasMany(EmailTemplate::class, 'LayoutId', 'Id');
+    }
+
 }

@@ -236,6 +236,7 @@ onMounted(async () => {
                 :Template="Template"
                 :TemplateObject="EmailTemplateObject"
                 :errors="errors"
+                AppType="office"
                 PageType="template"
                 @setNewErrors="setNewErrors"
                 @setTemplate="setTemplate"

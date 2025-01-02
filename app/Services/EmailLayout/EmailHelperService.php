@@ -70,7 +70,11 @@ abstract class EmailHelperService
 
     }
 
-    public function getEventProperties($fields): array
+    /**
+     * @param array $fields
+     * @return array
+     */
+    public function getEventProperties(array $fields): array
     {
         $properties = [];
         foreach ($fields as $field) {

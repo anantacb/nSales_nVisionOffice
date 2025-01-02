@@ -101,6 +101,9 @@ const EmailTemplates = () => import('@/views/email-template/EmailTemplates/Email
 const CreateEmailTemplate = () => import('@/views/email-template/CreateEmailTemplate.vue');
 const EditEmailTemplate = () => import('@/views/email-template/EditEmailTemplate.vue');
 
+const CompanyEmailLayouts = () => import('@/views/company-email-layout/CompanyEmailLayouts/CompanyEmailLayouts.vue');
+const CreateCompanyEmailLayout = () => import('@/views/company-email-layout/CreateCompanyEmailLayout.vue');
+const EditCompanyEmailLayout = () => import('@/views/company-email-layout/EditCompanyEmailLayout.vue');
 
 const NotFound = () => import('@/views/404View.vue');
 
@@ -836,6 +839,40 @@ const routes = [
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
+                }
+            },
+
+            {
+                path: "company-email-layout/layouts",
+                name: "company-email-layouts",
+                component: CompanyEmailLayouts,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-layout/create",
+                name: "create-company-email-layout",
+                component: CreateCompanyEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-layout/:id/edit",
+                name: "edit-company-email-layout",
+                component: EditCompanyEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
                 }
             },
 
