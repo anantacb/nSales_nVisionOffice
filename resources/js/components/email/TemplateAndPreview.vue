@@ -8,6 +8,7 @@ import {useCompanyStore} from "@/stores/companyStore";
 import EmailLayout from "@/models/Office/EmailLayout";
 import EmailTemplate from "@/models/Office/EmailTemplate";
 import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
+import CompanyEmailTemplate from "@/models/Company/CompanyEmailTemplate";
 
 const emit = defineEmits(['setTemplate', 'setNewErrors']);
 const companyStore = useCompanyStore();
@@ -80,7 +81,7 @@ async function getDataForPreview() {
 
     let model;
     if (props.PageType === 'template') {
-        model = props.AppType === 'company' ? 'CompanyEmailTemplate' : EmailTemplate;
+        model = props.AppType === 'company' ? CompanyEmailTemplate : EmailTemplate;
     } else if (props.PageType === 'layout') {
         model = props.AppType === 'company' ? CompanyEmailLayout : EmailLayout;
     }

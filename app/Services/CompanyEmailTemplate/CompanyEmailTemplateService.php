@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Services\EmailTemplate;
+namespace App\Services\CompanyEmailTemplate;
 
 use App\Contracts\ServiceDto;
-use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
-use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
+use App\Services\Company\CompanyService;
 use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
 
-class EmailTemplateService extends EmailHelperService implements EmailTemplateServiceInterface
+class CompanyEmailTemplateService extends EmailHelperService implements CompanyEmailTemplateServiceInterface
 {
-    protected EmailTemplateRepositoryInterface $templateRepository;
-    protected EmailLayoutRepositoryInterface $emailLayoutRepository;
+    protected CompanyEmailTemplateRepositoryInterface $templateRepository;
+    protected CompanyEmailLayoutRepositoryInterface $emailLayoutRepository;
     protected ModuleSettingServiceInterface $moduleSettingService;
 
     public function __construct(
-        EmailTemplateRepositoryInterface $templateRepository,
-        EmailLayoutRepositoryInterface   $emailLayoutRepository,
-        ModuleSettingServiceInterface    $moduleSettingService,
+        CompanyEmailTemplateRepositoryInterface $templateRepository,
+        CompanyEmailLayoutRepositoryInterface   $emailLayoutRepository,
+        ModuleSettingServiceInterface           $moduleSettingService,
     )
     {
         $this->templateRepository = $templateRepository;
@@ -31,20 +32,10 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
     {
         $request = $request->all();
         $request['relations'] = [
-            ["name" => "language", "columns" => ['Id', 'Name']],
-            ["name" => "emailLayout", "columns" => ['Id', 'Name']]
+            ["name" => "companyLanguage", "columns" => ['Id', 'Name']],
+            ["name" => "companyEmailLayout", "columns" => ['Id', 'Name']]
         ];
         $templates = $this->templateRepository->paginatedData($request);
-
-        list('EmailEvents' => $emailEvents) = $this->moduleSettingService->getCoreModuleSettings(
-            'Email', ['EmailEvents']
-        );
-        $emailEvents = json_decode(json_encode($emailEvents), true);
-
-        $templates = $templates->map(function ($template) use ($emailEvents) {
-            $template->ModifiedElementName = $emailEvents[$template->ElementName]['Title'] ?? $template->ElementName;
-            return $template;
-        });
 
         return new ServiceDto("Templates retrieved!!!", 200, $templates);
     }
@@ -97,12 +88,8 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
 
     public function fetchEmailEvents()
     {
-        list('LayoutFields' => $layoutFields, 'EmailEvents' => $emailEvents) = $this->moduleSettingService->getCoreModuleSettings(
-            'Email',
-            ['LayoutFields', 'EmailEvents']
-        );
-        $layoutFields = json_decode(json_encode($layoutFields), true);
-        $emailEvents = json_decode(json_encode($emailEvents), true);
+        $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
+        $emailEvents = json_decode(CompanyService::getSettingValue('CompanyEmail', 'EmailEvents'), true);
 
         foreach ($emailEvents as $key => $emailEvent) {
             $emailEvents[$key]['Fields'] = array_merge($layoutFields, $emailEvent['Fields']);
