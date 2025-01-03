@@ -497,22 +497,22 @@ export default {
                     moduleName: 'CompanyEmail',
                     roles: ["Developer", "Administrator", "Employee"],
                 },
-                // {
-                //     name: "Templates",
-                //     icon: "fa fa-envelope",
-                //     to: "company-email-templates",
-                //     moduleSpecific: true,
-                //     moduleName: 'CompanyEmail',
-                //     roles: ["Developer", "Administrator", "Employee"],
-                // },
-                // {
-                //     name: "Create Template",
-                //     icon: "fa fa-plus",
-                //     to: "create-company-email-template",
-                //     moduleSpecific: true,
-                //     moduleName: 'CompanyEmail',
-                //     roles: ["Developer", "Administrator", "Employee"],
-                // }
+                {
+                    name: "Templates",
+                    icon: "fa fa-envelope",
+                    to: "company-email-templates",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
+                    name: "Create Template",
+                    icon: "fa fa-plus",
+                    to: "create-company-email-template",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                }
             ],
         },
 

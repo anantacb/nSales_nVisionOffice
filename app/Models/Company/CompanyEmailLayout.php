@@ -3,8 +3,8 @@
 namespace App\Models\Company;
 
 use App\Models\BaseModel;
-use App\Models\Office\Language;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CompanyEmailLayout extends BaseModel
 {
@@ -16,8 +16,9 @@ class CompanyEmailLayout extends BaseModel
         return $this->belongsTo(CompanyLanguage::class, 'LanguageId', 'Id');
     }
 
-//    public function companyEmailTemplate(): HasMany
-//    {
-//        return $this->hasMany(CompanyEmailTemplate::class, 'LayoutId', 'Id');
-//    }
+    public function companyEmailTemplate(): HasMany
+    {
+        return $this->hasMany(CompanyEmailTemplate::class, 'LayoutId', 'Id');
+    }
+
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\B2bGqlApiController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyEmailLayoutController;
+use App\Http\Controllers\CompanyEmailTemplateController;
 use App\Http\Controllers\CompanyLanguageController;
 use App\Http\Controllers\CompanyTranslationController;
 use App\Http\Controllers\CustomerController;
@@ -322,6 +323,16 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/get-preview-template-object', [CompanyEmailLayoutController::class, 'getPreviewTemplateObject']);
         });
 
+        Route::prefix('company-email-template')->group(function () {
+            // Email Template
+            Route::post('/get-email-templates', [CompanyEmailTemplateController::class, 'getEmailTemplates']);
+            Route::post('/create', [CompanyEmailTemplateController::class, 'create']);
+            Route::post('/details', [CompanyEmailTemplateController::class, 'details']);
+            Route::post('/update', [CompanyEmailTemplateController::class, 'update']);
+            Route::post('/delete', [CompanyEmailTemplateController::class, 'delete']);
+            Route::post('/get-email-events', [CompanyEmailTemplateController::class, 'getEmailEvents']);
+            Route::post('/get-data-for-preview', [CompanyEmailTemplateController::class, 'getDataForPreview']);
+        });
 
     });
 });

@@ -10,6 +10,8 @@ use App\Services\Company\CompanyService;
 use App\Services\Company\CompanyServiceInterface;
 use App\Services\CompanyEmailLayout\CompanyEmailLayoutService;
 use App\Services\CompanyEmailLayout\CompanyEmailLayoutServiceInterface;
+use App\Services\CompanyEmailTemplate\CompanyEmailTemplateService;
+use App\Services\CompanyEmailTemplate\CompanyEmailTemplateServiceInterface;
 use App\Services\CompanyLanguage\CompanyLanguageService;
 use App\Services\CompanyLanguage\CompanyLanguageServiceInterface;
 use App\Services\CompanyTranslation\CompanyTranslationService;
@@ -122,5 +124,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(EmailLayoutServiceInterface::class, EmailLayoutService::class);
         $this->app->bind(EmailTemplateServiceInterface::class, EmailTemplateService::class);
         $this->app->bind(CompanyEmailLayoutServiceInterface::class, CompanyEmailLayoutService::class);
+        $this->app->bind(CompanyEmailTemplateServiceInterface::class, CompanyEmailTemplateService::class);
     }
 }
