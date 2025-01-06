@@ -1,8 +1,9 @@
-export default class ModuleSetting {
-    static getModuleSettingsByCompany(CompanyId) {
+export default class CompanyEmailTemplate {
+
+    static getEmailTemplates(CompanyId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/all-by-company', {
-                CompanyId: CompanyId
+            axios.post('/api/company-email-template/get-email-templates', {
+                CompanyId, ...formData
             })
                 .then(({data}) => {
                     resolve(data);
@@ -13,11 +14,39 @@ export default class ModuleSetting {
         });
     }
 
-    static getModuleSettingsByName(CompanyId, Settings) {
+    static create(CompanyId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/by-name', {
+            axios.post('/api/company-email-template/create', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static update(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company-email-template/update', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static details(CompanyId, EmailTemplateId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company-email-template/details', {
                 CompanyId: CompanyId,
-                Settings
+                EmailTemplateId: EmailTemplateId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -28,38 +57,11 @@ export default class ModuleSetting {
         });
     }
 
-    static getCoreModuleSettingsByName(Module, SettingKeys) {
+    static delete(CompanyId, EmailTemplateId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/core-settings-by-name', {
-                Module: Module,
-                SettingKeys: SettingKeys,
-            })
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static getModuleSettings(formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-settings', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static updateModuleSettings(CompanyId, moduleSettings) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/update-by-company', {
+            axios.post('/api/company-email-template/delete', {
                 CompanyId: CompanyId,
-                ModuleSettings: moduleSettings
+                EmailTemplateId: EmailTemplateId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -70,34 +72,10 @@ export default class ModuleSetting {
         });
     }
 
-    static create(formData) {
+    static getEmailEvents(CompanyId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/create', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static update(formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/update', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static details(ModuleSettingId) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/details', {
-                ModuleSettingId: ModuleSettingId
+            axios.post('/api/company-email-template/get-email-events', {
+                CompanyId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -108,10 +86,10 @@ export default class ModuleSetting {
         });
     }
 
-    static delete(ModuleSettingId) {
+    static getDataForPreview(CompanyId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/delete', {
-                ModuleSettingId: ModuleSettingId
+            axios.post('/api/company-email-template/get-data-for-preview', {
+                CompanyId, ...formData
             })
                 .then(({data}) => {
                     resolve(data);
@@ -121,4 +99,5 @@ export default class ModuleSetting {
                 });
         });
     }
+
 }
