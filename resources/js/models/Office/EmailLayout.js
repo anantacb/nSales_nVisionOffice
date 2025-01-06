@@ -1,66 +1,8 @@
-export default class ModuleSetting {
-    static getModuleSettingsByCompany(CompanyId) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/all-by-company', {
-                CompanyId: CompanyId
-            })
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
+export default class EmailLayout {
 
-    static getModuleSettingsByName(CompanyId, Settings) {
+    static getEmailLayouts(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/by-name', {
-                CompanyId: CompanyId,
-                Settings
-            })
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static getCoreModuleSettingsByName(Module, SettingKeys) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/core-settings-by-name', {
-                Module: Module,
-                SettingKeys: SettingKeys,
-            })
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static getModuleSettings(formData) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-settings', formData)
-                .then(({data}) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    }
-
-    static updateModuleSettings(CompanyId, moduleSettings) {
-        return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/update-by-company', {
-                CompanyId: CompanyId,
-                ModuleSettings: moduleSettings
-            })
+            axios.post('/api/email-layout/get-email-layouts', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -72,7 +14,7 @@ export default class ModuleSetting {
 
     static create(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/create', formData)
+            axios.post('/api/email-layout/create', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -84,7 +26,7 @@ export default class ModuleSetting {
 
     static update(formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/update', formData)
+            axios.post('/api/email-layout/update', formData)
                 .then(({data}) => {
                     resolve(data);
                 })
@@ -94,10 +36,10 @@ export default class ModuleSetting {
         });
     }
 
-    static details(ModuleSettingId) {
+    static details(EmailLayoutId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/details', {
-                ModuleSettingId: ModuleSettingId
+            axios.post('/api/email-layout/details', {
+                EmailLayoutId: EmailLayoutId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -108,10 +50,10 @@ export default class ModuleSetting {
         });
     }
 
-    static delete(ModuleSettingId) {
+    static delete(EmailLayoutId) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/module-setting/delete', {
-                ModuleSettingId: ModuleSettingId
+            axios.post('/api/email-layout/delete', {
+                EmailLayoutId: EmailLayoutId
             })
                 .then(({data}) => {
                     resolve(data);
@@ -121,4 +63,43 @@ export default class ModuleSetting {
                 });
         });
     }
+
+    static getDataForPreview(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-layout/get-data-for-preview', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getLayoutOptionsByLanguage(LanguageId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-layout/get-email-layout-options-by-language', {
+                LanguageId:LanguageId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getPreviewTemplateObjectForLayout() {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-layout/get-preview-template-object')
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }

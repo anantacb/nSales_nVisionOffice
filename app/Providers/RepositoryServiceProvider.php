@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepository;
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepository;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepository;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepository;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepository;
@@ -48,6 +52,10 @@ use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepository;
 use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepository;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepository;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepository;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepository;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
 use App\Repositories\Eloquent\Office\Language\LanguageRepository;
@@ -82,6 +90,7 @@ use App\Repositories\Eloquent\Office\User\UserRepository;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepository;
 use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepositoryInterface;
+use App\Services\CompanyEmailTemplate\CompanyEmailTemplateServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -166,6 +175,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DocumentApiRepositoryInterface::class, DocumentApiRepository::class);
 
         $this->app->bind(OnboardStatusRepositoryInterface::class, OnboardStatusRepository::class);
+
+        $this->app->bind(EmailLayoutRepositoryInterface::class, EmailLayoutRepository::class);
+        $this->app->bind(EmailTemplateRepositoryInterface::class, EmailTemplateRepository::class);
+        $this->app->bind(CompanyEmailLayoutRepositoryInterface::class, CompanyEmailLayoutRepository::class);
+        $this->app->bind(CompanyEmailTemplateRepositoryInterface::class, CompanyEmailTemplateRepository::class);
 
     }
 }

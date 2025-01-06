@@ -9,7 +9,9 @@ use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use App\Repositories\Plugin\B2bGqlApi\B2bGqlApiRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ModuleSettingService implements ModuleSettingServiceInterface
 {
@@ -271,4 +273,47 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
         return new ServiceDto("ModuleSettings retrieved!!!", 200, $formattedSettings);
     }
+
+    public function getCoreModuleSettingsByName(Request $request): ServiceDto
+    {
+        $module = $request->get('Module');
+        $settingKeys = $request->get('SettingKeys');
+
+        $settings = $this->getCoreModuleSettings($module, $settingKeys);
+        return new ServiceDto("ModuleSettings retrieved!!!", 200, $settings);
+    }
+
+    public function getCoreModuleSettings(string $module, array $settingKeys): array
+    {
+        $moduleSettings = Cache::remember(
+            'module_' . $module,
+            Carbon::now()->addHours(24),
+            function () use ($module) {
+                $moduleData = $this->moduleRepository->firstByAttributes(
+                    [
+                        ["column" => 'Name', 'operand' => '=', 'value' => $module]
+                    ],
+                    ['moduleSettings']
+                );
+
+                $settings = [];
+                if ($moduleData) {
+                    foreach ($moduleData->moduleSettings as $moduleSetting) {
+                        $formatModuleSetting = $this->formatModuleSetting($moduleSetting);
+                        $settings[$formatModuleSetting->Name] = $formatModuleSetting->Value;
+                    }
+                }
+
+                return $settings;
+            });
+
+        // send only requested settings
+        $responseSettings = [];
+        foreach ($settingKeys as $settingKey) {
+            $responseSettings[$settingKey] = $moduleSettings[$settingKey] ?? "";
+        }
+
+        return $responseSettings;
+    }
+
 }
