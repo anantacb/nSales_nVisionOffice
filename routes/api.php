@@ -5,6 +5,8 @@ use App\Http\Controllers\ApplicationModuleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\B2bGqlApiController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyEmailLayoutController;
+use App\Http\Controllers\CompanyEmailTemplateController;
 use App\Http\Controllers\CompanyLanguageController;
 use App\Http\Controllers\CompanyTranslationController;
 use App\Http\Controllers\CustomerController;
@@ -13,6 +15,8 @@ use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
 use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
+use App\Http\Controllers\EmailLayoutController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\GitController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
@@ -27,6 +31,7 @@ use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
 use App\Http\Controllers\TableHelperController;
 use App\Http\Controllers\TableIndexController;
+use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebShopPageController;
@@ -118,6 +123,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
     Route::post('/module-setting/by-name', [ModuleSettingController::class, 'getModuleSettingsByName']);
+    Route::post('/module-setting/core-settings-by-name', [ModuleSettingController::class, 'getCoreModuleSettingsByName']);
 
     Route::post('/get-all-companies-with-db', [DatabaseController::class, 'getAllCompanies']);
     Route::post('/copy-db-to-dev', [DatabaseController::class, 'copyDBtoDev']);
@@ -219,7 +225,30 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/role/details', [RoleController::class, 'details']);
 
     // Company theme
-    Route::post('/company-theme', [\App\Http\Controllers\ThemeController::class, 'getCompanyTheme']);
+    Route::post('/company-theme', [ThemeController::class, 'getCompanyTheme']);
+
+    Route::prefix('email-layout')->group(function () {
+        // Email Layout
+        Route::post('/get-email-layouts', [EmailLayoutController::class, 'getEmailLayouts']);
+        Route::post('/create', [EmailLayoutController::class, 'create']);
+        Route::post('/details', [EmailLayoutController::class, 'details']);
+        Route::post('/update', [EmailLayoutController::class, 'update']);
+        Route::post('/delete', [EmailLayoutController::class, 'delete']);
+        Route::post('/get-data-for-preview', [EmailLayoutController::class, 'getDataForPreview']);
+        Route::post('/get-email-layout-options-by-language', [EmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
+        Route::post('/get-preview-template-object', [EmailLayoutController::class, 'getPreviewTemplateObject']);
+    });
+
+    Route::prefix('email-template')->group(function () {
+        // Email Template
+        Route::post('/get-email-templates', [EmailTemplateController::class, 'getEmailTemplates']);
+        Route::post('/create', [EmailTemplateController::class, 'create']);
+        Route::post('/details', [EmailTemplateController::class, 'details']);
+        Route::post('/update', [EmailTemplateController::class, 'update']);
+        Route::post('/delete', [EmailTemplateController::class, 'delete']);
+        Route::post('/get-email-events', [EmailTemplateController::class, 'getEmailEvents']);
+        Route::post('/get-data-for-preview', [EmailTemplateController::class, 'getDataForPreview']);
+    });
 
     Route::middleware(['company'])->group(function () {
         // Order
@@ -281,5 +310,29 @@ Route::middleware(['auth:api'])->group(function () {
         // Onboard
         Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);
         Route::post('/company-onboard-status/update', [OnboardController::class, 'updateCompanyOnboardStatus']);
+
+        Route::prefix('company-email-layout')->group(function () {
+            // Email Layout
+            Route::post('/get-email-layouts', [CompanyEmailLayoutController::class, 'getEmailLayouts']);
+            Route::post('/create', [CompanyEmailLayoutController::class, 'create']);
+            Route::post('/details', [CompanyEmailLayoutController::class, 'details']);
+            Route::post('/update', [CompanyEmailLayoutController::class, 'update']);
+            Route::post('/delete', [CompanyEmailLayoutController::class, 'delete']);
+            Route::post('/get-data-for-preview', [CompanyEmailLayoutController::class, 'getDataForPreview']);
+            Route::post('/get-email-layout-options-by-language', [CompanyEmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
+            Route::post('/get-preview-template-object', [CompanyEmailLayoutController::class, 'getPreviewTemplateObject']);
+        });
+
+        Route::prefix('company-email-template')->group(function () {
+            // Email Template
+            Route::post('/get-email-templates', [CompanyEmailTemplateController::class, 'getEmailTemplates']);
+            Route::post('/create', [CompanyEmailTemplateController::class, 'create']);
+            Route::post('/details', [CompanyEmailTemplateController::class, 'details']);
+            Route::post('/update', [CompanyEmailTemplateController::class, 'update']);
+            Route::post('/delete', [CompanyEmailTemplateController::class, 'delete']);
+            Route::post('/get-email-events', [CompanyEmailTemplateController::class, 'getEmailEvents']);
+            Route::post('/get-data-for-preview', [CompanyEmailTemplateController::class, 'getDataForPreview']);
+        });
+
     });
 });
