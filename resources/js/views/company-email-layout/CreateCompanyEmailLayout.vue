@@ -50,7 +50,7 @@ async function createEmailLayout() {
         await nextTick();
         await router.push({name: 'company-email-layouts'});
     } catch (error) {
-        if (error.status === 422) {
+        if (error.response && error.response.status === 422) {
             setErrors(error.response.data.errors);
         }
     } finally {

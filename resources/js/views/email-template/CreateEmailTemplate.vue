@@ -52,7 +52,7 @@ async function createEmailTemplate() {
         await nextTick();
         await router.push({name: 'email-templates'});
     } catch (error) {
-        if (error.status === 422) {
+        if (error.response && error.response.status === 422) {
             setErrors(error.response.data.errors);
         }
     } finally {

@@ -48,7 +48,7 @@ async function updateEmailTemplate() {
         let {data, message} = await CompanyEmailTemplate.update(companyStore.selectedCompany.Id, formData);
         notificationStore.showNotification(message);
     } catch (error) {
-        if (error.status === 422) {
+        if (error.response && error.response.status === 422) {
             setErrors(error.response.data.errors);
         }
     } finally {
