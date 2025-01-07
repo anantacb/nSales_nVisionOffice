@@ -99,7 +99,7 @@ async function getDataForPreview() {
         }
 
     } catch (error) {
-        if (error.status === 422) {
+        if (error.response && error.response.status === 422) {
             emit('setNewErrors', error.response.data.errors);
         }
     } finally {
