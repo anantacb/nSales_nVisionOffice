@@ -137,12 +137,12 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         foreach ($request->get('ModuleSettings') as $moduleSetting) {
             if ($moduleSetting['setting']) {
                 $this->settingRepository->findByIdAndUpdate($moduleSetting['setting']['Id'], [
-                    'Value' => typeOf($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value']
+                    'Value' => gettype($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value']
                 ]);
             } else {
                 $this->settingRepository->create([
                     'ModuleSettingId' => $moduleSetting['Id'],
-                    'Value' => typeOf($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value'],
+                    'Value' => gettype($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value'],
                     'CompanyId' => $companyId,
                 ]);
             }
