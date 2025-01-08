@@ -291,6 +291,39 @@ export default {
         },
 
         {
+            name: "Email",
+            icon: "fa fa-envelope-open",
+            subActivePaths: ["layout", 'template'],
+            roles: ["Developer"],
+            sub: [
+                {
+                    name: "Layouts",
+                    icon: "fa fa-envelope",
+                    to: "email-layouts",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Create Layout",
+                    icon: "fa fa-plus",
+                    to: "create-email-layout",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Templates",
+                    icon: "fa fa-envelope",
+                    to: "email-templates",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Create Template",
+                    icon: "fa fa-plus",
+                    to: "create-email-template",
+                    roles: ["Developer"],
+                }
+            ],
+        },
+
+        {
             name: "Onboard",
             icon: "fa fa-wand-magic-sparkles",
             subActivePaths: ["onboard"],
@@ -439,5 +472,49 @@ export default {
                 }
             ]
         },
+
+        {
+            name: "Company Email",
+            icon: "fa fa-envelope",
+            subActivePaths: ["company-email-layout", 'company-email-template'],
+            moduleSpecific: true,
+            moduleName: 'CompanyEmail',
+            roles: ["Developer", "Administrator", "Employee"],
+            sub: [
+                {
+                    name: "Layouts",
+                    icon: "fa fa-envelope",
+                    to: "company-email-layouts",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
+                    name: "Create Layout",
+                    icon: "fa fa-plus",
+                    to: "create-company-email-layout",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
+                    name: "Templates",
+                    icon: "fa fa-envelope",
+                    to: "company-email-templates",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
+                    name: "Create Template",
+                    icon: "fa fa-plus",
+                    to: "create-company-email-template",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                }
+            ],
+        },
+
     ]
 };
