@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ModuleSetting\CoreModuleSettings;
 use App\Http\Requests\ModuleSetting\Create;
 use App\Http\Requests\ModuleSetting\DetailsOrDelete;
 use App\Http\Requests\ModuleSetting\Update;
@@ -36,6 +37,12 @@ class ModuleSettingController extends Controller
     public function getModuleSettingsByName(Request $request)
     {
         $response = $this->service->getModuleSettingsByName($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getCoreModuleSettingsByName(CoreModuleSettings $request)
+    {
+        $response = $this->service->getCoreModuleSettingsByName($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
