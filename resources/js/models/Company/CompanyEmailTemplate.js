@@ -100,4 +100,18 @@ export default class CompanyEmailTemplate {
         });
     }
 
+    static copyTemplateToCompany(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company-email-template/copy-template-to-company', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }
