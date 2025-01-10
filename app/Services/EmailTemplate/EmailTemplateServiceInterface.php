@@ -20,4 +20,6 @@ interface EmailTemplateServiceInterface
     public function getEmailEvents(Request $request): ServiceDto;
 
     public function getDataForPreview(Request $request): ServiceDto;
+    
+    public function getEmailTemplatesForCompany(Request $request): ServiceDto;
 }

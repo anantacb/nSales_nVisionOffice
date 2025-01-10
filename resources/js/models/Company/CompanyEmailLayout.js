@@ -73,7 +73,6 @@ export default class CompanyEmailLayout {
     }
 
     static getDataForPreview(CompanyId, formData) {
-        console.log(CompanyId, formData);
         return new Promise((resolve, reject) => {
             axios.post('/api/company-email-layout/get-data-for-preview', {
                 CompanyId: CompanyId,

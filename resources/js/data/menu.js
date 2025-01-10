@@ -474,7 +474,7 @@ export default {
         },
 
         {
-            name: "Company Email",
+            name: "Email",
             icon: "fa fa-envelope",
             subActivePaths: ["company-email-layout", 'company-email-template'],
             moduleSpecific: true,
@@ -506,9 +506,17 @@ export default {
                     roles: ["Developer", "Administrator", "Employee"],
                 },
                 {
-                    name: "Create Template",
+                    name: "Create New Template",
                     icon: "fa fa-plus",
                     to: "create-company-email-template",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
+                    name: "Choose Template",
+                    icon: "fa fa-copy",
+                    to: "choose-email-template",
                     moduleSpecific: true,
                     moduleName: 'CompanyEmail',
                     roles: ["Developer", "Administrator", "Employee"],

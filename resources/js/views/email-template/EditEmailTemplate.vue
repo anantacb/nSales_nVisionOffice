@@ -20,7 +20,7 @@ let LayoutOptions = ref([]);
 let EmailTemplateModel = ref({});
 let EmailEvents = ref([]);
 const updateEmailLayoutRef = ref(null);
-const isLoading = ref(false)
+const isLoading = ref(false);
 
 function setTemplate(newEditorValue) {
     EmailTemplateModel.value.Template = newEditorValue;
