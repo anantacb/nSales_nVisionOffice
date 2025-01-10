@@ -126,7 +126,7 @@ onMounted(async () => {
         <Loader :is-loading="isLoading"></Loader>
 
         <form class="space-y-4" @submit.prevent="createEmailTemplate">
-            <BaseBlock ref="createEmailLayoutRef" content-full title="Create Email layout">
+            <BaseBlock ref="createEmailLayoutRef" content-full title="Create Email Template">
                 <template #options>
                     <router-link :to="{name:'email-templates'}" class="btn btn-sm btn-outline-info">
                         <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back

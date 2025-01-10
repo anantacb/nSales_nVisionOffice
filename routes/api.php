@@ -334,5 +334,10 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/get-data-for-preview', [CompanyEmailTemplateController::class, 'getDataForPreview']);
         });
 
+        Route::prefix('email-template')->group(function () {
+            // Email Template
+            Route::post('/get-email-templates-for-company', [EmailTemplateController::class, 'getEmailTemplatesForCompany']);
+        });
+
     });
 });

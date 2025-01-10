@@ -63,5 +63,10 @@ class EmailTemplateController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getEmailTemplatesForCompany(PaginatedDataRequest $request): JsonResponse
+    {
+        $response = $this->service->getEmailTemplatesForCompany($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
 
 }
