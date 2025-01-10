@@ -42,30 +42,30 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
 
     public function create(Request $request): ServiceDto
     {
-        $layout = $this->templateRepository->create([
+        $template = $this->templateRepository->create([
             'ElementName' => $request->get('ElementName'),
             'LayoutId' => $request->get('LayoutId'),
             'LanguageId' => $request->get('LanguageId'),
             'Subject' => $request->get('Subject'),
             'Template' => $request->get('Template')
         ]);
-        return new ServiceDto("Email Template Created Successfully.", 200, $layout);
+        return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }
 
     public function details(Request $request): ServiceDto
     {
         $relations = [];
 
-        $layout = $this->templateRepository->firstByAttributes([
+        $template = $this->templateRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailTemplateId')]
         ], $relations);
 
-        return new ServiceDto("Template Retrieved Successfully.", 200, $layout);
+        return new ServiceDto("Template Retrieved Successfully.", 200, $template);
     }
 
     public function update(Request $request): ServiceDto
     {
-        $layout = $this->templateRepository->findByIdAndUpdate(
+        $template = $this->templateRepository->findByIdAndUpdate(
             $request->get('Id'),
             [
                 'ElementName' => $request->get('ElementName'),
@@ -75,7 +75,7 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
                 'Template' => $request->get('Template')
             ]
         );
-        return new ServiceDto("Template Updated Successfully.", 200, $layout);
+        return new ServiceDto("Template Updated Successfully.", 200, $template);
     }
 
 
@@ -124,6 +124,19 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
     {
         $this->templateRepository->findByIdAndDelete($request->get('EmailTemplateId'));
         return new ServiceDto("Template Deleted Successfully.", 200);
+    }
+
+    public function copyTemplateToCompany(Request $request): ServiceDto
+    {
+        $companyEmailTemplate = $this->templateRepository->create([
+            'ElementName' => $request->get('ElementName'),
+            'LanguageId' => $request->get('LanguageId'),
+            'LayoutId' => $request->get('LayoutId'),
+            'Subject' => $request->get('Subject'),
+            'Template' => $request->get('Template')
+        ]);
+
+        return new ServiceDto("Email Template Copied Successfully.", 200, $companyEmailTemplate);
     }
 
 }

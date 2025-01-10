@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompanyEmailTemplate\CopyTemplateToCompany;
 use App\Http\Requests\CompanyEmailTemplate\Create;
 use App\Http\Requests\CompanyEmailTemplate\DetailsOrDelete;
 use App\Http\Requests\CompanyEmailTemplate\PreviewTemplate;
@@ -63,5 +64,10 @@ class CompanyEmailTemplateController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function copyTemplateToCompany(CopyTemplateToCompany $request): JsonResponse
+    {
+        $response = $this->service->copyTemplateToCompany($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
 
 }
