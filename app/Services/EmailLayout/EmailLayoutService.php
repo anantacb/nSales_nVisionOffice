@@ -4,6 +4,7 @@ namespace App\Services\EmailLayout;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
@@ -14,14 +15,17 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     protected EmailLayoutRepositoryInterface $layoutRepository;
     protected ModuleSettingServiceInterface $moduleSettingService;
     protected TranslationRepositoryInterface $translationRepository;
+    protected EmailTemplateRepositoryInterface $templateRepository;
 
     public function __construct(
         EmailLayoutRepositoryInterface $layoutRepository,
+        EmailTemplateRepositoryInterface $templateRepository,
         ModuleSettingServiceInterface  $moduleSettingService,
         TranslationRepositoryInterface $translationRepository
     )
     {
         $this->layoutRepository = $layoutRepository;
+        $this->templateRepository = $templateRepository;
         $this->moduleSettingService = $moduleSettingService;
         $this->translationRepository = $translationRepository;
     }
@@ -102,8 +106,8 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
 
     public function delete(Request $request): ServiceDto
     {
-//        $this->translationRepository->deleteByAttributes([
-//            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+//        $this->templateRepository->deleteByAttributes([
+//            ['column' => 'LayoutId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
 //        ]);
         $this->layoutRepository->findByIdAndDelete($request->get('EmailLayoutId'));
         return new ServiceDto("Layout Deleted Successfully.", 200);

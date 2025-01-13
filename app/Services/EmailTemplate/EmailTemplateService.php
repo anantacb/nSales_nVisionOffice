@@ -3,6 +3,7 @@
 namespace App\Services\EmailTemplate;
 
 use App\Contracts\ServiceDto;
+use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
 use App\Services\EmailLayout\EmailHelperService;
@@ -15,16 +16,19 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
     protected EmailTemplateRepositoryInterface $templateRepository;
     protected EmailLayoutRepositoryInterface $emailLayoutRepository;
     protected ModuleSettingServiceInterface $moduleSettingService;
+    protected CompanyLanguageRepositoryInterface $companyLanguageRepository;
 
     public function __construct(
-        EmailTemplateRepositoryInterface $templateRepository,
-        EmailLayoutRepositoryInterface   $emailLayoutRepository,
-        ModuleSettingServiceInterface    $moduleSettingService,
+        EmailTemplateRepositoryInterface   $templateRepository,
+        EmailLayoutRepositoryInterface     $emailLayoutRepository,
+        ModuleSettingServiceInterface      $moduleSettingService,
+        CompanyLanguageRepositoryInterface $companyLanguageRepository,
     )
     {
         $this->templateRepository = $templateRepository;
         $this->emailLayoutRepository = $emailLayoutRepository;
         $this->moduleSettingService = $moduleSettingService;
+        $this->companyLanguageRepository = $companyLanguageRepository;
     }
 
     public function getEmailTemplates(Request $request): ServiceDto
@@ -34,6 +38,13 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
             ["name" => "language", "columns" => ['Id', 'Name']],
             ["name" => "emailLayout", "columns" => ['Id', 'Name']]
         ];
+        $templates = $this->fetchEmailTemplates($request);
+
+        return new ServiceDto("Templates retrieved!!!", 200, $templates);
+    }
+
+    public function fetchEmailTemplates($request)
+    {
         $templates = $this->templateRepository->paginatedData($request);
 
         list('EmailEvents' => $emailEvents) = $this->moduleSettingService->getCoreModuleSettings(
@@ -41,12 +52,10 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         );
         $emailEvents = json_decode(json_encode($emailEvents), true);
 
-        $templates = $templates->map(function ($template) use ($emailEvents) {
+        return $templates->map(function ($template) use ($emailEvents) {
             $template->ModifiedElementName = $emailEvents[$template->ElementName]['Title'] ?? $template->ElementName;
             return $template;
         });
-
-        return new ServiceDto("Templates retrieved!!!", 200, $templates);
     }
 
     public function create(Request $request): ServiceDto
@@ -86,7 +95,6 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         );
         return new ServiceDto("Template Updated Successfully.", 200, $layout);
     }
-
 
     public function getEmailEvents(Request $request): ServiceDto
     {
@@ -138,5 +146,24 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         $this->templateRepository->findByIdAndDelete($request->get('EmailTemplateId'));
         return new ServiceDto("Template Deleted Successfully.", 200);
     }
+
+    public function getEmailTemplatesForCompany(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        $companyLanguageCodes = $this->companyLanguageRepository->all()->pluck('Code')->toArray();
+
+        $request['filter_by_relation'] = [
+            ["relation" => 'language', "column" => "Code", "operator" => "=", "values" => $companyLanguageCodes]
+        ];
+
+        $request['relations'] = [
+            ["name" => "language", "columns" => ['Id', 'Name', 'Code']],
+            ["name" => "emailLayout", "columns" => ['Id', 'Name']]
+        ];
+        $templates = $this->fetchEmailTemplates($request);
+
+        return new ServiceDto("Templates retrieved!!!", 200, $templates);
+    }
+
 
 }
