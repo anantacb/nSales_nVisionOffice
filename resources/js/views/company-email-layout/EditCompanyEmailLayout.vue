@@ -94,7 +94,7 @@ onMounted(async () => {
         <Loader :is-loading="isLoading"></Loader>
         <form v-if="!_.isEmpty(CompanyEmailLayoutModel)" class="space-y-4" @submit.prevent="updateEmailLayout">
 
-            <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Email layout">
+            <BaseBlock ref="updateEmailLayoutRef" content-full title="Edit Email Layout">
                 <template #options>
                     <router-link :to="{name:'company-email-layouts'}" class="btn btn-sm btn-outline-info">
                         <i class="far fa-fw fa-arrow-alt-circle-left"></i> Back

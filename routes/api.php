@@ -332,6 +332,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/delete', [CompanyEmailTemplateController::class, 'delete']);
             Route::post('/get-email-events', [CompanyEmailTemplateController::class, 'getEmailEvents']);
             Route::post('/get-data-for-preview', [CompanyEmailTemplateController::class, 'getDataForPreview']);
+            Route::post('/copy-template-to-company', [CompanyEmailTemplateController::class, 'copyTemplateToCompany']);
+        });
+
+        Route::prefix('email-template')->group(function () {
+            // Email Template
+            Route::post('/get-email-templates-for-company', [EmailTemplateController::class, 'getEmailTemplatesForCompany']);
         });
 
     });

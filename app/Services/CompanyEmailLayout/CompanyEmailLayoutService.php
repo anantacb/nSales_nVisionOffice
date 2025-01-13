@@ -4,7 +4,7 @@ namespace App\Services\CompanyEmailLayout;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
-use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
 use App\Services\Company\CompanyService;
 use App\Services\EmailLayout\EmailHelperService;
 use Exception;
@@ -13,15 +13,15 @@ use Illuminate\Http\Request;
 class CompanyEmailLayoutService extends EmailHelperService implements CompanyEmailLayoutServiceInterface
 {
     protected CompanyEmailLayoutRepositoryInterface $repository;
-    protected TranslationRepositoryInterface $translationRepository;
+    protected CompanyEmailTemplateRepositoryInterface $companyEmailTemplateRepository;
 
     public function __construct(
-        CompanyEmailLayoutRepositoryInterface $repository,
-        TranslationRepositoryInterface        $translationRepository
+        CompanyEmailLayoutRepositoryInterface   $repository,
+        CompanyEmailTemplateRepositoryInterface $companyEmailTemplateRepository,
     )
     {
         $this->repository = $repository;
-        $this->translationRepository = $translationRepository;
+        $this->companyEmailTemplateRepository = $companyEmailTemplateRepository;
     }
 
     public function getEmailLayouts(Request $request): ServiceDto
@@ -100,8 +100,8 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
 
     public function delete(Request $request): ServiceDto
     {
-//        $this->translationRepository->deleteByAttributes([
-//            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+//        $this->companyEmailTemplateRepository->deleteByAttributes([
+//            ['column' => 'LayoutId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
 //        ]);
         $this->repository->findByIdAndDelete($request->get('EmailLayoutId'));
         return new ServiceDto("Layout Deleted Successfully.", 200);
