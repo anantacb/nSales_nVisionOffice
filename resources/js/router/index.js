@@ -107,6 +107,7 @@ const EditCompanyEmailLayout = () => import('@/views/company-email-layout/EditCo
 const CompanyEmailTemplates = () => import('@/views/company-email-template/CompanyEmailTemplates/CompanyEmailTemplates.vue');
 const CreateCompanyEmailTemplate = () => import('@/views/company-email-template/CreateCompanyEmailTemplate.vue');
 const EditCompanyEmailTemplate = () => import('@/views/company-email-template/EditCompanyEmailTemplate.vue');
+const ChooseEmailTemplate = () => import('@/views/company-email-template/ChooseEmailTemplates/ChooseEmailTemplate.vue');
 
 const NotFound = () => import('@/views/404View.vue');
 
@@ -905,6 +906,17 @@ const routes = [
                 path: "company-email-template/:id/edit",
                 name: "edit-company-email-template",
                 component: EditCompanyEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-template/choose",
+                name: "choose-email-template",
+                component: ChooseEmailTemplate,
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
