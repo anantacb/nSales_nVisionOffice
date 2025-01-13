@@ -218,7 +218,8 @@ async function getDataForPreview(emailTemplate) {
 }
 
 async function copyEmailTemplateToCompany() {
-
+    copyTemplateRef.value.closeModal();
+    isLoading.value = true;
     let formData = {
         ElementName: SelectedEmailTemplate.value.ElementName,
         LanguageId: SelectedEmailTemplate.value.LanguageId,
@@ -227,20 +228,18 @@ async function copyEmailTemplateToCompany() {
         Template: SelectedEmailTemplate.value.Template,
     };
 
-    isLoading.value = true;
     try {
         let {
             data,
             message
         } = await CompanyEmailTemplate.copyTemplateToCompany(companyStore.selectedCompany.Id, formData);
         notificationStore.showNotification(message);
-        copyTemplateRef.value.closeModal();
-
         await nextTick();
         await router.push({name: 'company-email-templates'});
     } catch (error) {
         if (error.response && error.response.status === 422) {
             setErrors(error.response.data.errors);
+            copyTemplateRef.value.openModal();
         }
     } finally {
         isLoading.value = false;
