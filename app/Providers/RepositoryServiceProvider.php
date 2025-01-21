@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepository;
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepository;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepository;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepository;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepository;
@@ -12,6 +16,8 @@ use App\Repositories\Eloquent\Company\Customer\CustomerRepository;
 use App\Repositories\Eloquent\Company\Customer\CustomerRepositoryInterface;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepository;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepositoryInterface;
+use App\Repositories\Eloquent\Company\DocumentApi\DocumentApiRepository;
+use App\Repositories\Eloquent\Company\DocumentApi\DocumentApiRepositoryInterface;
 use App\Repositories\Eloquent\Company\Item\ItemRepository;
 use App\Repositories\Eloquent\Company\Item\ItemRepositoryInterface;
 use App\Repositories\Eloquent\Company\ItemAttribute\ItemAttributeRepository;
@@ -22,8 +28,12 @@ use App\Repositories\Eloquent\Company\Order\OrderRepository;
 use App\Repositories\Eloquent\Company\Order\OrderRepositoryInterface;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepository;
 use App\Repositories\Eloquent\Company\WebShopLanguage\WebShopLanguageRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopPage\WebShopPageRepository;
+use App\Repositories\Eloquent\Company\WebShopPage\WebShopPageRepositoryInterface;
 use App\Repositories\Eloquent\Company\WebShopText\WebShopTextRepository;
 use App\Repositories\Eloquent\Company\WebShopText\WebShopTextRepositoryInterface;
+use App\Repositories\Eloquent\Company\WebShopUser\WebShopUserRepository;
+use App\Repositories\Eloquent\Company\WebShopUser\WebShopUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepository;
 use App\Repositories\Eloquent\Office\Application\ApplicationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
@@ -46,6 +56,10 @@ use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepository;
 use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepository;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepository;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepository;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepository;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
 use App\Repositories\Eloquent\Office\Language\LanguageRepository;
@@ -58,6 +72,8 @@ use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepo
 use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepository;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
+use App\Repositories\Eloquent\Office\OnboardStatus\OnboardStatusRepository;
+use App\Repositories\Eloquent\Office\OnboardStatus\OnboardStatusRepositoryInterface;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepository;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepository;
@@ -70,6 +86,8 @@ use App\Repositories\Eloquent\Office\TableField\TableFieldRepository;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepository;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepositoryInterface;
+use App\Repositories\Eloquent\Office\Theme\ThemeRepository;
+use App\Repositories\Eloquent\Office\Theme\ThemeRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepository;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepository;
@@ -152,5 +170,23 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(FtpUserRepositoryInterface::class, FtpUserRepository::class);
         $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
+
+        $this->app->bind(WebShopUserRepositoryInterface::class, WebShopUserRepository::class);
+
+        $this->app->bind(WebShopPageRepositoryInterface::class, WebShopPageRepository::class);
+
+        $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
+
+        $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
+
+        $this->app->bind(DocumentApiRepositoryInterface::class, DocumentApiRepository::class);
+
+        $this->app->bind(OnboardStatusRepositoryInterface::class, OnboardStatusRepository::class);
+
+        $this->app->bind(EmailLayoutRepositoryInterface::class, EmailLayoutRepository::class);
+        $this->app->bind(EmailTemplateRepositoryInterface::class, EmailTemplateRepository::class);
+        $this->app->bind(CompanyEmailLayoutRepositoryInterface::class, CompanyEmailLayoutRepository::class);
+        $this->app->bind(CompanyEmailTemplateRepositoryInterface::class, CompanyEmailTemplateRepository::class);
+
     }
 }

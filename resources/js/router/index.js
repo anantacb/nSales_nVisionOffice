@@ -84,7 +84,6 @@ const EditTranslation = () => import('@/views/translation/EditTranslation.vue');
 
 const CompanyLanguages = () => import('@/views/company-language/CompanyLanguages/CompanyLanguages.vue');
 
-
 const CompanyTranslations = () => import('@/views/company-translation/CompanyTranslations/CompanyTranslations.vue');
 const CreateCompanyTranslation = () => import('@/views/company-translation/CreateCompanyTranslation.vue');
 const EditCompanyTranslation = () => import('@/views/company-translation/EditCompanyTranslation.vue');
@@ -92,6 +91,26 @@ const EditCompanyTranslation = () => import('@/views/company-translation/EditCom
 const ModulePackages = () => import('@/views/module-package/ModulePackages/ModulePackages.vue');
 const CreateModulePackage = () => import('@/views/module-package/CreateModulePackage.vue');
 const EditModulePackage = () => import('@/views/module-package/EditModulePackage/EditModulePackage.vue');
+
+const OnboardWebshop = () => import("@/views/onboard/Webshop.vue");
+const OnboardRetailer = () => import("@/views/onboard/Retailer.vue");
+
+const EmailLayouts = () => import('@/views/email-layout/EmailLayouts/EmailLayouts.vue');
+const CreateEmailLayout = () => import('@/views/email-layout/CreateEmailLayout.vue');
+const EditEmailLayout = () => import('@/views/email-layout/EditEmailLayout.vue');
+
+const EmailTemplates = () => import('@/views/email-template/EmailTemplates/EmailTemplates.vue');
+const CreateEmailTemplate = () => import('@/views/email-template/CreateEmailTemplate.vue');
+const EditEmailTemplate = () => import('@/views/email-template/EditEmailTemplate.vue');
+
+const CompanyEmailLayouts = () => import('@/views/company-email-layout/CompanyEmailLayouts/CompanyEmailLayouts.vue');
+const CreateCompanyEmailLayout = () => import('@/views/company-email-layout/CreateCompanyEmailLayout.vue');
+const EditCompanyEmailLayout = () => import('@/views/company-email-layout/EditCompanyEmailLayout.vue');
+
+const CompanyEmailTemplates = () => import('@/views/company-email-template/CompanyEmailTemplates/CompanyEmailTemplates.vue');
+const CreateCompanyEmailTemplate = () => import('@/views/company-email-template/CreateCompanyEmailTemplate.vue');
+const EditCompanyEmailTemplate = () => import('@/views/company-email-template/EditCompanyEmailTemplate.vue');
+const ChooseEmailTemplate = () => import('@/views/company-email-template/ChooseEmailTemplates/ChooseEmailTemplate.vue');
 
 const NotFound = () => import('@/views/404View.vue');
 
@@ -597,6 +616,88 @@ const routes = [
                 }
             },
 
+            {
+                path: "email-layout/layouts",
+                name: "email-layouts",
+                component: EmailLayouts,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-layout/create",
+                name: "create-email-layout",
+                component: CreateEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-layout/:id/edit",
+                name: "edit-email-layout",
+                component: EditEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+
+            {
+                path: "email-template/templates",
+                name: "email-templates",
+                component: EmailTemplates,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-template/create",
+                name: "create-email-template",
+                component: CreateEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "email-template/:id/edit",
+                name: "edit-email-template",
+                component: EditEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+
+            {
+                path: "onboard/webshop",
+                name: "onboardWebshop",
+                component: OnboardWebshop,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "onboard/retailer",
+                name: "OnboardRetailer",
+                component: OnboardRetailer,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
 
             // Company Routes
             {
@@ -772,6 +873,85 @@ const routes = [
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
+                }
+            },
+
+            {
+                path: "company-email-layout/layouts",
+                name: "company-email-layouts",
+                component: CompanyEmailLayouts,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-layout/create",
+                name: "create-company-email-layout",
+                component: CreateCompanyEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-layout/:id/edit",
+                name: "edit-company-email-layout",
+                component: EditCompanyEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+
+            {
+                path: "company-email-template/templates",
+                name: "company-email-templates",
+                component: CompanyEmailTemplates,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-template/create",
+                name: "create-company-email-template",
+                component: CreateCompanyEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-template/:id/edit",
+                name: "edit-company-email-template",
+                component: EditCompanyEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-template/choose",
+                name: "choose-email-template",
+                component: ChooseEmailTemplate,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
                 }
             },
 

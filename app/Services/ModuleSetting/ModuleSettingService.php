@@ -9,7 +9,9 @@ use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use App\Repositories\Plugin\B2bGqlApi\B2bGqlApiRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ModuleSettingService implements ModuleSettingServiceInterface
 {
@@ -135,12 +137,12 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         foreach ($request->get('ModuleSettings') as $moduleSetting) {
             if ($moduleSetting['setting']) {
                 $this->settingRepository->findByIdAndUpdate($moduleSetting['setting']['Id'], [
-                    'Value' => $moduleSetting['Value']
+                    'Value' => gettype($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value']
                 ]);
             } else {
                 $this->settingRepository->create([
                     'ModuleSettingId' => $moduleSetting['Id'],
-                    'Value' => $moduleSetting['Value'],
+                    'Value' => gettype($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value'],
                     'CompanyId' => $companyId,
                 ]);
             }
@@ -159,7 +161,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
             'Name' => $request->get('Name'),
             'DataType' => $request->get('DataType'),
             'Options' => $request->get('Options'),
-            'Value' => $request->get('Value'),
+            'Value' => $request->get('Value') ?? "",
             'ValueExpression' => $request->get('ValueExpression'),
             'CoreSetting' => $request->get('CoreSetting'),
             'Note' => $request->get('Note'),
@@ -179,7 +181,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
                 'Name' => $request->get('Name'),
                 'DataType' => $request->get('DataType'),
                 'Options' => $request->get('Options'),
-                'Value' => $request->get('Value'),
+                'Value' => $request->get('Value') ?? "",
                 'ValueExpression' => $request->get('ValueExpression'),
                 'CoreSetting' => $request->get('CoreSetting'),
                 'Note' => $request->get('Note'),
@@ -215,4 +217,103 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         $moduleSettings = $this->moduleSettingRepository->paginatedData($request);
         return new ServiceDto("Module Settings retrieved!!!", 200, $moduleSettings);
     }
+
+    public function getModuleSettingsByName(Request $request): ServiceDto
+    {
+        $companyId = $request->get('CompanyId');
+
+        $settings = $request->get("Settings");
+        $settings = array_map(function ($setting) {
+            $exploded = explode('.', $setting);
+            $moduleName = array_shift($exploded);
+            $settingName = implode(".", $exploded);
+
+            return [
+                "moduleName" => $moduleName,
+                "settingName" => $settingName
+            ];
+        }, $settings);
+
+        $uniqueModuleNames = array_unique(array_map(function ($setting) {
+            return $setting["moduleName"];
+        }, $settings));
+
+        $attributes = [[
+            "column" => 'Name', 'operand' => 'in', 'value' => $uniqueModuleNames
+        ]];
+        $modules = $this->moduleRepository->getByAttributes($attributes, [], ["Id", "Name"])
+            ->pluck("Id", "Name")
+            ->toArray();
+
+        $attributes = [
+            [
+                "column" => 'Name',
+                'operand' => '=',
+                'value' => array_map(function ($setting) {
+                    return $setting["settingName"];
+                }, $settings)
+            ], [
+                "column" => 'ModuleId',
+                'operand' => '=',
+                'value' => array_values($modules)
+            ]
+        ];
+        $relations = [
+            'setting' => function ($q) use ($companyId) {
+                $q->select(["Id", "ModuleSettingId", "Value", "CompanyId"])
+                    ->where('CompanyId', $companyId);
+            }
+        ];
+        $settings = $this->moduleSettingRepository->getByAttributes($attributes, $relations);
+
+        $formattedSettings = [];
+        foreach ($settings as $setting) {
+            $formattedSettings[] = $this->formatModuleSetting($setting);
+        }
+
+        return new ServiceDto("ModuleSettings retrieved!!!", 200, $formattedSettings);
+    }
+
+    public function getCoreModuleSettingsByName(Request $request): ServiceDto
+    {
+        $module = $request->get('Module');
+        $settingKeys = $request->get('SettingKeys');
+
+        $settings = $this->getCoreModuleSettings($module, $settingKeys);
+        return new ServiceDto("ModuleSettings retrieved!!!", 200, $settings);
+    }
+
+    public function getCoreModuleSettings(string $module, array $settingKeys): array
+    {
+        $moduleSettings = Cache::remember(
+            'module_' . $module,
+            Carbon::now()->addHours(24),
+            function () use ($module) {
+                $moduleData = $this->moduleRepository->firstByAttributes(
+                    [
+                        ["column" => 'Name', 'operand' => '=', 'value' => $module]
+                    ],
+                    ['moduleSettings']
+                );
+
+                $settings = [];
+                if ($moduleData) {
+                    foreach ($moduleData->moduleSettings as $moduleSetting) {
+                        $formatModuleSetting = $this->formatModuleSetting($moduleSetting);
+                        $settings[$formatModuleSetting->Name] = $formatModuleSetting->Value;
+                    }
+                }
+
+                return $settings;
+            });
+
+        // send only requested settings
+        $responseSettings = [];
+        foreach ($settingKeys as $settingKey) {
+            $responseSettings[$settingKey] = $moduleSettings[$settingKey] ?? "";
+        }
+
+        return $responseSettings;
+    }
+
 }

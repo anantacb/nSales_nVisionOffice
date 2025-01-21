@@ -44,4 +44,10 @@ class WebShopPage extends BaseModel
     {
         return 'WebShopPage';
     }
+
+    public function webShopText()
+    {
+        return $this->hasMany(WebShopText::class, "ElementNumber", "Id")
+            ->where("ElementType", "Page");
+    }
 }

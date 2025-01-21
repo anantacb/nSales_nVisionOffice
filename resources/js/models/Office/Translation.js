@@ -63,4 +63,16 @@ export default class Translation {
                 });
         });
     }
+
+    static syncTranslations() {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/translations/sync')
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }
