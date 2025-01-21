@@ -20,3 +20,4 @@ package-lock.json
 composer.lock
 /public/vendor/log-viewer/
 storage/debugbar
+docker.env
