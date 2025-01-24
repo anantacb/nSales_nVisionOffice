@@ -30,23 +30,26 @@ class OnboardService implements OnboardServiceInterface
         ];
 
         $onboardStatus = $this->onboardStatusRepository->firstByAttributes($attributes);
-        if (!$onboardStatus) {
-            if (Cache::has("company_" . $request->get("CompanyId"))) {
-                $company = Cache::get("company_" . $request->get("CompanyId"));
-            } else {
-                $company = $this->companyRepository->findById($request->get("CompanyId"));
-            }
 
-            if (strtolower($request->get("Application")) === "retailer") {
-                $onboardStatus = $company->module_settings['System']['RetailerOnboardSteps'] ?? null;
-            } else {
-                $onboardStatus = $company->module_settings['System']['WebshopOnboardSteps'] ?? null;
-            }
+        if (Cache::has("company_" . $request->get("CompanyId"))) {
+            $company = Cache::get("company_" . $request->get("CompanyId"));
         } else {
-            $onboardStatus = $onboardStatus->Progress;
+            $company = $this->companyRepository->findById($request->get("CompanyId"));
         }
 
-        return new ServiceDto("Onboard progress Retrieved Successfully.", 200, json_decode($onboardStatus, true));
+        if (strtolower($request->get("Application")) === "retailer") {
+            $onboardStatusSetting = $company->module_settings['System']['RetailerOnboardSteps'] ?? null;
+        } else {
+            $onboardStatusSetting = $company->module_settings['System']['WebshopOnboardSteps'] ?? null;
+        }
+
+        if (!$onboardStatus) {
+            $onboardStatus = json_decode($onboardStatusSetting, true);
+        } else {
+            $onboardStatus = array_merge(json_decode($onboardStatusSetting, true), json_decode($onboardStatus->Progress, true));
+        }
+
+        return new ServiceDto("Onboard progress Retrieved Successfully.", 200, $onboardStatus);
     }
 
     public function updateCompanyOnboardStatus(Request $request): ServiceDto
