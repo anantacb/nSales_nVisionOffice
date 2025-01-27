@@ -48,7 +48,7 @@ class DeploymentService implements DeploymentServiceInterface
             $company = $this->companyRepository->findById($request->get("CompanyId"));
         }
 
-        $response = $this->repository->startCompanyDeployment($company->DomainName);
+        $response = $this->repository->startCompanyDeployment($company->DomainName, $request->get("prod"), $request->get("dev"));
 
         $companyDeploymentStatus = [];
         if ($response['success']) {
