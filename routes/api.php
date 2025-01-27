@@ -309,7 +309,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/company-git-branches/create', [GitController::class, 'createCompanyBranches']);
 
         Route::post('/company-deployment-status', [DeploymentController::class, 'getCompanyDeploymentStatus']);
-        Route::post('/start-company-deployment', [DeploymentController::class, 'startCompanyDeployment']);
+        Route::post('/company-deployment-start', [DeploymentController::class, 'startCompanyDeployment']);
 
         // Onboard
         Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);

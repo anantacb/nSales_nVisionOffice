@@ -13,10 +13,11 @@ export default class Deploy {
         });
     }
 
-    static startCompanyDeployment(CompanyId) {
+    static startCompanyDeployment(CompanyId, formData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/company-deployment/start', {
+            axios.post('/api/company-deployment-start', {
                 CompanyId: CompanyId,
+                ...formData
             })
                 .then(({data}) => {
                     resolve(data);
