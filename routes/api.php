@@ -13,6 +13,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
+use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\EmailLayoutController;
@@ -306,6 +307,9 @@ Route::middleware(['auth:api'])->group(function () {
         // Git api
         Route::post('/company-git-branches', [GitController::class, 'getCompanyBranches']);
         Route::post('/company-git-branches/create', [GitController::class, 'createCompanyBranches']);
+
+        Route::post('/company-deployment-status', [DeploymentController::class, 'getCompanyDeploymentStatus']);
+        Route::post('/company-deployment-start', [DeploymentController::class, 'startCompanyDeployment']);
 
         // Onboard
         Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);
