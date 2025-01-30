@@ -62,6 +62,31 @@ trait ModuleHelperTrait
         ]);
     }
 
+    private function makeEntryInCompanyTableFieldTable($companyId, $tableFieldId): void
+    {
+        $this->companyTableFieldRepository->firstOrCreate([
+            'TableFieldId' => $tableFieldId,
+            'CompanyId' => $companyId
+        ]);
+    }
+
+    private function makeEntryInCompanyTableIndexTable($companyId, $tableIndexId): void
+    {
+        $this->companyTableIndexRepository->firstOrCreate([
+            'TableIndexId' => $tableIndexId,
+            'CompanyId' => $companyId
+        ]);
+    }
+
+    private function makeEntryInCompanyTableTable($companyId, $tableId): void
+    {
+        $this->companyTableRepository->firstOrCreate([
+            'TableId' => $tableId,
+            'CompanyId' => $companyId
+        ]);
+    }
+
+
     private function deleteEntryFromCompanyModuleTable($companyId, $moduleId): void
     {
         $this->companyModuleRepository->deleteByAttributes([

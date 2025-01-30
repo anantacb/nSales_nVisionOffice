@@ -11,8 +11,13 @@ use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryI
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyTableIndex\CompanyTableIndexRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyTheme\CompanyThemeRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
+use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
 use App\Repositories\Eloquent\Office\Language\LanguageRepositoryInterface;
@@ -30,6 +35,7 @@ use App\Repositories\Plugin\Postmark\PostmarkRepository;
 use App\Services\Traits\ModuleHelperTrait;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +84,13 @@ class CompanyService implements CompanyServiceInterface
     protected CompanyLanguageRepositoryInterface $companyLanguageRepository;
     protected CompanyTranslationRepositoryInterface $companyTranslationRepository;
 
+    protected CompanyTableFieldRepositoryInterface $companyTableFieldRepository;
+    protected CompanyTableIndexRepositoryInterface $companyTableIndexRepository;
+    protected CompanyTableRepositoryInterface $companyTableRepository;
+    protected CompanyThemeRepositoryInterface $companyThemeRepository;
+
+    protected DataFilterRepositoryInterface $dataFilterRepository;
+
     public function __construct(
         CompanyRepositoryInterface             $companyRepository,
         ModulePackageRepositoryInterface       $modulePackageRepository,
@@ -99,7 +112,12 @@ class CompanyService implements CompanyServiceInterface
         LanguageRepositoryInterface            $languageRepository,
         TranslationRepositoryInterface         $translationRepository,
         CompanyLanguageRepositoryInterface     $companyLanguageRepository,
-        CompanyTranslationRepositoryInterface  $companyTranslationRepository
+        CompanyTranslationRepositoryInterface  $companyTranslationRepository,
+        CompanyTableFieldRepositoryInterface   $companyTableFieldRepository,
+        CompanyTableIndexRepositoryInterface   $companyTableIndexRepository,
+        CompanyTableRepositoryInterface        $companyTableRepository,
+        CompanyThemeRepositoryInterface        $companyThemeRepository,
+        DataFilterRepositoryInterface          $dataFilterRepository,
     )
     {
         $this->companyRepository = $companyRepository;
@@ -123,6 +141,11 @@ class CompanyService implements CompanyServiceInterface
         $this->translationRepository = $translationRepository;
         $this->companyLanguageRepository = $companyLanguageRepository;
         $this->companyTranslationRepository = $companyTranslationRepository;
+        $this->companyTableFieldRepository = $companyTableFieldRepository;
+        $this->companyTableIndexRepository = $companyTableIndexRepository;
+        $this->companyTableRepository = $companyTableRepository;
+        $this->companyThemeRepository = $companyThemeRepository;
+        $this->dataFilterRepository = $dataFilterRepository;
     }
 
     /**
@@ -203,6 +226,86 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Companies retrieved!!!", 200, $companies);
     }
 
+    public function cloneCompany(Request $request): ServiceDto
+    {
+        $relations = [
+            'modules' => function ($q) {
+                $q->with([
+                    'tables' => function ($q) {
+                        $q->with(['companyTables', 'tableFields.companyTableFields', 'tableIndices.companyTableIndices'])
+                            ->whereIn('Type', ['Server', 'Both']);
+                    }
+                ]);
+            }
+        ];
+
+        $sourceCompany = $this->companyRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('SourceCompanyId')]
+        ], $relations);
+
+        // create company
+        $targetCompany = $this->companyRepository->create(array_merge(
+            [
+                'Name' => $request->get('Name'),
+                'DomainName' => $request->get('DomainName'),
+                'DatabaseName' => $request->get('DatabaseName'),
+                'CompanyName' => $request->get('CompanyName'),
+            ],
+            collect($sourceCompany)->except([
+                'Id', 'InsertTime', 'UpdateTime', 'DeleteTime',
+                'Name', 'DomainName', 'DatabaseName', 'CompanyName', 'modules'
+            ])->toArray()
+        ));
+
+        $this->cloneModuleTableAndFieldEntries($sourceCompany, $targetCompany);
+
+        $targetCompany->load($relations);
+
+        $withData = $request->get('WithData');
+        $this->cloneDatabaseAndData($sourceCompany, $targetCompany, $withData);
+
+        $withRolesAndUsers = $request->get('WithRolesAndUsers');
+        list($developerRole, $adminRole, $mappedRoles) = $this->cloneRoles($sourceCompany, $targetCompany, $withRolesAndUsers);
+
+        $mappedUsers = [];
+        if (!$withRolesAndUsers) {
+            $this->setUpDevelopers($targetCompany, $developerRole);
+        } else {
+            $mappedUsers = $this->cloneUsersWithRoles($sourceCompany, $targetCompany, $mappedRoles);
+        }
+
+        $withSettings = $request->get('WithSettings');
+        $this->cloneSettings($sourceCompany, $targetCompany, $withSettings);
+
+        if (App::environment('production')) {
+            $this->setUpSyncFtp($targetCompany);
+            $this->setUpImageHosting($targetCompany);
+            $postmarkToken = $this->clonePostmarkEmail($sourceCompany, $targetCompany);
+            if (!$withRolesAndUsers) {
+                // TODO
+                $this->createInitialUserAndSendInvitation($targetCompany, $adminRole, $postmarkToken);
+            }
+        }
+
+        $this->cloneCompanyThemes($sourceCompany, $targetCompany);
+
+        $withDataFilters = $request->get('WithDataFilters');
+        $this->cloneDataFilters($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withDataFilters);
+
+        $withEmailConfigurations = $request->get('WithEmailConfigurations');
+        $this->cloneEmailConfigurations($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withEmailConfigurations);
+
+        if (!$withData) {
+            $this->addDefaultLanguageAndTranslations($targetCompany);
+            /**
+             * TODO
+             *  Add Default Email Layout and templates
+             */
+        }
+
+        return new ServiceDto("Company Cloned Successfully.", 200, $targetCompany);
+    }
+
     public function create(Request $request): ServiceDto
     {
         $company = $this->companyRepository->create($request->all());
@@ -265,10 +368,21 @@ class CompanyService implements CompanyServiceInterface
             ['column' => 'CompanyId', 'operand' => '=', 'value' => null]
         ]);
 
+        return $this->createRoles($defaultRoles, $company);
+    }
+
+    /**
+     * @param $roles
+     * @param $company
+     * @return null[]
+     */
+    private function createRoles($roles, $company): array
+    {
+        $mappedRoles = [];
         $developerRole = null;
         $adminRole = null;
 
-        foreach ($defaultRoles as $role) {
+        foreach ($roles as $role) {
             $newRole = $this->roleRepository->create([
                 'CompanyId' => $company->Id,
                 'Name' => $role->Name,
@@ -281,8 +395,11 @@ class CompanyService implements CompanyServiceInterface
             if ($newRole->Type == 'Administrator') {
                 $adminRole = $newRole;
             }
+            $mappedRole = $role;
+            $mappedRole['generatedRole'] = $newRole;
+            $mappedRoles[] = $mappedRole;
         }
-        return [$developerRole, $adminRole];
+        return [$developerRole, $adminRole, $mappedRoles];
     }
 
     private function setUpDevelopers($company, $developerRole): void
@@ -380,41 +497,51 @@ class CompanyService implements CompanyServiceInterface
         $name = $company->DomainName;
         $response = $this->postmarkRepository->createServer($name);
         if ($response['success']) {
-            $newServer = $response['data'];
-            $postmarkEmailServer = $this->postmarkEmailServerRepository->create([
-                'ServerId' => $newServer['ID'],
-                'ServerName' => $newServer['Name'],
-                'ServerDetails' => $newServer,
-                'CompanyId' => $company->Id,
-                'ApiToken' => $newServer['ApiTokens'][0]
-            ]);
-
-            // Set Token in settings
-            $module = $this->moduleRepository->firstByAttributes([
-                ['column' => 'Name', 'operand' => '=', 'value' => 'System']
-            ]);
-            $moduleSetting = $this->moduleSettingRepository->firstByAttributes([
-                ['column' => 'ModuleId', 'operand' => '=', 'value' => $module->Id],
-                ['column' => 'Name', 'operand' => '=', 'value' => 'PostmarkServerApiToken']
-            ]);
-
-            $this->settingRepository->create([
-                'ModuleSettingId' => $moduleSetting->Id,
-                'Value' => $newServer['ApiTokens'][0],
-                'CompanyId' => $company->Id
-            ]);
-
-            $response = $this->postmarkRepository->pushTemplatesToAnotherServer($templateServer->ServerId, $postmarkEmailServer->ServerId);
-            if (!$response['success']) {
-                Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
-            }
-
-            return $postmarkEmailServer->ApiToken;
-
+            return $this->doPostmarkTemplateAndSettingEntry($response, $company, $templateServer);
         } else {
             Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
             return null;
         }
+    }
+
+    /**
+     * @param array $response
+     * @param $targetCompany
+     * @param Model $sourceCompanyTemplateServer
+     * @return mixed
+     */
+    private function doPostmarkTemplateAndSettingEntry(array $response, $targetCompany, Model $sourceCompanyTemplateServer): mixed
+    {
+        $newServer = $response['data'];
+        $postmarkEmailServer = $this->postmarkEmailServerRepository->create([
+            'ServerId' => $newServer['ID'],
+            'ServerName' => $newServer['Name'],
+            'ServerDetails' => $newServer,
+            'CompanyId' => $targetCompany->Id,
+            'ApiToken' => $newServer['ApiTokens'][0]
+        ]);
+
+        // Set Token in settings
+        $module = $this->moduleRepository->firstByAttributes([
+            ['column' => 'Name', 'operand' => '=', 'value' => 'System']
+        ]);
+        $moduleSetting = $this->moduleSettingRepository->firstByAttributes([
+            ['column' => 'ModuleId', 'operand' => '=', 'value' => $module->Id],
+            ['column' => 'Name', 'operand' => '=', 'value' => 'PostmarkServerApiToken']
+        ]);
+
+        $this->settingRepository->create([
+            'ModuleSettingId' => $moduleSetting->Id,
+            'Value' => $newServer['ApiTokens'][0],
+            'CompanyId' => $targetCompany->Id
+        ]);
+
+        $response = $this->postmarkRepository->pushTemplatesToAnotherServer($sourceCompanyTemplateServer->ServerId, $postmarkEmailServer->ServerId);
+        if (!$response['success']) {
+            Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
+        }
+
+        return $postmarkEmailServer->ApiToken;
     }
 
     private function createInitialUserAndSendInvitation($company, $adminRole, $postmarkToken): void
@@ -617,6 +744,291 @@ class CompanyService implements CompanyServiceInterface
             'RoleId' => null,
             'CompanyUserId' => null,
         ]);
+    }
+
+    private function cloneModuleTableAndFieldEntries($sourceCompany, $targetCompany): void
+    {
+        // Entry in CompanyModule, CompanyTable, CompanyTableField, CompanyTableIndex table
+        foreach ($sourceCompany->modules as $module) {
+            $this->makeEntryInCompanyModuleTable($targetCompany->Id, $module->Id);
+            foreach ($module->tables as $table) {
+                // make entry in CompanyTable table
+                if ($table->companyTables->count() > 0) {
+                    $companyIds = $table->companyTables->pluck('CompanyId')->toArray();
+                    if (in_array($sourceCompany->Id, $companyIds)) {
+                        $this->makeEntryInCompanyTableTable($targetCompany->Id, $table->Id);
+                    }
+                }
+
+                // make entries in CompanyTableField table
+                foreach ($table->tableFields as $tableField) {
+                    if ($tableField->companyTableFields->count() > 0) {
+                        $companyIds = $tableField->companyTableFields->pluck('CompanyId')->toArray();
+                        if (in_array($sourceCompany->Id, $companyIds)) {
+                            $this->makeEntryInCompanyTableFieldTable($targetCompany->Id, $tableField->Id);
+                        }
+                    }
+                }
+
+                // make entries in CompanyTableIndex table
+                foreach ($table->tableIndices as $tableIndex) {
+                    if ($tableIndex->companyTableIndices->count() > 0) {
+                        $companyIds = $tableIndex->companyTableIndices->pluck('CompanyId')->toArray();
+                        if (in_array($sourceCompany->Id, $companyIds)) {
+                            $this->makeEntryInCompanyTableIndexTable($targetCompany->Id, $tableIndex->Id);
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    public function cloneDatabaseAndData($sourceCompany, $targetCompany, $withData): void
+    {
+        $excludesModulesForData = ['Order', 'ActivityLog'];
+        $sqlQueries = [];
+        // create cloning company database
+        $sqlQueries[] = MysqlQueryGenerator::getCreateDatabaseSql($targetCompany->DatabaseName);
+        $sqlQueries[] = "SET SQL_MODE='ALLOW_INVALID_DATES';";
+        foreach ($sourceCompany->modules as $module) {
+            foreach ($module->tables as $table) {
+                if ($table->companyTables->count()) {
+                    $companyTableCompanyIds = $table->companyTables->pluck('CompanyId')->toArray();
+                    if (in_array($sourceCompany->Id, $companyTableCompanyIds)) {
+                        $sqlQueries[] = MysqlQueryGenerator::getCopyTableStructureSql(
+                            $sourceCompany->DatabaseName,
+                            $table->Name,
+                            $targetCompany->DatabaseName,
+                            $table->Name
+                        );
+                        if ($withData && !in_array($module->Name, $excludesModulesForData)) {
+                            $sqlQueries[] = MysqlQueryGenerator::getCopyTableDataSql(
+                                $sourceCompany->DatabaseName,
+                                $table->Name,
+                                $targetCompany->DatabaseName,
+                                $table->Name
+                            );
+                        }
+                    }
+                } else {
+                    $sqlQueries[] = MysqlQueryGenerator::getCopyTableStructureSql(
+                        $sourceCompany->DatabaseName,
+                        $table->Name,
+                        $targetCompany->DatabaseName,
+                        $table->Name
+                    );
+                    if ($withData && !in_array($module->Name, $excludesModulesForData)) {
+                        $sqlQueries[] = MysqlQueryGenerator::getCopyTableDataSql(
+                            $sourceCompany->DatabaseName,
+                            $table->Name,
+                            $targetCompany->DatabaseName,
+                            $table->Name
+                        );
+                    }
+                }
+            }
+        }
+
+        foreach ($sqlQueries as $sqlQuery) {
+            try {
+                DB::statement($sqlQuery);
+            } catch (Exception $exception) {
+                Log::error("Clone Company Database Error. Message: {$exception->getMessage()}");
+            }
+        }
+    }
+
+    private function cloneRoles($sourceCompany, $targetCompany, $withRolesAndUsers = true): array
+    {
+        if (!$withRolesAndUsers) {
+            return $this->setUpRoles($targetCompany);
+        }
+
+        $sourceCompanyRoles = $this->roleRepository->getByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $sourceCompany->Id]
+        ]);
+
+        return $this->createRoles($sourceCompanyRoles, $targetCompany);
+    }
+
+    private function cloneUsersWithRoles($sourceCompany, $targetCompany, $mappedRoles): array
+    {
+        $mappedRoles = collect($mappedRoles);
+        $mappedUsers = [];
+
+        $relations = [
+            'companyUser' => function ($q) use ($sourceCompany) {
+                $q->with(['roles'])->where('CompanyId', $sourceCompany->Id);
+            }
+        ];
+        $filterByRelations = [
+            ["relation" => 'companyUser', "column" => "CompanyId", "operator" => "=", "values" => $sourceCompany->Id],
+        ];
+        $users = $this->userRepository->getByAttributes([], $relations, '', '', false, $filterByRelations);
+
+        foreach ($users as $user) {
+            $newCompanyUser = $this->companyUserRepository->create([
+                'CompanyId' => $targetCompany->Id,
+                'UserId' => $user->Id,
+                'Number' => $user->companyUser->Number,
+                'CultureName' => $user->companyUser->CultureName,
+                'Initials' => $user->companyUser->Initials,
+                'Territory' => $user->companyUser->Territory,
+                'Commission' => $user->companyUser->Commission,
+                'Billable' => $user->companyUser->Billable,
+                'Note' => $user->companyUser->Note,
+                'LicenceType' => $user->companyUser->LicenceType,
+            ]);
+            foreach ($user->companyUser->roles as $role) {
+                $mappedRole = $mappedRoles->where('Id', $role->Id)->first();
+                $this->companyUserRoleRepository->create([
+                    'RoleId' => $mappedRole['generatedRole']['Id'],
+                    'CompanyUserId' => $newCompanyUser->Id,
+                ]);
+            }
+
+            $user->generatedCompanyUser = $newCompanyUser;
+
+            $mappedUsers[] = $user;
+        }
+
+        return $mappedUsers;
+    }
+
+    private function cloneSettings($sourceCompany, $targetCompany, $withSettings): void
+    {
+        if ($withSettings) {
+            $baseSettings = $this->settingRepository->getByAttributes([
+                ['column' => 'CompanyId', 'operand' => '=', 'value' => $sourceCompany->Id]
+            ]);
+            if ($baseSettings->count()) {
+                $baseSettings->transform(function ($setting) use ($targetCompany) {
+                    $setting->CompanyId = $targetCompany->Id;
+                    return collect($setting)->except(['Id', 'UpdateTime', 'InsertTime', 'DeleteTime'])->toArray();
+                });
+                $this->settingRepository->insert($baseSettings->toArray());
+            }
+        }
+    }
+
+    private function clonePostmarkEmail($sourceCompany, $targetCompany): ?string
+    {
+        $sourceCompanyTemplateServer = $this->postmarkEmailServerRepository->firstByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $sourceCompany->Id]
+        ]);
+
+        // No server for current company then copy templates form default template server
+        if (!$sourceCompanyTemplateServer) {
+            $sourceCompanyTemplateServer = $this->postmarkEmailServerRepository->firstByAttributes([
+                ['column' => 'ServerName', 'operand' => '=', 'value' => 'TEMPLATE SERVER']
+            ]);
+        }
+
+        $name = $targetCompany->DomainName;
+        $response = $this->postmarkRepository->createServer($name);
+        if ($response['success']) {
+            return $this->doPostmarkTemplateAndSettingEntry($response, $targetCompany, $sourceCompanyTemplateServer);
+        } else {
+            Log::error("Postmark Clone Company Error. Message: " . $response['message']);
+            return null;
+        }
+    }
+
+    private function cloneCompanyThemes($sourceCompany, $targetCompany): void
+    {
+        $companyThemes = $this->companyThemeRepository->getByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $sourceCompany->Id]
+        ]);
+        if ($companyThemes->count()) {
+            $companyThemes->transform(function ($theme) use ($targetCompany) {
+                $theme->CompanyId = $targetCompany->Id;
+                return collect($theme)->except(['Id', 'UpdateTime', 'InsertTime', 'DeleteTime'])->toArray();
+            });
+            $this->companyThemeRepository->insert($companyThemes->toArray());
+        }
+    }
+
+    private function cloneDataFilters($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withDataFilters): void
+    {
+        if ($withDataFilters) {
+            $sourceRoleIds = [];
+            $sourceCompanyUserIds = [];
+            if ($withRolesAndUsers) {
+                $sourceRoleIds = collect($mappedRoles)->pluck('Id')->toArray();
+                $sourceCompanyUserIds = collect($mappedUsers)->pluck('companyUser.Id')->toArray();
+            }
+            $sourceDataFilters = $this->dataFilterRepository->getModel()
+                ->where(function ($query) use ($sourceCompany, $sourceRoleIds, $sourceCompanyUserIds) {
+                    $query->where('CompanyId', $sourceCompany->Id)
+                        ->orWhere(function ($query) use ($sourceRoleIds) {
+                            if ($sourceRoleIds) {
+                                $query->whereIn('RoleId', $sourceRoleIds);
+                            }
+                        })
+                        ->orWhere(function ($query) use ($sourceCompanyUserIds) {
+                            if ($sourceCompanyUserIds) {
+                                $query->whereIn('CompanyUserId', $sourceCompanyUserIds);
+                            }
+                        });
+                })
+                ->get();
+
+            $sourceDataFilters->transform(function ($sourceDataFilter) use ($mappedRoles, $mappedUsers, $targetCompany) {
+                if ($sourceDataFilter->ApplyTo == 'Role') {
+                    $sourceDataFilter->RoleId = collect($mappedRoles)->where('Id', $sourceDataFilter->RoleId)->first()['generatedRole']['Id'];
+                } elseif ($sourceDataFilter->ApplyTo == 'User') {
+                    $sourceDataFilter->CompanyUserId = collect($mappedUsers)->where('companyUser.Id', $sourceDataFilter->CompanyUserId)->first()['generatedCompanyUser']['Id'];
+                } else {
+                    $sourceDataFilter->CompanyId = $targetCompany->Id;
+                }
+                return collect($sourceDataFilter)->except(['Id', 'UpdateTime', 'InsertTime', 'DeleteTime', 'ApplyTo'])->toArray();
+            });
+
+            $this->dataFilterRepository->insert($sourceDataFilters->toArray());
+        }
+    }
+
+    private function cloneEmailConfigurations($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withEmailConfigurations): void
+    {
+        if ($withEmailConfigurations) {
+            $sourceRoleIds = [];
+            $sourceCompanyUserIds = [];
+            if ($withRolesAndUsers) {
+                $sourceRoleIds = collect($mappedRoles)->pluck('Id')->toArray();
+                $sourceCompanyUserIds = collect($mappedUsers)->pluck('companyUser.Id')->toArray();
+            }
+            $sourceEmailConfigurations = $this->emailConfigurationRepository->getModel()
+                ->where(function ($query) use ($sourceCompany, $sourceRoleIds, $sourceCompanyUserIds) {
+                    $query->where('CompanyId', $sourceCompany->Id)
+                        ->orWhere(function ($query) use ($sourceRoleIds) {
+                            if ($sourceRoleIds) {
+                                $query->whereIn('RoleId', $sourceRoleIds);
+                            }
+                        })
+                        ->orWhere(function ($query) use ($sourceCompanyUserIds) {
+                            if ($sourceCompanyUserIds) {
+                                $query->whereIn('CompanyUserId', $sourceCompanyUserIds);
+                            }
+                        });
+                })
+                ->get();
+
+            $sourceEmailConfigurations->transform(function ($sourceEmailConfiguration) use ($mappedRoles, $mappedUsers, $targetCompany) {
+                if ($sourceEmailConfiguration->ApplyTo == 'Role') {
+                    $sourceEmailConfiguration->RoleId = collect($mappedRoles)->where('Id', $sourceEmailConfiguration->RoleId)->first()['generatedRole']['Id'];
+                } elseif ($sourceEmailConfiguration->ApplyTo == 'User') {
+                    $sourceEmailConfiguration->CompanyUserId = collect($mappedUsers)->where('companyUser.Id', $sourceEmailConfiguration->CompanyUserId)->first()['generatedCompanyUser']['Id'];
+                } else {
+                    $sourceEmailConfiguration->CompanyId = $targetCompany->Id;
+                }
+                return collect($sourceEmailConfiguration)->except(['Id', 'UpdateTime', 'InsertTime', 'DeleteTime', 'ApplyTo'])->toArray();
+            });
+
+            $this->emailConfigurationRepository->insert($sourceEmailConfigurations->toArray());
+        } else {
+            $this->setUpEmailConfiguration($targetCompany);
+        }
     }
 
     public function update(Request $request): ServiceDto

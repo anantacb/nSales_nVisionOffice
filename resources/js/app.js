@@ -27,6 +27,7 @@ import ActionButton from "@/components/ui/ActionButton.vue";
 
 import InputErrorMessages from "@/components/ui/FormElements/InputErrorMessages.vue";
 import Select from "@/components/ui/FormElements/Select.vue";
+import Switch from "@/components/ui/FormElements/Switch.vue";
 import PopOverButton from "@/components/ui/PopOvers/PopOverButton.vue";
 import DataGrid from "@/components/ui/DataGrid/DataGrid.vue";
 
@@ -52,6 +53,7 @@ app.component("ActionButton", ActionButton);
 app.component("DataGrid", DataGrid);
 app.component("InputErrorMessages", InputErrorMessages);
 app.component("Select", Select);
+app.component("Switch", Switch);
 app.component("PopOverButton", PopOverButton);
 
 // Register global directives
