@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Company\AssignableUserCompanies;
+use App\Http\Requests\Company\CloneCompany;
 use App\Http\Requests\Company\Create;
 use App\Http\Requests\Company\DetailsOrDelete;
 use App\Http\Requests\Company\ModuleEnabledCompanies;
@@ -55,6 +56,12 @@ class CompanyController extends Controller
     public function create(Create $request): JsonResponse
     {
         $response = $this->service->create($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function cloneCompany(CloneCompany $request): JsonResponse
+    {
+        $response = $this->service->cloneCompany($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
