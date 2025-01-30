@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 interface CompanyServiceInterface
 {
     public function getAllCompanies(Request $request): ServiceDto;
+
     public function getAuthUserCompanies(Request $request): ServiceDto;
 
     public function getModuleEnabledCompanies(Request $request): ServiceDto;
@@ -17,6 +18,8 @@ interface CompanyServiceInterface
     public function getCompanies(Request $request): ServiceDto;
 
     public function create(Request $request): ServiceDto;
+
+    public function cloneCompany(Request $request): ServiceDto;
 
     public function details(Request $request): ServiceDto;
 

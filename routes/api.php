@@ -131,6 +131,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Company
     Route::post('/companies', [CompanyController::class, 'getCompanies']);
     Route::post('/company/create', [CompanyController::class, 'create']);
+    Route::post('/company/clone-company', [CompanyController::class, 'cloneCompany']);
     Route::post('/company/update', [CompanyController::class, 'update']);
     Route::post('/company/details', [CompanyController::class, 'details']);
     Route::post('/company/delete', [CompanyController::class, 'delete']);
