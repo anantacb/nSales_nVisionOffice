@@ -20,15 +20,19 @@ const modalRef = ref(null);
 
 let modal = ref(null);
 
+let areaHidden = ref(true);
+
 onMounted(() => {
     modal.value = new Modal(modalRef.value);
 });
 
 function openModal() {
+    areaHidden.value = false;
     modal.value.show();
 }
 
 function closeModal() {
+    areaHidden.value = true;
     modal.value.hide();
 }
 
@@ -42,8 +46,8 @@ defineExpose({
     <div
         :id="id"
         ref="modalRef"
+        :aria-hidden="areaHidden"
         :aria-labelledby="`${id}-label`"
-        aria-hidden="true"
         class="modal"
         role="dialog"
         tabindex="-1"
