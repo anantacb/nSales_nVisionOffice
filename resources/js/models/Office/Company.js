@@ -126,4 +126,49 @@ export default class Company {
                 });
         });
     }
+
+    static getCompanyCustomDomains(CompanyId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/custom-domain/get', {
+                CompanyId: CompanyId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static addCompanyCustomDomain(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/custom-domain/add', {
+                CompanyId: CompanyId,
+                ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static deleteCompanyCustomDomain(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/custom-domain/delete', {
+                CompanyId: CompanyId,
+                ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }
