@@ -143,6 +143,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
     Route::post('/company/assignable-companies-by-user', [CompanyController::class, 'getAssignableCompaniesByUser']);
 
+    Route::post('/company/custom-domain/get', [CompanyController::class, 'getCompanyCustomDomains']);
+    Route::post('/company/custom-domain/add', [CompanyController::class, 'addCompanyCustomDomain']);
+    Route::post('/company/custom-domain/delete', [CompanyController::class, 'deleteCompanyCustomDomain']);
 
     // Helpers
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
