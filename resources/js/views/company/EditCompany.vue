@@ -9,7 +9,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
 import ModulePackage from "@/models/Office/ModulePackage";
-import CompanyCustomDomain from "@/views/company/CompanyCustomDomain.vue";
+import CompanyCustomDomain from "@/components/company/CompanyCustomDomain.vue";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -613,7 +613,9 @@ function nameChanged() {
 
         <div class="row">
             <div class="col-6">
-                <CompanyCustomDomain v-if="CompanyModel.CustomDomainsArray">
+                <CompanyCustomDomain v-if="CompanyModel.CustomDomainsArray"
+                                     :CompanyId="route.params.id"
+                >
                 </CompanyCustomDomain>
             </div>
         </div>

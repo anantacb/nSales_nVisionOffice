@@ -1197,14 +1197,9 @@ class CompanyService implements CompanyServiceInterface
         if (!$response['success']) {
             $errorData = [];
             $statusCode = $response['status_code'];
-            if ($response['status_code'] === 400 && (isset($response['errors']['hostname']) || isset($response['errors']))) {
+            if ($response['status_code'] === 400 && isset($response['errors']['hostname'])) {
                 $statusCode = 422;
-                if (isset($response['errors']['hostname'])){
-                    $errorData['CustomDomain'] = $response['errors']['hostname'];
-                }
-                if (isset($response['errors'])) {
-                    $errorData['CustomDomain'] = $response['errors'];
-                }
+                $errorData['CustomDomain'] = $response['errors']['hostname'];
             }
 
             return new ServiceDto($response["message"], $statusCode, $errorData);

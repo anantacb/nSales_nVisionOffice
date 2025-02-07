@@ -12,6 +12,8 @@ const route = useRoute();
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
 
+const props = defineProps(["CompanyId"]);
+
 const updateCustomDomainRef = ref(null);
 const newCompanyCustomDomain = ref(null);
 const CompanyCustomDomains = ref({});
@@ -19,7 +21,7 @@ const CompanyDeploymentStatus = ref({});
 
 async function getCompanyCustomDomains() {
     try {
-        let {data} = await Company.getCompanyCustomDomains(route.params.id);
+        let {data} = await Company.getCompanyCustomDomains(props.CompanyId);
         CompanyCustomDomains.value = data;
     } catch (error) {
         console.log(error);
@@ -29,7 +31,7 @@ async function getCompanyCustomDomains() {
 
 async function getCompanyDeploymentStatus() {
     try {
-        let {data} = await Deploy.getCompanyDeploymentStatus(route.params.id);
+        let {data} = await Deploy.getCompanyDeploymentStatus(props.CompanyId);
         CompanyDeploymentStatus.value = data;
     } catch (error) {
         console.log(error);
@@ -46,7 +48,7 @@ async function addCompanyDomain() {
     };
 
     try {
-        let {data, message} = await Company.addCompanyCustomDomain(route.params.id, formData);
+        let {data, message} = await Company.addCompanyCustomDomain(props.CompanyId, formData);
         CompanyCustomDomains.value = data;
         notificationStore.showNotification(message);
     } catch (error) {
@@ -91,7 +93,7 @@ async function removeCompanyDomain(companyDomain, index) {
 
             updateCustomDomainRef.value.statusLoading();
             try {
-                let {data, message} = await Company.deleteCompanyCustomDomain(route.params.id, formData);
+                let {data, message} = await Company.deleteCompanyCustomDomain(props.CompanyId, formData);
                 // console.log(data);
                 // CompanyCustomDomains.value.splice(index, 1);
                 CompanyCustomDomains.value = data;
@@ -100,6 +102,9 @@ async function removeCompanyDomain(companyDomain, index) {
                 console.log(error);
                 if (error.response && error.response.status === 422) {
                     setErrors(error.response.data.errors);
+                }
+                if (error.response && error.response.status === 404) {
+                    notificationStore.showNotification(error.response.data.message, 'error');
                 }
             }
             updateCustomDomainRef.value.statusNormal();
