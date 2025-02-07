@@ -26,4 +26,11 @@ interface CompanyServiceInterface
     public function update(Request $request): ServiceDto;
 
     public function delete(Request $request): ServiceDto;
+
+    public function getCompanyCustomDomains(Request $request): ServiceDto;
+
+    public function addCompanyCustomDomain(Request $request): ServiceDto;
+
+    public function deleteCompanyCustomDomain(Request $request): ServiceDto;
+
 }

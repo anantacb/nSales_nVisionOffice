@@ -32,6 +32,11 @@
                 </div>
             </div>
         </div>
+
+        <CompanyCustomDomain v-if="prodModel"
+                             :CompanyId="companyStore.selectedCompany.Id"
+        >
+        </CompanyCustomDomain>
     </div>
 </template>
 
@@ -42,6 +47,7 @@ import _ from "lodash";
 import Loader from "@/components/ui/Loader/Loader.vue";
 import Deploy from "@/models/Company/Deploy";
 import {useNotificationStore} from "@/stores/notificationStore";
+import CompanyCustomDomain from "@/components/company/CompanyCustomDomain.vue";
 
 const props = defineProps(['name', 'step']);
 const emits = defineEmits(['complete']);

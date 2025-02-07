@@ -33,9 +33,9 @@ class DeploymentService implements DeploymentServiceInterface
         $companyDeploymentStatus = [];
         if ($response['success']) {
             $companyDeploymentStatus = $response['data'];
-            return new ServiceDto("Company Deployment Status Retrieved Successfully.", 200, $companyDeploymentStatus);
+            return new ServiceDto("Company Deployment Status Retrieved Successfully.", $response['status_code'], $companyDeploymentStatus);
         } else {
-            return new ServiceDto($response["message"], 400, $companyDeploymentStatus);
+            return new ServiceDto($response["message"], $response['status_code'], $companyDeploymentStatus);
         }
 
     }
@@ -53,9 +53,9 @@ class DeploymentService implements DeploymentServiceInterface
         $companyDeploymentStatus = [];
         if ($response['success']) {
             $companyDeploymentStatus = $response['data'];
-            return new ServiceDto("Company Deployment Successfully.", 200, $companyDeploymentStatus);
+            return new ServiceDto("Company Deployment Successfully.", $response['status_code'], $companyDeploymentStatus);
         } else {
-            return new ServiceDto($response["message"], 400, $companyDeploymentStatus);
+            return new ServiceDto($response["message"], $response['status_code'], $companyDeploymentStatus);
         }
 
     }
