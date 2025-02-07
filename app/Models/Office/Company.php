@@ -10,6 +10,22 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Company extends BaseModel
 {
     protected $table = 'Company';
+//    protected $fillable = ['CustomDomains']; // Ensure fillable attributes are set
+//
+//    protected $casts = [
+//        'CustomDomains' => 'string',
+//    ];
+    protected $appends = ['CustomDomainsArray'];
+
+    public function getCustomDomainsArrayAttribute(): array
+    {
+        return isset($this->CustomDomains) && $this->CustomDomains ? explode(',', $this->CustomDomains) : [];
+    }
+
+    public function setCustomDomainsAttribute($value): void
+    {
+        $this->attributes['CustomDomains'] = is_array($value) ? implode(',', $value) : $value;
+    }
 
     public function modules(): BelongsToMany
     {

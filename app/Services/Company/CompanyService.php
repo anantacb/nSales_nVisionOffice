@@ -31,6 +31,7 @@ use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepositoryInterface;
 use App\Repositories\Plugin\BunnyCdn\BunnyCdnRepository;
+use App\Repositories\Plugin\NsalesAdminDjangoApi\NsalesAdminDjangoApiRepository;
 use App\Repositories\Plugin\Postmark\PostmarkRepository;
 use App\Services\Traits\ModuleHelperTrait;
 use Carbon\Carbon;
@@ -118,6 +119,7 @@ class CompanyService implements CompanyServiceInterface
         CompanyTableRepositoryInterface        $companyTableRepository,
         CompanyThemeRepositoryInterface        $companyThemeRepository,
         DataFilterRepositoryInterface          $dataFilterRepository,
+        NsalesAdminDjangoApiRepository         $nsalesAdminDjangoApiRepository
     )
     {
         $this->companyRepository = $companyRepository;
@@ -146,6 +148,7 @@ class CompanyService implements CompanyServiceInterface
         $this->companyTableRepository = $companyTableRepository;
         $this->companyThemeRepository = $companyThemeRepository;
         $this->dataFilterRepository = $dataFilterRepository;
+        $this->nsalesAdminDjangoApiRepository = $nsalesAdminDjangoApiRepository;
     }
 
     /**
@@ -1180,4 +1183,81 @@ class CompanyService implements CompanyServiceInterface
 
         return new ServiceDto("Companies Retrieved Successfully.", 200, $assignAbleCompanies);
     }
+
+    public function getCompanyCustomDomains(Request $request): ServiceDto
+    {
+        $company = $this->companyRepository->findById($request->get('CompanyId'));
+
+        return new ServiceDto("Company Custom Domain Retrieved Successfully.", 200, $company->CustomDomainsArray);
+    }
+
+    public function addCompanyCustomDomain(Request $request): ServiceDto
+    {
+        $response = $this->nsalesAdminDjangoApiRepository->addCompanyCustomDomain($request->get('CustomDomain'), $request->get('UUID'));
+        if (!$response['success']) {
+            $errorData = [];
+            $statusCode = $response['status_code'];
+            if ($response['status_code'] === 400 && isset($response['errors']['hostname'])) {
+                $statusCode = 422;
+                $errorData['CustomDomain'] = $response['errors']['hostname'];
+            }
+
+            return new ServiceDto($response["message"], $statusCode, $errorData);
+        }
+
+        $companyCustomDomains = $this->updateCompanyDomainToDB($request);
+
+        return new ServiceDto('Custom Domain Added Successfully.', 200, $companyCustomDomains);
+    }
+
+    public function updateCompanyDomainToDB($request)
+    {
+        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        $companyCustomDomains = $company->CustomDomainsArray;
+        $companyCustomDomains[] = $request->get('CustomDomain');
+        $updateCompany = $this->companyRepository->findByIdAndUpdate(
+            $request->get('CompanyId'),
+            [
+                'CustomDomains' => $companyCustomDomains,
+            ]
+        );
+
+        return $updateCompany->CustomDomainsArray;
+    }
+
+    public function deleteCompanyCustomDomain(Request $request): ServiceDto
+    {
+        if ($request->has('HostId')) {
+            $response = $this->nsalesAdminDjangoApiRepository->deleteCompanyCustomDomain($request->get('HostId'));
+
+            if (!$response['success']) {
+                return new ServiceDto($response["message"], $response['status_code'], []);
+            }
+        }
+        $companyCustomDomains = $this->deleteCompanyDomainToDB($request);
+
+        return new ServiceDto('Custom Domain Deleted Successfully.', 200, $companyCustomDomains);
+    }
+
+    public function deleteCompanyDomainToDB($request)
+    {
+        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        $companyCustomDomains = $company->CustomDomainsArray;
+        $companyCustomDomains = array_filter(
+            $companyCustomDomains,
+            function ($domain) use ($request) {
+                return $domain !== $request->get('CustomDomain');
+            }
+        );
+
+        $updateCompany = $this->companyRepository->findByIdAndUpdate(
+            $request->get('CompanyId'),
+            [
+                'CustomDomains' => $companyCustomDomains,
+            ]
+        );
+
+        return $updateCompany->CustomDomainsArray;
+    }
+
 }
