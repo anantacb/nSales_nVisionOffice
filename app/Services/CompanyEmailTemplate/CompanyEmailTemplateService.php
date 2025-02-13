@@ -118,11 +118,10 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         // Fetch general and company-specific table fields
         $generalTableFields = $this->tableFieldRepository->getGeneralTableFields($tableId);
         $companySpecificTableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId);
-        $allFields = array_merge($generalTableFields, $companySpecificTableFields);
 
-        foreach ($allFields as $field) {
-            if (!in_array($field->Name, $this->hiddenTableFields)) {
-                $fields[$field->Name] = $field->Name;
+        foreach ($generalTableFields->merge($companySpecificTableFields) as $tableField) {
+            if (!in_array($tableField->Name, $this->hiddenTableFields)) {
+                $fields[$tableField->Name] = $tableField->Name;
             }
         }
 
