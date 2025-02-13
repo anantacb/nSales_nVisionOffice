@@ -77,9 +77,19 @@ abstract class EmailHelperService
     public function getEventProperties(array $fields): array
     {
         $properties = [];
+
         foreach ($fields as $field) {
-            $properties[$field['Field']] = $field['Name'];
+            if (isset($field['Children']) && is_array($field['Children'])) {
+                // Handle nested fields (e.g., OrderLine)
+                $properties[$field['Field']] = [
+                    $this->getEventProperties($field['Children']) // Recursively process children
+                ];
+            } else {
+                // Standard key-value mapping
+                $properties[$field['Field']] = $field['Name'];
+            }
         }
+
         return $properties;
     }
 
