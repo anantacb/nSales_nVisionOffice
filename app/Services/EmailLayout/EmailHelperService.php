@@ -10,6 +10,8 @@ use Throwable;
 
 abstract class EmailHelperService
 {
+    public array $hiddenTableFields = ["Id", "InsertTime", "UpdateTime", "DeleteTime", "ImportTime", "ExportTime",
+        "InsertBy", "UpdateBy", "DeleteBy", "ImportBy", "ExportBy"];
 
     /**
      * @param string $layout
@@ -79,15 +81,7 @@ abstract class EmailHelperService
         $properties = [];
 
         foreach ($fields as $field) {
-            if (isset($field['Children']) && is_array($field['Children'])) {
-                // Handle nested fields (e.g., OrderLine)
-                $properties[$field['Field']] = [
-                    $this->getEventProperties($field['Children']) // Recursively process children
-                ];
-            } else {
-                // Standard key-value mapping
-                $properties[$field['Field']] = $field['Name'];
-            }
+            $properties[$field['Field']] = $field['Name'];
         }
 
         return $properties;

@@ -3,29 +3,35 @@
 namespace App\Services\CompanyEmailTemplate;
 
 use App\Contracts\ServiceDto;
+use App\Models\Office\Table;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Services\Company\CompanyService;
 use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CompanyEmailTemplateService extends EmailHelperService implements CompanyEmailTemplateServiceInterface
 {
     protected CompanyEmailTemplateRepositoryInterface $templateRepository;
     protected CompanyEmailLayoutRepositoryInterface $emailLayoutRepository;
     protected ModuleSettingServiceInterface $moduleSettingService;
+    protected TableFieldRepositoryInterface $tableFieldRepository;
 
     public function __construct(
         CompanyEmailTemplateRepositoryInterface $templateRepository,
         CompanyEmailLayoutRepositoryInterface   $emailLayoutRepository,
         ModuleSettingServiceInterface           $moduleSettingService,
+        TableFieldRepositoryInterface           $tableFieldRepository
     )
     {
         $this->templateRepository = $templateRepository;
         $this->emailLayoutRepository = $emailLayoutRepository;
         $this->moduleSettingService = $moduleSettingService;
+        $this->tableFieldRepository = $tableFieldRepository;
     }
 
     public function getEmailTemplates(Request $request): ServiceDto
@@ -38,18 +44,6 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         $templates = $this->templateRepository->paginatedData($request);
 
         return new ServiceDto("Templates retrieved!!!", 200, $templates);
-    }
-
-    public function create(Request $request): ServiceDto
-    {
-        $template = $this->templateRepository->create([
-            'ElementName' => $request->get('ElementName'),
-            'LayoutId' => $request->get('LayoutId'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Subject' => $request->get('Subject'),
-            'Template' => $request->get('Template')
-        ]);
-        return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }
 
     public function details(Request $request): ServiceDto
@@ -78,27 +72,102 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         return new ServiceDto("Template Updated Successfully.", 200, $template);
     }
 
-
     public function getEmailEvents(Request $request): ServiceDto
     {
-        $emailEvents = $this->fetchEmailEvents();
+        $emailEvents = $this->fetchEmailEvents($request);
 
         return new ServiceDto("Email events retrieved!!!", 200, $emailEvents);
     }
 
-    public function fetchEmailEvents()
+    public function fetchEmailEvents($request): array
     {
         $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
         $emailEvents = json_decode(CompanyService::getSettingValue('CompanyEmail', 'EmailEvents'), true);
 
+        $data = [];
         foreach ($emailEvents as $key => $emailEvent) {
-            $emailEvents[$key]['Fields'] = array_merge($layoutFields, $emailEvent['Fields']);
-            $emailEvents[$key]['templateObject'] = $this->getEventProperties(
-                array_merge($layoutFields, $emailEvent['Fields'])
-            );
+            $fields = $this->getEventProperties(array_merge($layoutFields, $emailEvent['Fields'] ?? []));
+
+            // Fetch fields from main table
+            if (isset($emailEvent['Table'])) {
+                $tableFields = $this->fetchTableFields($emailEvent['Table'], $request->get("CompanyId"));
+                $fields = array_merge($tableFields, $fields);
+            }
+
+            // Handle children recursively
+            if (!empty($emailEvent['Children']) && is_array($emailEvent['Children'])) {
+                foreach ($emailEvent['Children'] as $child) {
+                    $fields = $this->assignRelation($fields, $child, $request->get("CompanyId"));
+                }
+            }
+
+            $data[$key] = [
+                'Title' => $emailEvent['Title'],
+                'templateObject' => $fields,
+            ];
         }
 
-        return $emailEvents;
+        return $data;
+    }
+
+    public function fetchTableFields($tableName, $companyId): array
+    {
+        $fields = [];
+        $tableId = Table::where('Name', $tableName)->value('Id');
+
+        // Fetch general and company-specific table fields
+        $generalTableFields = $this->tableFieldRepository->getGeneralTableFields($tableId);
+        $companySpecificTableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId);
+        $allFields = array_merge($generalTableFields, $companySpecificTableFields);
+
+        foreach ($allFields as $field) {
+            if (!in_array($field->Name, $this->hiddenTableFields)) {
+                $fields[$field->Name] = $field->Name;
+            }
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Assign child elements based on relation type (HasMany or BelongsTo).
+     */
+    private function assignRelation(array &$fields, array $child, $companyId): array
+    {
+        $childFieldsData = $this->processChild($child, $companyId);
+
+        $relation = $child['Relation'] ?? "BelongsTo";
+        $relationKey = $relation === "HasMany" ? Str::plural($child['Name']) : $child['Name'];
+
+        if ($relation === "HasMany") {
+            $fields[$relationKey] = [$childFieldsData];
+        } else {
+            $fields[$relationKey] = $childFieldsData;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Recursively process children and assign them based on their relation.
+     */
+    private function processChild(array $child, $companyId): array
+    {
+        $childFields = $this->getEventProperties($child['Fields'] ?? []);
+
+        if (isset($child['Table'])) {
+            $childTableFields = $this->fetchTableFields($child['Table'], $companyId);
+            $childFields = array_merge($childFields, $childTableFields);
+        }
+
+        // Handle nested children recursively
+        if (!empty($child['Children']) && is_array($child['Children'])) {
+            foreach ($child['Children'] as $nestedChild) {
+                $childFields = $this->assignRelation($childFields, $nestedChild, $companyId);
+            }
+        }
+
+        return $childFields;
     }
 
     /**
@@ -137,6 +206,18 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         ]);
 
         return new ServiceDto("Email Template Copied Successfully.", 200, $companyEmailTemplate);
+    }
+
+    public function create(Request $request): ServiceDto
+    {
+        $template = $this->templateRepository->create([
+            'ElementName' => $request->get('ElementName'),
+            'LayoutId' => $request->get('LayoutId'),
+            'LanguageId' => $request->get('LanguageId'),
+            'Subject' => $request->get('Subject'),
+            'Template' => $request->get('Template')
+        ]);
+        return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }
 
 }
