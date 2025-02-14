@@ -2,16 +2,26 @@
 
 namespace App\Services\EmailLayout;
 
+use App\Models\Office\Table;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use Exception;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 abstract class EmailHelperService
 {
-    public array $hiddenTableFields = ["Id", "InsertTime", "UpdateTime", "DeleteTime", "ImportTime", "ExportTime",
+    protected array $hiddenTableFields = ["Id", "InsertTime", "UpdateTime", "DeleteTime", "ImportTime", "ExportTime",
         "InsertBy", "UpdateBy", "DeleteBy", "ImportBy", "ExportBy"];
+
+    protected TableFieldRepositoryInterface $tableFieldRepository;
+
+    public function __construct($tableFieldRepository)
+    {
+        $this->tableFieldRepository = $tableFieldRepository;
+    }
 
     /**
      * @param string $layout
@@ -42,7 +52,6 @@ abstract class EmailHelperService
             'subject' => $renderedSubject,
             'template' => $renderedTemplate,
         ];
-
     }
 
     /**
@@ -69,7 +78,54 @@ abstract class EmailHelperService
             Log::error("Unable to render: " . $exception->getMessage());
             return "";
         }
+    }
 
+    /**
+     * @param array $fields
+     * @param array $child
+     * @param $companyId
+     * @return array
+     *  Assign child elements based on relation type (HasMany or BelongsTo).
+     */
+    public function assignRelation(array &$fields, array $child, $companyId = null): array
+    {
+        $childFieldsData = $this->processChild($child, $companyId);
+
+        $relation = $child['Relation'] ?? "BelongsTo";
+        $relationKey = $relation === "HasMany" ? Str::plural($child['Name']) : $child['Name'];
+
+        if ($relation === "HasMany") {
+            $fields[$relationKey] = [$childFieldsData];
+        } else {
+            $fields[$relationKey] = $childFieldsData;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @param array $child
+     * @param $companyId
+     * @return array
+     *  Recursively process children and assign them based on their relation.
+     */
+    public function processChild(array $child, $companyId = null): array
+    {
+        $childFields = $this->getEventProperties($child['Fields'] ?? []);
+
+        if (isset($child['Table'])) {
+            $childTableFields = $this->fetchTableFields($child['Table'], $companyId);
+            $childFields = array_merge($childFields, $childTableFields);
+        }
+
+        // Handle nested children recursively
+        if (!empty($child['Children']) && is_array($child['Children'])) {
+            foreach ($child['Children'] as $nestedChild) {
+                $childFields = $this->assignRelation($childFields, $nestedChild, $companyId);
+            }
+        }
+
+        return $childFields;
     }
 
     /**
@@ -87,5 +143,36 @@ abstract class EmailHelperService
         return $properties;
     }
 
+    /**
+     * @param string $tableName
+     * @param $companyId
+     * @return array
+     */
+    public function fetchTableFields(string $tableName, $companyId = null): array
+    {
+        $fields = [];
+        $tableId = Table::where('Name', $tableName)->value('Id');
+
+        if (!$tableId) {
+            return $fields;
+        }
+
+        // Fetch general table fields
+        $tableFields = $this->tableFieldRepository->getGeneralTableFields($tableId);
+
+        // Fetch company-specific fields only if $companyId is provided
+        if ($companyId) {
+            $companySpecificFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId);
+            $tableFields = $tableFields->merge($companySpecificFields);
+        }
+
+        foreach ($tableFields as $tableField) {
+            if (!in_array($tableField->Name, $this->hiddenTableFields)) {
+                $fields[$tableField->Name] = $tableField->Name;
+            }
+        }
+
+        return $fields;
+    }
 
 }

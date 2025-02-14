@@ -3,7 +3,6 @@
 namespace App\Services\CompanyEmailTemplate;
 
 use App\Contracts\ServiceDto;
-use App\Models\Office\Table;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
@@ -12,14 +11,12 @@ use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CompanyEmailTemplateService extends EmailHelperService implements CompanyEmailTemplateServiceInterface
 {
     protected CompanyEmailTemplateRepositoryInterface $templateRepository;
     protected CompanyEmailLayoutRepositoryInterface $emailLayoutRepository;
     protected ModuleSettingServiceInterface $moduleSettingService;
-    protected TableFieldRepositoryInterface $tableFieldRepository;
 
     public function __construct(
         CompanyEmailTemplateRepositoryInterface $templateRepository,
@@ -28,10 +25,10 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         TableFieldRepositoryInterface           $tableFieldRepository
     )
     {
+        parent::__construct($tableFieldRepository);
         $this->templateRepository = $templateRepository;
         $this->emailLayoutRepository = $emailLayoutRepository;
         $this->moduleSettingService = $moduleSettingService;
-        $this->tableFieldRepository = $tableFieldRepository;
     }
 
     public function getEmailTemplates(Request $request): ServiceDto
@@ -108,65 +105,6 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         }
 
         return $data;
-    }
-
-    public function fetchTableFields($tableName, $companyId): array
-    {
-        $fields = [];
-        $tableId = Table::where('Name', $tableName)->value('Id');
-
-        // Fetch general and company-specific table fields
-        $generalTableFields = $this->tableFieldRepository->getGeneralTableFields($tableId);
-        $companySpecificTableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId);
-
-        foreach ($generalTableFields->merge($companySpecificTableFields) as $tableField) {
-            if (!in_array($tableField->Name, $this->hiddenTableFields)) {
-                $fields[$tableField->Name] = $tableField->Name;
-            }
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Assign child elements based on relation type (HasMany or BelongsTo).
-     */
-    private function assignRelation(array &$fields, array $child, $companyId): array
-    {
-        $childFieldsData = $this->processChild($child, $companyId);
-
-        $relation = $child['Relation'] ?? "BelongsTo";
-        $relationKey = $relation === "HasMany" ? Str::plural($child['Name']) : $child['Name'];
-
-        if ($relation === "HasMany") {
-            $fields[$relationKey] = [$childFieldsData];
-        } else {
-            $fields[$relationKey] = $childFieldsData;
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Recursively process children and assign them based on their relation.
-     */
-    private function processChild(array $child, $companyId): array
-    {
-        $childFields = $this->getEventProperties($child['Fields'] ?? []);
-
-        if (isset($child['Table'])) {
-            $childTableFields = $this->fetchTableFields($child['Table'], $companyId);
-            $childFields = array_merge($childFields, $childTableFields);
-        }
-
-        // Handle nested children recursively
-        if (!empty($child['Children']) && is_array($child['Children'])) {
-            foreach ($child['Children'] as $nestedChild) {
-                $childFields = $this->assignRelation($childFields, $nestedChild, $companyId);
-            }
-        }
-
-        return $childFields;
     }
 
     /**
