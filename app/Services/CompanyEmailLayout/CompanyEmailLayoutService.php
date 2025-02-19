@@ -5,6 +5,7 @@ namespace App\Services\CompanyEmailLayout;
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Services\Company\CompanyService;
 use App\Services\EmailLayout\EmailHelperService;
 use Exception;
@@ -18,8 +19,10 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function __construct(
         CompanyEmailLayoutRepositoryInterface   $repository,
         CompanyEmailTemplateRepositoryInterface $companyEmailTemplateRepository,
+        TableFieldRepositoryInterface           $tableFieldRepository
     )
     {
+        parent::__construct($tableFieldRepository);
         $this->repository = $repository;
         $this->companyEmailTemplateRepository = $companyEmailTemplateRepository;
     }

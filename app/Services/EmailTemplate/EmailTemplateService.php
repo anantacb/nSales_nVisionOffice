@@ -6,6 +6,7 @@ use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
@@ -23,8 +24,10 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         EmailLayoutRepositoryInterface     $emailLayoutRepository,
         ModuleSettingServiceInterface      $moduleSettingService,
         CompanyLanguageRepositoryInterface $companyLanguageRepository,
+        TableFieldRepositoryInterface      $tableFieldRepository
     )
     {
+        parent::__construct($tableFieldRepository);
         $this->templateRepository = $templateRepository;
         $this->emailLayoutRepository = $emailLayoutRepository;
         $this->moduleSettingService = $moduleSettingService;
@@ -103,7 +106,7 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         return new ServiceDto("Email events retrieved!!!", 200, $emailEvents);
     }
 
-    public function fetchEmailEvents()
+    public function fetchEmailEvents(): array
     {
         list('LayoutFields' => $layoutFields, 'EmailEvents' => $emailEvents) = $this->moduleSettingService->getCoreModuleSettings(
             'Email',
@@ -112,14 +115,30 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         $layoutFields = json_decode(json_encode($layoutFields), true);
         $emailEvents = json_decode(json_encode($emailEvents), true);
 
+        $data = [];
         foreach ($emailEvents as $key => $emailEvent) {
-            $emailEvents[$key]['Fields'] = array_merge($layoutFields, $emailEvent['Fields']);
-            $emailEvents[$key]['templateObject'] = $this->getEventProperties(
-                array_merge($layoutFields, $emailEvent['Fields'])
-            );
+            $fields = $this->getEventProperties(array_merge($layoutFields, $emailEvent['Fields'] ?? []));
+
+            // Fetch fields from main table
+            if (isset($emailEvent['Table'])) {
+                $tableFields = $this->fetchTableFields($emailEvent['Table']);
+                $fields = array_merge($tableFields, $fields);
+            }
+
+            // Handle children recursively
+            if (!empty($emailEvent['Children']) && is_array($emailEvent['Children'])) {
+                foreach ($emailEvent['Children'] as $child) {
+                    $fields = $this->assignRelation($fields, $child);
+                }
+            }
+
+            $data[$key] = [
+                'Title' => $emailEvent['Title'],
+                'templateObject' => $fields,
+            ];
         }
 
-        return $emailEvents;
+        return $data;
     }
 
     /**

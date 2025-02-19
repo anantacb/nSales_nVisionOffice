@@ -5,6 +5,7 @@ namespace App\Services\EmailLayout;
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
@@ -18,12 +19,14 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     protected EmailTemplateRepositoryInterface $templateRepository;
 
     public function __construct(
-        EmailLayoutRepositoryInterface $layoutRepository,
+        EmailLayoutRepositoryInterface   $layoutRepository,
         EmailTemplateRepositoryInterface $templateRepository,
-        ModuleSettingServiceInterface  $moduleSettingService,
-        TranslationRepositoryInterface $translationRepository
+        ModuleSettingServiceInterface    $moduleSettingService,
+        TranslationRepositoryInterface   $translationRepository,
+        TableFieldRepositoryInterface    $tableFieldRepository
     )
     {
+        parent::__construct($tableFieldRepository);
         $this->layoutRepository = $layoutRepository;
         $this->templateRepository = $templateRepository;
         $this->moduleSettingService = $moduleSettingService;
