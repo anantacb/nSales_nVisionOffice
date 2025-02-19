@@ -183,6 +183,7 @@ onMounted(async () => {
                                             :modelValue="TemplateObject"
                                             :read-only="true"
                                             :status-bar="false"
+                                            class="jsoneditor-container"
                                             mode="text"
                                         >
                                         </JsonEditorVue>
@@ -221,6 +222,11 @@ onMounted(async () => {
 <style scoped>
 .preview-iframe {
     border: 1px solid #2a384b;;
+    width: 100%;
+    height: 65vh;
+}
+
+.jsoneditor-container {
     width: 100%;
     height: 65vh;
 }
