@@ -190,6 +190,7 @@ class AddCompanyEmailLayoutAndTemplate extends Command
 
             $companyEmailTemplate = $companyEmailTemplates
                 //->where('LayoutId', $companyEmailLayout->Id)
+                ->where('LanguageId', $companyLanguage->Id)
                 ->where('ElementName', $officeEmailTemplate->ElementName)
                 ->first();
 
