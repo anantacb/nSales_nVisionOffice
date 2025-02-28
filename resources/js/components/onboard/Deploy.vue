@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <CompanyCustomDomain v-if="prodModel"
+        <CompanyCustomDomain v-if="step.IsCompleted && prodModel"
                              :CompanyId="companyStore.selectedCompany.Id"
         >
         </CompanyCustomDomain>
@@ -68,7 +68,7 @@ async function getCompanyDeploymentStatus() {
         prodModel.value = !!(companyDeploymentStatus.value.prod.uuid && companyDeploymentStatus.value.prod.hosts[0].active);
         devModel.value = !!(companyDeploymentStatus.value.dev.uuid && companyDeploymentStatus.value.dev.hosts[0].active);
 
-        if (prodModel.value && devModel.value) {
+        if (prodModel.value) {
             emits("complete", true);
         }
 
