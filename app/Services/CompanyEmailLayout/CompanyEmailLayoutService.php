@@ -113,7 +113,12 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function getPreviewTemplateObject(): ServiceDto
     {
         $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
-        $previewTemplateObject = $this->getEventProperties($layoutFields ?? []);
+        $previewTemplateObject = array_merge(
+            $this->getEventProperties($layoutFields ?? []),
+            array_filter($this->getCompanyDataForTemplate(), function ($value) {
+                return $value !== '';
+            })
+        );
 
         return new ServiceDto("Preview template data retrieved successfully.", 200, $previewTemplateObject);
     }
