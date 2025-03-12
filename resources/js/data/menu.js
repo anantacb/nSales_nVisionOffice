@@ -498,6 +498,14 @@ export default {
                     roles: ["Developer", "Administrator", "Employee"],
                 },
                 {
+                    name: "Choose Layout",
+                    icon: "fa fa-copy",
+                    to: "choose-email-layout",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
                     name: "Templates",
                     icon: "fa fa-envelope",
                     to: "company-email-templates",

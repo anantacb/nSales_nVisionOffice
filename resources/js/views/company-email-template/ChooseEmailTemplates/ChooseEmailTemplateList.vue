@@ -238,6 +238,7 @@ async function copyEmailTemplateToCompany() {
         } = await CompanyEmailTemplate.copyTemplateToCompany(companyStore.selectedCompany.Id, formData);
 
         notificationStore.showNotification(message);
+        copyTemplateRef.value.closeModal();
         await nextTick();
         await router.push({name: 'company-email-templates'});
     } catch (error) {
