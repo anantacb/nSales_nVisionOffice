@@ -1,5 +1,5 @@
 <script setup>
-import {nextTick, onMounted, ref} from 'vue';
+import {nextTick, onMounted, ref, watch} from 'vue';
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
@@ -10,6 +10,7 @@ import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
 import EmailLayout from "@/models/Office/EmailLayout";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
@@ -123,14 +124,6 @@ async function showPreviewModal(emailLayout) {
     isLoading.value = false;
 }
 
-async function showCopyModal(emailLayout) {
-    isLoading.value = true;
-    resetErrors();
-    SelectedEmailLayout.value = emailLayout;
-    isLoading.value = false;
-    copyLayoutRef.value.openModal();
-}
-
 function resetPreview() {
     previewSubject.value = '';
     previewTemplate.value = '';
@@ -142,8 +135,6 @@ async function getDataForPreview(emailLayout) {
         LanguageId: emailLayout.LanguageId,
         Template: emailLayout.Template,
         TemplateObject: PreviewTemplateObject.value,
-        // LayoutId: emailLayout.LayoutId,
-        // Subject: emailLayout.Subject,
     };
 
     let {data} = await EmailLayout.getDataForPreview(formData);
@@ -156,14 +147,30 @@ async function getDataForPreview(emailLayout) {
 
 }
 
-async function copyEmailLayoutToCompany() {
-    isLoading.value = true;
+async function setTemplateLanguageId() {
+    const matchedLanguage = CompanyLanguages.value.find(
+        lang => lang.Code === SelectedEmailLayout.value.language.Code
+    );
+
+    if (matchedLanguage) {
+        SelectedEmailLayout.value.LanguageId = matchedLanguage.Id;
+    } else {
+        const defaultLanguage = CompanyLanguages.value.find(lang => lang.IsDefault === 1);
+        SelectedEmailLayout.value.LanguageId = defaultLanguage.Id;
+    }
+}
+
+async function copyEmailLayoutToCompany(selectedEmailLayout) {
+    resetErrors();
+    SelectedEmailLayout.value = selectedEmailLayout;
+    await setTemplateLanguageId();
     let formData = {
         Name: SelectedEmailLayout.value.Name,
         LanguageId: SelectedEmailLayout.value.LanguageId,
         Template: SelectedEmailLayout.value.Template,
     };
 
+    isLoading.value = true;
     try {
         let {
             data,
@@ -174,11 +181,14 @@ async function copyEmailLayoutToCompany() {
         copyLayoutRef.value.closeModal();
         await nextTick();
         await router.push({name: 'company-email-layouts'});
+
     } catch (error) {
         if (error.response && error.response.status === 422) {
             setErrors(error.response.data.errors);
-            if (errors.value.Name && errors.value.Name.length) {
-                errors.value.Name.forEach(error => notificationStore.showNotification(error, "error"));
+            if (errors.value) {
+                Object.entries(errors.value).forEach(error => {
+                    error[1].forEach(err => notificationStore.showNotification(err, "error"));
+                });
             }
         }
     } finally {
@@ -192,6 +202,15 @@ onMounted(async () => {
     await getPreviewTemplateObjectForLayout();
     await getCompanyPreviewTemplateObjectForLayout();
     await getAllCompanyLanguages();
+});
+
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        await getEmailLayoutsForCompany();
+        await getPreviewTemplateObjectForLayout();
+        await getCompanyPreviewTemplateObjectForLayout();
+        await getAllCompanyLanguages();
+    }
 });
 
 </script>
@@ -214,7 +233,7 @@ onMounted(async () => {
     >
         <template v-slot:body-Action="props">
             <button class="btn rounded-pill btn-alt-danger me-1" type="button"
-                    @click="showCopyModal(props.data)">
+                    @click="copyEmailLayoutToCompany(props.data)">
                 <i class="fa fa-copy"></i>
             </button>
             <button class="btn rounded-pill btn-alt-danger me-1" type="button"
@@ -243,11 +262,6 @@ onMounted(async () => {
                     <div class="block-content tab-content fs-sm scrollable-modal-content">
                         <!-- Content goes here -->
                         <div class="row fs-sm">
-                            <!--                            <div class="col-12 mb-2">-->
-                            <!--                                <span>Subject: </span>-->
-                            <!--                                <span v-html="previewSubject"></span>-->
-                            <!--                            </div>-->
-
                             <div class="col-12">
                                 <span>Body: </span>
                                 <iframe :srcdoc="previewTemplate" class="preview-iframe"></iframe>
@@ -265,65 +279,6 @@ onMounted(async () => {
         </template>
     </ModalComponent>
 
-    <!-- modal for copyTemplate -->
-    <ModalComponent id="copyTemplate" ref="copyLayoutRef" modal-body-classes="modal-xl">
-        <template v-slot:modal-content>
-            <BaseBlock class="mb-0" title="Copy Layout" transparent>
-                <template #options>
-                    <button
-                        aria-label="Close"
-                        class="btn-block-option"
-                        data-bs-dismiss="modal"
-                        type="button"
-                    >
-                        <i class="fa fa-fw fa-times"></i>
-                    </button>
-                </template>
-
-                <template #content>
-                    <div class="block-content tab-content fs-sm scrollable-modal-content mb-5">
-                        <Loader :is-loading="isLoading"></Loader>
-
-                        <div class="space-y-2">
-                            <div class="row">
-                                <div class="col-lg-6 space-y-2">
-                                    <div class="row">
-                                        <label class="col-sm-3 col-form-label col-form-label-sm" for="Language">
-                                            Language<span class="text-danger">*</span>
-                                        </label>
-                                        <div class="col-sm-9">
-                                            <Select
-                                                id="LanguageId"
-                                                v-model="SelectedEmailLayout.LanguageId"
-                                                :options="CompanyLanguageOptions"
-                                                :required="true"
-                                                :select-class="errors.LanguageId ? `is-invalid form-select-sm` : `form-select-sm`"
-                                                name="Language"
-                                                @change="resetErrors()"
-                                            />
-                                            <InputErrorMessages v-if="errors.LanguageId"
-                                                                :errorMessages="errors.LanguageId"></InputErrorMessages>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="block-content block-content-full text-end bg-body">
-                        <button class="btn btn-sm btn-outline-danger me-1" data-bs-dismiss="modal" type="button">
-                            Cancel
-                        </button>
-                        <button class="btn btn-sm btn-outline-success" type="button"
-                                @click="copyEmailLayoutToCompany">
-                            Copy Template
-                        </button>
-                    </div>
-                </template>
-            </BaseBlock>
-        </template>
-    </ModalComponent>
 </template>
 
 <style scoped>
