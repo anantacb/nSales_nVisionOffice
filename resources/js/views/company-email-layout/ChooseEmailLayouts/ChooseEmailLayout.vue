@@ -5,7 +5,7 @@ import ChooseEmailLayoutList from "@/views/company-email-layout/ChooseEmailLayou
 <template>
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock title="Email Layouts">
+        <BaseBlock title="Choose Email Layouts">
             <ChooseEmailLayoutList/>
         </BaseBlock>
     </div>
