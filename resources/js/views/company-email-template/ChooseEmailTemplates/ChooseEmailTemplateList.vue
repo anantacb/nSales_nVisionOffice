@@ -261,6 +261,7 @@ onMounted(async () => {
 
 watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
     if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
         await getEmailTemplatesForCompany();
         await getEmailEvents();
         await getCompanyEmailEvents();
