@@ -206,6 +206,7 @@ onMounted(async () => {
 
 watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
     if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
         await getEmailLayoutsForCompany();
         await getPreviewTemplateObjectForLayout();
         await getCompanyPreviewTemplateObjectForLayout();

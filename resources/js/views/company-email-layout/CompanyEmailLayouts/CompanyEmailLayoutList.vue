@@ -52,6 +52,7 @@ onMounted(() => {
 
 watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
     if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
         getEmailLayouts();
     }
 });
