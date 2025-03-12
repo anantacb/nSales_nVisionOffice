@@ -1,10 +1,11 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
 import CompanyEmailTemplate from "@/models/Company/CompanyEmailTemplate";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
@@ -72,13 +73,22 @@ function search(query) {
 }
 
 async function getEmailTemplates() {
-    let {data, pagination} = await CompanyEmailTemplate.getEmailTemplates(companyStore.selectedCompany.Id, request.value);
+    let {
+        data,
+        pagination
+    } = await CompanyEmailTemplate.getEmailTemplates(companyStore.selectedCompany.Id, request.value);
     tableData.value = data;
     paginationData.value = pagination;
 }
 
 onMounted(async () => {
     await getEmailTemplates();
+});
+
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        await getEmailTemplates();
+    }
 });
 
 function deleteTemplate(template, index) {
