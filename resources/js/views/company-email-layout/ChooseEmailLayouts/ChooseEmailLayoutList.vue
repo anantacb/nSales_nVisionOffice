@@ -19,15 +19,12 @@ let {errors, setErrors, resetErrors} = useFormErrors();
 const isLoading = ref(false);
 let tableData = ref([]);
 let paginationData = ref(null);
-let previewTemplateRef = ref(null);
-let copyLayoutRef = ref(null);
+let previewLayoutRef = ref(null);
 
 const PreviewTemplateObject = ref([]);
-const CompanyPreviewTemplateObject = ref([]);
 const CompanyLanguages = ref([]);
 const CompanyLanguageOptions = ref([]);
 const previewTemplate = ref('');
-const previewSubject = ref('');
 const SelectedEmailLayout = ref({});
 
 const {
@@ -96,13 +93,6 @@ async function getPreviewTemplateObjectForLayout() {
     isLoading.value = false;
 }
 
-async function getCompanyPreviewTemplateObjectForLayout() {
-    isLoading.value = true;
-    let {data} = await CompanyEmailLayout.getPreviewTemplateObjectForLayout(companyStore.selectedCompany.Id);
-    CompanyPreviewTemplateObject.value = data;
-    isLoading.value = false;
-}
-
 async function getAllCompanyLanguages() {
     isLoading.value = true;
     const {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id);
@@ -118,14 +108,13 @@ async function getAllCompanyLanguages() {
 
 async function showPreviewModal(emailLayout) {
     isLoading.value = true;
-    console.log(emailLayout);
+    // console.log(emailLayout);
     await getDataForPreview(emailLayout);
-    previewTemplateRef.value.openModal();
+    previewLayoutRef.value.openModal();
     isLoading.value = false;
 }
 
 function resetPreview() {
-    previewSubject.value = '';
     previewTemplate.value = '';
 }
 
@@ -139,7 +128,6 @@ async function getDataForPreview(emailLayout) {
 
     let {data} = await EmailLayout.getDataForPreview(formData);
     previewTemplate.value = data.template;
-    previewSubject.value = data.subject;
 
     if (!previewTemplate.value) {
         notificationStore.showNotification("Unable to preview", "error");
@@ -178,7 +166,6 @@ async function copyEmailLayoutToCompany(selectedEmailLayout) {
         } = await CompanyEmailLayout.copyLayoutToCompany(companyStore.selectedCompany.Id, formData);
 
         notificationStore.showNotification(message);
-        copyLayoutRef.value.closeModal();
         await nextTick();
         await router.push({name: 'company-email-layouts'});
 
@@ -200,7 +187,6 @@ async function copyEmailLayoutToCompany(selectedEmailLayout) {
 onMounted(async () => {
     await getEmailLayoutsForCompany();
     await getPreviewTemplateObjectForLayout();
-    await getCompanyPreviewTemplateObjectForLayout();
     await getAllCompanyLanguages();
 });
 
@@ -209,7 +195,6 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
         resetRequest();
         await getEmailLayoutsForCompany();
         await getPreviewTemplateObjectForLayout();
-        await getCompanyPreviewTemplateObjectForLayout();
         await getAllCompanyLanguages();
     }
 });
@@ -245,7 +230,7 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
     </DataGrid>
 
     <!-- Modal for previewing email template -->
-    <ModalComponent id="previewTemplate" ref="previewTemplateRef" modal-body-classes="modal-xl">
+    <ModalComponent id="previewTemplate" ref="previewLayoutRef" modal-body-classes="modal-xl">
         <template v-slot:modal-content>
             <BaseBlock class="mb-0" title="Preview Layout" transparent>
                 <template #options>
