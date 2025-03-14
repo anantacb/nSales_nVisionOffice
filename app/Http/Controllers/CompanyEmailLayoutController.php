@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompanyEmailLayout\CopyLayoutToCompany;
 use App\Http\Requests\CompanyEmailLayout\Create;
 use App\Http\Requests\CompanyEmailLayout\DetailsOrDelete;
 use App\Http\Requests\CompanyEmailLayout\EmailLayoutOptionsByLanguage;
@@ -66,6 +67,12 @@ class CompanyEmailLayoutController extends Controller
     public function getPreviewTemplateObject(): JsonResponse
     {
         $response = $this->service->getPreviewTemplateObject();
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function copyLayoutToCompany(CopyLayoutToCompany $request): JsonResponse
+    {
+        $response = $this->service->copyLayoutToCompany($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

@@ -23,4 +23,6 @@ interface EmailLayoutServiceInterface
 
     public function getPreviewTemplateObject(): ServiceDto;
 
+    public function getEmailLayoutsForCompany(Request $request): ServiceDto;
+
 }
