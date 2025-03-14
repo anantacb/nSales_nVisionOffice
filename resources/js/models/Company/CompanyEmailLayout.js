@@ -116,4 +116,18 @@ export default class CompanyEmailLayout {
         });
     }
 
+    static copyLayoutToCompany(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company-email-layout/copy-layout-to-company', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
 }

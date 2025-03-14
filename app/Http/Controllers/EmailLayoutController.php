@@ -70,4 +70,10 @@ class EmailLayoutController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function getEmailLayoutsForCompany(PaginatedDataRequest $request): JsonResponse
+    {
+        $response = $this->service->getEmailLayoutsForCompany($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
 }

@@ -1,10 +1,11 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import useGridManagement from "@/composables/useGridManagement";
 import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 import {useCompanyStore} from "@/stores/companyStore";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
@@ -49,6 +50,13 @@ onMounted(() => {
     getEmailLayouts();
 });
 
+watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        resetRequest();
+        getEmailLayouts();
+    }
+});
+
 function goToPage(pageNo) {
     setPageNo(pageNo);
     getEmailLayouts();
@@ -68,7 +76,7 @@ function search(query) {
 
 async function getEmailLayouts() {
     let {data, pagination} = await CompanyEmailLayout.getEmailLayouts(companyStore.selectedCompany.Id, request.value);
-    console.log(data);
+    // console.log(data);
     tableData.value = data;
     paginationData.value = pagination;
 }
