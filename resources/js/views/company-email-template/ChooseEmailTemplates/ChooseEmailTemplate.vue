@@ -5,7 +5,7 @@ import ChooseEmailTemplateList from "@/views/company-email-template/ChooseEmailT
 <template>
     <!-- Page Content -->
     <div class="content">
-        <BaseBlock title="Email Templates">
+        <BaseBlock title="Choose Email Templates">
             <ChooseEmailTemplateList/>
         </BaseBlock>
     </div>

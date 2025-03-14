@@ -39,16 +39,6 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
         return new ServiceDto("Layouts retrieved!!!", 200, $layouts);
     }
 
-    public function create(Request $request): ServiceDto
-    {
-        $layout = $this->repository->create([
-            'Name' => $request->get('Name'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Template' => $request->get('Template')
-        ]);
-        return new ServiceDto("Email Layout Created Successfully.", 200, $layout);
-    }
-
     public function details(Request $request): ServiceDto
     {
         $relations = [];
@@ -113,9 +103,35 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function getPreviewTemplateObject(): ServiceDto
     {
         $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
-        $previewTemplateObject = $this->getEventProperties($layoutFields ?? []);
+        $previewTemplateObject = array_merge(
+            $this->getEventProperties($layoutFields ?? []),
+            array_filter($this->getCompanyDataForTemplate(), function ($value) {
+                return $value !== '';
+            })
+        );
 
         return new ServiceDto("Preview template data retrieved successfully.", 200, $previewTemplateObject);
+    }
+
+    public function copyLayoutToCompany(Request $request): ServiceDto
+    {
+        $companyEmailTemplate = $this->repository->create([
+            'Name' => $request->get('Name'),
+            'LanguageId' => $request->get('LanguageId'),
+            'Template' => $request->get('Template')
+        ]);
+
+        return new ServiceDto("Email Layout Copied Successfully.", 200, $companyEmailTemplate);
+    }
+
+    public function create(Request $request): ServiceDto
+    {
+        $layout = $this->repository->create([
+            'Name' => $request->get('Name'),
+            'LanguageId' => $request->get('LanguageId'),
+            'Template' => $request->get('Template')
+        ]);
+        return new ServiceDto("Email Layout Created Successfully.", 200, $layout);
     }
 
 }
