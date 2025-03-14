@@ -12,6 +12,20 @@ export default class EmailLayout {
         });
     }
 
+    static getEmailLayoutsForCompany(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/email-layout/get-email-layouts-for-company', {
+                CompanyId, ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static create(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/email-layout/create', formData)

@@ -78,12 +78,18 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
 
     public function fetchEmailEvents($request): array
     {
-        $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
         $emailEvents = json_decode(CompanyService::getSettingValue('CompanyEmail', 'EmailEvents'), true);
+        $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
+        $layoutFields = array_merge(
+            $this->getEventProperties($layoutFields ?? []),
+            array_filter($this->getCompanyDataForTemplate(), function ($value) {
+                return $value !== '';
+            })
+        );
 
         $data = [];
         foreach ($emailEvents as $key => $emailEvent) {
-            $fields = $this->getEventProperties(array_merge($layoutFields, $emailEvent['Fields'] ?? []));
+            $fields = array_merge($layoutFields, $this->getEventProperties($emailEvent['Fields'] ?? []));
 
             // Fetch fields from main table
             if (isset($emailEvent['Table'])) {
