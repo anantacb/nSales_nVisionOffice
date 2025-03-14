@@ -255,8 +255,10 @@ class CompanyService implements CompanyServiceInterface
                 'CompanyName' => $request->get('CompanyName'),
             ],
             collect($sourceCompany)->except([
-                'Id', 'InsertTime', 'UpdateTime', 'DeleteTime',
-                'Name', 'DomainName', 'DatabaseName', 'CompanyName', 'modules'
+                'Id', 'InsertTime', 'UpdateTime', 'DeleteTime', // Default Columns For laravel
+                'Name', 'DomainName', 'DatabaseName', 'CompanyName', // input
+                'modules', // relations
+                'CustomDomainsArray' // appended
             ])->toArray()
         ));
 
