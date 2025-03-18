@@ -55,7 +55,7 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         );
         $emailEvents = json_decode(json_encode($emailEvents), true);
 
-        return $templates->map(function ($template) use ($emailEvents) {
+        return $templates->through(function ($template) use ($emailEvents) {
             $template->ModifiedElementName = $emailEvents[$template->ElementName]['Title'] ?? $template->ElementName;
             return $template;
         });
