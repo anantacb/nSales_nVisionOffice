@@ -7,6 +7,10 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static insert($data)
+ * @method static truncate()
+ */
 abstract class BaseModel extends Model
 {
     use ModelHelper, HasFactory;
