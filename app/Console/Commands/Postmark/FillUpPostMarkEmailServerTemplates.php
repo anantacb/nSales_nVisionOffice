@@ -7,7 +7,6 @@ use App\Models\Office\PostmarkEmailServerTemplates;
 use App\Repositories\Plugin\Postmark\PostmarkRepository;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Encryption\Encrypter;
 
 class FillUpPostMarkEmailServerTemplates extends Command
 {
@@ -23,7 +22,6 @@ class FillUpPostMarkEmailServerTemplates extends Command
      * @var string
      */
     protected $description = 'Fetch server templates from postmark and match them with our companies and store in database.';
-    private $encryptionKey;
 
     /**
      * Execute the console command.
@@ -32,7 +30,6 @@ class FillUpPostMarkEmailServerTemplates extends Command
      */
     public function handle()
     {
-        $this->encryptionKey = env("POSTMARK_SERVER_API_TOKEN_ENCRYPTION_KEY");
         PostmarkEmailServerTemplates::truncate();
         $postmarkEmailServers = PostmarkEmailServer::all();
 
@@ -50,11 +47,11 @@ class FillUpPostMarkEmailServerTemplates extends Command
             $offset = 0;
             $continue = true;
             while ($continue) {
-                $response = $repository->listTemplates($this->getDecryptedApiToken($postmarkEmailServer['EncryptedApiToken']), $count, $offset);
+                $response = $repository->listTemplates(decryptPostmarkToken($postmarkEmailServer['EncryptedApiToken']), $count, $offset);
                 $offset += $count;
                 $templates = $response['data']['Templates'];
                 foreach ($templates as $template) {
-                    $templateDetails = $repository->getTemplate($this->getDecryptedApiToken($postmarkEmailServer['EncryptedApiToken']), $template['TemplateId']);
+                    $templateDetails = $repository->getTemplate(decryptPostmarkToken($postmarkEmailServer['EncryptedApiToken']), $template['TemplateId']);
                     $postmarkEmailServerTemplates[] = [
                         'InsertTime' => Carbon::now(),
                         'UpdateTime' => Carbon::now(),
@@ -74,10 +71,5 @@ class FillUpPostMarkEmailServerTemplates extends Command
         $progressBar->finish();
         $this->info("Success");
         return Command::SUCCESS;
-    }
-
-    private function getDecryptedApiToken($apiToken)
-    {
-        return (new Encrypter($this->encryptionKey, config('app.cipher')))->decrypt($apiToken);
     }
 }

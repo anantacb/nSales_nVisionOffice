@@ -7,11 +7,10 @@ use App\Models\Office\PostmarkEmailServer;
 use App\Repositories\Plugin\Postmark\PostmarkRepository;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Encryption\Encrypter;
 
 class FillUpPostMarkEmailServer extends Command
 {
-    public $companyWithModuleSettingValue = [];
+    public array $companyWithModuleSettingValue = [];
     /**
      * The name and signature of the console command.
      *
@@ -24,18 +23,15 @@ class FillUpPostMarkEmailServer extends Command
      * @var string
      */
     protected $description = 'Fetch servers from postmark and match them with our companies and store in database.';
-    private $encryptionKey;
 
     /**
      * Execute the console command.
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
         $this->setCompanyModuleSettingValue();
-
-        $this->encryptionKey = env("POSTMARK_SERVER_API_TOKEN_ENCRYPTION_KEY");
 
         $repository = new PostmarkRepository();
         $count = 100;
@@ -66,7 +62,7 @@ class FillUpPostMarkEmailServer extends Command
                         'ServerName' => $server['Name'],
                         'ServerDetails' => json_encode($server),
                         'CompanyId' => $companyId,
-                        'EncryptedApiToken' => (new Encrypter($this->encryptionKey, config('app.cipher')))->encrypt($server['ApiTokens'][0]),
+                        'EncryptedApiToken' => encryptPostmarkToken($server['ApiTokens'][0]),
                     ];
                 }
             } else {
@@ -77,7 +73,7 @@ class FillUpPostMarkEmailServer extends Command
                     'ServerName' => $server['Name'],
                     'ServerDetails' => json_encode($server),
                     'CompanyId' => null,
-                    'EncryptedApiToken' => (new Encrypter($this->encryptionKey, config('app.cipher')))->encrypt($server['ApiTokens'][0]),
+                    'EncryptedApiToken' => encryptPostmarkToken($server['ApiTokens'][0]),
                 ];
             }
         })->toArray();
@@ -89,7 +85,7 @@ class FillUpPostMarkEmailServer extends Command
         return Command::SUCCESS;
     }
 
-    private function setCompanyModuleSettingValue()
+    private function setCompanyModuleSettingValue(): void
     {
         $module = Module::with([
             'moduleSettings' => function ($q) {
@@ -109,7 +105,7 @@ class FillUpPostMarkEmailServer extends Command
         }
     }
 
-    private function getCompanyIds($apiTokens)
+    private function getCompanyIds($apiTokens): array
     {
         $companyIds = [];
         foreach ($apiTokens as $apiToken) {
@@ -119,15 +115,5 @@ class FillUpPostMarkEmailServer extends Command
             }
         }
         return $companyIds;
-    }
-
-    private function getCompanyId($companyWithModuleSettingValue, $apiTokens)
-    {
-        foreach ($apiTokens as $apiToken) {
-            if (isset($companyWithModuleSettingValue[$apiToken])) {
-                return $companyWithModuleSettingValue[$apiToken]['CompanyId'];
-            }
-        }
-        return null;
     }
 }
