@@ -92,6 +92,8 @@ class CompanyService implements CompanyServiceInterface
 
     protected DataFilterRepositoryInterface $dataFilterRepository;
 
+    protected NsalesAdminDjangoApiRepository $nsalesAdminDjangoApiRepository;
+
     public function __construct(
         CompanyRepositoryInterface             $companyRepository,
         ModulePackageRepositoryInterface       $modulePackageRepository,
@@ -436,6 +438,62 @@ class CompanyService implements CompanyServiceInterface
         }
     }
 
+    private function setUpPostmarkEmail($company): ?string
+    {
+        $templateServer = $this->postmarkEmailServerRepository->firstByAttributes([
+            ['column' => 'ServerName', 'operand' => '=', 'value' => 'TEMPLATE SERVER']
+        ]);
+
+        $name = $company->DomainName;
+        $response = $this->postmarkRepository->createServer($name);
+        if ($response['success']) {
+            return $this->doPostmarkTemplateAndSettingEntry($response, $company, $templateServer);
+        } else {
+            Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
+            return null;
+        }
+    }
+
+    /**
+     * @param array $response
+     * @param $targetCompany
+     * @param Model $sourceCompanyTemplateServer
+     * @return mixed
+     */
+    private function doPostmarkTemplateAndSettingEntry(array $response, $targetCompany, Model $sourceCompanyTemplateServer): mixed
+    {
+        $newServer = $response['data'];
+        $postmarkEmailServer = $this->postmarkEmailServerRepository->create([
+            'ServerId' => $newServer['ID'],
+            'ServerName' => $newServer['Name'],
+            'ServerDetails' => json_encode($newServer),
+            'CompanyId' => $targetCompany->Id,
+            'EncryptedApiToken' => encryptPostmarkToken($newServer['ApiTokens'][0])
+        ]);
+
+        // Set Token in settings
+        $module = $this->moduleRepository->firstByAttributes([
+            ['column' => 'Name', 'operand' => '=', 'value' => 'System']
+        ]);
+        $moduleSetting = $this->moduleSettingRepository->firstByAttributes([
+            ['column' => 'ModuleId', 'operand' => '=', 'value' => $module->Id],
+            ['column' => 'Name', 'operand' => '=', 'value' => 'PostmarkServerApiToken']
+        ]);
+
+        $this->settingRepository->create([
+            'ModuleSettingId' => $moduleSetting->Id,
+            'Value' => $newServer['ApiTokens'][0],
+            'CompanyId' => $targetCompany->Id
+        ]);
+
+        $response = $this->postmarkRepository->pushTemplatesToAnotherServer($sourceCompanyTemplateServer->ServerId, $postmarkEmailServer->ServerId);
+        if (!$response['success']) {
+            Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
+        }
+
+        return $postmarkEmailServer->ApiToken;
+    }
+
     private function setUpSyncFtp($company): void
     {
         $paths = ['Data/Export', 'Data/Exported', 'Data/Import', 'Data/Imported', 'Data/Templates'];
@@ -491,62 +549,6 @@ class CompanyService implements CompanyServiceInterface
             return "$base_name$attempt$suffix";
         }
         return $base_name;
-    }
-
-    private function setUpPostmarkEmail($company): ?string
-    {
-        $templateServer = $this->postmarkEmailServerRepository->firstByAttributes([
-            ['column' => 'ServerName', 'operand' => '=', 'value' => 'TEMPLATE SERVER']
-        ]);
-
-        $name = $company->DomainName;
-        $response = $this->postmarkRepository->createServer($name);
-        if ($response['success']) {
-            return $this->doPostmarkTemplateAndSettingEntry($response, $company, $templateServer);
-        } else {
-            Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
-            return null;
-        }
-    }
-
-    /**
-     * @param array $response
-     * @param $targetCompany
-     * @param Model $sourceCompanyTemplateServer
-     * @return mixed
-     */
-    private function doPostmarkTemplateAndSettingEntry(array $response, $targetCompany, Model $sourceCompanyTemplateServer): mixed
-    {
-        $newServer = $response['data'];
-        $postmarkEmailServer = $this->postmarkEmailServerRepository->create([
-            'ServerId' => $newServer['ID'],
-            'ServerName' => $newServer['Name'],
-            'ServerDetails' => $newServer,
-            'CompanyId' => $targetCompany->Id,
-            'ApiToken' => $newServer['ApiTokens'][0]
-        ]);
-
-        // Set Token in settings
-        $module = $this->moduleRepository->firstByAttributes([
-            ['column' => 'Name', 'operand' => '=', 'value' => 'System']
-        ]);
-        $moduleSetting = $this->moduleSettingRepository->firstByAttributes([
-            ['column' => 'ModuleId', 'operand' => '=', 'value' => $module->Id],
-            ['column' => 'Name', 'operand' => '=', 'value' => 'PostmarkServerApiToken']
-        ]);
-
-        $this->settingRepository->create([
-            'ModuleSettingId' => $moduleSetting->Id,
-            'Value' => $newServer['ApiTokens'][0],
-            'CompanyId' => $targetCompany->Id
-        ]);
-
-        $response = $this->postmarkRepository->pushTemplatesToAnotherServer($sourceCompanyTemplateServer->ServerId, $postmarkEmailServer->ServerId);
-        if (!$response['success']) {
-            Log::error("Postmark New Company Creation Error. Message: " . $response['message']);
-        }
-
-        return $postmarkEmailServer->ApiToken;
     }
 
     private function createInitialUserAndSendInvitation($company, $adminRole, $postmarkToken): void
