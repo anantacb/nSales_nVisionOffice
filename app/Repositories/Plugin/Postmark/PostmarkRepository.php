@@ -17,33 +17,6 @@ class PostmarkRepository
     }
 
     /**
-     * @param int $id
-     * @return array
-     */
-    public function deleteServer(int $id): array
-    {
-        $this->setAdminClient();
-        try {
-            $response = $this->client->deleteServer($id);
-            return [
-                'success' => true,
-                'data' => (array)$response
-            ];
-        } catch (PostmarkException $exception) {
-            return [
-                "success" => false,
-                "code" => $exception->getCode(),
-                "message" => $exception->getMessage()
-            ];
-        }
-    }
-
-    private function setAdminClient(): void
-    {
-        $this->client = new PostmarkAdminClient(env('POSTMARK_ACCOUNT_API_TOKEN'));
-    }
-
-    /**
      * @param int $count
      * @param int $offset
      * @param string $name
@@ -54,9 +27,17 @@ class PostmarkRepository
         $this->setAdminClient();
         try {
             $response = $this->client->listServers($count, $offset, $name);
+            $totalCount = $response->getTotalCount();
+            $servers = [];
+            foreach ($response->getServers() as $server) {
+                $servers[] = (array)$server;
+            }
             return [
                 'success' => true,
-                'data' => (array)$response
+                'data' => [
+                    'TotalCount' => $totalCount,
+                    'Servers' => $servers,
+                ]
             ];
         } catch (PostmarkException $exception) {
             return [
@@ -64,6 +45,11 @@ class PostmarkRepository
                 "message" => $exception->getMessage()
             ];
         }
+    }
+
+    private function setAdminClient(): void
+    {
+        $this->client = new PostmarkAdminClient(env('POSTMARK_ACCOUNT_API_TOKEN'));
     }
 
     /**
@@ -134,6 +120,29 @@ class PostmarkRepository
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function deleteServer(int $id): array
+    {
+        $this->setAdminClient();
+        try {
+            $response = $this->client->deleteServer($id);
+            return [
+                'success' => true,
+                'data' => (array)$response
+            ];
+        } catch (PostmarkException $exception) {
+            return [
+                "success" => false,
+                "code" => $exception->getCode(),
+                "message" => $exception->getMessage()
+            ];
+        }
+    }
+
+
+    /**
      * @param string $from
      * @param string $to
      * @param string|int $templateIdOrAlias
@@ -170,5 +179,67 @@ class PostmarkRepository
     {
         $this->client = new PostmarkClient($postmarkToken);
         return $this;
+    }
+
+    public function listTemplates($postmarkToken, int $count, int $offset = 0, $templateType = 'All', $layoutTemplate = null): array
+    {
+        $this->setServerClient($postmarkToken);
+        try {
+            $response = $this->client->listTemplates($count, $offset, $templateType, $layoutTemplate);
+            $totalCount = $response->getTotalCount();
+            $templates = [];
+            foreach ($response->getTemplates() as $template) {
+                $templates[] = [
+                    'TemplateId' => $template->getTemplateId(),
+                    'Alias' => $template->getAlias(),
+                    'Subject' => $template->getSubject(),
+                    'Name' => $template->getName(),
+                    'HtmlBody' => $template->getHtmlBody(),
+                    'TextBody' => $template->getTextBody(),
+                    'AssociatedServerId' => $template->getAssociatedServerId(),
+                    'TemplateType' => $template->getTemplateType(),
+                    'LayoutTemplate' => $template->getLayoutTemplate()
+                ];
+            }
+            return [
+                'success' => true,
+                'data' => [
+                    'TotalCount' => $totalCount,
+                    'Templates' => $templates
+                ]
+            ];
+        } catch (PostmarkException $exception) {
+            return [
+                "success" => false,
+                "message" => $exception->getMessage()
+            ];
+        }
+    }
+
+    public function getTemplate($postmarkToken, int $templateId): array
+    {
+        $this->setServerClient($postmarkToken);
+        try {
+            $response = $this->client->getTemplate($templateId);
+            return [
+                'success' => true,
+                'data' => [
+                    'TemplateId' => $response->getTemplateId(),
+                    'Alias' => $response->getAlias(),
+                    'Subject' => $response->getSubject(),
+                    'Name' => $response->getName(),
+                    'HtmlBody' => $response->getHtmlBody(),
+                    'TextBody' => $response->getTextBody(),
+                    'AssociatedServerId' => $response->getAssociatedServerId(),
+                    'TemplateType' => $response->getTemplateType(),
+                    'LayoutTemplate' => $response->getLayoutTemplate()
+                ]
+            ];
+        } catch (PostmarkException $exception) {
+            return [
+                "success" => false,
+                "message" => $exception->getMessage()
+            ];
+        }
     }
 }
