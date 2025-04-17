@@ -29,7 +29,8 @@ abstract class EmailHelperService
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
 
         return [
-            'CompanyName' => $selectedCompany->module_settings['WebShop']['CompanyName'] ?? $selectedCompany->CompanyName,
+            'CompanyName' => isset($selectedCompany->module_settings['WebShop']) ?
+                $selectedCompany->module_settings['WebShop']['CompanyName'] : $selectedCompany->CompanyName,
             'CompanyStreet' => $selectedCompany->Street,
             'CompanyZipCode' => $selectedCompany->ZipCode,
             'CompanyCity' => $selectedCompany->City,
@@ -40,7 +41,8 @@ abstract class EmailHelperService
             'CompanyState' => $selectedCompany->State,
             'CompanyAddress' => $selectedCompany->Street . ', ' . $selectedCompany->ZipCode . ', ' . $selectedCompany->City,
             'CompanyCountry' => $selectedCompany->Country,
-            'CompanyLogoUrl' => $selectedCompany['imageHostAccount']['Home'] . '/logo.png' ?? '',
+            'CompanyLogoUrl' => isset($selectedCompany['imageHostAccount']) ?
+                $selectedCompany['imageHostAccount']['Home'] . '/logo.png' : '',
         ];
     }
 
