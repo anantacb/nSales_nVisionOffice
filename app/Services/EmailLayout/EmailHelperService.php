@@ -29,8 +29,7 @@ abstract class EmailHelperService
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
 
         return [
-            'CompanyName' => isset($selectedCompany->module_settings['WebShop']) ?
-                $selectedCompany->module_settings['WebShop']['CompanyName'] : $selectedCompany->CompanyName,
+            'CompanyName' => $selectedCompany->CompanyName,
             'CompanyStreet' => $selectedCompany->Street,
             'CompanyZipCode' => $selectedCompany->ZipCode,
             'CompanyCity' => $selectedCompany->City,
