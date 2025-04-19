@@ -12,6 +12,7 @@ import TableHelper from "@/models/TableHelper";
 import User from "@/models/Office/User";
 import useGeneralCreate from "@/composables/useGeneralCreate";
 import _ from "lodash";
+import CompanyLanguage from "@/models/Company/CompanyLanguage";
 
 const createCustomerRef = ref(null);
 const notificationStore = useNotificationStore();
@@ -36,7 +37,7 @@ const PriceGroupOptions = ref([]);
 async function getPriceGroups() {
     let {data} = await TableHelper.getColumnDistinctValues('Company', 'Pricegroup', 'Pricegroup', companyStore.selectedCompany.Id);
     if (!!data.length) {
-        PriceGroupOptions.value.push({label: "Please Select", value: ""});
+        PriceGroupOptions.value.push({label: "Select Pricegroup", value: ""});
         data.map((item) => {
             PriceGroupOptions.value.push({label: item, value: item});
         });
@@ -47,15 +48,24 @@ const CompanyUserOptions = ref([]);
 
 async function getAllCompanyUsers() {
     const {data} = await User.getAllCompanyUsers(companyStore.selectedCompany.Id, true);
-
     let options = [{label: 'Select User', value: ''}];
-
     data.forEach((company_user) => {
         let option = {label: company_user.user.Name, value: company_user.Initials};
         options.push(option);
     });
-
     CompanyUserOptions.value = options;
+}
+
+const CompanyLanguageOptions = ref([]);
+
+async function getAllCompanyLanguages() {
+    const {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id, true);
+    let options = [{label: 'Select Language', value: ''}];
+    data.forEach((language) => {
+        let option = {label: language.Name, value: language.Code};
+        options.push(option);
+    });
+    CompanyLanguageOptions.value = options;
 }
 
 function initFormValues() {
@@ -66,12 +76,12 @@ function initFormValues() {
         'Account': {
             HasTooltip: true,
             TooltipText: "This is the Account number for this customer. This will be the identifier of the customer.",
-            InputRequired: true
+            Nullable: false,
         },
         'Currency': {
             HasTooltip: true,
             TooltipText: "This is the currency for this customer. This will make sure that the customer always see prices in the correct currency.",
-            InputRequired: true,
+            Nullable: false,
             DefaultValue: 'DKK'
         },
         'Pricegroup': {
@@ -81,6 +91,10 @@ function initFormValues() {
         },
         'Employee': {
             SelectOptions: CompanyUserOptions.value
+        },
+        'Language': {
+            SelectOptions: CompanyLanguageOptions.value,
+            Nullable: false,
         }
     });
 }
@@ -109,6 +123,7 @@ onMounted(async () => {
     await getTableDetails('Customer');
     isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
     await getAllCompanyUsers();
+    await getAllCompanyLanguages();
     initFormValues();
     await getCompanyAllTableFields();
     createCustomerRef.value.statusNormal();
@@ -120,6 +135,7 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
         await getTableDetails('Customer');
         isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
         await getAllCompanyUsers();
+        await getAllCompanyLanguages();
         initFormValues();
         await getCompanyAllTableFields();
         createCustomerRef.value.statusNormal();

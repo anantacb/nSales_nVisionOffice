@@ -53,7 +53,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                     <label :class="{ 'text-info': TableField.isCompanySpecific }" :for="TableField.Name"
                            class="col-sm-4 col-form-label col-form-label-sm">
                         {{ TableField.Name }}
-                        <span v-if="TableField.InputRequired" class="text-danger">*</span>
+                        <span v-if="!TableField.Nullable" class="text-danger">*</span>
                         <PopOverButton v-if="TableField.HasTooltip"
                                        :content="TableField.TooltipText"
                                        btnClass="btn btn-sm pt-0 pb-0 pe-0 float-end"
@@ -68,7 +68,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                             :class="{'is-invalid' : props.Errors[TableField.Name]}"
                             :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
-                            :required="!!TableField.InputRequired"
+                            :required="!TableField.Nullable"
                             autocomplete="off"
                             class="form-control form-control-sm"
                             type="text"
@@ -82,7 +82,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                             :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :options="TableField.SelectOptions"
-                            :required="!!TableField.InputRequired"
+                            :required="!TableField.Nullable"
                             :select-class="props.Errors[TableField.Name] ? `is-invalid form-select-sm` : `form-select-sm`"
                             name="Disabled"
                         />
@@ -93,7 +93,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                                :class="{'is-invalid' : props.Errors[TableField.Name]}"
                                :disabled="!!TableField.InputLocked"
                                :name="TableField.Name"
-                               :required="!!TableField.InputRequired"
+                               :required="!TableField.Nullable"
                                autocomplete="off"
                                class="form-control form-control-sm"
                                type="number"
@@ -105,7 +105,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                                :class="{'is-invalid' : props.Errors[TableField.Name]}"
                                :disabled="!!TableField.InputLocked"
                                :name="TableField.Name"
-                               :required="!!TableField.InputRequired"
+                               :required="!TableField.Nullable"
                                autocomplete="off"
                                class="form-control form-control-sm"
                                step="any"
@@ -119,7 +119,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                             :class="{'is-invalid' : props.Errors[TableField.Name]}"
                             :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
-                            :required="!!TableField.InputRequired"
+                            :required="!TableField.Nullable"
                             class="form-control form-control-sm"
                             rows="3"
                         >
@@ -132,7 +132,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                             :class="{'is-invalid' : props.Errors[TableField.Name]}"
                             :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
-                            :required="!!TableField.InputRequired"
+                            :required="!TableField.Nullable"
                             class="form-control form-control-sm"
                             placeholder="Y-m-d"
                         />
@@ -145,7 +145,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                             :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :options="booleanOptions"
-                            :required="!!TableField.InputRequired"
+                            :required="!TableField.Nullable"
                             :select-class="props.Errors[TableField.Name] ? `is-invalid form-select-sm` : `form-select-sm`"
                             name="Disabled"
                         />
@@ -158,7 +158,7 @@ const emit = defineEmits(['formAction', 'resetErrors']);
                             :disabled="!!TableField.InputLocked"
                             :name="TableField.Name"
                             :options="TableField.SelectOptions"
-                            :required="!!TableField.InputRequired"
+                            :required="!TableField.Nullable"
                             :select-class="props.Errors[TableField.Name] ? `is-invalid form-select-sm` : `form-select-sm`"
                             name="Disabled"
                         />

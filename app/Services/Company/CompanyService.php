@@ -7,6 +7,8 @@ use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Models\Office\Company;
 use App\Models\Office\Module;
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
@@ -19,6 +21,8 @@ use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailConfiguration\EmailConfigurationRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
+use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\ImageHostAccount\ImageHostAccountRepositoryInterface;
 use App\Repositories\Eloquent\Office\Language\LanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
@@ -33,9 +37,11 @@ use App\Repositories\Eloquent\Office\UserInvitation\UserInvitationRepositoryInte
 use App\Repositories\Plugin\BunnyCdn\BunnyCdnRepository;
 use App\Repositories\Plugin\NsalesAdminDjangoApi\NsalesAdminDjangoApiRepository;
 use App\Repositories\Plugin\Postmark\PostmarkRepository;
+use App\Services\CompanyLanguage\CompanyLanguageServiceInterface;
 use App\Services\Traits\ModuleHelperTrait;
 use Carbon\Carbon;
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -94,34 +100,48 @@ class CompanyService implements CompanyServiceInterface
 
     protected NsalesAdminDjangoApiRepository $nsalesAdminDjangoApiRepository;
 
+    protected EmailLayoutRepositoryInterface $emailLayoutRepository;
+    protected EmailTemplateRepositoryInterface $emailTemplateRepository;
+
+    protected CompanyEmailLayoutRepositoryInterface $companyEmailLayoutRepository;
+
+    protected CompanyEmailTemplateRepositoryInterface $companyEmailTemplateRepository;
+
+    protected CompanyLanguageServiceInterface $companyLanguageService;
+
     public function __construct(
-        CompanyRepositoryInterface             $companyRepository,
-        ModulePackageRepositoryInterface       $modulePackageRepository,
-        CompanyModuleRepositoryInterface       $companyModuleRepository,
-        RoleRepositoryInterface                $roleRepository,
-        CompanyUserRepositoryInterface         $companyUserRepository,
-        UserRepositoryInterface                $userRepository,
-        CompanyUserRoleRepositoryInterface     $companyUserRoleRepository,
-        BunnyCdnRepository                     $bunnyCdnRepository,
-        ImageHostAccountRepositoryInterface    $imageHostAccountRepository,
-        PostmarkRepository                     $postmarkRepository,
-        PostmarkEmailServerRepositoryInterface $postmarkEmailServerRepository,
-        ModuleSettingRepositoryInterface       $moduleSettingRepository,
-        SettingRepositoryInterface             $settingRepository,
-        ModuleRepositoryInterface              $moduleRepository,
-        UserInvitationRepositoryInterface      $userInvitationRepository,
-        EmailConfigurationRepositoryInterface  $emailConfigurationRepository,
-        FtpUserRepositoryInterface             $ftpUserRepository,
-        LanguageRepositoryInterface            $languageRepository,
-        TranslationRepositoryInterface         $translationRepository,
-        CompanyLanguageRepositoryInterface     $companyLanguageRepository,
-        CompanyTranslationRepositoryInterface  $companyTranslationRepository,
-        CompanyTableFieldRepositoryInterface   $companyTableFieldRepository,
-        CompanyTableIndexRepositoryInterface   $companyTableIndexRepository,
-        CompanyTableRepositoryInterface        $companyTableRepository,
-        CompanyThemeRepositoryInterface        $companyThemeRepository,
-        DataFilterRepositoryInterface          $dataFilterRepository,
-        NsalesAdminDjangoApiRepository         $nsalesAdminDjangoApiRepository
+        CompanyRepositoryInterface              $companyRepository,
+        ModulePackageRepositoryInterface        $modulePackageRepository,
+        CompanyModuleRepositoryInterface        $companyModuleRepository,
+        RoleRepositoryInterface                 $roleRepository,
+        CompanyUserRepositoryInterface          $companyUserRepository,
+        UserRepositoryInterface                 $userRepository,
+        CompanyUserRoleRepositoryInterface      $companyUserRoleRepository,
+        BunnyCdnRepository                      $bunnyCdnRepository,
+        ImageHostAccountRepositoryInterface     $imageHostAccountRepository,
+        PostmarkRepository                      $postmarkRepository,
+        PostmarkEmailServerRepositoryInterface  $postmarkEmailServerRepository,
+        ModuleSettingRepositoryInterface        $moduleSettingRepository,
+        SettingRepositoryInterface              $settingRepository,
+        ModuleRepositoryInterface               $moduleRepository,
+        UserInvitationRepositoryInterface       $userInvitationRepository,
+        EmailConfigurationRepositoryInterface   $emailConfigurationRepository,
+        FtpUserRepositoryInterface              $ftpUserRepository,
+        LanguageRepositoryInterface             $languageRepository,
+        TranslationRepositoryInterface          $translationRepository,
+        CompanyLanguageRepositoryInterface      $companyLanguageRepository,
+        CompanyTranslationRepositoryInterface   $companyTranslationRepository,
+        CompanyTableFieldRepositoryInterface    $companyTableFieldRepository,
+        CompanyTableIndexRepositoryInterface    $companyTableIndexRepository,
+        CompanyTableRepositoryInterface         $companyTableRepository,
+        CompanyThemeRepositoryInterface         $companyThemeRepository,
+        DataFilterRepositoryInterface           $dataFilterRepository,
+        NsalesAdminDjangoApiRepository          $nsalesAdminDjangoApiRepository,
+        EmailLayoutRepositoryInterface          $emailLayoutRepository,
+        EmailTemplateRepositoryInterface        $emailTemplateRepository,
+        CompanyEmailLayoutRepositoryInterface   $companyEmailLayoutRepository,
+        CompanyEmailTemplateRepositoryInterface $companyEmailTemplateRepository,
+        CompanyLanguageServiceInterface         $companyLanguageService
     )
     {
         $this->companyRepository = $companyRepository;
@@ -151,6 +171,21 @@ class CompanyService implements CompanyServiceInterface
         $this->companyThemeRepository = $companyThemeRepository;
         $this->dataFilterRepository = $dataFilterRepository;
         $this->nsalesAdminDjangoApiRepository = $nsalesAdminDjangoApiRepository;
+        $this->emailLayoutRepository = $emailLayoutRepository;
+        $this->emailTemplateRepository = $emailTemplateRepository;
+        $this->companyEmailLayoutRepository = $companyEmailLayoutRepository;
+        $this->companyEmailTemplateRepository = $companyEmailTemplateRepository;
+        $this->companyLanguageService = $companyLanguageService;
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public static function getSettingValue(string $moduleName, string $key)
+    {
+        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
     }
 
     /**
@@ -162,16 +197,6 @@ class CompanyService implements CompanyServiceInterface
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
         $modules = $selectedCompany->modules->toArray();
         return in_array($moduleName, array_column($modules, 'Name'));
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public static function getSettingValue(string $moduleName, string $key)
-    {
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
     }
 
     public function getAllCompanies(Request $request): ServiceDto
@@ -289,7 +314,6 @@ class CompanyService implements CompanyServiceInterface
             $this->setUpImageHosting($targetCompany);
             $postmarkToken = $this->clonePostmarkEmail($sourceCompany, $targetCompany);
             if (!$withRolesAndUsers) {
-                // TODO
                 $this->createInitialUserAndSendInvitation($targetCompany, $adminRole, $postmarkToken);
             }
         }
@@ -303,11 +327,7 @@ class CompanyService implements CompanyServiceInterface
         $this->cloneEmailConfigurations($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withEmailConfigurations);
 
         if (!$withData) {
-            $this->addDefaultLanguageAndTranslations($targetCompany);
-            /**
-             * TODO
-             *  Add Default Email Layout and templates
-             */
+            $this->addDefaultLanguageAndRelatedContents($targetCompany);
         }
 
         return new ServiceDto("Company Cloned Successfully.", 200, $targetCompany);
@@ -325,8 +345,8 @@ class CompanyService implements CompanyServiceInterface
             $postmarkToken = $this->setUpPostmarkEmail($company);
             $this->createInitialUserAndSendInvitation($company, $adminRole, $postmarkToken);
         }
-        $this->addDefaultLanguageAndTranslations($company);
         $this->setUpEmailConfiguration($company);
+        $this->addDefaultLanguageAndRelatedContents($company);
         return new ServiceDto("Company Created Successfully.", 200, $company);
     }
 
@@ -517,7 +537,7 @@ class CompanyService implements CompanyServiceInterface
      * @param Model $sourceCompanyTemplateServer
      * @return mixed
      */
-    private function doPostmarkTemplateAndSettingEntry(array $response, $targetCompany, Model $sourceCompanyTemplateServer): mixed
+    private function doPostmarkTemplateAndSettingEntry(array $response, $targetCompany, Model $sourceCompanyTemplateServer): string
     {
         $newServer = $response['data'];
         $postmarkEmailServer = $this->postmarkEmailServerRepository->create([
@@ -625,27 +645,45 @@ class CompanyService implements CompanyServiceInterface
         }
     }
 
-    private function addDefaultLanguageAndTranslations($company): void
+    private function setUpEmailConfiguration($company): void
+    {
+        $orderModule = $this->moduleRepository->firstByAttributes([
+            ['column' => 'Name', 'operand' => '=', 'value' => 'Order']
+        ]);
+        $this->emailConfigurationRepository->create([
+            'Name' => "Order Confirmation",
+            'TemplateType' => "Internal",
+            'Disabled' => 0,
+            'From' => "no-reply@nsales.dk",
+            'To' => "",
+            'Cc' => "",
+            'Bcc' => "",
+            'SendToCompany' => 0,
+            'SendToUser' => 1,
+            'SendToCustomer' => 1,
+            'SendToSupplier' => 0,
+            'SendToEmployee' => 0,
+            'Subject' => "",
+            'Body' => "",
+            'Description' => "",
+            'TemplatePath' => "",
+            'ModuleId' => $orderModule->Id,
+            'ApplicationId' => null,
+            'CompanyId' => $company->Id,
+            'RoleId' => null,
+            'CompanyUserId' => null,
+        ]);
+    }
+
+    private function addDefaultLanguageAndRelatedContents($company): void
     {
         $language = $this->languageRepository->firstByAttributes([
             ['column' => 'IsDefault', 'operand' => '=', 'value' => 1]
         ]);
         CompanyService::setCompanyDatabaseConnection($company->Id);
-        $companyLanguage = $this->companyLanguageRepository->firstOrCreate([
-            'Name' => $language->Name,
-            'Locale' => $language->Locale,
-            'Code' => $language->Code,
-            'IsDefault' => $language->IsDefault,
-        ]);
-        $translations = $this->translationRepository->getByAttribute('LanguageId', '=', $language->Id);
-        foreach ($translations as $translation) {
-            $this->companyTranslationRepository->create([
-                'CompanyLanguageId' => $companyLanguage->Id,
-                'Type' => $translation->Type,
-                'ElementName' => $translation->ElementName,
-                'Translations' => $translation->Translations,
-            ]);
-        }
+        $companyLanguage = $this->companyLanguageService->createCompanyLanguage($language, 1);
+        $this->companyLanguageService->addCompanyTranslations($language, $companyLanguage);
+        $this->companyLanguageService->addCompanyEmailLayoutAndTemplates($language, $companyLanguage);
     }
 
     /**
@@ -721,36 +759,6 @@ class CompanyService implements CompanyServiceInterface
         Config::set('database.connections.mysql_company.database', $company->DatabaseName);
 
         DB::connection('mysql_company')->reconnect();
-    }
-
-    private function setUpEmailConfiguration($company): void
-    {
-        $orderModule = $this->moduleRepository->firstByAttributes([
-            ['column' => 'Name', 'operand' => '=', 'value' => 'Order']
-        ]);
-        $this->emailConfigurationRepository->create([
-            'Name' => "Order Confirmation",
-            'TemplateType' => "Internal",
-            'Disabled' => 0,
-            'From' => "no-reply@nsales.dk",
-            'To' => "",
-            'Cc' => "",
-            'Bcc' => "",
-            'SendToCompany' => 0,
-            'SendToUser' => 1,
-            'SendToCustomer' => 1,
-            'SendToSupplier' => 0,
-            'SendToEmployee' => 0,
-            'Subject' => "",
-            'Body' => "",
-            'Description' => "",
-            'TemplatePath' => "",
-            'ModuleId' => $orderModule->Id,
-            'ApplicationId' => null,
-            'CompanyId' => $company->Id,
-            'RoleId' => null,
-            'CompanyUserId' => null,
-        ]);
     }
 
     private function cloneModuleTableAndFieldEntries($sourceCompany, $targetCompany): void
@@ -1195,6 +1203,9 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Company Custom Domain Retrieved Successfully.", 200, $company->CustomDomainsArray);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function addCompanyCustomDomain(Request $request): ServiceDto
     {
         $response = $this->nsalesAdminDjangoApiRepository->addCompanyCustomDomain($request->get('CustomDomain'), $request->get('UUID'));
@@ -1229,6 +1240,9 @@ class CompanyService implements CompanyServiceInterface
         return $updateCompany->CustomDomainsArray;
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function deleteCompanyCustomDomain(Request $request): ServiceDto
     {
         if ($request->has('HostId')) {
