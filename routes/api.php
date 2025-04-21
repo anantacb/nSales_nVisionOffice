@@ -19,6 +19,7 @@ use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\EmailLayoutController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\GitController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModulePackageController;
@@ -254,6 +255,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/get-email-events', [EmailTemplateController::class, 'getEmailEvents']);
         Route::post('/get-data-for-preview', [EmailTemplateController::class, 'getDataForPreview']);
     });
+
+    Route::post('/cache-clear', [HomeController::class, 'cacheClear']);
 
     Route::middleware(['company'])->group(function () {
         // Order
