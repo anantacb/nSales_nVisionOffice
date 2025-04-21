@@ -363,6 +363,15 @@ export default {
         },
 
         {
+            name: "Cache Clear",
+            to: "/cache-clear",
+            roles: ["Developer"],
+            icon: "fa fa-dumpster-fire",
+            directLink: true,
+            targetBlank: false
+        },
+
+        {
             name: "Company",
             heading: true,
             roles: ["Developer", "Administrator", "Employee"],
