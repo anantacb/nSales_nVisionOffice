@@ -112,6 +112,8 @@ const ChooseEmailTemplate = () => import('@/views/company-email-template/ChooseE
 
 const NotFound = () => import('@/views/404View.vue');
 
+const CacheClear = () => import('@/views/global-helper/CacheClear.vue');
+
 const routes = [
     {
         path: "",
@@ -957,6 +959,22 @@ const routes = [
 
     },
 
+    {
+        path: "",
+        component: LayoutSimple,
+        children: [
+            {
+                path: "cache-clear",
+                name: "cache-clear",
+                component: CacheClear,
+                meta: {
+                    requiresAuth: true,
+                    roles: ['Developer']
+                }
+            }
+        ],
+
+    },
     {
         path: "/:catchAll(.*)",
         name: "not_found",
