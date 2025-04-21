@@ -74,9 +74,16 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
     public function delete(Request $request): ServiceDto
     {
         $count = $this->companyLanguageRepository->totalCount();
+        $companyLanguage = $this->companyLanguageRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
+        ]);
         if ($count == 1) {
             return new ServiceDto("You have to keep at least one language.", 422);
         }
+        if ($companyLanguage->IsDefault) {
+            return new ServiceDto("First you have to set another language as Default.", 422);
+        }
+
         $this->companyTranslationRepository->deleteByAttributes([
             ['column' => 'CompanyLanguageId', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
         ]);
@@ -85,10 +92,6 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
         ]);
         $this->companyEmailLayoutRepository->deleteByAttributes([
             ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
-        ]);
-
-        $companyLanguage = $this->companyLanguageRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
         ]);
 
         if (CompanyService::isModuleEnabled('WSPage')) {
@@ -175,6 +178,11 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
 
     public function addWebShopTexts($companyLanguage): void
     {
+        /**
+         * TODO
+         * May have to add Item,Itemgroup etc
+         */
+
         if (CompanyService::isModuleEnabled('WSPage')) {
             $webShopPages = $this->webShopPageRepository->all();
             $section_types = ['Header', 'SubHeader', 'Body', 'Footer'];
