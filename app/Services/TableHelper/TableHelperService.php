@@ -74,7 +74,7 @@ class TableHelperService implements TableHelperServiceInterface
         $in = '';
         $type = '';
 
-        if ($tableField['InputRequired']) {
+        if (!$tableField['Nullable']) {
             $required = 'required';
         }
 

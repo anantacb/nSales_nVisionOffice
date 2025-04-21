@@ -34,7 +34,11 @@ class CompanyLanguageController extends Controller
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        if ($response->statusCode == 200) {
+            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        } else {
+            return ApiResponseTransformer::error($response->data, $response->message, $response->statusCode);
+        }
     }
 
     public function addCompanyLanguage(AddCompanyLanguage $request): JsonResponse
