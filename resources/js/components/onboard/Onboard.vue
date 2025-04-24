@@ -39,7 +39,7 @@ const getCompanyOnboardStatus = async () => {
 
         isLoading.value = false
     } catch (err) {
-        notificationStore.showNotification(err.response.data.message, "danger")
+        notificationStore.showNotification(err.response.data.message, "error")
         isLoading.value = false
     }
 }
@@ -103,7 +103,7 @@ const updateCompanyOnboardStatus = async () => {
         await Onboard.updateCompanyOnboardStatus(companyStore.selectedCompany.Id, props.application, onboardingProgress.value);
         isLoading.value = false
     } catch (err) {
-        notificationStore.showNotification(err.response.data.message, "danger")
+        notificationStore.showNotification(err.response.data.message, "error")
         isLoading.value = false
     }
 }
