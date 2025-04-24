@@ -1,12 +1,11 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import VueSelect from 'vue-select';
-
-import Module from "@/models/Office/Module";
 import Table from "@/models/Office/Table";
 import {booleanOptions, clientSyncOptions, databaseOptions, typeOptions} from "@/data/dropDownOptions";
 import {useRoute} from "vue-router";
 import {useNotificationStore} from "@/stores/notificationStore";
+import _ from "lodash";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -24,7 +23,6 @@ let loading = ref({
 
 let errors = ref({});
 
-
 onMounted(async () => {
     updateTableRef.value.statusLoading();
     await getTableDetails();
@@ -41,10 +39,11 @@ async function update() {
         EnableSqlTruncate: TableModel.value.EnableSqlTruncate,
         SqlTruncate: TableModel.value.SqlTruncate,
         SqlSeed: TableModel.value.SqlSeed,
-        Note: TableModel.value.Note
+        Note: TableModel.value.Note,
+        CompanyIds: TableModel.value.CompanyIds // Added for `add to/delete from` other companies
     };
     try {
-        let {data, message} = await Table.update(formData);
+        let {message} = await Table.update(formData);
         notificationStore.showNotification(message);
     } catch (err) {
         if (err.response.status === 422) {
@@ -58,17 +57,29 @@ async function update() {
 async function getTableDetails() {
     let {data} = await Table.getDetails(route.params.id);
     TableModel.value = data;
-
-    let tableCompanies = data.company_tables.map((company_table) => {
-        return {
-            label: company_table.company.Name,
-            value: company_table.company.Id
-        }
-    });
-
-    _.orderBy(tableCompanies, ['label'], ['asc']);
+    TableModel.value.CompanyIds = [];
+    if (!_.isEmpty(TableModel.value.company_tables)) {
+        TableModel.value.CompanyIds = TableModel.value.company_tables.map(company => company.CompanyId);
+        companies.value = TableModel.value.module.companies.map((company) => {
+            return {
+                label: company.Name,
+                value: company.Id
+            }
+        });
+        companies.value = _.orderBy(companies.value, ['label'], ['asc']);
+    }
 }
 
+const isCompaniesEditable = computed(() => {
+    return !_.isEmpty(TableModel.value.company_tables);
+});
+
+function removeCompany(option) {
+    if (_.isEmpty(TableModel.value.CompanyIds)) {
+        TableModel.value.CompanyIds.push(option.value);
+        notificationStore.showNotification("Need to keep at least one Company.", 'error');
+    }
+}
 </script>
 
 <template>
@@ -164,18 +175,19 @@ async function getTableDetails() {
                             </label>
                             <div class="col-sm-8">
                                 <VueSelect
-                                    v-model="TableModel.company_tables"
+                                    v-model="TableModel.CompanyIds"
                                     :class="errors.selectedCompanies ? `is-invalid` : ``"
                                     :clearable="true"
-                                    :disabled="true"
-                                    :get-option-label="company => company.company.Name"
+                                    :disabled="!isCompaniesEditable"
+                                    :get-option-label="company => company.label"
                                     :inputId="`Companies`"
                                     :loading="loading.companiesDropDown"
                                     :options="companies"
-                                    :reduce="company => company.CompanyId"
+                                    :reduce="company => company.value"
                                     :searchable="true"
                                     multiple
                                     placeholder="Select Companies"
+                                    @option:deselected="removeCompany($event)"
                                 >
                                 </VueSelect>
                                 <InputErrorMessages v-if="errors.selectedCompanies"

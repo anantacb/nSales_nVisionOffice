@@ -68,7 +68,7 @@ const getCompanyBranches = async () => {
 
         isLoading.value = false
     } catch (err) {
-        notificationStore.showNotification(err.response.data.message, "danger")
+        notificationStore.showNotification(err.response.data.message, "error")
         isLoading.value = false
     }
 }
@@ -83,7 +83,7 @@ const createCompanyBranches = async () => {
 
         getCompanyBranches();
     } catch (err) {
-        notificationStore.showNotification(err.response.data.message, "danger")
+        notificationStore.showNotification(err.response.data.message, "error")
         isLoading.value = false
     }
 }

@@ -123,7 +123,7 @@ function deleteCompanyLanguage(companyLanguage, index) {
                 refresh();
             } catch (error) {
                 if (error.response && error.response.status === 422) {
-                    notificationStore.showNotification(error.response.data.message, 'danger');
+                    notificationStore.showNotification(error.response.data.message, 'error');
                 }
             }
         }
