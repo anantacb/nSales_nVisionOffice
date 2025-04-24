@@ -31,7 +31,8 @@ class UpdateTable extends FormRequest
             'EnableSqlTruncate' => 'required|boolean',
             'SqlTruncate' => 'nullable',
             'SqlSeed' => 'nullable',
-            'Note' => 'nullable'
+            'Note' => 'nullable',
+            'CompanyIds' => 'nullable|array',
         ];
     }
 }

@@ -331,9 +331,65 @@ class TableService implements TableServiceInterface
 
     public function updateTable(Request $request): ServiceDto
     {
-        $table = $this->tableRepository->findByIdAndUpdate($request->get('Id'), [
+        $table = $this->tableRepository->firstByAttributes(
+            [
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('Id')]
+            ],
+            [
+                'companyTables.company',
+                'module.companies',
+                'tableFields.companyTableFields',
+                'tableIndices.companyTableIndices'
+            ]
+        );
+
+        $existingCompanyTableCompanyIds = $table->companyTables->pluck('CompanyId')->toArray();
+        $requestCompanyIds = $request->get('CompanyIds');
+
+        $deletedCompanyIds = array_diff($existingCompanyTableCompanyIds, $requestCompanyIds); // in old, not in new
+        $addedCompanyIds = array_diff($requestCompanyIds, $existingCompanyTableCompanyIds); // in new, not in old
+
+        foreach ($addedCompanyIds as $companyId) {
+            $this->companyTableRepository->firstOrCreate([
+                'TableId' => $table->Id,
+                'CompanyId' => $companyId
+            ]);
+        }
+
+        foreach ($deletedCompanyIds as $companyId) {
+            $this->companyTableRepository->deleteByAttributes([
+                ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId],
+                ['column' => 'TableId', 'operand' => '=', 'value' => $table->Id]
+            ]);
+        }
+
+        if (in_array($table->Type, ['Server', 'Both'])) {
+            $deletingDataBaseNames = collect($table->module->companies)->whereIn('Id', $deletedCompanyIds)->pluck('DatabaseName')->toArray();
+            $addingDatabaseNames = collect($table->module->companies)->whereIn('Id', $addedCompanyIds)->pluck('DatabaseName')->toArray();
+
+            $sqlQueries = [];
+            foreach ($addingDatabaseNames as $databaseName) {
+                $sqlQueries[] = MysqlQueryGenerator::getCreateTableSql($databaseName, $table->Name, $table->tableFields->toArray());
+                foreach ($table->tableIndices->toArray() as $index) {
+                    $index['columns'] = explode(',', $index['ColumnNames']);
+                    $sqlQueries[] = MysqlQueryGenerator::getAddIndexSql($databaseName, $table->Name, $index);
+                }
+            }
+            foreach ($deletingDataBaseNames as $databaseName) {
+                $sqlQueries [] = MysqlQueryGenerator::getDropTableSql($databaseName, $table->Name);
+            }
+            foreach ($sqlQueries as $sqlQuery) {
+                try {
+                    DB::statement($sqlQuery);
+                } catch (Exception $exception) {
+                    Log::error("Update Table. Message: " . $exception->getMessage());
+                }
+            }
+        }
+
+        $table->update([
             'Disabled' => $request->get('Disabled'),
-            'ClientSync' => $request->get('ClientSync'),
+            'ClientSync' => $request->get('ClientSync') ?? "",
             'AutoNumbering' => $request->get('AutoNumbering'),
             'EnableSqlTruncate' => $request->get('EnableSqlTruncate'),
             'SqlTruncate' => $request->get('SqlTruncate'),
