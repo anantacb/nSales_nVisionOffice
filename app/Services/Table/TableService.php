@@ -367,10 +367,17 @@ class TableService implements TableServiceInterface
             $deletingDataBaseNames = collect($table->module->companies)->whereIn('Id', $deletedCompanyIds)->pluck('DatabaseName')->toArray();
             $addingDatabaseNames = collect($table->module->companies)->whereIn('Id', $addedCompanyIds)->pluck('DatabaseName')->toArray();
 
+            $tableFields = $table->tableFields->filter(function ($tableField) {
+                return $tableField->companyTableFields->count() == 0;
+            })->toArray();
+            $tableIndices = $table->tableIndices->filter(function ($tableIndex) {
+                return $tableIndex->companyTableIndices->count() == 0;
+            })->toArray();
+
             $sqlQueries = [];
             foreach ($addingDatabaseNames as $databaseName) {
-                $sqlQueries[] = MysqlQueryGenerator::getCreateTableSql($databaseName, $table->Name, $table->tableFields->toArray());
-                foreach ($table->tableIndices->toArray() as $index) {
+                $sqlQueries[] = MysqlQueryGenerator::getCreateTableSql($databaseName, $table->Name, $tableFields);
+                foreach ($tableIndices as $index) {
                     $index['columns'] = explode(',', $index['ColumnNames']);
                     $sqlQueries[] = MysqlQueryGenerator::getAddIndexSql($databaseName, $table->Name, $index);
                 }
