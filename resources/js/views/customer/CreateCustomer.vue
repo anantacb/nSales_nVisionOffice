@@ -95,6 +95,9 @@ function initFormValues() {
         'Language': {
             SelectOptions: CompanyLanguageOptions.value,
             Nullable: false,
+        },
+        'ExportStatus': {
+            Nullable: false,
         }
     });
 }

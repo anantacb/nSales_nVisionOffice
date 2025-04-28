@@ -48,6 +48,7 @@ class Create extends FormRequest
         ];
         $validationRulesArray = $this->tableHelperService->getValidationArray('Customer', $this->exceptColumns, $this->request->get('CompanyId'));
         $this->overriddenRules = [
+            'Account' => 'required|unique:mysql_company.Customer,Account',
             'ExportStatus' => 'required',
         ];
         return array_merge($baseValidationRulesArray, $validationRulesArray, $this->overriddenRules);
