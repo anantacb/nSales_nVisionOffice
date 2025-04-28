@@ -13,7 +13,6 @@ import useGeneralCreate from "@/composables/useGeneralCreate";
 import GeneralForm from "@/components/ui/FormElements/GeneralForm.vue";
 import useCompanyInfos from "@/composables/useCompanyInfos";
 import {useRoute} from "vue-router";
-import router from "@/router";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
 
 const route = useRoute();
@@ -79,6 +78,9 @@ function initFormValues() {
         'Language': {
             SelectOptions: CompanyLanguageOptions.value,
             Nullable: false
+        },
+        'ExportStatus': {
+            Nullable: false,
         }
     });
 }
@@ -132,9 +134,9 @@ async function updateCustomerInfo() {
     };
 
     try {
-        let {data, message} = await Customer.update(formData);
+        createCustomerRef.value.statusLoading();
+        let {message} = await Customer.update(formData);
         createCustomerRef.value.statusNormal();
-        await router.push({name: 'customers'});
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
