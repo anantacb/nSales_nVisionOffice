@@ -22,10 +22,16 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="m-6 text-center" v-else>
+            <div class="mt-6 text-center" v-else>
                 <h6>No theme added yet!</h6>
                 <a href="https://app.nsales.io/e-commerce/themes" target="_blank" class="btn btn-primary">Add Theme</a>
             </div>
+
+            <div class="mt-6 text-center text-danger" v-if="!isThemeActive && theme && theme.length > 0">
+                <p>One theme need to activate</p>
+                <a href="https://app.nsales.io/e-commerce/themes" target="_blank" class="btn btn-primary">Activate theme</a>
+            </div>
+
         </div>
     </div>
 </template>
@@ -54,6 +60,8 @@ watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
 const isLoading = ref(false)
 const theme = ref([])
 
+const isThemeActive = ref(false)
+
 const getCompanyTheme = async () => {
     try {
         isLoading.value = true
@@ -61,8 +69,9 @@ const getCompanyTheme = async () => {
         let {data} = await Theme.details(companyStore.selectedCompany.Id);
         theme.value = data
 
-        if (theme.value && theme.value.length > 0) {
+        if (theme.value && theme.value.length > 0 && theme.value.some(item => item.Disabled == 0)) {
             emits("complete", true)
+            isThemeActive.value = true
         }
 
         isLoading.value = false
