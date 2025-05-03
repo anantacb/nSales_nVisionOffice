@@ -57,6 +57,8 @@ class FillUpPostMarkEmailServerTemplates extends Command
                         'UpdateTime' => Carbon::now(),
                         'ServerId' => $postmarkEmailServer['ServerId'],
                         'TemplateId' => $templateDetails['data']['TemplateId'],
+                        'TemplateAlias' => $templateDetails['data']['Alias'],
+                        'TemplateType' => $templateDetails['data']['TemplateType'],
                         'TemplateDetails' => json_encode($templateDetails['data']),
                     ];
                 }
