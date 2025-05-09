@@ -53,7 +53,7 @@ setTableFields([
     }
 ]);
 
-setSearchColumns(['Name']);
+setSearchColumns(['ElementName']);
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -87,7 +87,6 @@ onMounted(async () => {
 
 watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
     if (!_.isEmpty(newSelectedCompany)) {
-        resetRequest();
         await getEmailTemplates();
     }
 });
