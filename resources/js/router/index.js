@@ -843,7 +843,7 @@ const routes = [
                 component: EditCompanyTranslation,
                 meta: {
                     requiresAuth: true,
-                    requiresCompany: true,
+                    requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
                 }
@@ -877,7 +877,7 @@ const routes = [
                 component: EditCompanyEmailLayout,
                 meta: {
                     requiresAuth: true,
-                    requiresCompany: true,
+                    requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'CompanyEmail'
                 }
@@ -922,7 +922,7 @@ const routes = [
                 component: EditCompanyEmailTemplate,
                 meta: {
                     requiresAuth: true,
-                    requiresCompany: true,
+                    requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'CompanyEmail'
                 }
