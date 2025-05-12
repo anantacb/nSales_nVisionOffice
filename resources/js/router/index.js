@@ -699,6 +699,16 @@ const routes = [
                 }
             },
 
+            {
+                path: "cache-clear",
+                name: "cache-clear",
+                component: CacheClear,
+                meta: {
+                    requiresAuth: true,
+                    roles: ['Developer']
+                }
+            },
+
             // Company Routes
             {
                 path: "order/orders",
@@ -955,26 +965,9 @@ const routes = [
                     roles: []
                 }
             }
-        ],
-
+        ]
     },
 
-    {
-        path: "",
-        component: LayoutSimple,
-        children: [
-            {
-                path: "cache-clear",
-                name: "cache-clear",
-                component: CacheClear,
-                meta: {
-                    requiresAuth: true,
-                    roles: ['Developer']
-                }
-            }
-        ],
-
-    },
     {
         path: "/:catchAll(.*)",
         name: "not_found",

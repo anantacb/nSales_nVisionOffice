@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Repositories\Plugin\B2bGqlApi;
+namespace App\Repositories\Plugin\NsalesOfficeRestApi;
 
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\App;
 
-class B2bGqlApiRepository
+class NsalesOfficeRestApiRepository
 {
     protected Client $client;
     protected string $baseUrl;
@@ -19,7 +19,7 @@ class B2bGqlApiRepository
         } else {
             $this->client = new Client(['verify' => false]);
         }
-        $this->baseUrl = env('B2B_GQL_API_URL');
+        $this->baseUrl = env('NSALES_OFFICE_APP_URL');
     }
 
     /**
@@ -27,29 +27,16 @@ class B2bGqlApiRepository
      */
     public function cacheClear(): array
     {
-        // Define the GraphQL mutation
-        $mutation = <<<'GRAPHQL'
-                        mutation {
-                          CacheClearMutation {
-                            Message
-                            Success
-                          }
-                        }
-                        GRAPHQL;
-
         try {
-            $response = $this->client->post($this->baseUrl, [
-                'headers' => [
+            $response = $this->client->post("$this->baseUrl/api/v1.0/cache-clear", [
+                'form_params' => [
                     'developerAccessKey' => env('DEVELOPER_ACCESS_KEY'),
-                ],
-                'json' => [
-                    'query' => $mutation
-                ],
+                ]
             ]);
             $response = json_decode($response->getBody()->getContents(), true);
             return [
                 "success" => true,
-                "data" => $response['data']['CacheClearMutation']
+                "data" => $response
             ];
         } catch (Exception|GuzzleException $exception) {
             return [
