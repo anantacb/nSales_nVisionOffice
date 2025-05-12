@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Repositories\Plugin\B2bGqlApi;
+namespace App\Repositories\Plugin\NvmGqlApi;
 
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\App;
 
-class B2bGqlApiRepository
+class NvmGqlApiRepository
 {
     protected Client $client;
     protected string $baseUrl;
@@ -19,13 +19,14 @@ class B2bGqlApiRepository
         } else {
             $this->client = new Client(['verify' => false]);
         }
-        $this->baseUrl = env('B2B_GQL_API_URL');
+        $this->baseUrl = env('NVM_GQL_API_URL');
     }
+
 
     /**
      * @return mixed
      */
-    public function cacheClear(): array
+    public function cacheClear(): mixed
     {
         // Define the GraphQL mutation
         $mutation = <<<'GRAPHQL'

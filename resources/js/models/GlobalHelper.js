@@ -1,7 +1,7 @@
-export default class TableHelper {
-    static cacheClear() {
+export default class GlobalHelper {
+    static cacheClear(fromData) {
         return new Promise((resolve, reject) => {
-            axios.post('/api/cache-clear')
+            axios.post('/api/cache-clear', fromData)
                 .then(({data}) => {
                     resolve(data);
                 })
