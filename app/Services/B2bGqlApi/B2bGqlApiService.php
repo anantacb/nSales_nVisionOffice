@@ -4,16 +4,16 @@ namespace App\Services\B2bGqlApi;
 
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
-use App\Repositories\Plugin\B2bGqlApi\B2bGqlApiRepository;
+use App\Repositories\Plugin\B2bGqlApi\NvmGqlApiRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class B2bGqlApiService
 {
-    private B2bGqlApiRepository $repository;
+    private NvmGqlApiRepository $repository;
     private CompanyRepositoryInterface $companyRepository;
 
-    public function __construct(B2bGqlApiRepository $repository, CompanyRepositoryInterface $companyRepository)
+    public function __construct(NvmGqlApiRepository $repository, CompanyRepositoryInterface $companyRepository)
     {
         $this->repository = $repository;
         $this->companyRepository = $companyRepository;
