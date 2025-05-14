@@ -94,7 +94,6 @@ class CompanyController extends Controller
     public function addCompanyCustomDomain(AddCustomDomain $request): JsonResponse
     {
         $response = $this->service->addCompanyCustomDomain($request);
-
         $status = $response->statusCode === 200 ? 'success' : 'error';
         return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
     }
@@ -102,9 +101,19 @@ class CompanyController extends Controller
     public function deleteCompanyCustomDomain(DeleteCustomDomain $request): JsonResponse
     {
         $response = $this->service->deleteCompanyCustomDomain($request);
-
         $status = $response->statusCode === 200 ? 'success' : 'error';
         return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
     }
 
+    public function getPostmarkServer(Request $request): JsonResponse
+    {
+        $response = $this->service->getPostmarkServer($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+    public function createPostmarkServer(Request $request): JsonResponse
+    {
+        $response = $this->service->createPostmarkServer($request);
+        $status = $response->statusCode === 200 ? 'success' : 'error';
+        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
+    }
 }

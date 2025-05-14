@@ -148,6 +148,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/custom-domain/add', [CompanyController::class, 'addCompanyCustomDomain']);
     Route::post('/company/custom-domain/delete', [CompanyController::class, 'deleteCompanyCustomDomain']);
 
+    Route::post('/company/postmark-server/get', [CompanyController::class, 'getPostmarkServer']);
+    Route::post('/company/postmark-server/add', [CompanyController::class, 'createPostmarkServer']);
+
     // Helpers
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
     Route::post('/table-helper/get-column-distinct-values', [TableHelperController::class, 'getColumnDistinctValues']);

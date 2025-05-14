@@ -132,7 +132,6 @@ function deleteCompany(company, index) {
 }
 
 watch(() => props.refreshData, async (newValue) => {
-    console.log(newValue);
     await getCompanies();
 });
 
