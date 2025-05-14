@@ -50,7 +50,7 @@ setTableFields([
     }
 ]);
 
-setSearchColumns(['Name']);
+setSearchColumns(['ElementName']);
 
 function goToPage(pageNo) {
     setPageNo(pageNo);

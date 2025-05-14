@@ -543,7 +543,7 @@ class CompanyService implements CompanyServiceInterface
         $postmarkEmailServer = $this->postmarkEmailServerRepository->create([
             'ServerId' => $newServer['ID'],
             'ServerName' => $newServer['Name'],
-            'ServerDetails' => json_encode($newServer),
+            'ServerDetails' => $newServer,
             'CompanyId' => $targetCompany->Id,
             'EncryptedApiToken' => encryptPostmarkToken($newServer['ApiTokens'][0])
         ]);
@@ -1238,6 +1238,32 @@ class CompanyService implements CompanyServiceInterface
         );
 
         return $updateCompany->CustomDomainsArray;
+    }
+
+
+    public function getPostmarkServer(Request $request): ServiceDto
+    {
+        $postmarkServer = $this->postmarkEmailServerRepository->firstByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
+        ]);
+        $postmarkServer = $postmarkServer?->only(['ServerName', 'ServerId', 'ServerLink']);
+        return new ServiceDto('Postmark Server Retrieved Successfully.', 200, $postmarkServer ?? []);
+    }
+
+    public function createPostmarkServer(Request $request): ServiceDto
+    {
+        $company = $this->companyRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyId')]
+        ]);
+        $postmarkToken = $this->setUpPostmarkEmail($company);
+        if ($postmarkToken) {
+            $postmarkServer = $this->postmarkEmailServerRepository->firstByAttributes([
+                ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
+            ])->only(['ServerName', 'ServerId', 'ServerLink']);
+            return new ServiceDto('Postmark Server Added Successfully.', 200, $postmarkServer);
+        } else {
+            return new ServiceDto('Postmark Server not created.', 500, []);
+        }
     }
 
     /**
