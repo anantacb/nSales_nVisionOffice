@@ -10,6 +10,7 @@ import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
 import ModulePackage from "@/models/Office/ModulePackage";
 import CompanyCustomDomain from "@/components/company/CompanyCustomDomain.vue";
+import CompanyPostmarkServer from "@/components/company/CompanyPostmarkServer.vue";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -613,10 +614,11 @@ function nameChanged() {
 
         <div class="row">
             <div class="col-6">
-                <CompanyCustomDomain v-if="CompanyModel.CustomDomainsArray"
-                                     :CompanyId="route.params.id"
-                >
-                </CompanyCustomDomain>
+                <CompanyCustomDomain v-if="CompanyModel.CustomDomainsArray" :CompanyId="route.params.id"/>
+            </div>
+            <div class="col-6">
+                <CompanyPostmarkServer :CompanyId="route.params.id"
+                                       :PostmarkServer="CompanyModel.postmark_email_server"/>
             </div>
         </div>
     </div>

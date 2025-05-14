@@ -171,4 +171,27 @@ export default class Company {
         });
     }
 
+    static createPostmarkServer(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/postmark-server/add', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getPostmarkServer(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/postmark-server/get', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }
