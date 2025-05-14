@@ -33,4 +33,8 @@ interface CompanyServiceInterface
 
     public function deleteCompanyCustomDomain(Request $request): ServiceDto;
 
+    public function createPostmarkServer(Request $request): ServiceDto;
+
+    public function getPostmarkServer(Request $request): ServiceDto;
+
 }
