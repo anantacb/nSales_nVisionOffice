@@ -152,6 +152,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/postmark-server/add', [CompanyController::class, 'createPostmarkServer']);
 
     // Helpers
+    Route::post('/table-helper/get-all-table-columns', [TableHelperController::class, 'getAllTableColumnNames']);
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
     Route::post('/table-helper/get-column-distinct-values', [TableHelperController::class, 'getColumnDistinctValues']);
 
