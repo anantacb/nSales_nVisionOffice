@@ -57,7 +57,7 @@ function databaseTableChanged() {
         label: 'Please Select',
         value: ''
     }];
-    if (CompanyEmailTemplateModel.value.DatabaseTable) {
+    if (!CompanyEmailTemplateModel.value.DatabaseTable) {
         return;
     }
     getTableColumns();
@@ -69,7 +69,7 @@ function tableColumnChanged() {
         label: 'Please Select',
         value: ''
     }];
-    if (CompanyEmailTemplateModel.value.TableColumn) {
+    if (!CompanyEmailTemplateModel.value.TableColumn) {
         return;
     }
     getColumnValues();
