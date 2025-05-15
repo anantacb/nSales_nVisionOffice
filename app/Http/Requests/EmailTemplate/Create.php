@@ -46,7 +46,7 @@ class Create extends FormRequest
     public function messages()
     {
         return [
-            'Name.required' => 'Layout Name is required.',
+            'ElementName.required' => 'Layout Name is required.',
             'LanguageId.required' => 'Language is required.',
             'Template.required' => 'Template is required.',
         ];
