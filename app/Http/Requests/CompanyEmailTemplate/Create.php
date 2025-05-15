@@ -25,6 +25,16 @@ class Create extends FormRequest
     public function rules()
     {
         return [
+            'ElementName' => [
+                'required',
+                Rule::unique('mysql_company.CompanyEmailTemplate')
+                    ->where(function ($query) {
+                        return $query->where('LanguageId', $this->LanguageId)
+                            ->where('DatabaseTable', $this->DatabaseTable)
+                            ->where('TableColumn', $this->TableColumn)
+                            ->where('ColumnValue', $this->ColumnValue);
+                    }),
+            ],
             'LayoutId' => 'required|exists:mysql_company.CompanyEmailLayout,Id',
             'LanguageId' => 'required|exists:mysql_company.CompanyLanguage,Id',
             'Subject' => 'required|string|max:255',
@@ -32,15 +42,11 @@ class Create extends FormRequest
                 'required',
                 'string'
             ],
-//            'ElementName' => 'required',
-            'ElementName' => [
-                'required',
-                Rule::unique('mysql_company.CompanyEmailTemplate')->where(function ($query) {
-                    return $query->where('LanguageId', $this->LanguageId);
-                }),
-            ],
-        ];
 
+            'DatabaseTable' => 'nullable',
+            'TableColumn' => 'required_with:DatabaseTable',
+            'ColumnValue' => 'required_with:DatabaseTable',
+        ];
     }
 
     public function messages()

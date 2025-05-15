@@ -8,7 +8,7 @@ use App\Models\Office\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Order extends BaseModel
+class Orderhead extends BaseModel
 {
     public $keyType = 'string';
     public $incrementing = false;
@@ -51,7 +51,7 @@ class Order extends BaseModel
 
     public function orderLines(): HasMany
     {
-        return $this->hasMany(OrderLine::class, 'OrderUUID', 'UUID');
+        return $this->hasMany(Orderline::class, 'OrderUUID', 'UUID');
     }
 
     public function salesRep(): BelongsTo

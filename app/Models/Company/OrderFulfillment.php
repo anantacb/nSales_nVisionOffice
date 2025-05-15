@@ -14,7 +14,7 @@ class OrderFulfillment extends BaseModel
 
     public function shopifyOrder(): BelongsTo
     {
-        return $this->belongsTo(Order::class, 'FulfillmentOrderId', 'UUID')
+        return $this->belongsTo(Orderhead::class, 'FulfillmentOrderId', 'UUID')
             ->where('OrderOrigin', '=', 'Shopify');
     }
 

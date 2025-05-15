@@ -2,11 +2,11 @@
 
 namespace App\Models\Company;
 
+use App\Helpers\FileUrlGenerator;
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Helpers\FileUrlGenerator;
 
-class OrderLine extends BaseModel
+class Orderline extends BaseModel
 {
     public $incrementing = false;
     public $keyType = "string";
@@ -17,7 +17,7 @@ class OrderLine extends BaseModel
 
     public function order(): BelongsTo
     {
-        return $this->belongsTo(Order::class, 'OrderUUID', 'UUID');
+        return $this->belongsTo(Orderhead::class, 'OrderUUID', 'UUID');
     }
 
     public function item(): BelongsTo
