@@ -32,4 +32,20 @@ export default class TableHelper {
                 });
         });
     }
+
+    static getAllColumns(DatabaseType, TableName, CompanyId = null) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/table-helper/get-all-table-columns', {
+                DatabaseType: DatabaseType,
+                TableName: TableName,
+                CompanyId: CompanyId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }

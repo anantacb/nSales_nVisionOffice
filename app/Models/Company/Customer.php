@@ -13,7 +13,7 @@ class Customer extends BaseModel
 
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class, 'CustomerAccount', 'Account');
+        return $this->hasMany(Orderhead::class, 'CustomerAccount', 'Account');
     }
 
     public function budgets(): HasMany
