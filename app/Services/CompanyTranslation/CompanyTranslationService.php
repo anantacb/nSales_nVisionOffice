@@ -3,6 +3,7 @@
 namespace App\Services\CompanyTranslation;
 
 use App\Contracts\ServiceDto;
+use App\Jobs\SyncCompanyTranslations;
 use App\Repositories\Eloquent\Company\CompanyTranslation\CompanyTranslationRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,12 @@ class CompanyTranslationService implements CompanyTranslationServiceInterface
         ];
         $languages = $this->companyTranslationRepository->paginatedData($request);
         return new ServiceDto("Company Languages retrieved!!!", 200, $languages);
+    }
+
+    public function syncCompanyTranslations(Request $request): ServiceDto
+    {
+        SyncCompanyTranslations::dispatch($request->get('CompanyId'))->onQueue('translations');
+        return new ServiceDto("Translations will be available for all elements in a few moments. Please check after sometime.", 200, []);
     }
 
     public function create(Request $request): ServiceDto
