@@ -42,7 +42,8 @@
         "files": [
             "app/Helpers/Functions/dataChecker.php",
             "app/Helpers/Functions/randomGenerator.php",
-            "app/Helpers/Functions/postmarkTokenEncryptionDecryption.php"
+            "app/Helpers/Functions/postmarkTokenEncryptionDecryption.php",
+            "app/Helpers/Functions/translator.php"
         ]
     },
     "autoload-dev": {
