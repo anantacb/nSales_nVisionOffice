@@ -7,5 +7,9 @@ use App\Repositories\Eloquent\Base\BaseRepositoryInterface;
 
 interface ThemeRepositoryInterface extends BaseRepositoryInterface
 {
+    public function getThemes();
+
+    public function getTheme($themeId);
+
     public function getCompanyTheme($companyId);
 }
