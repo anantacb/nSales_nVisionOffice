@@ -345,6 +345,15 @@ export default {
         },
 
         {
+            name: "Themes",
+            to: "/themes",
+            roles: ["Developer"],
+            icon: "fa fa-paint-brush",
+            directLink: true,
+            targetBlank: false
+        },
+
+        {
             name: "Log Viewer",
             to: "/log-viewer",
             roles: ["Developer"],

@@ -36,6 +36,8 @@ use App\Services\EmailTemplate\EmailTemplateService;
 use App\Services\EmailTemplate\EmailTemplateServiceInterface;
 use App\Services\Git\GitService;
 use App\Services\Git\GitServiceInterface;
+use App\Services\Google\GoogleBuildService;
+use App\Services\Google\GoogleBuildServiceInterface;
 use App\Services\Language\LanguageService;
 use App\Services\Language\LanguageServiceInterface;
 use App\Services\Module\ModuleService;
@@ -128,5 +130,6 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(EmailTemplateServiceInterface::class, EmailTemplateService::class);
         $this->app->bind(CompanyEmailLayoutServiceInterface::class, CompanyEmailLayoutService::class);
         $this->app->bind(CompanyEmailTemplateServiceInterface::class, CompanyEmailTemplateService::class);
+        $this->app->bind(GoogleBuildServiceInterface::class, GoogleBuildService::class);
     }
 }
