@@ -13,4 +13,9 @@ class CompanyTheme extends BaseModel
     {
         return $this->belongsTo(Theme::class, 'ThemeId', 'Id');
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'CompanyId', 'Id');
+    }
 }
