@@ -234,6 +234,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/role/delete', [RoleController::class, 'delete']);
     Route::post('/role/details', [RoleController::class, 'details']);
 
+    // Theme
+    Route::post('/themes', [ThemeController::class, 'getThemes']);
+    Route::post('/themes/trigger-build/{themeId}', [ThemeController::class, 'triggerBuild']);
     // Company theme
     Route::post('/company-theme', [ThemeController::class, 'getCompanyTheme']);
 

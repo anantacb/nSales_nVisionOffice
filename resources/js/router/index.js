@@ -114,6 +114,8 @@ const NotFound = () => import('@/views/404View.vue');
 
 const CacheClear = () => import('@/views/global-helper/CacheClear.vue');
 
+const Themes = () => import("@/views/themes/List.vue")
+
 const routes = [
     {
         path: "",
@@ -695,6 +697,16 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
+
+            {
+                path: "themes",
+                name: "themes",
+                component: Themes,
+                meta: {
+                    requiresAuth: true,
                     roles: ['Developer']
                 }
             },
