@@ -16,6 +16,24 @@ class ThemeRepository extends BaseRepository implements ThemeRepositoryInterface
         $this->companyTheme = $companyTheme;
     }
 
+    public function getThemes()
+    {
+        return $this->model
+            ->with("parent")
+            ->withCount(['companyTheme' => function ($query) {
+                return $query->where("Disabled", 0);
+            }])
+            ->get();
+    }
+
+    public function getTheme($themeId)
+    {
+        return $this->model
+            ->with("companyTheme.company")
+            ->where("Id", $themeId)
+            ->first();
+    }
+
     public function getCompanyTheme($companyId)
     {
         return $this->companyTheme
