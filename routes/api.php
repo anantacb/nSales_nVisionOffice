@@ -298,6 +298,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Company Translation
         Route::post('/company-translations', [CompanyTranslationController::class, 'getCompanyTranslations']);
+        Route::post('/company-translations/sync', [CompanyTranslationController::class, 'syncCompanyTranslations']);
         Route::post('/company-translation/create', [CompanyTranslationController::class, 'create']);
         Route::post('/company-translation/update', [CompanyTranslationController::class, 'update']);
         Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
