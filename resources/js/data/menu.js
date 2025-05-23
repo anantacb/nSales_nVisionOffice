@@ -455,7 +455,7 @@ export default {
                 }
             ]
         },
-        {
+        /*{
             name: "Product",
             icon: "fa fa-gift",
             subActivePaths: ["product"],
@@ -471,13 +471,13 @@ export default {
                     moduleName: 'Item',
                     roles: ["Developer", "Administrator", "Employee"],
                 },
-                /*{
+                /!*{
                     name: "Create Product",
                     icon: "fa fa-plus",
                     to: "create-customer",
-                },*/
+                },*!/
             ]
-        },
+        },*/
 
         {
             name: "Language",
