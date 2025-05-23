@@ -18,6 +18,10 @@ use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepository;
 use App\Repositories\Eloquent\Company\CustomerVisit\CustomerVisitRepositoryInterface;
 use App\Repositories\Eloquent\Company\DocumentApi\DocumentApiRepository;
 use App\Repositories\Eloquent\Company\DocumentApi\DocumentApiRepositoryInterface;
+use App\Repositories\Eloquent\Company\Item\ItemRepository;
+use App\Repositories\Eloquent\Company\Item\ItemRepositoryInterface;
+use App\Repositories\Eloquent\Company\ItemAttribute\ItemAttributeRepository;
+use App\Repositories\Eloquent\Company\ItemAttribute\ItemAttributeRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepository;
 use App\Repositories\Eloquent\Company\Order\OrderLineRepositoryInterface;
 use App\Repositories\Eloquent\Company\Order\OrderRepository;
@@ -147,8 +151,11 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(OrderLineRepositoryInterface::class, OrderLineRepository::class);
+
         $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
         $this->app->bind(CustomerVisitRepositoryInterface::class, CustomerVisitRepository::class);
+        $this->app->bind(ItemRepositoryInterface::class, ItemRepository::class);
+        $this->app->bind(ItemAttributeRepositoryInterface::class, ItemAttributeRepository::class);
 
         $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
         $this->app->bind(TranslationRepositoryInterface::class, TranslationRepository::class);
@@ -164,6 +171,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(UserInvitationRepositoryInterface::class, UserInvitationRepository::class);
 
         $this->app->bind(FtpUserRepositoryInterface::class, FtpUserRepository::class);
+        $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
 
         $this->app->bind(WebShopUserRepositoryInterface::class, WebShopUserRepository::class);
 
