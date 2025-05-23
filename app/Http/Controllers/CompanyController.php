@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Company\AddCustomDomain;
 use App\Http\Requests\Company\AssignableUserCompanies;
+use App\Http\Requests\Company\CloneCompany;
 use App\Http\Requests\Company\Create;
+use App\Http\Requests\Company\DeleteCustomDomain;
 use App\Http\Requests\Company\DetailsOrDelete;
 use App\Http\Requests\Company\ModuleEnabledCompanies;
 use App\Http\Requests\Company\Update;
@@ -58,6 +61,12 @@ class CompanyController extends Controller
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 
+    public function cloneCompany(CloneCompany $request): JsonResponse
+    {
+        $response = $this->service->cloneCompany($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
     public function update(Update $request): JsonResponse
     {
         $response = $this->service->update($request);
@@ -74,5 +83,37 @@ class CompanyController extends Controller
     {
         $response = $this->service->delete($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getCompanyCustomDomains(Request $request): JsonResponse
+    {
+        $response = $this->service->getCompanyCustomDomains($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function addCompanyCustomDomain(AddCustomDomain $request): JsonResponse
+    {
+        $response = $this->service->addCompanyCustomDomain($request);
+        $status = $response->statusCode === 200 ? 'success' : 'error';
+        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
+    }
+
+    public function deleteCompanyCustomDomain(DeleteCustomDomain $request): JsonResponse
+    {
+        $response = $this->service->deleteCompanyCustomDomain($request);
+        $status = $response->statusCode === 200 ? 'success' : 'error';
+        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
+    }
+
+    public function getPostmarkServer(Request $request): JsonResponse
+    {
+        $response = $this->service->getPostmarkServer($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+    public function createPostmarkServer(Request $request): JsonResponse
+    {
+        $response = $this->service->createPostmarkServer($request);
+        $status = $response->statusCode === 200 ? 'success' : 'error';
+        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
     }
 }

@@ -75,6 +75,18 @@ export default class Company {
         });
     }
 
+    static cloneCompany(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/clone-company', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static update(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/company/update', formData)
@@ -106,6 +118,74 @@ export default class Company {
             axios.post('/api/company/delete', {
                 CompanyId: CompanyId
             })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getCompanyCustomDomains(CompanyId) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/custom-domain/get', {
+                CompanyId: CompanyId
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static addCompanyCustomDomain(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/custom-domain/add', {
+                CompanyId: CompanyId,
+                ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static deleteCompanyCustomDomain(CompanyId, formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/custom-domain/delete', {
+                CompanyId: CompanyId,
+                ...formData
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static createPostmarkServer(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/postmark-server/add', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getPostmarkServer(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/postmark-server/get', formData)
                 .then(({data}) => {
                     resolve(data);
                 })

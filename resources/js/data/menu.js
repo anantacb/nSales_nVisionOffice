@@ -345,6 +345,15 @@ export default {
         },
 
         {
+            name: "Themes",
+            to: "/themes",
+            roles: ["Developer"],
+            icon: "fa fa-paint-brush",
+            directLink: true,
+            targetBlank: false
+        },
+
+        {
             name: "Log Viewer",
             to: "/log-viewer",
             roles: ["Developer"],
@@ -360,6 +369,15 @@ export default {
             icon: "fa fa-tachometer-alt",
             directLink: true,
             targetBlank: true
+        },
+
+        {
+            name: "Cache Clear",
+            to: "/cache-clear",
+            roles: ["Developer"],
+            icon: "fa fa-dumpster-fire",
+            directLink: true,
+            targetBlank: false
         },
 
         {
@@ -516,6 +534,14 @@ export default {
                     name: "Create Layout",
                     icon: "fa fa-plus",
                     to: "create-company-email-layout",
+                    moduleSpecific: true,
+                    moduleName: 'CompanyEmail',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                {
+                    name: "Choose Layout",
+                    icon: "fa fa-copy",
+                    to: "choose-email-layout",
                     moduleSpecific: true,
                     moduleName: 'CompanyEmail',
                     roles: ["Developer", "Administrator", "Employee"],

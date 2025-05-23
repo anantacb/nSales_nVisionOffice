@@ -87,7 +87,7 @@ function refresh() {
 }
 
 watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
-    if (!_.isEmpty(newSelectedCompany)){
+    if (!_.isEmpty(newSelectedCompany)) {
         resetRequest();
         getCompanyLanguages();
     }
@@ -117,9 +117,15 @@ function deleteCompanyLanguage(companyLanguage, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {data, message} = await CompanyLanguage.delete(companyStore.selectedCompany.Id, companyLanguage.Id);
-            tableData.value.splice(index, 1);
-            notificationStore.showNotification(message);
+            try {
+                let {message} = await CompanyLanguage.delete(companyStore.selectedCompany.Id, companyLanguage.Id);
+                notificationStore.showNotification(message);
+                refresh();
+            } catch (error) {
+                if (error.response && error.response.status === 422) {
+                    notificationStore.showNotification(error.response.data.message, 'error');
+                }
+            }
         }
     });
 }
@@ -142,10 +148,7 @@ function setAsDefaultLanguage(companyLanguageId, index) {
         allowOutsideClick: () => !Swal.isLoading()
     }).then(async (result) => {
         if (result.isConfirmed) {
-            let {
-                data,
-                message
-            } = await CompanyLanguage.setAsDefaultLanguage(companyStore.selectedCompany.Id, companyLanguageId);
+            let {message} = await CompanyLanguage.setAsDefaultLanguage(companyStore.selectedCompany.Id, companyLanguageId);
             notificationStore.showNotification(message);
             refresh();
         }

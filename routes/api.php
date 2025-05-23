@@ -13,11 +13,13 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
+use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
 use App\Http\Controllers\EmailLayoutController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\GitController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemAttributeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
@@ -136,6 +138,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Company
     Route::post('/companies', [CompanyController::class, 'getCompanies']);
     Route::post('/company/create', [CompanyController::class, 'create']);
+    Route::post('/company/clone-company', [CompanyController::class, 'cloneCompany']);
     Route::post('/company/update', [CompanyController::class, 'update']);
     Route::post('/company/details', [CompanyController::class, 'details']);
     Route::post('/company/delete', [CompanyController::class, 'delete']);
@@ -146,8 +149,15 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
     Route::post('/company/assignable-companies-by-user', [CompanyController::class, 'getAssignableCompaniesByUser']);
 
+    Route::post('/company/custom-domain/get', [CompanyController::class, 'getCompanyCustomDomains']);
+    Route::post('/company/custom-domain/add', [CompanyController::class, 'addCompanyCustomDomain']);
+    Route::post('/company/custom-domain/delete', [CompanyController::class, 'deleteCompanyCustomDomain']);
+
+    Route::post('/company/postmark-server/get', [CompanyController::class, 'getPostmarkServer']);
+    Route::post('/company/postmark-server/add', [CompanyController::class, 'createPostmarkServer']);
 
     // Helpers
+    Route::post('/table-helper/get-all-table-columns', [TableHelperController::class, 'getAllTableColumnNames']);
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
     Route::post('/table-helper/get-column-distinct-values', [TableHelperController::class, 'getColumnDistinctValues']);
 
@@ -229,6 +239,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/role/delete', [RoleController::class, 'delete']);
     Route::post('/role/details', [RoleController::class, 'details']);
 
+    // Theme
+    Route::post('/themes', [ThemeController::class, 'getThemes']);
+    Route::post('/themes/trigger-build/{themeId}', [ThemeController::class, 'triggerBuild']);
     // Company theme
     Route::post('/company-theme', [ThemeController::class, 'getCompanyTheme']);
 
@@ -254,6 +267,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/get-email-events', [EmailTemplateController::class, 'getEmailEvents']);
         Route::post('/get-data-for-preview', [EmailTemplateController::class, 'getDataForPreview']);
     });
+
+    Route::post('/cache-clear', [HomeController::class, 'cacheClear']);
 
     Route::middleware(['company'])->group(function () {
         // Order
@@ -308,6 +323,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Company Translation
         Route::post('/company-translations', [CompanyTranslationController::class, 'getCompanyTranslations']);
+        Route::post('/company-translations/sync', [CompanyTranslationController::class, 'syncCompanyTranslations']);
         Route::post('/company-translation/create', [CompanyTranslationController::class, 'create']);
         Route::post('/company-translation/update', [CompanyTranslationController::class, 'update']);
         Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
@@ -335,6 +351,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/company-git-branches', [GitController::class, 'getCompanyBranches']);
         Route::post('/company-git-branches/create', [GitController::class, 'createCompanyBranches']);
 
+        Route::post('/company-deployment-status', [DeploymentController::class, 'getCompanyDeploymentStatus']);
+        Route::post('/company-deployment-start', [DeploymentController::class, 'startCompanyDeployment']);
+
         // Onboard
         Route::post('/company-onboard-status', [OnboardController::class, 'getCompanyOnboardStatus']);
         Route::post('/company-onboard-status/update', [OnboardController::class, 'updateCompanyOnboardStatus']);
@@ -349,6 +368,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/get-data-for-preview', [CompanyEmailLayoutController::class, 'getDataForPreview']);
             Route::post('/get-email-layout-options-by-language', [CompanyEmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
             Route::post('/get-preview-template-object', [CompanyEmailLayoutController::class, 'getPreviewTemplateObject']);
+            Route::post('/copy-layout-to-company', [CompanyEmailLayoutController::class, 'copyLayoutToCompany']);
         });
 
         Route::prefix('company-email-template')->group(function () {
@@ -366,6 +386,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('email-template')->group(function () {
             // Email Template
             Route::post('/get-email-templates-for-company', [EmailTemplateController::class, 'getEmailTemplatesForCompany']);
+        });
+
+        Route::prefix('email-layout')->group(function () {
+            // Email Layout
+            Route::post('/get-email-layouts-for-company', [EmailLayoutController::class, 'getEmailLayoutsForCompany']);
         });
 
     });

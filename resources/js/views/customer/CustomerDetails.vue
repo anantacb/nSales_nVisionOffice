@@ -13,7 +13,7 @@ import useGeneralCreate from "@/composables/useGeneralCreate";
 import GeneralForm from "@/components/ui/FormElements/GeneralForm.vue";
 import useCompanyInfos from "@/composables/useCompanyInfos";
 import {useRoute} from "vue-router";
-import router from "@/router";
+import CompanyLanguage from "@/models/Company/CompanyLanguage";
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -26,6 +26,7 @@ const {errors, setErrors, resetErrors} = useFormErrors();
 
 const PriceGroupOptions = ref([]);
 const CompanyUserOptions = ref([]);
+const CompanyLanguageOptions = ref([]);
 let LatestOrderModel = ref({});
 
 let dateFormatStr = ref('DD, MMM YYYY');
@@ -58,13 +59,13 @@ function initFormValues() {
             InputLocked: true,
             HasTooltip: true,
             TooltipText: "This is the Account number for this customer. This will be the identifier of the customer.",
-            InputRequired: true
+            Nullable: false
         },
         'Currency': {
             HasTooltip: true,
             TooltipText: "This is the currency for this customer. This will make sure that the customer always see prices in the correct currency.",
-            InputRequired: true,
-            DefaultValue: 'DKK'
+            DefaultValue: 'DKK',
+            Nullable: false
         },
         'Pricegroup': {
             HasTooltip: true,
@@ -73,6 +74,13 @@ function initFormValues() {
         },
         'Employee': {
             SelectOptions: CompanyUserOptions.value
+        },
+        'Language': {
+            SelectOptions: CompanyLanguageOptions.value,
+            Nullable: false
+        },
+        'ExportStatus': {
+            Nullable: false,
         }
     });
 }
@@ -99,6 +107,16 @@ async function getAllCompanyUsers() {
     CompanyUserOptions.value = options;
 }
 
+async function getAllCompanyLanguages() {
+    const {data} = await CompanyLanguage.getAllCompanyLanguages(companyStore.selectedCompany.Id, true);
+    let options = [{label: 'Select Language', value: ''}];
+    data.forEach((language) => {
+        let option = {label: language.Name, value: language.Code};
+        options.push(option);
+    });
+    CompanyLanguageOptions.value = options;
+}
+
 async function getCustomerLatestOrders() {
     let {data} = await Order.getLatestOrdersByCustomer(companyStore.selectedCompany.Id, route.params.id);
     LatestOrderModel.value = data;
@@ -116,9 +134,9 @@ async function updateCustomerInfo() {
     };
 
     try {
-        let {data, message} = await Customer.update(formData);
+        createCustomerRef.value.statusLoading();
+        let {message} = await Customer.update(formData);
         createCustomerRef.value.statusNormal();
-        await router.push({name: 'customers'});
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
@@ -133,6 +151,7 @@ onMounted(async () => {
     await getTableDetails('Customer');
     isModuleEnabled('Pricegroup') ? await getPriceGroups() : PriceGroupOptions.value = [];
     await getAllCompanyUsers();
+    await getAllCompanyLanguages();
     initFormValues();
     await getCompanyAllTableFields();
     isCustomerActive();

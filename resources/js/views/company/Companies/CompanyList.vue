@@ -1,10 +1,12 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import Company from "@/models/Office/Company";
 import useGridManagement from "@/composables/useGridManagement";
 import {useTemplateStore} from "@/stores/templateStore";
+
+const emit = defineEmits(['showCloneCompanyModal']);
 
 const notificationStore = useNotificationStore();
 const templateStore = useTemplateStore();
@@ -12,6 +14,14 @@ const templateStore = useTemplateStore();
 let tableData = ref([]);
 let paginationData = ref(null);
 let isLoading = ref(true);
+
+const props = defineProps({
+    refreshData: {
+        type: Number,
+        required: true,
+        default: () => 0
+    }
+});
 
 const {
     tableFields,
@@ -121,6 +131,10 @@ function deleteCompany(company, index) {
     });
 }
 
+watch(() => props.refreshData, async (newValue) => {
+    await getCompanies();
+});
+
 </script>
 
 <template>
@@ -139,6 +153,12 @@ function deleteCompany(company, index) {
         @sortBy="sortBy"
     >
         <template v-slot:body-Action="props">
+            <PopOverButton
+                btnClass="btn rounded-pill btn-alt-primary me-1"
+                content="Clone"
+                iconClass="far fa-clone"
+                @click="emit('showCloneCompanyModal',props.data.Id, props.data.Name, props.data.DomainName)"
+            ></PopOverButton>
             <router-link :to="{name: 'edit-company', params:{id: props.data.Id}}"
                          class="btn rounded-pill btn-alt-warning me-1">
                 <i class="fa fa-pen-alt"></i>

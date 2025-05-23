@@ -24,6 +24,8 @@ use App\Services\Database\DatabaseService;
 use App\Services\Database\DatabaseServiceInterface;
 use App\Services\DataFilter\DataFilterService;
 use App\Services\DataFilter\DataFilterServiceInterface;
+use App\Services\Deployment\DeploymentService;
+use App\Services\Deployment\DeploymentServiceInterface;
 use App\Services\DocumentApi\DocumentApiService;
 use App\Services\DocumentApi\DocumentApiServiceInterface;
 use App\Services\EmailConfiguration\EmailConfigurationService;
@@ -34,6 +36,8 @@ use App\Services\EmailTemplate\EmailTemplateService;
 use App\Services\EmailTemplate\EmailTemplateServiceInterface;
 use App\Services\Git\GitService;
 use App\Services\Git\GitServiceInterface;
+use App\Services\Google\GoogleBuildService;
+use App\Services\Google\GoogleBuildServiceInterface;
 use App\Services\Item\ItemService;
 use App\Services\Item\ItemServiceInterface;
 use App\Services\ItemAttribute\ItemAttributeService;
@@ -135,10 +139,12 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
         $this->app->bind(DocumentApiServiceInterface::class, DocumentApiService::class);
         $this->app->bind(GitServiceInterface::class, GitService::class);
+        $this->app->bind(DeploymentServiceInterface::class, DeploymentService::class);
         $this->app->bind(OnboardServiceInterface::class, OnboardService::class);
         $this->app->bind(EmailLayoutServiceInterface::class, EmailLayoutService::class);
         $this->app->bind(EmailTemplateServiceInterface::class, EmailTemplateService::class);
         $this->app->bind(CompanyEmailLayoutServiceInterface::class, CompanyEmailLayoutService::class);
         $this->app->bind(CompanyEmailTemplateServiceInterface::class, CompanyEmailTemplateService::class);
+        $this->app->bind(GoogleBuildServiceInterface::class, GoogleBuildService::class);
     }
 }

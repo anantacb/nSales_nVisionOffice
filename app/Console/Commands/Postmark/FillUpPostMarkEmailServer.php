@@ -5,17 +5,18 @@ namespace App\Console\Commands\Postmark;
 use App\Models\Office\Module;
 use App\Models\Office\PostmarkEmailServer;
 use App\Repositories\Plugin\Postmark\PostmarkRepository;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class FillUpPostMarkEmailServer extends Command
 {
+    public array $companyWithModuleSettingValue = [];
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
     protected $signature = 'postmark:fill-up-postmark-email-server';
-
     /**
      * The console command description.
      *
@@ -28,25 +29,9 @@ class FillUpPostMarkEmailServer extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
-        $companyWithModuleSettingValue = [];
-        $module = Module::with([
-            'moduleSettings' => function ($q) {
-                $q->with(['settings' => function ($q) {
-                    $q->with(['company']);
-                }])->where('Name', 'PostmarkServerApiToken');
-            }])
-            ->whereIn('Name', ['System'])
-            ->first();
-
-        foreach ($module->moduleSettings[0]->settings as $setting) {
-            $companyWithModuleSettingValue[$setting->Value] = [
-                'CompanyId' => $setting->CompanyId,
-                'CompanyName' => $setting->company->Name,
-                'Value' => $setting->Value
-            ];
-        }
+        $this->setCompanyModuleSettingValue();
 
         $repository = new PostmarkRepository();
         $count = 100;
@@ -64,26 +49,71 @@ class FillUpPostMarkEmailServer extends Command
 
         PostmarkEmailServer::truncate();
 
-        foreach ($servers as $server) {
-            PostmarkEmailServer::create([
-                'ServerId' => $server->ID,
-                'ServerName' => $server->Name,
-                'ServerDetails' => $server,
-                'CompanyId' => $this->getCompanyId($companyWithModuleSettingValue, $server->ApiTokens),
-                'ApiToken' => $server->ApiTokens[0]
-            ]);
-        }
+        $serversToInsert = [];
+
+        collect($servers)->each(function ($server) use (&$serversToInsert) {
+            $companyIds = $this->getCompanyIds($server['ApiTokens']);
+            if ($companyIds) {
+                foreach ($companyIds as $companyId) {
+                    $serversToInsert[] = [
+                        'InsertTime' => Carbon::now(),
+                        'UpdateTime' => Carbon::now(),
+                        'ServerId' => $server['ID'],
+                        'ServerName' => $server['Name'],
+                        'ServerDetails' => json_encode($server),
+                        'CompanyId' => $companyId,
+                        'EncryptedApiToken' => encryptPostmarkToken($server['ApiTokens'][0]),
+                    ];
+                }
+            } else {
+                $serversToInsert[] = [
+                    'InsertTime' => Carbon::now(),
+                    'UpdateTime' => Carbon::now(),
+                    'ServerId' => $server['ID'],
+                    'ServerName' => $server['Name'],
+                    'ServerDetails' => json_encode($server),
+                    'CompanyId' => null,
+                    'EncryptedApiToken' => encryptPostmarkToken($server['ApiTokens'][0]),
+                ];
+            }
+        })->toArray();
+
+        PostmarkEmailServer::insert($serversToInsert);
+
         $this->info("Success");
+
         return Command::SUCCESS;
     }
 
-    private function getCompanyId($companyWithModuleSettingValue, $apiTokens)
+    private function setCompanyModuleSettingValue(): void
     {
+        $module = Module::with([
+            'moduleSettings' => function ($q) {
+                $q->with(['settings' => function ($q) {
+                    $q->with(['company']);
+                }])->where('Name', 'PostmarkServerApiToken');
+            }])
+            ->whereIn('Name', ['System'])
+            ->first();
+
+        foreach ($module->moduleSettings[0]->settings as $setting) {
+            $this->companyWithModuleSettingValue[$setting->Value][] = [
+                'CompanyId' => $setting->CompanyId,
+                'CompanyName' => $setting->company->Name,
+                'Value' => $setting->Value
+            ];
+        }
+    }
+
+    private function getCompanyIds($apiTokens): array
+    {
+        $companyIds = [];
         foreach ($apiTokens as $apiToken) {
-            if (isset($companyWithModuleSettingValue[$apiToken])) {
-                return $companyWithModuleSettingValue[$apiToken]['CompanyId'];
+            if (isset($this->companyWithModuleSettingValue[$apiToken])) {
+                $merging = collect($this->companyWithModuleSettingValue[$apiToken])->pluck('CompanyId')->toArray();
+                $companyIds = array_merge($companyIds, $merging);
             }
         }
-        return null;
+        return $companyIds;
     }
 }

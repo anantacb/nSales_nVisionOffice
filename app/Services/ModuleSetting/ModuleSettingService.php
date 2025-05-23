@@ -9,8 +9,11 @@ use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use App\Repositories\Plugin\B2bGqlApi\B2bGqlApiRepository;
+use App\Repositories\Plugin\NsalesOfficeRestApi\NsalesOfficeRestApiRepository;
+use App\Repositories\Plugin\NvmGqlApi\NvmGqlApiRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 
 class ModuleSettingService implements ModuleSettingServiceInterface
@@ -23,12 +26,18 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     protected B2bGqlApiRepository $b2bGqlApiRepository;
 
+    protected NvmGqlApiRepository $nvmGqlApiRepository;
+
+    protected NsalesOfficeRestApiRepository $nsalesOfficeRestApiRepository;
+
     public function __construct(
         ModuleSettingRepositoryInterface $moduleSettingRepository,
         SettingRepositoryInterface       $settingRepository,
         ModuleRepositoryInterface        $moduleRepository,
         CompanyRepositoryInterface       $companyRepository,
-        B2bGqlApiRepository              $b2bGqlApiRepository
+        B2bGqlApiRepository              $b2bGqlApiRepository,
+        NvmGqlApiRepository              $nvmGqlApiRepository,
+        NsalesOfficeRestApiRepository    $nsalesOfficeRestApiRepository
     )
     {
         $this->moduleSettingRepository = $moduleSettingRepository;
@@ -36,6 +45,8 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         $this->companyRepository = $companyRepository;
         $this->settingRepository = $settingRepository;
         $this->b2bGqlApiRepository = $b2bGqlApiRepository;
+        $this->nvmGqlApiRepository = $nvmGqlApiRepository;
+        $this->nsalesOfficeRestApiRepository = $nsalesOfficeRestApiRepository;
     }
 
     public function getAllModuleSettingsByCompanyId(Request $request): ServiceDto
@@ -148,8 +159,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
             }
         }
 
-        // Clear Cache of B2B GQL API Server
-        $this->b2bGqlApiRepository->cacheClear();
+        $this->clearAllServerCaches();
 
         return new ServiceDto("Settings Updated Successfully!!!", 200, []);
     }
@@ -169,7 +179,20 @@ class ModuleSettingService implements ModuleSettingServiceInterface
             'Visible' => $request->get('Visible'),
             'Disabled' => $request->get('Disabled'),
         ]);
+        $this->clearAllServerCaches();
         return new ServiceDto("Setting Created Successfully.", 200, $moduleSetting);
+    }
+
+    protected function clearAllServerCaches(): void
+    {
+        // Clear Cache of B2B GQL API Server
+        $this->b2bGqlApiRepository->cacheClear();
+        // Clear Cache of NVM GQL API Server
+        $this->nvmGqlApiRepository->cacheClear();
+        // Cache Clear of Nsales Office API Server
+        $this->nsalesOfficeRestApiRepository->cacheClear();
+        // Cache Clear of Nvision Office Server
+        Artisan::call('cache:clear');
     }
 
     public function update(Request $request): ServiceDto
@@ -190,6 +213,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
                 'Disabled' => $request->get('Disabled'),
             ]
         );
+        $this->clearAllServerCaches();
         return new ServiceDto("Module Updated Successfully.", 200, $moduleSetting);
     }
 
@@ -205,6 +229,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         $this->settingRepository->deleteByAttributes([
             ['column' => 'ModuleSettingId', 'operand' => '=', 'value' => $request->get('ModuleSettingId')]
         ]);
+        $this->clearAllServerCaches();
         return new ServiceDto("Setting Deleted Successfully.", 200, []);
     }
 

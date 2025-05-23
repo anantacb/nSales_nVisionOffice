@@ -10,6 +10,7 @@ import Loader from "@/components/ui/Loader/Loader.vue";
 import CompanyEmailTemplate from "@/models/Company/CompanyEmailTemplate";
 import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
+import TableHelper from "@/models/TableHelper";
 
 const route = useRoute();
 const companyStore = useCompanyStore();
@@ -22,7 +23,81 @@ let LayoutOptions = ref([]);
 let CompanyEmailTemplateModel = ref({});
 let EmailEvents = ref([]);
 const updateEmailLayoutRef = ref(null);
-const isLoading = ref(false)
+const isLoading = ref(false);
+
+let DatabaseTableOptions = ref([
+    {
+        label: 'Please Select',
+        value: ''
+    },
+    {
+        label: 'Orderhead',
+        value: 'Orderhead'
+    }
+]);
+let TableColumnOptions = ref([{
+    label: 'Please Select',
+    value: ''
+}]);
+let ColumnValueOptions = ref([
+    {
+        label: 'Please Select',
+        value: ''
+    }
+]);
+
+function databaseTableChanged() {
+    CompanyEmailTemplateModel.value.TableColumn = '';
+    TableColumnOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    CompanyEmailTemplateModel.value.ColumnValue = '';
+    ColumnValueOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    if (!CompanyEmailTemplateModel.value.DatabaseTable) {
+        return;
+    }
+    getTableColumns();
+}
+
+function tableColumnChanged() {
+    CompanyEmailTemplateModel.value.ColumnValue = '';
+    ColumnValueOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    if (!CompanyEmailTemplateModel.value.TableColumn) {
+        return;
+    }
+    getColumnValues();
+}
+
+async function getTableColumns() {
+    let {
+        data,
+        message
+    } = await TableHelper.getAllColumns('Company', CompanyEmailTemplateModel.value.DatabaseTable, companyStore.selectedCompany.Id);
+    data.forEach((column, index) => {
+        TableColumnOptions.value.push({label: column, value: column});
+    });
+}
+
+async function getColumnValues() {
+    let {
+        data,
+        message
+    } = await TableHelper.getColumnDistinctValues('Company', CompanyEmailTemplateModel.value.DatabaseTable, CompanyEmailTemplateModel.value.TableColumn, companyStore.selectedCompany.Id);
+    data.forEach((column, index) => {
+        ColumnValueOptions.value.push({label: column, value: column});
+    });
+}
+
+const showDatabaseFormElements = computed(() => {
+    return CompanyEmailTemplateModel.value.ElementName === 'ORDER_CONFIRMATION_MAIL';
+});
 
 function setTemplate(newEditorValue) {
     CompanyEmailTemplateModel.value.Template = newEditorValue;
@@ -42,6 +117,9 @@ async function updateEmailTemplate() {
         LanguageId: CompanyEmailTemplateModel.value.LanguageId,
         Subject: CompanyEmailTemplateModel.value.Subject,
         Template: CompanyEmailTemplateModel.value.Template,
+        DatabaseTable: CompanyEmailTemplateModel.value.DatabaseTable,
+        TableColumn: CompanyEmailTemplateModel.value.TableColumn,
+        ColumnValue: CompanyEmailTemplateModel.value.ColumnValue,
     };
 
     try {
@@ -60,6 +138,10 @@ async function getEmailTemplateDetails() {
     isLoading.value = true;
     let {data} = await CompanyEmailTemplate.details(companyStore.selectedCompany.Id, route.params.id);
     CompanyEmailTemplateModel.value = data;
+    if (CompanyEmailTemplateModel.value.DatabaseTable) {
+        await getTableColumns();
+        await getColumnValues();
+    }
     isLoading.value = false;
 }
 
@@ -203,6 +285,74 @@ onMounted(async () => {
 
                     </div>
 
+
+                    <div v-if="showDatabaseFormElements" class="row">
+                        <div class="col-lg-4 space-y-2 ">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="DatabaseTable">
+                                    Table
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="ElementName"
+                                        v-model="CompanyEmailTemplateModel.DatabaseTable"
+                                        :options="DatabaseTableOptions"
+                                        :required="false"
+                                        :select-class="errors.DatabaseTable ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="ElementName"
+                                        @change="resetErrors();databaseTableChanged()"
+                                    />
+                                    <InputErrorMessages v-if="errors.DatabaseTable"
+                                                        :errorMessages="errors.DatabaseTable"></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="Column">
+                                    Column<span v-if="!!CompanyEmailTemplateModel.DatabaseTable"
+                                                class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="LanguageId"
+                                        v-model="CompanyEmailTemplateModel.TableColumn"
+                                        :options="TableColumnOptions"
+                                        :required="!!CompanyEmailTemplateModel.DatabaseTable"
+                                        :select-class="errors.TableColumn ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="Language"
+                                        @change="tableColumnChanged()"
+                                    />
+                                    <InputErrorMessages v-if="errors.TableColumn"
+                                                        :errorMessages="errors.TableColumn"></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="ColumnValue">
+                                    Value<span v-if="!!CompanyEmailTemplateModel.DatabaseTable"
+                                               class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="ColumnValue"
+                                        v-model="CompanyEmailTemplateModel.ColumnValue"
+                                        :options="ColumnValueOptions"
+                                        :required="!!CompanyEmailTemplateModel.DatabaseTable"
+                                        :select-class="errors.ColumnValue ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="ColumnValue"
+                                        @change="resetErrors"
+                                    />
+                                    <InputErrorMessages v-if="errors.ColumnValue"
+                                                        :errorMessages="errors.ColumnValue"></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
 
                     <div class="row">
                         <div class="col-lg-12 space-y-2">

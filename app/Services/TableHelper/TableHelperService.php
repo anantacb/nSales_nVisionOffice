@@ -84,7 +84,7 @@ class TableHelperService implements TableHelperServiceInterface
         $in = '';
         $type = '';
 
-        if ($tableField['InputRequired']) {
+        if (!$tableField['Nullable']) {
             $required = 'required';
         }
 
@@ -126,5 +126,24 @@ class TableHelperService implements TableHelperServiceInterface
         $model = new $namespacedModel();
         $enumValues = $model->getEnumColumnValues($columName);
         return new ServiceDto("EnumValues Retrieved Successfully.", 200, $enumValues);
+    }
+
+    public function getAllTableColumnNames(Request $request): ServiceDto
+    {
+        $databaseType = $request->get("DatabaseType");
+        $tableName = $request->get('TableName');
+        $companyId = $request->get('CompanyId');
+        $table = $this->tableRepository->firstByAttributes(
+            [
+                ['column' => 'Name', 'operand' => '=', 'value' => $tableName]
+            ]
+        );
+        $generalTableFields = $this->tableFieldRepository->getGeneralTableFields($table->Id);
+        if ($companyId) {
+            $companySpecificTableFields = $this->tableFieldRepository->getCompanySpecificTableFields($table->Id, $companyId);
+            $generalTableFields = $generalTableFields->merge($companySpecificTableFields);
+        }
+        $generalTableFields = $generalTableFields->pluck('Name')->toArray();
+        return new ServiceDto("All table columns Retrieved Successfully.", 200, $generalTableFields);
     }
 }

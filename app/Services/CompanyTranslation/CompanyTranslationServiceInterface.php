@@ -16,4 +16,6 @@ interface CompanyTranslationServiceInterface
     public function update(Request $request): ServiceDto;
 
     public function delete(Request $request): ServiceDto;
+
+    public function syncCompanyTranslations(Request $request): ServiceDto;
 }

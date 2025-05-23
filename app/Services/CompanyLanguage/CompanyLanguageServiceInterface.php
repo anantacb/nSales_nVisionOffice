@@ -3,6 +3,7 @@
 namespace App\Services\CompanyLanguage;
 
 use App\Contracts\ServiceDto;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 interface CompanyLanguageServiceInterface
@@ -16,4 +17,10 @@ interface CompanyLanguageServiceInterface
     public function setAsDefaultLanguage(Request $request): ServiceDto;
 
     public function delete(Request $request): ServiceDto;
+
+    public function createCompanyLanguage($language, $isDefault = 0): Model;
+
+    public function addCompanyTranslations($language, $companyLanguage): void;
+
+    public function addCompanyEmailLayoutAndTemplates($language, $companyLanguage): void;
 }

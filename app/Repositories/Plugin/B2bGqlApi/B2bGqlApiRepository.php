@@ -5,6 +5,7 @@ namespace App\Repositories\Plugin\B2bGqlApi;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\App;
 
 class B2bGqlApiRepository
 {
@@ -13,15 +14,18 @@ class B2bGqlApiRepository
 
     public function __construct()
     {
-        $this->client = new Client();
+        if (App::environment(['production', 'development'])) {
+            $this->client = new Client();
+        } else {
+            $this->client = new Client(['verify' => false]);
+        }
         $this->baseUrl = env('B2B_GQL_API_URL');
     }
-
 
     /**
      * @return mixed
      */
-    public function cacheClear(): mixed
+    public function cacheClear(): array
     {
         // Define the GraphQL mutation
         $mutation = <<<'GRAPHQL'
@@ -36,7 +40,7 @@ class B2bGqlApiRepository
         try {
             $response = $this->client->post($this->baseUrl, [
                 'headers' => [
-                    'developerAccessKey' => env('B2B_GQL_API_DEVELOPER_ACCESS_KEY'),
+                    'developerAccessKey' => env('DEVELOPER_ACCESS_KEY'),
                 ],
                 'json' => [
                     'query' => $mutation
@@ -55,7 +59,7 @@ class B2bGqlApiRepository
         }
     }
 
-    public function createLoginToken($companyDomain, $userName, $password)
+    public function createLoginToken($companyDomain, $userName, $password): array
     {
         // Define the GraphQL mutation
         $mutation = <<<'GRAPHQL'
@@ -94,7 +98,7 @@ class B2bGqlApiRepository
         }
     }
 
-    public function getItemgroups($authToken)
+    public function getItemgroups($authToken): array
     {
         // Define the GraphQL mutation
         $mutation = <<<'GRAPHQL'
@@ -130,7 +134,7 @@ class B2bGqlApiRepository
         }
     }
 
-    public function getItemgroupProducts($authToken, $number, $perPage)
+    public function getItemgroupProducts($authToken, $number, $perPage): array
     {
         // Define the GraphQL mutation
         $mutation = <<<'GRAPHQL'

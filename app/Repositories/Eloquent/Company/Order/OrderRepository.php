@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Eloquent\Company\Order;
 
-use App\Models\Company\Order;
+use App\Models\Company\Orderhead;
 use App\Repositories\Eloquent\Base\BaseRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
-    public function __construct(Order $model)
+    public function __construct(Orderhead $model)
     {
         parent::__construct($model);
     }

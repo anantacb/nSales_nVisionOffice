@@ -48,6 +48,8 @@ use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldReposito
 use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTableIndex\CompanyTableIndexRepository;
 use App\Repositories\Eloquent\Office\CompanyTableIndex\CompanyTableIndexRepositoryInterface;
+use App\Repositories\Eloquent\Office\CompanyTheme\CompanyThemeRepository;
+use App\Repositories\Eloquent\Office\CompanyTheme\CompanyThemeRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepository;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepository;
@@ -178,6 +180,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(WebShopTextRepositoryInterface::class, WebShopTextRepository::class);
 
         $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
+        $this->app->bind(CompanyThemeRepositoryInterface::class, CompanyThemeRepository::class);
 
         $this->app->bind(DocumentApiRepositoryInterface::class, DocumentApiRepository::class);
 

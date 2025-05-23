@@ -1,5 +1,5 @@
 <template>
-    <div class="position-relative max-h-60vh h-100" v-if="isLoading">
+    <div v-if="isLoading" class="position-relative max-h-60vh h-100">
         <Loader :is-loading="isLoading"></Loader>
     </div>
     <div v-else-if="itemGroup">
@@ -7,8 +7,8 @@
             {{ itemGroup?.Name }}
         </h4>
         <div class="max-h-60vh overflow-auto">
-            <div v-if="items && items.length > 0 && !priceExist" class="alert alert-danger p-2">Price not found</div>
-            <div v-if="items && items.length > 0 && !mediaExist" class="alert alert-danger p-2">Media not found</div>
+            <div v-if="items && items.length > 0 && !priceExist" class="alert alert-warning p-2">Price not found</div>
+            <div v-if="items && items.length > 0 && !mediaExist" class="alert alert-warning p-2">Media not found</div>
             <table class="table">
                 <thead class="table-dark">
                 <tr>
@@ -21,7 +21,8 @@
                 <template v-if="items && items.length > 0">
                     <tr v-for="item in items">
                         <td>
-                            <img class="img-fluid" v-if="item.Media && item.Media.length > 0" :src="item.Media[0].FullPath"  alt="" width="50">
+                            <img v-if="item.Media && item.Media.length > 0" :src="item.Media[0].FullPath"
+                                 alt="" class="img-fluid" width="50">
                             {{ item.Name1 }}
                         </td>
                         <td>{{ item.Number }}</td>
@@ -35,9 +36,10 @@
             </table>
         </div>
     </div>
-    <div class="m-8 text-center" v-else>
+    <div v-else class="m-8 text-center">
         <h6>No product category added yet!</h6>
-        <a href="https://app.nsales.io/e-commerce/itemgroups" target="_blank" class="btn btn-primary">Add product category</a>
+        <a class="btn btn-primary" href="https://app.nsales.io/e-commerce/itemgroups" target="_blank">Add product
+            category</a>
     </div>
 </template>
 <script setup>
@@ -79,13 +81,14 @@ const getItemGroupsAndItem = async () => {
         items.value = data.items
 
         for (let item of items.value) {
-            priceExist.value = item.Price.Price ? true :  priceExist.value
+            priceExist.value = item.Price.Price ? true : priceExist.value
             mediaExist.value = item.Media && item.Media.length > 0 && item.Media[0].FullPath ? true : mediaExist.value
         }
 
-        if (priceExist.value && mediaExist.value) {
-            emits("complete", true)
-        }
+        // if (priceExist.value && mediaExist.value) {
+        //     emits("complete", true)
+        // }
+        emits("complete", true);
 
         isLoading.value = false
     } catch (err) {
@@ -99,4 +102,3 @@ const getItemGroupsAndItem = async () => {
     max-height: 60vh;
 }
 </style>
-
