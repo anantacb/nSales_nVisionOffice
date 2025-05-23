@@ -12,13 +12,29 @@ class FileUrlGenerator
     /**
      * @param $elementNumber
      * @param null $model
+     * @return array
+     */
+    public static function getItemImageUrlByElementNumber($elementNumber, $model = null): array
+    {
+        $imageUrlKeys = CompanyService::getSettingsKeys('Item', 'ImageUrl.');
+        $imageUrls = [];
+        foreach ($imageUrlKeys as $key => $imageUrlKey) {
+            $imageUrls[str_replace('ImageUrl.', '', $imageUrlKey)] = Self::imageUrlByElementNumber($elementNumber, $model, $imageUrlKey);
+        }
+
+        return $imageUrls;
+    }
+
+    /**
+     * @param $elementNumber
+     * @param null $model
      * @param string $size ThumbnailSmall|Preview|Fullsize|ThumbnailLarge
      * @return string
      */
-    public static function imageUrlByElementNumber($elementNumber, $model = null, string $size = 'Fullsize')
+    public static function imageUrlByElementNumber($elementNumber, $model = null, string $size = 'ImageUrl.Fullsize'): string
     {
         //$selected_company = Cache::get('company_'.request()->get('CompanyId'));
-        $image_url = CompanyService::getSettingValue('Item', 'ImageUrl.' . $size);
+        $image_url = CompanyService::getSettingValue('Item', $size);
 
         preg_match_all('/\[(\w*)\]/', $image_url, $matches);
         if ($model) {

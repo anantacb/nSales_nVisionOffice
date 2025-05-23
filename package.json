@@ -71,6 +71,7 @@
         "vue-dataset": "^3.4.8",
         "vue-easy-lightbox": "^1.7.1",
         "vue-flatpickr-component": "^9.0.6",
+        "vue-lazyload": "^3.0.0",
         "vue-router": "^4.1.6",
         "vue-select": "^4.0.0-beta.3",
         "vue-star-rating": "^2.1.0",
