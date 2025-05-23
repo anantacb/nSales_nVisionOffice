@@ -4,8 +4,6 @@ namespace App\Console\Commands\Translation;
 
 use App\Repositories\Eloquent\Office\Language\LanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
-use Exception;
-use Google\Cloud\Translate\V2\TranslateClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -67,7 +65,7 @@ class TranslateAllElements extends Command
                     foreach ($baseLanguageTranslation['Translations'] as $key => $translation) {
                         if (!isset($otherLanguageTranslation['Translations'][$key])) {
                             Log::debug("Missing Key: $key Element: {$baseLanguageTranslation['ElementName']} Language: {$otherLanguage["Name"]} Code: {$otherLanguage["Code"]}");
-                            $newTranslation[$key] = $this->translateText($baseLanguageTranslation['Translations'][$key], $otherLanguage['Code']);
+                            $newTranslation[$key] = getTranslation($baseLanguageTranslation['Translations'][$key], $otherLanguage['Code']);
                         }
                     }
                     $otherLanguageTranslation->update([
@@ -77,7 +75,7 @@ class TranslateAllElements extends Command
                     Log::debug("Missing Element: {$baseLanguageTranslation['ElementName']} Language: {$otherLanguage["Name"]} Code: {$otherLanguage["Code"]}");
                     $newTranslations = [];
                     foreach ($baseLanguageTranslation['Translations'] as $key => $translation) {
-                        $newTranslations[$key] = $this->translateText($translation, $otherLanguage['Code']);
+                        $newTranslations[$key] = getTranslation($translation, $otherLanguage['Code']);
                     }
 
                     $this->translationRepository->create([
@@ -91,25 +89,6 @@ class TranslateAllElements extends Command
                     //dd($otherLanguageTranslation);
                 }
             }
-        }
-    }
-
-    private function translateText($text, $targetLanguageCode)
-    {
-        try {
-            // Creates a client
-            $translate = new TranslateClient([
-                'keyFilePath' => storage_path("app/public/gcp/nsales-translations.json") // Set the path to your service account JSON file
-            ]);
-
-            // Translates the text
-            $result = $translate->translate($text, [
-                'target' => $targetLanguageCode
-            ]);
-            return $result['text'];
-        } catch (Exception $exception) {
-            Log::error("Translate Error: {$exception->getMessage()}");
-            return "";
         }
     }
 }

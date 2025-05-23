@@ -5,6 +5,7 @@ namespace App\Services\CompanyEmailTemplate;
 use App\Contracts\ServiceDto;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Services\Company\CompanyService;
 use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
@@ -21,8 +22,10 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         CompanyEmailTemplateRepositoryInterface $templateRepository,
         CompanyEmailLayoutRepositoryInterface   $emailLayoutRepository,
         ModuleSettingServiceInterface           $moduleSettingService,
+        TableFieldRepositoryInterface           $tableFieldRepository
     )
     {
+        parent::__construct($tableFieldRepository);
         $this->templateRepository = $templateRepository;
         $this->emailLayoutRepository = $emailLayoutRepository;
         $this->moduleSettingService = $moduleSettingService;
@@ -38,18 +41,6 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         $templates = $this->templateRepository->paginatedData($request);
 
         return new ServiceDto("Templates retrieved!!!", 200, $templates);
-    }
-
-    public function create(Request $request): ServiceDto
-    {
-        $template = $this->templateRepository->create([
-            'ElementName' => $request->get('ElementName'),
-            'LayoutId' => $request->get('LayoutId'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Subject' => $request->get('Subject'),
-            'Template' => $request->get('Template')
-        ]);
-        return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }
 
     public function details(Request $request): ServiceDto
@@ -72,33 +63,57 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
                 'LayoutId' => $request->get('LayoutId'),
                 'LanguageId' => $request->get('LanguageId'),
                 'Subject' => $request->get('Subject'),
-                'Template' => $request->get('Template')
+                'Template' => $request->get('Template'),
+                'DatabaseTable' => $request->get('DatabaseTable'),
+                'TableColumn' => $request->get('TableColumn'),
+                'ColumnValue' => $request->get('ColumnValue'),
             ]
         );
         return new ServiceDto("Template Updated Successfully.", 200, $template);
     }
 
-
     public function getEmailEvents(Request $request): ServiceDto
     {
-        $emailEvents = $this->fetchEmailEvents();
+        $emailEvents = $this->fetchEmailEvents($request);
 
         return new ServiceDto("Email events retrieved!!!", 200, $emailEvents);
     }
 
-    public function fetchEmailEvents()
+    public function fetchEmailEvents($request): array
     {
-        $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
         $emailEvents = json_decode(CompanyService::getSettingValue('CompanyEmail', 'EmailEvents'), true);
+        $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
+        $layoutFields = array_merge(
+            $this->getEventProperties($layoutFields ?? []),
+            array_filter($this->getCompanyDataForTemplate(), function ($value) {
+                return $value !== '';
+            })
+        );
 
+        $data = [];
         foreach ($emailEvents as $key => $emailEvent) {
-            $emailEvents[$key]['Fields'] = array_merge($layoutFields, $emailEvent['Fields']);
-            $emailEvents[$key]['templateObject'] = $this->getEventProperties(
-                array_merge($layoutFields, $emailEvent['Fields'])
-            );
+            $fields = array_merge($layoutFields, $this->getEventProperties($emailEvent['Fields'] ?? []));
+
+            // Fetch fields from main table
+            if (isset($emailEvent['Table'])) {
+                $tableFields = $this->fetchTableFields($emailEvent['Table'], $request->get("CompanyId"));
+                $fields = array_merge($tableFields, $fields);
+            }
+
+            // Handle children recursively
+            if (!empty($emailEvent['Children']) && is_array($emailEvent['Children'])) {
+                foreach ($emailEvent['Children'] as $child) {
+                    $fields = $this->assignRelation($fields, $child, $request->get("CompanyId"));
+                }
+            }
+
+            $data[$key] = [
+                'Title' => $emailEvent['Title'],
+                'templateObject' => $fields,
+            ];
         }
 
-        return $emailEvents;
+        return $data;
     }
 
     /**
@@ -137,6 +152,21 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         ]);
 
         return new ServiceDto("Email Template Copied Successfully.", 200, $companyEmailTemplate);
+    }
+
+    public function create(Request $request): ServiceDto
+    {
+        $template = $this->templateRepository->create([
+            'ElementName' => $request->get('ElementName'),
+            'LayoutId' => $request->get('LayoutId'),
+            'LanguageId' => $request->get('LanguageId'),
+            'Subject' => $request->get('Subject'),
+            'Template' => $request->get('Template'),
+            'DatabaseTable' => $request->get('DatabaseTable'),
+            'TableColumn' => $request->get('TableColumn'),
+            'ColumnValue' => $request->get('ColumnValue'),
+        ]);
+        return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }
 
 }

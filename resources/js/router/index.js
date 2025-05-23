@@ -106,6 +106,7 @@ const EditEmailTemplate = () => import('@/views/email-template/EditEmailTemplate
 const CompanyEmailLayouts = () => import('@/views/company-email-layout/CompanyEmailLayouts/CompanyEmailLayouts.vue');
 const CreateCompanyEmailLayout = () => import('@/views/company-email-layout/CreateCompanyEmailLayout.vue');
 const EditCompanyEmailLayout = () => import('@/views/company-email-layout/EditCompanyEmailLayout.vue');
+const ChooseEmailLayout = () => import('@/views/company-email-layout/ChooseEmailLayouts/ChooseEmailLayout.vue');
 
 const CompanyEmailTemplates = () => import('@/views/company-email-template/CompanyEmailTemplates/CompanyEmailTemplates.vue');
 const CreateCompanyEmailTemplate = () => import('@/views/company-email-template/CreateCompanyEmailTemplate.vue');
@@ -113,6 +114,10 @@ const EditCompanyEmailTemplate = () => import('@/views/company-email-template/Ed
 const ChooseEmailTemplate = () => import('@/views/company-email-template/ChooseEmailTemplates/ChooseEmailTemplate.vue');
 
 const NotFound = () => import('@/views/404View.vue');
+
+const CacheClear = () => import('@/views/global-helper/CacheClear.vue');
+
+const Themes = () => import("@/views/themes/List.vue")
 
 const routes = [
     {
@@ -699,6 +704,26 @@ const routes = [
                 }
             },
 
+            {
+                path: "themes",
+                name: "themes",
+                component: Themes,
+                meta: {
+                    requiresAuth: true,
+                    roles: ['Developer']
+                }
+            },
+
+            {
+                path: "cache-clear",
+                name: "cache-clear",
+                component: CacheClear,
+                meta: {
+                    requiresAuth: true,
+                    roles: ['Developer']
+                }
+            },
+
             // Company Routes
             {
                 path: "order/orders",
@@ -870,7 +895,7 @@ const routes = [
                 component: EditCompanyTranslation,
                 meta: {
                     requiresAuth: true,
-                    requiresCompany: true,
+                    requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'Translation'
                 }
@@ -902,6 +927,17 @@ const routes = [
                 path: "company-email-layout/:id/edit",
                 name: "edit-company-email-layout",
                 component: EditCompanyEmailLayout,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer', 'Administrator', "Employee"],
+                    module: 'CompanyEmail'
+                }
+            },
+            {
+                path: "company-email-layout/choose",
+                name: "choose-email-layout",
+                component: ChooseEmailLayout,
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
@@ -938,7 +974,7 @@ const routes = [
                 component: EditCompanyEmailTemplate,
                 meta: {
                     requiresAuth: true,
-                    requiresCompany: true,
+                    requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
                     module: 'CompanyEmail'
                 }
@@ -971,8 +1007,7 @@ const routes = [
                     roles: []
                 }
             }
-        ],
-
+        ]
     },
 
     {

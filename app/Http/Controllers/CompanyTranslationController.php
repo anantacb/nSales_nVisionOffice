@@ -9,6 +9,7 @@ use App\Http\Requests\PaginatedDataRequest;
 use App\Services\CompanyTranslation\CompanyTranslationServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CompanyTranslationController extends Controller
 {
@@ -22,6 +23,12 @@ class CompanyTranslationController extends Controller
     public function getCompanyTranslations(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getCompanyTranslations($request);
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function syncCompanyTranslations(Request $request): JsonResponse
+    {
+        $response = $this->service->syncCompanyTranslations($request);
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
 

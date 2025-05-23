@@ -3,8 +3,10 @@
 namespace App\Services\EmailLayout;
 
 use App\Contracts\ServiceDto;
+use App\Repositories\Eloquent\Company\CompanyLanguage\CompanyLanguageRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailLayout\EmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Office\EmailTemplate\EmailTemplateRepositoryInterface;
+use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
@@ -16,18 +18,23 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     protected ModuleSettingServiceInterface $moduleSettingService;
     protected TranslationRepositoryInterface $translationRepository;
     protected EmailTemplateRepositoryInterface $templateRepository;
+    protected CompanyLanguageRepositoryInterface $companyLanguageRepository;
 
     public function __construct(
-        EmailLayoutRepositoryInterface $layoutRepository,
-        EmailTemplateRepositoryInterface $templateRepository,
-        ModuleSettingServiceInterface  $moduleSettingService,
-        TranslationRepositoryInterface $translationRepository
+        EmailLayoutRepositoryInterface     $layoutRepository,
+        EmailTemplateRepositoryInterface   $templateRepository,
+        ModuleSettingServiceInterface      $moduleSettingService,
+        TranslationRepositoryInterface     $translationRepository,
+        TableFieldRepositoryInterface      $tableFieldRepository,
+        CompanyLanguageRepositoryInterface $companyLanguageRepository
     )
     {
+        parent::__construct($tableFieldRepository);
         $this->layoutRepository = $layoutRepository;
         $this->templateRepository = $templateRepository;
         $this->moduleSettingService = $moduleSettingService;
         $this->translationRepository = $translationRepository;
+        $this->companyLanguageRepository = $companyLanguageRepository;
     }
 
     public function getEmailLayouts(Request $request): ServiceDto
@@ -124,6 +131,23 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
         $previewTemplateObject = $this->getEventProperties($layoutFields);
 
         return new ServiceDto("Preview template data retrieved successfully.", 200, $previewTemplateObject);
+    }
+
+    public function getEmailLayoutsForCompany(Request $request): ServiceDto
+    {
+        $request = $request->all();
+        $companyLanguageCodes = $this->companyLanguageRepository->all()->pluck('Code')->toArray();
+
+        $request['filter_by_relation'] = [
+            ["relation" => 'language', "column" => "Code", "operator" => "=", "values" => $companyLanguageCodes]
+        ];
+
+        $request['relations'] = [
+            ["name" => "language", "columns" => ['Id', 'Name', 'Code']]
+        ];
+        $layouts = $this->layoutRepository->paginatedData($request);
+
+        return new ServiceDto("Layouts retrieved!!!", 200, $layouts);
     }
 
 }

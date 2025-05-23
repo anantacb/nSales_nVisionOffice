@@ -1,10 +1,11 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import Swal from 'sweetalert2';
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
 import CompanyEmailTemplate from "@/models/Company/CompanyEmailTemplate";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
@@ -28,7 +29,7 @@ setTableFields([
     {
         name: "ModifiedElementName",
         title: "Element Name",
-        sortField: "ElementName"
+        sortField: "ElementName",
     },
     {
         name: "company_language",
@@ -52,7 +53,7 @@ setTableFields([
     }
 ]);
 
-setSearchColumns(['Name']);
+setSearchColumns(['ElementName']);
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -72,13 +73,22 @@ function search(query) {
 }
 
 async function getEmailTemplates() {
-    let {data, pagination} = await CompanyEmailTemplate.getEmailTemplates(companyStore.selectedCompany.Id, request.value);
+    let {
+        data,
+        pagination
+    } = await CompanyEmailTemplate.getEmailTemplates(companyStore.selectedCompany.Id, request.value);
     tableData.value = data;
     paginationData.value = pagination;
 }
 
 onMounted(async () => {
     await getEmailTemplates();
+});
+
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        await getEmailTemplates();
+    }
 });
 
 function deleteTemplate(template, index) {
@@ -123,6 +133,14 @@ function deleteTemplate(template, index) {
         @search="search"
         @sortBy="sortBy"
     >
+        <template v-slot:body-ModifiedElementName="props">
+            {{ props.data.ModifiedElementName }}
+            <template v-if="props.data.DatabaseTable">
+                <small> &nbsp; ({{ props.data.DatabaseTable }}->{{ props.data.TableColumn }} = {{
+                        props.data.ColumnValue
+                    }})</small>
+            </template>
+        </template>
         <template v-slot:body-Action="props">
             <router-link :to="{name: 'edit-company-email-template', params:{id: props.data.Id}}"
                          class="btn rounded-pill btn-alt-warning me-1">

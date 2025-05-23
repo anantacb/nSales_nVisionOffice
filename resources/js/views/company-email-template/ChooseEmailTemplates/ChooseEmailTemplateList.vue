@@ -1,5 +1,5 @@
 <script setup>
-import {nextTick, onMounted, ref} from 'vue';
+import {nextTick, onMounted, ref, watch} from 'vue';
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
@@ -11,6 +11,7 @@ import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import CompanyEmailTemplate from "@/models/Company/CompanyEmailTemplate";
 import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
+import _ from "lodash";
 
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
@@ -72,7 +73,7 @@ setTableFields([
     }
 ]);
 
-setSearchColumns(['Name']);
+setSearchColumns(['ElementName']);
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -238,6 +239,7 @@ async function copyEmailTemplateToCompany() {
         } = await CompanyEmailTemplate.copyTemplateToCompany(companyStore.selectedCompany.Id, formData);
 
         notificationStore.showNotification(message);
+        copyTemplateRef.value.closeModal();
         await nextTick();
         await router.push({name: 'company-email-templates'});
     } catch (error) {
@@ -257,6 +259,14 @@ onMounted(async () => {
     await getAllCompanyLanguages();
 });
 
+watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
+    if (!_.isEmpty(newSelectedCompany)) {
+        await getEmailTemplatesForCompany();
+        await getEmailEvents();
+        await getCompanyEmailEvents();
+        await getAllCompanyLanguages();
+    }
+});
 
 </script>
 

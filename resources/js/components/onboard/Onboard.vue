@@ -16,6 +16,7 @@ const Settings = defineAsyncComponent(() => import('@/components/onboard/Setting
 const Theme = defineAsyncComponent(() => import('@/components/onboard/Theme.vue'))
 const DocumentApi = defineAsyncComponent(() => import('@/components/onboard/DocumentApi.vue'))
 const GitBranch = defineAsyncComponent(() => import('@/components/onboard/GitBranch.vue'))
+const Deploy = defineAsyncComponent(() => import('@/components/onboard/Deploy.vue'))
 const Default = defineAsyncComponent(() => import('@/components/onboard/Default.vue'))
 
 const companyStore = useCompanyStore();
@@ -38,7 +39,7 @@ const getCompanyOnboardStatus = async () => {
 
         isLoading.value = false
     } catch (err) {
-        notificationStore.showNotification(err.response.data.message, "danger")
+        notificationStore.showNotification(err.response.data.message, "error")
         isLoading.value = false
     }
 }
@@ -102,7 +103,7 @@ const updateCompanyOnboardStatus = async () => {
         await Onboard.updateCompanyOnboardStatus(companyStore.selectedCompany.Id, props.application, onboardingProgress.value);
         isLoading.value = false
     } catch (err) {
-        notificationStore.showNotification(err.response.data.message, "danger")
+        notificationStore.showNotification(err.response.data.message, "error")
         isLoading.value = false
     }
 }
@@ -126,6 +127,8 @@ const componentToRender = computed(() => {
         return DocumentApi
     } else if (currentStep.value === "GitBranch") {
         return GitBranch
+    } else if (currentStep.value === "Deploy") {
+        return Deploy
     }
     return Default
 })
