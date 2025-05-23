@@ -2,7 +2,9 @@
 
 namespace App\Models\Company;
 
+use App\Helpers\FileUrlGenerator;
 use App\Models\BaseModel;
+use App\Services\Company\CompanyService;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -11,17 +13,17 @@ class Item extends BaseModel
 {
     protected $connection = 'mysql_company';
     protected $table = 'Item';
+    protected $appends = ['image_urls', 'variant_exists'];
 
-    //protected $appends = ['image_url'];
-
-    public function getImageUrlAttribute()
+    public function getImageUrlsAttribute(): array
     {
-        //return FileUrlGenerator::imageUrlByElementNumber($this->Number, $this);
+        return FileUrlGenerator::getItemImageUrlByElementNumber($this->Number, $this);
     }
 
-    public function getItemVariantExistsAttribute(): bool
+    public function getVariantExistsAttribute(): bool
     {
-        return $this->itemVariants()->exists();
+        return CompanyService::isModuleEnabled('ItemVariant') && $this->itemVariants()->exists();
+        //return $this->itemVariants()->exists();
     }
 
     public function itemVariants(): HasMany

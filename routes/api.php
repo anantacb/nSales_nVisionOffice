@@ -20,6 +20,8 @@ use App\Http\Controllers\EmailLayoutController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\GitController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ItemAttributeController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\ModulePackageController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\ModulePackageModuleController;
 use App\Http\Controllers\ModuleSettingController;
 use App\Http\Controllers\OnboardController;
 use App\Http\Controllers\OrderByCustomerController;
+use App\Http\Controllers\OrderByItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableController;
@@ -36,7 +39,9 @@ use App\Http\Controllers\TableIndexController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\TranslationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebShopLanguageController;
 use App\Http\Controllers\WebShopPageController;
+use App\Http\Controllers\WebShopTextController;
 use App\Http\Controllers\WebShopUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -278,6 +283,12 @@ Route::middleware(['auth:api'])->group(function () {
         // Order By Customer
         Route::post('/customer/latest/orders', [OrderByCustomerController::class, 'latestOrdersByCustomer']);
 
+        // Order By Item
+        Route::post('/item/total-sales-yearly', [OrderByItemController::class, 'totalSalesYearlyByItem']);
+        Route::post('/item/total-sales-monthly', [OrderByItemController::class, 'totalSalesMonthlyByItem']);
+        Route::post('/item/quantity-orders-yearly', [OrderByItemController::class, 'totalQuantityYearlyByItem']);
+        Route::post('/item/quantity-orders-monthly', [OrderByItemController::class, 'totalQuantityMonthlyByItem']);
+
         // Customer
         Route::post('/customers', [CustomerController::class, 'getCustomers']);
         Route::post('/customer/create', [CustomerController::class, 'create']);
@@ -288,6 +299,20 @@ Route::middleware(['auth:api'])->group(function () {
         // Customer Visits
         Route::post('/customer-visits', [CustomerVisitController::class, 'getCustomerVisits']);
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
+
+        // Items or Products
+        Route::post('/items', [ItemController::class, 'getItems']);
+        Route::post('/item/details', [ItemController::class, 'details']);
+        Route::post('/item/update', [ItemController::class, 'update']);
+
+        // Item attributes
+        Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem']);
+        Route::post('/item-attributes/by-item/update', [ItemAttributeController::class, 'updateItemAttributesByItem']);
+        Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete']);
+
+        //Webshoptext
+        Route::post('/web-shop-text/get-web-shop-texts-by-item', [WebShopTextController::class, 'getByItem']);
+        Route::post('/web-shop-text/update-by-item', [WebShopTextController::class, 'updateByItem']);
 
         // Company Language
         Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
@@ -303,6 +328,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/company-translation/update', [CompanyTranslationController::class, 'update']);
         Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
         Route::post('/company-translation/details', [CompanyTranslationController::class, 'details']);
+
+        // Web Shop Language
+        Route::post('web-shop-languages/all', [WebShopLanguageController::class, 'getAllWebShopLanguages']);
 
         // WebShopUser
         Route::post('/web-shop-user/details', [WebShopUserController::class, 'details']);
