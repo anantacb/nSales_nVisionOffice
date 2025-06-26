@@ -9,7 +9,6 @@ use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Services\Company\CompanyService;
-use App\Services\Traits\ModuleHelperTrait;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,8 +19,6 @@ use Illuminate\Support\Facades\Log;
 
 class AddWebShopTextToCompanies extends Command
 {
-    use ModuleHelperTrait;
-
     /**
      * The name and signature of the console command.
      *
@@ -44,6 +41,7 @@ class AddWebShopTextToCompanies extends Command
     protected ?Model $module = null;
     protected string $table = '';
     protected string $column = '';
+    protected array $sectionTypes = ['Header', 'SubHeader', 'Body', 'Footer'];
 
     public function __construct(
         protected ModuleRepositoryInterface          $moduleRepository,
@@ -252,13 +250,12 @@ class AddWebShopTextToCompanies extends Command
     private function processElementData(SupportCollection $elementData, Collection $companyLanguages): int
     {
         $createdCount = 0;
-        $sectionTypes = ['Header', 'SubHeader', 'Body', 'Footer'];
 
         foreach ($elementData as $element) {
             $elementNumber = $element->{$this->column};
 
             foreach ($companyLanguages as $language) {
-                foreach ($sectionTypes as $sectionType) {
+                foreach ($this->sectionTypes as $sectionType) {
                     $wasRecentlyCreated = $this->createWebShopText($elementNumber, $sectionType, $language->Code);
                     if ($wasRecentlyCreated) {
                         $createdCount++;
