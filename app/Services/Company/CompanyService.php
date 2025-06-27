@@ -3,6 +3,7 @@
 namespace App\Services\Company;
 
 use App\Contracts\ServiceDto;
+use App\Helpers\Helpers;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Models\Office\Company;
 use App\Models\Office\Module;
@@ -697,6 +698,7 @@ class CompanyService implements CompanyServiceInterface
     /**
      * @param int $company_id
      * @return false|void
+     * @throws Exception
      */
     public static function setCompanyDatabaseConnection(int $company_id)
     {
@@ -762,11 +764,21 @@ class CompanyService implements CompanyServiceInterface
         );
 
         //Session::put('selected_company', $company);
-
-
-        Config::set('database.connections.mysql_company.database', $company->DatabaseName);
-
-        DB::connection('mysql_company')->reconnect();
+        self::setDatabaseConnection($company);
+    }
+    /**
+     * @throws Exception
+     */
+    private static function setDatabaseConnection($company): void
+    {
+        if ($company->CloudSqlMigrated && !App::environment('local')) {
+            Helpers::connectCloudSqlDB($company);
+        } else {
+            Helpers::connectDB($company->DatabaseName);
+        }
+//        $connections = DB::getConnections();
+//        dd($connections['mysql_company']);
+//        dd(Config::get("database.connections.mysql_company"));
     }
 
     private function cloneModuleTableAndFieldEntries($sourceCompany, $targetCompany): void
