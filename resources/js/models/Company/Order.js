@@ -117,4 +117,69 @@ export default class Order {
         });
     }
 
+
+    static fetchSalesYearlyByItem(CompanyId, ItemId, Initials = '') {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/item/total-sales-yearly', {
+                CompanyId: CompanyId,
+                ItemId: ItemId,
+                Initials: Initials
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    }
+
+    static fetchSalesMonthlyByItem(CompanyId, ItemId, Initials = '') {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/item/total-sales-monthly', {
+                CompanyId: CompanyId,
+                ItemId: ItemId,
+                Initials: Initials
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    }
+
+    static fetchOrdersYearlyByItem(CompanyId, ItemId, Initials = '') {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/item/quantity-orders-yearly', {
+                CompanyId: CompanyId,
+                ItemId: ItemId,
+                Initials: Initials
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    }
+
+    static fetchOrdersMonthlyByItem(CompanyId, ItemId, Initials = '') {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/item/quantity-orders-monthly', {
+                CompanyId: CompanyId,
+                ItemId: ItemId,
+                Initials: Initials
+            })
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    }
+
 }

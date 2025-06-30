@@ -16,7 +16,7 @@ class LiveLine extends BaseModel
         return $this->belongsTo(Live::class, 'LiveNumber', 'Number');
     }
 
-    public function product(): BelongsTo
+    public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'ItemNumber', 'Number');
     }

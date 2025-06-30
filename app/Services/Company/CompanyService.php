@@ -182,21 +182,29 @@ class CompanyService implements CompanyServiceInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public static function getSettingValue(string $moduleName, string $key)
+    public static function isModuleEnabled(string $moduleName): bool
     {
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
+        $modules = $selectedCompany->modules->toArray();
+        return in_array($moduleName, array_column($modules, 'Name'));
     }
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public static function isModuleEnabled(string $moduleName): bool
+    public static function getSettingValue(string $moduleName, string $key)
     {
         $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        $modules = $selectedCompany->modules->toArray();
-        return in_array($moduleName, array_column($modules, 'Name'));
+        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
+    }
+
+    public static function getSettingsKeys(string $moduleName, string $keyLike): array
+    {
+        $selectedCompanySettings = array_keys(Cache::get('company_' . request()->get('CompanyId'))->module_settings[$moduleName]);
+        return array_filter($selectedCompanySettings, function ($value) use ($keyLike) {
+            return (stripos($value, $keyLike) !== false);
+        });
     }
 
     public function getAllCompanies(Request $request): ServiceDto

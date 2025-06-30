@@ -241,7 +241,7 @@ onMounted(async () => {
                             <tbody class="fs-sm">
                             <tr v-for="order_line of OrderModel.order_lines">
                                 <td>
-                                    <img :src="order_line.image_url"
+                                    <img v-lazy="order_line.image_urls.ThumbnailSmall"
                                          class="img-responsive"
                                          width="75">
                                 </td>

@@ -11,6 +11,7 @@ import {createPinia} from "pinia";
 import App from "./App.vue";
 
 import router from "./router";
+import VueLazyload from 'vue-lazyload';
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -55,6 +56,14 @@ app.component("InputErrorMessages", InputErrorMessages);
 app.component("Select", Select);
 app.component("Switch", Switch);
 app.component("PopOverButton", PopOverButton);
+
+// Register VueLazyLoad
+app.use(VueLazyload, {
+    preLoad: 1.3,
+    error: '/assets/media/images/noImage.png',
+    loading: '/assets/media/images/loading.gif',
+    attempt: 1
+});
 
 // Register global directives
 app.directive("click-ripple", clickRipple);
