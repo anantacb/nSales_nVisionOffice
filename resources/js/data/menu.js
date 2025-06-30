@@ -455,6 +455,29 @@ export default {
                 }
             ]
         },
+        /*{
+            name: "Product",
+            icon: "fa fa-gift",
+            subActivePaths: ["product"],
+            moduleSpecific: true,
+            moduleName: 'Item',
+            roles: ["Developer", "Administrator", "Employee"],
+            sub: [
+                {
+                    name: "Products",
+                    icon: "fa fa-gifts",
+                    to: "items",
+                    moduleSpecific: true,
+                    moduleName: 'Item',
+                    roles: ["Developer", "Administrator", "Employee"],
+                },
+                /!*{
+                    name: "Create Product",
+                    icon: "fa fa-plus",
+                    to: "create-customer",
+                },*!/
+            ]
+        },*/
 
         {
             name: "Language",

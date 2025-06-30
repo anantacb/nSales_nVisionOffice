@@ -1,13 +1,15 @@
 <script setup>
 import {useTemplateStore} from "@/stores/templateStore";
+import {useCompanyStore} from "@/stores/companyStore";
 
 import BaseLayout from "@/layouts/BaseLayout.vue";
+import {onBeforeMount, onServerPrefetch} from "vue";
 
 // Main store
-const store = useTemplateStore();
+const templateStore = useTemplateStore();
 
 // Set default elements for this layout
-store.setLayout({
+templateStore.setLayout({
     header: true,
     sidebar: true,
     sideOverlay: true,
@@ -15,9 +17,9 @@ store.setLayout({
 });
 
 // Set various template options for this layout variation
-store.headerStyle({mode: "dark"});
-store.mainContent({mode: "full"});
-store.darkMode({mode: "on"});
+templateStore.headerStyle({mode: "dark"});
+templateStore.mainContent({mode: "full"});
+templateStore.darkMode({mode: "on"});
 </script>
 
 <template>

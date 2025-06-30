@@ -3,7 +3,6 @@ import _ from "lodash";
 
 import NProgress from "nprogress/nprogress.js";
 import LayoutBackend from "@/layouts/variations/Backend.vue";
-
 import LayoutSimple from "@/layouts/variations/Simple.vue";
 import {useAuthStore} from "@/stores/authStore";
 import {useCompanyStore} from "@/stores/companyStore";
@@ -66,10 +65,14 @@ const Orders = () => import('@/views/order/Orders/Orders.vue');
 const OpenOrders = () => import('@/views/order/Open-Orders/OpenOrders.vue');
 const FailedOrders = () => import('@/views/order/Failed-Orders/FailedOrders.vue');
 const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
+
 const Customers = () => import('@/views/customer/Customers/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
 const CustomerDetails = () => import('@/views/customer/CustomerDetails.vue');
 const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
+
+const Items = () => import('@/views/item/Items/Items.vue');
+const ItemDetails = () => import('@/views/item/ItemDetails/ItemDetails.vue');
 
 const Languages = () => import('@/views/language/Languages/Languages.vue');
 const CreateLanguage = () => import('@/views/language/CreateLanguage.vue');
@@ -812,7 +815,6 @@ const routes = [
                     return true;
                 },
             },
-
             {
                 path: "customer-visit/customer-visits",
                 name: "customer-visits",
@@ -823,6 +825,34 @@ const routes = [
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'CustomerVisit'
                 }
+            },
+            {
+                path: "item/items",
+                name: "items",
+                component: Items,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer', 'Administrator', 'Employee'],
+                    module: 'Item'
+                }
+            },
+            {
+                path: "item/:id",
+                name: "item-details",
+                component: ItemDetails,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer', 'Administrator', 'Employee'],
+                    module: 'Item'
+                },
+                beforeEnter: (to, from) => {
+                    if (['items'].includes(from.name)) {
+                        localStorage.setItem('item-details-back-route', from.name);
+                    }
+                    return true;
+                },
             },
 
             {
