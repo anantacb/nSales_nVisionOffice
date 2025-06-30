@@ -66,31 +66,31 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 
 Route::middleware(['auth:api'])->group(function () {
     // Table
-    Route::post('/tables', [TableController::class, 'getTables']);
-    Route::post('/table/details', [TableController::class, 'getDetails']);
+    Route::middleware(['developer'])->post('/tables', [TableController::class, 'getTables']);
+    Route::middleware(['developer'])->post('/table/details', [TableController::class, 'getDetails']);
     Route::post('/table/details-by-name', [TableController::class, 'getDetailsByName']);
-    Route::post('/table/delete', [TableController::class, 'delete']);
-    Route::post('/table/update', [TableController::class, 'update']);
+    Route::middleware(['developer'])->post('/table/delete', [TableController::class, 'delete']);
+    Route::middleware(['developer'])->post('/table/update', [TableController::class, 'update']);
     Route::post('/table/get-by-module', [TableController::class, 'getByModule']);
-    Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
-    Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
-    Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
+    Route::middleware(['developer'])->post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
+    Route::middleware(['developer'])->post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
+    Route::middleware(['developer'])->post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
 
     // TableField
-    Route::post('/table-fields', [TableFieldController::class, 'getTableFields']);
-    Route::post('/table-fields-operation-sql-previews', [TableFieldController::class, 'tableFieldsOperationPreviews']);
-    Route::post('/table-fields-operations-save-without-executing', [TableFieldController::class, 'tableFieldsOperationsSaveWithoutExecuting']);
-    Route::post('/table-fields-operations-save-and-execute', [TableFieldController::class, 'tableFieldsOperationsSaveAndExecute']);
+    Route::middleware(['developer'])->post('/table-fields', [TableFieldController::class, 'getTableFields']);
+    Route::middleware(['developer'])->post('/table-fields-operation-sql-previews', [TableFieldController::class, 'tableFieldsOperationPreviews']);
+    Route::middleware(['developer'])->post('/table-fields-operations-save-without-executing', [TableFieldController::class, 'tableFieldsOperationsSaveWithoutExecuting']);
+    Route::middleware(['developer'])->post('/table-fields-operations-save-and-execute', [TableFieldController::class, 'tableFieldsOperationsSaveAndExecute']);
 
     Route::post('/general-table-fields', [TableFieldController::class, 'getGeneralTableFields']);
     Route::post('/company-specific-table-fields', [TableFieldController::class, 'getCompanySpecificTableFields']);
     Route::post('/company-all-table-fields', [TableFieldController::class, 'getCompanyAllTableFields']);
 
     // TableIndex
-    Route::post('/table-indices', [TableIndexController::class, 'getTableIndices']);
-    Route::post('/table-indices-operation-sql-previews', [TableIndexController::class, 'tableIndicesOperationPreviews']);
-    Route::post('/table-indices-operations-save-without-executing', [TableIndexController::class, 'tableIndicesOperationsSaveWithoutExecuting']);
-    Route::post('/table-indices-operations-save-and-execute', [TableIndexController::class, 'tableIndicesOperationsSaveAndExecute']);
+    Route::middleware(['developer'])->post('/table-indices', [TableIndexController::class, 'getTableIndices']);
+    Route::middleware(['developer'])->post('/table-indices-operation-sql-previews', [TableIndexController::class, 'tableIndicesOperationPreviews']);
+    Route::middleware(['developer'])->post('/table-indices-operations-save-without-executing', [TableIndexController::class, 'tableIndicesOperationsSaveWithoutExecuting']);
+    Route::middleware(['developer'])->post('/table-indices-operations-save-and-execute', [TableIndexController::class, 'tableIndicesOperationsSaveAndExecute']);
 
     // Module
     Route::post('/modules', [ModuleController::class, 'getModules']);

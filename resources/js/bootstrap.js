@@ -8,6 +8,8 @@ import _ from 'lodash';
 import axios from 'axios';
 import {useAuthStore} from "@/stores/authStore.js";
 import router from "@/router";
+import {useCompanyStore} from "@/stores/companyStore";
+import {useNotificationStore} from "@/stores/notificationStore";
 
 window._ = _;
 
@@ -20,6 +22,14 @@ window.axios.interceptors.request.use((config) => {
     if (authStore.getToken()) {
         config.headers.Authorization = `Bearer ${authStore.getToken()}`;
     }
+    // Add CompanyId to ALL Requests
+    const companyStore = useCompanyStore();
+    if (config.data && !_.isEmpty(companyStore.selectedCompany)) {
+        config.data.SelectedCompanyId = companyStore.selectedCompany.Id;
+    } else if (!config.data && !_.isEmpty(companyStore.selectedCompany)) {
+        config.data = {};
+        config.data.SelectedCompanyId = companyStore.selectedCompany.Id;
+    }
     return config;
 });
 
@@ -30,6 +40,11 @@ window.axios.interceptors.response.use(
             const authStore = useAuthStore();
             authStore.logout();
             return router.push({name: 'login'});
+        }
+        if (error.response.status === 403) {
+            const notificationStore = useNotificationStore();
+            notificationStore.showNotification(error.response.data.message, "error");
+            return router.push({name: 'home'});
         }
         return Promise.reject(error);
     });
