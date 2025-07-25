@@ -4,9 +4,11 @@ namespace App\Services\Table;
 
 
 use App\Contracts\ServiceDto;
+use App\Helpers\DbHelpers;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Helpers\Sql\SqliteQueryGenerator;
 use App\Helpers\SqlFormatter;
+use App\Jobs\RunQueriesByConnection;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
@@ -14,7 +16,6 @@ use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -54,7 +55,7 @@ class TableService implements TableServiceInterface
 
     public function getCreateTablePreview(Request $request): ServiceDto
     {
-        $response = $this->generateCreateTableSqlQueries($request);
+        $response = $this->generateCreateTableSqlQueriesWithConnection($request);
         if ($response['success']) {
             $response['data']['sqlPreviews'] = collect($response['data']['sqlPreviews'])->map(function ($sql) {
                 return SqlFormatter::format($sql);
@@ -63,18 +64,29 @@ class TableService implements TableServiceInterface
                 return SqlFormatter::format($sql);
             })->toArray();
             unset($response['data']['databases']);
+            unset($response['data']['sqlPreviewsWithConnections']);
             return new ServiceDto("Sql Queries Generated Successfully", 200, $response['data']);
         } else {
             return new ServiceDto($response['message'], $response['statusCode'], $response['errors']);
         }
     }
 
-    private function generateCreateTableSqlQueries(Request $request): array
+    private function generateCreateTableSqlQueriesWithConnection(Request $request): array
     {
-        $module = $this->moduleRepository->findById($request->get('module'));
-        $moduleEnabledCompanies = $this->moduleRepository->getRelationData($module, 'companies');
+        //$module = $this->moduleRepository->findById($request->get('module'));
+        //$moduleEnabledCompanies = $this->moduleRepository->getRelationData($module, 'companies');
+        $module = $this->moduleRepository->firstByAttributes([
+            [
+                'column' => 'Id', 'operand' => '=', 'value' => $request->get('module')
+            ]
+        ], ['companies']);
+        $moduleEnabledCompanies = $module->companies;
         $moduleEnabledCompanyIds = $moduleEnabledCompanies->pluck('Id')->toArray();
         $selectedDBNames = $moduleEnabledCompanies->pluck('DatabaseName')->toArray();
+
+        $selectedDatabasesWithConnections = collect($moduleEnabledCompanies->toArray())->select([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ])->toArray();
 
         if ($request->get('selectedCompanies')) {
             $moduleNotEnabledCompanyIds = array_diff($request->get('selectedCompanies'), $moduleEnabledCompanyIds);
@@ -99,21 +111,30 @@ class TableService implements TableServiceInterface
                     ['column' => 'Id', 'operand' => '=', 'value' => $request->get('selectedCompanies')]
                 ]);
                 $selectedDBNames = $selectedCompanies->pluck('DatabaseName')->toArray();
+                $selectedDatabasesWithConnections = collect($selectedCompanies->toArray())->select([
+                    'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                ])->toArray();
             }
         }
+
+        $officeDatabaseWithConnection = DbHelpers::getOfficeDatabaseConnectionDetails();
+        $templateDatabaseWithConnection = DbHelpers::getTemplateDatabaseConnectionDetails();
 
         switch ($request->get('database')) {
             case 'Company':
                 if (!$request->get('selectedCompanies')) {
                     $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE']);
+                    $selectedDatabasesWithConnections = array_merge($selectedDatabasesWithConnections, [$templateDatabaseWithConnection]);
                 }
                 break;
             case 'Office':
                 $selectedDBNames = ['NVISION_OFFICE'];
+                $selectedDatabasesWithConnections = [$officeDatabaseWithConnection];
                 break;
             case 'Both':
                 if (!$request->get('selectedCompanies')) {
                     $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
+                    $selectedDatabasesWithConnections = array_merge($selectedDatabasesWithConnections, [$templateDatabaseWithConnection, $officeDatabaseWithConnection]);
                 }
                 break;
         }
@@ -122,6 +143,7 @@ class TableService implements TableServiceInterface
             'sqlPreview' => false,
             'sqlPreviewMessage' => "",
             'sqlPreviews' => [],
+            'sqlPreviewsWithConnections' => [],
             'sqlitePreview' => false,
             'sqlitePreviewMessage' => "",
             'sqlitePreviews' => [],
@@ -137,6 +159,18 @@ class TableService implements TableServiceInterface
             }
             $data['sqlPreview'] = true;
             $data['sqlPreviews'] = $sqlPreviews;
+
+            $sqlPreviewsWithConnections = [];
+            foreach ($selectedDatabasesWithConnections as $databaseWithConnection) {
+                $sqlPreviewsWithConnections[] = [
+                    'connection' => $databaseWithConnection,
+                    'queries' => [
+                        MysqlQueryGenerator::getCreateTableSql($databaseWithConnection['DatabaseName'], $tableName, $columnDefinitions)
+                    ]
+                ];
+            }
+            $data['sqlPreviewsWithConnections'] = $sqlPreviewsWithConnections;
+
             if ($request->get('type') == 'Server') {
                 $data['sqlitePreviewMessage'] = "No Sql Generated as Type is `Server`";
             } elseif ($request->get('type') == 'Both') {
@@ -158,6 +192,9 @@ class TableService implements TableServiceInterface
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function createTableSaveAndExecute(Request $request): ServiceDto
     {
         $insertTableResponse = $this->insertDataIntoTableAndTableField($request);
@@ -165,20 +202,11 @@ class TableService implements TableServiceInterface
             return new ServiceDto($insertTableResponse['message'], 500);
         }
 
-        $generateTableSqlResponse = $this->generateCreateTableSqlQueries($request);
+        //$generateTableSqlResponse = $this->generateCreateTableSqlQueries($request);
+
+        $generateTableSqlResponse = $this->generateCreateTableSqlQueriesWithConnection($request);
         if ($generateTableSqlResponse['success']) {
-            foreach ($generateTableSqlResponse['data']['sqlPreviews'] as $sql) {
-                try {
-                    DB::statement($sql);
-                } catch (Exception $exception) {
-                    if (App::environment('production')) {
-                        $this->deleteTableAndRelationalData($insertTableResponse['data']['table']);
-                        $this->dropTablesFromDatabases($insertTableResponse['data']['table'], $generateTableSqlResponse['data']['databases']);
-                        return new ServiceDto($exception->getMessage(), 500);
-                    }
-                    Log::error("Create Table query execution failed Query: {$sql}");
-                }
-            }
+            dispatch(new RunQueriesByConnection($generateTableSqlResponse['data']['sqlPreviewsWithConnections']));
             return new ServiceDto("Table Created and Added into Databases Successfully.", 200);
         } else {
             return new ServiceDto($generateTableSqlResponse['message'], $generateTableSqlResponse['statusCode'], $generateTableSqlResponse['errors']);
@@ -254,6 +282,76 @@ class TableService implements TableServiceInterface
         }
     }
 
+    public function createTableSaveWithoutExecuting(Request $request): ServiceDto
+    {
+        $response = $this->insertDataIntoTableAndTableField($request);
+        if ($response['success']) {
+            return new ServiceDto('Table and TableField insert successful.', 200, []);
+        } else {
+            return new ServiceDto($response['message'], 500);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteTable(Request $request): ServiceDto
+    {
+        $table = $this->tableRepository->firstByAttributes(
+            [
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TableId')]
+            ],
+            ['companyTables.company', 'module.companies']
+        );
+
+        $isCompanySpecificTable = $table->companyTables->count() > 0;
+
+        if ($isCompanySpecificTable) { // Company Specific Table
+            $selectedDatabasesWithConnections = $table->companyTables->map(function ($companyTable) {
+                return [
+                    'connection' => collect($companyTable->company)->only(['DatabaseName', 'CloudSqlMigrated', 'DomainName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'])->toArray()
+                ];
+            })->toArray();
+            //$selectedDBNames = $table->companyTables->pluck('company.DatabaseName')->toArray();
+        } else {
+            $selectedDatabasesWithConnections = $table->module->companies->map(function ($company) {
+                return [
+                    'connection' => collect($company)->only(['DatabaseName', 'CloudSqlMigrated', 'DomainName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'])->toArray()
+                ];
+            })->toArray();
+            //$selectedDBNames = $table->module->companies->pluck('DatabaseName')->toArray();
+        }
+
+
+        $officeDatabaseWithConnection = DbHelpers::getOfficeDatabaseConnectionDetails();
+        $templateDatabaseWithConnection = DbHelpers::getTemplateDatabaseConnectionDetails();
+
+        switch ($table->Database) {
+            case 'Company':
+                if (!$isCompanySpecificTable) {
+                    //$selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE']);
+                    $selectedDatabasesWithConnections = array_merge($selectedDatabasesWithConnections, [['connection' => $templateDatabaseWithConnection]]);
+                }
+                break;
+            case 'Office':
+                $selectedDatabasesWithConnections = [['connection' => $officeDatabaseWithConnection]];
+                break;
+            case 'Both':
+                if (!$isCompanySpecificTable) {
+                    //$selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
+                    $selectedDatabasesWithConnections = array_merge($selectedDatabasesWithConnections, [['connection' => $officeDatabaseWithConnection], ['connection' => $templateDatabaseWithConnection]]);
+                }
+                break;
+        }
+
+        $this->deleteTableAndRelationalData($table);
+
+        //$this->dropTablesFromDatabases($table, $selectedDBNames);
+        $this->dropTablesFromDatabases($table, $selectedDatabasesWithConnections);
+
+        return new ServiceDto("Table Deleted Successfully.", 200);
+    }
+
     private function deleteTableAndRelationalData($table): void
     {
         $this->tableRepository->findByIdAndDelete($table->Id);
@@ -269,64 +367,28 @@ class TableService implements TableServiceInterface
         );
     }
 
-    private function dropTablesFromDatabases($table, $databases): void
+    private function dropTablesFromDatabases($table, $databasesWithConnections): void
     {
-        foreach ($databases as $database) {
+        $databaseQueriesWithConnections = [];
+        foreach ($databasesWithConnections as $databasesWithConnection) {
+            $databaseQueriesWithConnections[] = [
+                'connection' => $databasesWithConnection['connection'],
+                'queries' => [
+                    MysqlQueryGenerator::getDropTableSql($databasesWithConnection['connection']['DatabaseName'], $table->Name)
+                ]
+            ];
+        }
+
+        dispatch(new RunQueriesByConnection($databaseQueriesWithConnections));
+
+        /*foreach ($databases as $database) {
             $sql = MysqlQueryGenerator::getDropTableSql($database, $table->Name);
             try {
                 DB::statement($sql);
             } catch (Exception $exception) {
                 Log::error("DROP Table query execution failed \nDB: {$database} \nTable: {$table->Name} \nMessage: {$exception->getMessage()}");
             }
-        }
-    }
-
-    public function createTableSaveWithoutExecuting(Request $request): ServiceDto
-    {
-        $response = $this->insertDataIntoTableAndTableField($request);
-        if ($response['success']) {
-            return new ServiceDto('Table and TableField insert successful.', 200, []);
-        } else {
-            return new ServiceDto($response['message'], 500);
-        }
-    }
-
-    public function deleteTable(Request $request): ServiceDto
-    {
-        $table = $this->tableRepository->firstByAttributes(
-            [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TableId')]
-            ],
-            ['companyTables.company', 'module.companies']
-        );
-
-        $isCompanySpecificTable = $table->companyTables->count() > 0;
-
-        if ($isCompanySpecificTable) { // Company Specific Table
-            $selectedDBNames = $table->companyTables->pluck('company.DatabaseName')->toArray();
-        } else {
-            $selectedDBNames = $table->module->companies->pluck('DatabaseName')->toArray();
-        }
-
-        switch ($table->Database) {
-            case 'Company':
-                if (!$isCompanySpecificTable) {
-                    $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE']);
-                }
-                break;
-            case 'Office':
-                $selectedDBNames = ['NVISION_OFFICE'];
-                break;
-            case 'Both':
-                if (!$isCompanySpecificTable) {
-                    $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
-                }
-                break;
-        }
-        $this->deleteTableAndRelationalData($table);
-        $this->dropTablesFromDatabases($table, $selectedDBNames);
-
-        return new ServiceDto("Table Deleted Successfully.", 200);
+        }*/
     }
 
     public function updateTable(Request $request): ServiceDto
@@ -441,5 +503,94 @@ class TableService implements TableServiceInterface
         );
 
         return new ServiceDto("Tables By Module Retrieved Successfully.", 200, $table);
+    }
+
+    private function generateCreateTableSqlQueries(Request $request): array
+    {
+        $module = $this->moduleRepository->findById($request->get('module'));
+        $moduleEnabledCompanies = $this->moduleRepository->getRelationData($module, 'companies');
+        $moduleEnabledCompanyIds = $moduleEnabledCompanies->pluck('Id')->toArray();
+        $selectedDBNames = $moduleEnabledCompanies->pluck('DatabaseName')->toArray();
+
+        if ($request->get('selectedCompanies')) {
+            $moduleNotEnabledCompanyIds = array_diff($request->get('selectedCompanies'), $moduleEnabledCompanyIds);
+            $moduleNotEnabledCompanyIdsNames = $this->companyRepository->getByAttributes([
+                ['column' => 'Id', 'operand' => '=', 'value' => $moduleNotEnabledCompanyIds]
+            ])->mapWithKeys(function ($company) {
+                return [$company->Id => $company->Name];
+            })->all();
+            if ($moduleNotEnabledCompanyIds) {
+                $errors = [];
+                foreach ($moduleNotEnabledCompanyIds as $moduleNotEnabledCompanyId) {
+                    $errors['selectedCompanies'][] = "Module not enabled for " . $moduleNotEnabledCompanyIdsNames[$moduleNotEnabledCompanyId];
+                }
+                return [
+                    'success' => false,
+                    'statusCode' => 422,
+                    'message' => "Module Error!!!",
+                    'errors' => $errors
+                ];
+            } else {
+                $selectedCompanies = $this->companyRepository->getByAttributes([
+                    ['column' => 'Id', 'operand' => '=', 'value' => $request->get('selectedCompanies')]
+                ]);
+                $selectedDBNames = $selectedCompanies->pluck('DatabaseName')->toArray();
+            }
+        }
+
+        switch ($request->get('database')) {
+            case 'Company':
+                if (!$request->get('selectedCompanies')) {
+                    $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE']);
+                }
+                break;
+            case 'Office':
+                $selectedDBNames = ['NVISION_OFFICE'];
+                break;
+            case 'Both':
+                if (!$request->get('selectedCompanies')) {
+                    $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
+                }
+                break;
+        }
+
+        $data = [
+            'sqlPreview' => false,
+            'sqlPreviewMessage' => "",
+            'sqlPreviews' => [],
+            'sqlitePreview' => false,
+            'sqlitePreviewMessage' => "",
+            'sqlitePreviews' => [],
+            'databases' => $selectedDBNames
+        ];
+
+        $tableName = $request->get('name');
+        if (in_array($request->get('type'), ['Server', 'Both'])) {
+            $columnDefinitions = config('initialColumnDefinitionsMysql');
+            $sqlPreviews = [];
+            foreach ($selectedDBNames as $databaseName) {
+                $sqlPreviews[] = MysqlQueryGenerator::getCreateTableSql($databaseName, $tableName, $columnDefinitions);
+            }
+            $data['sqlPreview'] = true;
+            $data['sqlPreviews'] = $sqlPreviews;
+            if ($request->get('type') == 'Server') {
+                $data['sqlitePreviewMessage'] = "No Sql Generated as Type is `Server`";
+            } elseif ($request->get('type') == 'Both') {
+                $columnDefinitions = config('initialColumnDefinitionsSqlite');
+                $data['sqlitePreviews'] = [SqliteQueryGenerator::getCreateTableSql($tableName, $columnDefinitions)];
+                $data['sqlitePreview'] = true;
+            }
+        } elseif ($request->get('type') == 'Client') {
+            $columnDefinitions = config('initialColumnDefinitionsSqlite');
+            $data['sqlitePreviews'] = [SqliteQueryGenerator::getCreateTableSql($tableName, $columnDefinitions)];
+            $data['sqlitePreview'] = true;
+            $data['sqlPreviewMessage'] = "No Sql generated as Type is `Client`";
+        }
+
+        return [
+            'success' => true,
+            'message' => "Sql Queries Generated Successfully.",
+            'data' => $data
+        ];
     }
 }
