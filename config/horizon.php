@@ -197,6 +197,21 @@ return [
 
     'environments' => [
         'production' => [
+            'query-execution' => [
+                'connection' => 'redis',
+                'queue' => ['query-execution'],
+                'balance' => 'auto',
+                'autoScalingStrategy' => 'time',
+                'maxTime' => 0,
+                'maxJobs' => 1,
+                'memory' => 256,
+                'tries' => 1,
+                'timeout' => 3600,
+                'nice' => 0,
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 1,
+            ],
             'db-copy' => [
                 'connection' => 'redis',
                 'queue' => ['db-copy'],
@@ -230,6 +245,21 @@ return [
         ],
 
         'local' => [
+            'query-execution' => [
+                'connection' => 'redis',
+                'queue' => ['query-execution'],
+                'balance' => 'auto',
+                'autoScalingStrategy' => 'time',
+                'maxTime' => 0,
+                'maxJobs' => 1,
+                'memory' => 256,
+                'tries' => 1,
+                'timeout' => 3600,
+                'nice' => 0,
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 1,
+            ],
             'db-copy' => [
                 'connection' => 'redis',
                 'queue' => ['db-copy'],

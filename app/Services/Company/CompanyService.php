@@ -3,7 +3,7 @@
 namespace App\Services\Company;
 
 use App\Contracts\ServiceDto;
-use App\Helpers\Helpers;
+use App\Helpers\DbHelpers;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Models\Office\Company;
 use App\Models\Office\Module;
@@ -48,7 +48,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -766,15 +765,18 @@ class CompanyService implements CompanyServiceInterface
         //Session::put('selected_company', $company);
         self::setDatabaseConnection($company);
     }
+
     /**
      * @throws Exception
      */
-    private static function setDatabaseConnection($company): void
+    public static function setDatabaseConnection($company): void
     {
-        if ($company->CloudSqlMigrated && !App::environment('local')) {
-            Helpers::connectCloudSqlDB($company);
+        Log::info("Setting database connection for company: " . $company['DomainName']);
+        //if ($company['CloudSqlMigrated'] && !App::environment('local')) {
+        if ((int)$company['CloudSqlMigrated']) {
+            DbHelpers::connectCloudSqlDB($company);
         } else {
-            Helpers::connectDB($company->DatabaseName);
+            DbHelpers::connectDB($company['DatabaseName']);
         }
 //        $connections = DB::getConnections();
 //        dd($connections['mysql_company']);
@@ -787,7 +789,7 @@ class CompanyService implements CompanyServiceInterface
         foreach ($sourceCompany->modules as $module) {
             $this->makeEntryInCompanyModuleTable($targetCompany->Id, $module->Id);
             foreach ($module->tables as $table) {
-                // make entry in CompanyTable table
+                // make entry in the CompanyTable table
                 if ($table->companyTables->count() > 0) {
                     $companyIds = $table->companyTables->pluck('CompanyId')->toArray();
                     if (in_array($sourceCompany->Id, $companyIds)) {
