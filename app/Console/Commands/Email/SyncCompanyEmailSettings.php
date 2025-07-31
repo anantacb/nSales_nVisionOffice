@@ -62,7 +62,7 @@ class SyncCompanyEmailSettings extends Command
     public function handle(): int
     {
         $companies = $this->getCompanies();
-        $this->defaultModuleSettings = $this->formatSettingsData($this->module);
+        $this->defaultModuleSettings = $this->formatDefaultSettingsData($this->module);
 
         $this->info("Processing {$companies->count()} companies...");
         $bar = $this->output->createProgressBar($companies->count());
@@ -80,6 +80,7 @@ class SyncCompanyEmailSettings extends Command
     private function getCompanies(): Collection
     {
         $this->module = $this->getModuleWithModuleSettings();
+        $this->module->moduleSettings = $this->module->moduleSettings->keyBy('Name');
         $moduleSettingsIds = $this->module->moduleSettings->pluck('Id')->toArray();
         $settingOverrideCompanyIds = Setting::whereIn('ModuleSettingId', $moduleSettingsIds)
             ->select(['Id', 'CompanyId'])->pluck('CompanyId')->toArray();
@@ -106,52 +107,38 @@ class SyncCompanyEmailSettings extends Command
         return $this->companyRepository->getByAttributes($attributes);
     }
 
-    private function getModuleWithModuleSettings($companyId = null): Model
+    private function getModuleWithModuleSettings(): Model
     {
-        $relations = [
-            'moduleSettings' => function ($que) use ($companyId) {
-                $que = $que->whereIn('Name', $this->moduleKeys)
-                    ->select(['Id', 'ModuleId', 'Name', 'DataType', 'Value']);
-                if ($companyId) {
-                    $que = $que->with([
-                        'setting' => function ($q) use ($companyId) {
-                            $q->select(["Id", "ModuleSettingId", "Value", "CompanyId"])
-                                ->where('CompanyId', $companyId);
-                        },
-                    ]);
+        return $this->moduleRepository->firstByAttributes(
+            [['column' => 'Name', 'operand' => '=', 'value' => $this->moduleName]],
+            [
+                'moduleSettings' => function ($que) {
+                    $que->whereIn('Name', $this->moduleKeys)
+                        ->select(['Id', 'ModuleId', 'Name', 'DataType', 'Value'])
+                        ->with([
+                            'settings' => function ($q) {
+                                $q->select(["Id", "ModuleSettingId", "Value", "CompanyId"]);
+                            }
+                        ])
+                        ->orderBy('Name');
                 }
-                $que->orderBy('Name');
-            }
-        ];
-
-        return $this->moduleRepository->firstByAttributes([
-            ['column' => 'Name', 'operand' => '=', 'value' => $this->moduleName]
-        ], $relations, ['Id', 'Name'], 'Name');
+            ],
+            ['Id', 'Name'], 'Name'
+        );
     }
 
-    private function formatSettingsData($module, $companyId = null): array
+    private function formatDefaultSettingsData($module): array
     {
         $moduleSettings = [];
         if ($module->moduleSettings) {
-            foreach ($module->moduleSettings as $moduleSetting) {
-
-                if (!in_array($moduleSetting->Name, $this->moduleKeys)) {
-                    continue;
-                }
-
+            foreach ($module->moduleSettings as $key => $moduleSetting) {
+                $this->module->moduleSettings[$key]->settings = $moduleSetting->settings->keyBy('CompanyId');
                 $moduleSettingValue = json_decode($moduleSetting->Value, true);
-                if ($companyId && $moduleSetting->setting && $moduleSetting->setting->Value) {
-                    $moduleSettingValue = json_decode($moduleSetting->setting->Value, true);
-                }
 
                 if ($moduleSetting->Name === 'LayoutFields') {
                     $moduleSettingValue = collect($moduleSettingValue)->keyBy('Field')->toArray();
                 }
-                $moduleSettings[$moduleSetting->Name]['value'] = $moduleSettingValue;
-
-                if ($companyId && $moduleSetting->setting) {
-                    $moduleSettings[$moduleSetting->Name]['settingId'] = $moduleSetting->setting->Id;
-                }
+                $moduleSettings[$moduleSetting->Name] = $moduleSettingValue;
             }
         }
 
@@ -162,26 +149,21 @@ class SyncCompanyEmailSettings extends Command
     {
         try {
             $counters = ['EmailEvents' => 0, 'LayoutFields' => 0];
-            $companyModuleSettings = $this->getModuleWithModuleSettings($company->Id);
-            $formattedCompanyModuleSettings = $this->formatSettingsData($companyModuleSettings, $company->Id);
+            $companySettings = $this->getCompanySpecificSettings($company->Id);
 
-            foreach ($formattedCompanyModuleSettings as $key => $setting) {
+            foreach ($companySettings as $key => $setting) {
+                $mergedSettings = $this->mergeSettingsWithDefaults(
+                    $this->defaultModuleSettings[$key], $setting->Value
+                );
 
-                if (isset($setting['settingId'])) {
-                    $mergedSettings = $this->mergeSettingsWithDefaults(
-                        $this->defaultModuleSettings[$key]['value'], $setting['value']
-                    );
-
-                    // Compare merged result with current value
-                    if ($mergedSettings === $setting['value']) {
-                        // No change needed
-                        continue;
-                    }
-                    $tobeUpdateSetting = $key === 'LayoutFields' ? array_values($mergedSettings) : $mergedSettings;
-
-                    $counters[$key] = Setting::where('Id', $setting['settingId'])
-                        ->update(['Value' => json_encode($tobeUpdateSetting)]);
+                // Compare merged result with current value # No change needed
+                if ($mergedSettings === $setting->Value) {
+                    continue;
                 }
+                $tobeUpdateSetting = $key === 'LayoutFields' ? array_values($mergedSettings) : $mergedSettings;
+
+                $counters[$key] = Setting::where('Id', $setting->Id)
+                    ->update(['Value' => json_encode($tobeUpdateSetting)]);
             }
 
             $status = $this->getFinalStatus($counters['EmailEvents'], $counters['LayoutFields']);
@@ -194,10 +176,28 @@ class SyncCompanyEmailSettings extends Command
         }
     }
 
+    private function getCompanySpecificSettings($companyId): array
+    {
+        $companySettings = [];
+        foreach ($this->module->moduleSettings as $moduleSetting) {
+            // If the setting has a company-specific value, use it
+            if ($moduleSetting->settings->has($companyId)) {
+                $tempSettings = $moduleSetting->settings[$companyId];
+                $tempSettings->Value = json_decode($tempSettings->Value, true);
+
+                if ($moduleSetting->Name === 'LayoutFields') {
+                    $tempSettings->Value = collect($tempSettings->Value)->keyBy('Field')->toArray();
+                }
+
+                $companySettings[$moduleSetting->Name] = $tempSettings;
+            }
+        }
+        return $companySettings;
+    }
+
     private function mergeSettingsWithDefaults(array $default, array $custom): array
     {
         $output = $custom;
-
         foreach ($default as $key => $defaultValue) {
             if (!array_key_exists($key, $custom)) {
                 $output[$key] = $defaultValue;
