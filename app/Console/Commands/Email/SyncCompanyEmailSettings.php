@@ -19,6 +19,12 @@ class SyncCompanyEmailSettings extends Command
     private const LAYOUT_FIELDS_KEY = 'LayoutFields';
     /**
      * The name and signature of the console command.
+     * The console command description.
+     *
+     *   php artisan script:sync-company-email-settings
+     *   php artisan script:sync-company-email-settings -C821 -S943
+     *   php artisan script:sync-company-email-settings --companyId=821 --skipCompanyId=943
+     * @var string
      */
     protected $signature = 'script:sync-company-email-settings
                             {--C|companyId=* : Specific company IDs to process}
