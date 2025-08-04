@@ -48,7 +48,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -341,6 +340,9 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Company Cloned Successfully.", 200, $targetCompany);
     }
 
+    /**
+     * @throws Exception
+     */
     public function create(Request $request): ServiceDto
     {
         $company = $this->companyRepository->create($request->all());
@@ -358,6 +360,9 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Company Created Successfully.", 200, $company);
     }
 
+    /**
+     * @throws Exception
+     */
     private function setUpDatabase($company): void
     {
         $sqlQueries = [];
@@ -388,13 +393,8 @@ class CompanyService implements CompanyServiceInterface
             $sqlQueries = array_merge($sqlQueries, $modulesTableCreationQueries);
         }
 
-        foreach ($sqlQueries as $sqlQuery) {
-            try {
-                DB::statement($sqlQuery);
-            } catch (Exception $exception) {
-                Log::error("Company Creation. Message: " . $exception->getMessage());
-            }
-        }
+        $connection = DbHelpers::getOfficeDatabaseConnectionDetails();
+        DbHelpers::setDatabaseConnectionAndRunQueries($connection, $sqlQueries);
     }
 
     private function setUpRoles($company): array
@@ -766,21 +766,18 @@ class CompanyService implements CompanyServiceInterface
         self::setDatabaseConnection($company);
     }
 
-    /**
-     * @throws Exception
-     */
     public static function setDatabaseConnection($company): void
     {
         Log::info("Setting database connection for company: " . $company['DomainName']);
-        //if ($company['CloudSqlMigrated'] && !App::environment('local')) {
-        if ((int)$company['CloudSqlMigrated']) {
-            DbHelpers::connectCloudSqlDB($company);
-        } else {
+        if (App::environment('local')) {
             DbHelpers::connectDB($company['DatabaseName']);
+        } else {
+            if ((int)$company['CloudSqlMigrated']) {
+                DbHelpers::connectCloudSqlDB($company);
+            } else {
+                DbHelpers::connectDB($company['DatabaseName']);
+            }
         }
-//        $connections = DB::getConnections();
-//        dd($connections['mysql_company']);
-//        dd(Config::get("database.connections.mysql_company"));
     }
 
     private function cloneModuleTableAndFieldEntries($sourceCompany, $targetCompany): void
@@ -825,7 +822,7 @@ class CompanyService implements CompanyServiceInterface
     {
         $excludesModulesForData = ['Order', 'ActivityLog'];
         $sqlQueries = [];
-        // create cloning company database
+        // create a cloning company database
         $sqlQueries[] = MysqlQueryGenerator::getCreateDatabaseSql($targetCompany->DatabaseName);
         $sqlQueries[] = "SET SQL_MODE='ALLOW_INVALID_DATES';";
         foreach ($sourceCompany->modules as $module) {
@@ -866,14 +863,10 @@ class CompanyService implements CompanyServiceInterface
                 }
             }
         }
-
-        foreach ($sqlQueries as $sqlQuery) {
-            try {
-                DB::statement($sqlQuery);
-            } catch (Exception $exception) {
-                Log::error("Clone Company Database Error. Message: {$exception->getMessage()}");
-            }
-        }
+        $connection = $sourceCompany->only([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ]);
+        DbHelpers::setDatabaseConnectionAndRunQueries($connection, $sqlQueries);
     }
 
     private function cloneRoles($sourceCompany, $targetCompany, $withRolesAndUsers = true): array
@@ -1068,6 +1061,9 @@ class CompanyService implements CompanyServiceInterface
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(Request $request): ServiceDto
     {
         $relations = [
@@ -1133,14 +1129,10 @@ class CompanyService implements CompanyServiceInterface
                 }
             }
             $sqlQueries[] = MysqlQueryGenerator::getDropDatabaseSql($initialCompany->DatabaseName);
-
-            foreach ($sqlQueries as $sqlQuery) {
-                try {
-                    DB::statement($sqlQuery);
-                } catch (Exception $exception) {
-                    Log::error("Update Company Rename Database Error. Message: {$exception->getMessage()}");
-                }
-            }
+            $connection = $initialCompany->only([
+                'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+            ]);
+            DbHelpers::setDatabaseConnectionAndRunQueries($connection, $sqlQueries);
         }
         return new ServiceDto("Company Updated Successfully.", 200, $updatedCompany);
     }
@@ -1157,12 +1149,13 @@ class CompanyService implements CompanyServiceInterface
             ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyId')]
         ], ["imageHostAccount", "postmarkEmailServer"]);
 
-        $sqlQuery = MysqlQueryGenerator::getDropDatabaseSql($company->DatabaseName);
-        try {
-            DB::statement($sqlQuery);
-        } catch (Exception $exception) {
-            Log::error("Delete Company Database Error. Message: {$exception->getMessage()}");
-        }
+        $connection = $company->only([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ]);
+
+        $sqlQueries = [MysqlQueryGenerator::getDropDatabaseSql($company->DatabaseName)];
+
+        DbHelpers::setDatabaseConnectionAndRunQueries($connection, $sqlQueries);
 
         if (App::environment('production')) {
             // Delete Sync Ftp User and Folder
@@ -1197,6 +1190,7 @@ class CompanyService implements CompanyServiceInterface
         }
 
         $this->companyRepository->findByIdAndDelete($company->Id);
+
         return new ServiceDto("Company Deleted Successfully.", 200, []);
     }
 

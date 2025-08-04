@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Services\Company\CompanyService;
 use Exception;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\App;
@@ -36,9 +37,6 @@ class DbHelpers
         ];
     }
 
-    /**
-     * @throws Exception
-     */
     public static function connectDB($dbName): void
     {
         try {
@@ -55,9 +53,6 @@ class DbHelpers
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public static function connectCloudSqlDB($company): void
     {
         try {
@@ -72,7 +67,7 @@ class DbHelpers
 
             if (!empty($databaseHost)) {
                 if (!App::environment('production')) {
-                    $databaseHost = env('DEV_GOOGLE_SQL_HOST', '10.30.0.13');
+                    $databaseHost = env('DEV_GOOGLE_SQL_HOST');
                 }
                 Config::set("database.connections.mysql_company.host", $databaseHost);
             }
@@ -92,6 +87,20 @@ class DbHelpers
         } catch (Exception $exception) {
             Log::error('Error connecting to Cloud SQL DB: ' . $exception->getMessage());
             //throw new Exception('DB not found', 400);
+        }
+    }
+
+
+    public static function setDatabaseConnectionAndRunQueries($connection, $queries): void
+    {
+        CompanyService::setDatabaseConnection($connection);
+        foreach ($queries as $sql) {
+            try {
+                DB::connection('mysql_company')->statement($sql);
+                Log::info("Query executed successfully. \nQuery: {$sql}");
+            } catch (Exception $exception) {
+                Log::error("Query execution failed. \nQuery: {$sql}\nMessage: {$exception->getMessage()}");
+            }
         }
     }
 }

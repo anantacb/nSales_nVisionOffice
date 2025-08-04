@@ -6,6 +6,7 @@ namespace App\Services\TableIndex;
 use App\Contracts\ServiceDto;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Helpers\SqlFormatter;
+use App\Jobs\RunQueriesByConnection;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepositoryInterface;
@@ -14,11 +15,8 @@ use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableIndex\TableIndexRepositoryInterface;
 use App\Services\Traits\TableHelperTrait;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TableIndexService implements TableIndexServiceInterface
 {
@@ -198,10 +196,20 @@ class TableIndexService implements TableIndexServiceInterface
         );
 
         //$tableModuleCompanyIds = $table->module->companies->pluck('Id')->toArray();
-        $tableModuleCompanyDatabases = $table->module->companies->pluck('DatabaseName')->toArray();
-
         //$companyTableCompanyIds = $table->companyTables->pluck('company.Id')->toArray();
-        $companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();
+        /*$tableModuleCompanyDatabases = $table->module->companies->pluck('DatabaseName')->toArray();
+        $companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();*/
+
+        $tableModuleCompanyDatabasesWithConnections = collect($table->module->companies->toArray())->select([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ])->toArray();
+        $companyTableDatabasesWithConnections = collect($table->companyTables->toArray())->map(function ($companyTable) {
+            return collect($companyTable['company'])->only([
+                'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+            ])->toArray();
+        })->toArray();
+
+        $sqlQueriesWithConnections = [];
 
         $sqlQueries = [];
 
@@ -212,13 +220,27 @@ class TableIndexService implements TableIndexServiceInterface
 
             if (in_array($newIndex['Type'], ['Server', 'Both'])) {
                 // This Field Is CompanySpecific
-                $tableIndexSpecificDatabases = $this->getDatabaseNamesByCompanyIds($newIndex['companies']);
+                $tableIndexSpecificDatabases = $this->companyRepository->getByAttributes([
+                    ['column' => 'Id', 'operand' => '=', 'value' => $newIndex['companies']]
+                ]);
+                $tableIndexSpecificDatabasesWithConnections = collect($tableIndexSpecificDatabases->toArray())->select([
+                    'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                ])->toArray();
+                $selectedDatabasesWithConnections = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableIndexSpecificDatabasesWithConnections);
+                foreach ($selectedDatabasesWithConnections as $selectedDatabaseWithConnection) {
+                    $sqlQueriesWithConnections[] = [
+                        'connection' => $selectedDatabaseWithConnection,
+                        'queries' => [MysqlQueryGenerator::getAddIndexSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $newIndex)]
+                    ];
+                }
+
+                /*$tableIndexSpecificDatabases = $this->getDatabaseNamesByCompanyIds($newIndex['companies']);
                 $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableIndexSpecificDatabases);
 
                 foreach ($selectedDatabases as $database) {
                     $sql = MysqlQueryGenerator::getAddIndexSql($database, $table->Name, $newIndex);
                     $sqlQueries[] = $sql;
-                }
+                }*/
             }
         }
 
@@ -237,12 +259,25 @@ class TableIndexService implements TableIndexServiceInterface
 
             if (in_array($tableIndexToDelete->Type, ['Server', 'Both'])) {
                 // Company Specific Index
-                $tableIndexSpecificDatabases = $tableIndexToDelete->companyTableIndices->pluck('company.DatabaseName')->toArray();
+                $tableIndexSpecificDatabasesWithConnections = collect($tableIndexToDelete->companyTableIndices->toArray())->map(function ($companyTableField) {
+                    return collect($companyTableField['company'])->only([
+                        'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                    ])->toArray();
+                })->toArray();
+                $selectedDatabasesWithConnections = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableIndexSpecificDatabasesWithConnections);
+                foreach ($selectedDatabasesWithConnections as $selectedDatabaseWithConnection) {
+                    $sqlQueriesWithConnections[] = [
+                        'connection' => $selectedDatabaseWithConnection,
+                        'queries' => [MysqlQueryGenerator::getDeleteIndexSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $tableIndexToDelete->Name)]
+                    ];
+                }
+
+                /*$tableIndexSpecificDatabases = $tableIndexToDelete->companyTableIndices->pluck('company.DatabaseName')->toArray();
                 $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableIndexSpecificDatabases);
                 foreach ($selectedDatabases as $database) {
                     $sql = MysqlQueryGenerator::getDeleteIndexSql($database, $table->Name, $tableIndexToDelete->Name);
                     $sqlQueries[] = $sql;
-                }
+                }*/
             }
         }
 
@@ -293,27 +328,71 @@ class TableIndexService implements TableIndexServiceInterface
 
             $existingTableIndexData = $updatedTableIndicesRows[$requestedUpdatedTableIndex['Id']][0];
 
-            $tableIndexSpecificDatabases = $existingTableIndexData->companyTableIndices->pluck('company.DatabaseName')->toArray();
-            $selectedDatabasesForUpdate = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableIndexSpecificDatabases);
+
+            $tableIndexSpecificDatabasesWithConnections = collect($existingTableIndexData->companyTableIndices->toArray())->map(function ($companyTableField) {
+                return collect($companyTableField['company'])->only([
+                    'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                ])->toArray();
+            })->toArray();
+            $selectedDatabasesWithConnectionsForUpdate = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableIndexSpecificDatabasesWithConnections);
+
+
+            /*$tableIndexSpecificDatabases = $existingTableIndexData->companyTableIndices->pluck('company.DatabaseName')->toArray();
+            $selectedDatabasesForUpdate = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableIndexSpecificDatabases);*/
 
             // Delete Existing Index from Databases
             if (in_array($existingTableIndexData->Type, ['Server', 'Both'])) {
-                foreach ($selectedDatabasesForUpdate as $database) {
+                foreach ($selectedDatabasesWithConnectionsForUpdate as $selectedDatabaseWithConnection) {
+                    $sqlQueriesWithConnections[] = [
+                        'connection' => $selectedDatabaseWithConnection,
+                        'queries' => [MysqlQueryGenerator::getDeleteIndexSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $existingTableIndexData->Name)]
+                    ];
+                }
+                /*foreach ($selectedDatabasesForUpdate as $database) {
                     $sql = MysqlQueryGenerator::getDeleteIndexSql($database, $table->Name, $existingTableIndexData->Name);
                     $sqlQueries[] = $sql;
-                }
+                }*/
             }
             // Create Index
             if (in_array($requestedUpdatedTableIndex['Type'], ['Server', 'Both'])) {
-                foreach ($selectedDatabasesForUpdate as $database) {
+                foreach ($selectedDatabasesWithConnectionsForUpdate as $selectedDatabaseWithConnection) {
+                    $sqlQueriesWithConnections[] = [
+                        'connection' => $selectedDatabaseWithConnection,
+                        'queries' => [MysqlQueryGenerator::getAddIndexSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableIndex)]
+                    ];
+                }
+                /*foreach ($selectedDatabasesForUpdate as $database) {
                     $sql = MysqlQueryGenerator::getAddIndexSql($database, $table->Name, $requestedUpdatedTableIndex);
                     $sqlQueries[] = $sql;
-                }
+                }*/
             }
             /*-------------- Add/Delete Index in/from Company End -----------------*/
         }
 
-        $totalQueries = count($sqlQueries);
+        $sqlQueriesWithConnections = collect($sqlQueriesWithConnections)->groupBy('connection.DatabaseName')
+            ->map(function ($sqlQueriesWithConnection, $key) {
+                $data = [];
+                $queries = [];
+                foreach ($sqlQueriesWithConnection as $sqlQueryWithConnection) {
+                    $data['connection'] = $sqlQueryWithConnection['connection'];
+                    $queries = array_merge($queries, $sqlQueryWithConnection['queries']);
+                    $data['queries'] = $queries;
+                }
+                return $data;
+            })->values()->toArray();
+
+        if (in_array($table->Type, ['Server', 'Both'])) {
+            dispatch(new RunQueriesByConnection($sqlQueriesWithConnections));
+        }
+        // Update Table Version
+        $this->tableRepository->findByIdAndUpdate($tableId, [
+            'Version' => $table->Version + 1
+        ]);
+
+        return new ServiceDto("TableFields Operation Save And Execute Queued Successfully.", 200, []);
+
+
+        /*$totalQueries = count($sqlQueries);
         $successful = 0;
         $failed = 0;
 
@@ -324,25 +403,18 @@ class TableIndexService implements TableIndexServiceInterface
                     DB::statement($sql);
                     $successful += 1;
                 } catch (Exception $exception) {
-                    /*if (App::environment('production')) {
-                        return new ServiceDto($exception->getMessage(), 500);
-                    }*/
                     $failed += 1;
                     Log::error("Query execution failed (tableIndicesOperationsSaveAndExecute). \n Query: $sql \n Error Message: {$exception->getMessage()}");
                 }
             }
-        }
+        }*/
 
-        // Update Table Version
-        $this->tableRepository->findByIdAndUpdate($tableId, [
-            'Version' => $table->Version + 1
-        ]);
 
-        return new ServiceDto(
+        /*return new ServiceDto(
             "Total: $totalQueries\nSuccess: $successful\nFailed: $failed\nTableIndices Operation Save And Execute Finished Successfully.",
             200,
             []
-        );
+        );*/
     }
 
     /**
