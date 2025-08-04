@@ -2,12 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Services\Company\CompanyService;
+use App\Helpers\DbHelpers;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RunQueriesByConnection implements ShouldQueue
 {
@@ -30,6 +28,10 @@ class RunQueriesByConnection implements ShouldQueue
      */
     public function handle(): void
     {
+        foreach ($this->queriesWithConnections as $queriesWithConnection) {
+            DbHelpers::setDatabaseConnectionAndRunQueries($queriesWithConnection['connection'], $queriesWithConnection['queries']);
+        }
+
         /*$connectionAndQueries = collect($this->queriesWithConnections)->groupBy('connection.DatabaseHost')->map(function ($sqlQueriesWithConnections) {
             $queries = [];
             $connection = [];
@@ -53,17 +55,5 @@ class RunQueriesByConnection implements ShouldQueue
                 }
             }
         }*/
-
-        foreach ($this->queriesWithConnections as $queriesWithConnection) {
-            CompanyService::setDatabaseConnection($queriesWithConnection['connection']);
-            foreach ($queriesWithConnection['queries'] as $sql) {
-                try {
-                    DB::connection('mysql_company')->statement($sql);
-                    Log::info("Query executed successfully. \nQuery: {$sql}");
-                } catch (Exception $exception) {
-                    Log::error("Query execution failed. \nQuery: {$sql}\nMessage: {$exception->getMessage()}");
-                }
-            }
-        }
     }
 }
