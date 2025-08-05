@@ -768,7 +768,7 @@ class CompanyService implements CompanyServiceInterface
 
     public static function setDatabaseConnection($company): void
     {
-        Log::info("Setting database connection for company: " . $company['DomainName']);
+        //Log::info("Setting database connection for company: " . $company['DomainName']);
         if (App::environment('local')) {
             DbHelpers::connectDB($company['DatabaseName']);
         } else {

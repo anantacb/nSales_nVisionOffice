@@ -46,7 +46,7 @@ class DbHelpers
             Config::set("database.connections.mysql_company.password", env('DB_PASSWORD'));
             DB::purge('mysql_company');
             DB::connection('mysql_company')->getPdo();
-            Log::info('Connected to DB: ' . $dbName);
+            //Log::info('Connected to DB: ' . $dbName);
         } catch (Exception $exception) {
             Log::error('Error connecting to DB: ' . $exception->getMessage());
             //throw new Exception('DB not found', 400);
@@ -83,7 +83,7 @@ class DbHelpers
             // dd(Config::get("database.connections.mysql_company"));
             DB::purge('mysql_company');
             DB::connection('mysql_company')->getPdo();
-            Log::info("Connected to Cloud SQL: $databaseHost DB: $databaseName ");
+            //Log::info("Connected to Cloud SQL: $databaseHost DB: $databaseName ");
         } catch (Exception $exception) {
             Log::error('Error connecting to Cloud SQL DB: ' . $exception->getMessage());
             //throw new Exception('DB not found', 400);
@@ -97,7 +97,7 @@ class DbHelpers
         foreach ($queries as $sql) {
             try {
                 DB::connection('mysql_company')->statement($sql);
-                Log::info("Query executed successfully. \nQuery: {$sql}");
+                //Log::info("Query executed successfully. \nQuery: {$sql}");
             } catch (Exception $exception) {
                 Log::error("Query execution failed. \nQuery: {$sql}\nMessage: {$exception->getMessage()}");
             }
