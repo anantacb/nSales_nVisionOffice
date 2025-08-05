@@ -772,7 +772,7 @@ class CompanyService implements CompanyServiceInterface
         if (App::environment('local')) {
             DbHelpers::connectDB($company['DatabaseName']);
         } else {
-            if ((int)$company['CloudSqlMigrated']) {
+            if ($company['CloudSqlMigrated']) {
                 DbHelpers::connectCloudSqlDB($company);
             } else {
                 DbHelpers::connectDB($company['DatabaseName']);
