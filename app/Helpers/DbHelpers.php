@@ -16,7 +16,7 @@ class DbHelpers
     public static function getOfficeDatabaseConnectionDetails(): array
     {
         return [
-            'CloudSqlMigrated' => env('CLOUD_SQL_MIGRATED', 0),
+            'CloudSqlMigrated' => 0,
             'DomainName' => '',
             'DatabaseName' => env('DB_DATABASE', 'NVISION_OFFICE'),
             'DatabaseHost' => env('DB_HOST'),
@@ -28,7 +28,7 @@ class DbHelpers
     public static function getTemplateDatabaseConnectionDetails(): array
     {
         return [
-            'CloudSqlMigrated' => env('CLOUD_SQL_MIGRATED', 0),
+            'CloudSqlMigrated' => 0,
             'DomainName' => '',
             'DatabaseName' => env('DB_TEMPLATE_DATABASE', 'NVISION_TEMPLATE'),
             'DatabaseHost' => env('DB_HOST'),
