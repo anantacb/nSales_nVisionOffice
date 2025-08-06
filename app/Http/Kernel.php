@@ -9,6 +9,8 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\SetCompanyDatabaseConnection;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
+use App\Http\Middleware\UserIsAdminOrDeveloper;
+use App\Http\Middleware\UserIsDeveloper;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -31,7 +33,7 @@ class Kernel extends HttpKernel
     /**
      * The application's global HTTP middleware stack.
      *
-     * These middleware are run during every request to your application.
+     * These middlewares are run during every request to your application.
      *
      * @var array<int, class-string|string>
      */
@@ -71,7 +73,7 @@ class Kernel extends HttpKernel
     /**
      * The application's route middleware.
      *
-     * These middleware may be assigned to groups or used individually.
+     * These middlewares may be assigned to groups or used individually.
      *
      * @var array<string, class-string|string>
      */
@@ -86,5 +88,7 @@ class Kernel extends HttpKernel
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
         'company' => SetCompanyDatabaseConnection::class,
+        'developer' => UserIsDeveloper::class,
+        'admin-or-developer' => UserIsAdminOrDeveloper::class,
     ];
 }
