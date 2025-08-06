@@ -4,19 +4,18 @@ namespace App\Services\TableField;
 
 
 use App\Contracts\ServiceDto;
+use App\Helpers\Helpers;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Helpers\SqlFormatter;
+use App\Jobs\RunQueriesByConnection;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTable\CompanyTableRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyTableField\CompanyTableFieldRepositoryInterface;
 use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use App\Services\Traits\TableHelperTrait;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TableFieldService implements TableFieldServiceInterface
 {
@@ -349,11 +348,21 @@ class TableFieldService implements TableFieldServiceInterface
         );
 
         //$tableModuleCompanyIds = $table->module->companies->pluck('Id')->toArray();
-        $tableModuleCompanyDatabases = $table->module->companies->pluck('DatabaseName')->toArray();
+        //$tableModuleCompanyDatabases = $table->module->companies->pluck('DatabaseName')->toArray();
+        $tableModuleCompanyDatabasesWithConnections = collect($table->module->companies->toArray())->select([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ])->toArray();
+
 
         //$companyTableCompanyIds = $table->companyTables->pluck('company.Id')->toArray();
-        $companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();
+        //$companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();
+        $companyTableDatabasesWithConnections = collect($table->companyTables->toArray())->map(function ($companyTable) {
+            return collect($companyTable['company'])->only([
+                'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+            ])->toArray();
+        })->toArray();
 
+        $sqlQueriesWithConnections = [];
         $sqlQueries = [];
 
         // Add Section
@@ -374,17 +383,27 @@ class TableFieldService implements TableFieldServiceInterface
                         'TableFieldId' => $newTableField->Id
                     ]);
                 }
-                $selectedDatabases = $selectedCompanies->pluck('DatabaseName')->toArray();
+                //$selectedDatabases = $selectedCompanies->pluck('DatabaseName')->toArray();
+                $selectedDatabasesWithConnections = collect($selectedCompanies->toArray())->select([
+                    'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                ])->toArray();
             } else {
-                $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table);
+                //$selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table);
+                $selectedDatabasesWithConnections = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table);
             }
 
             // Generate Sql Queries if Server or Both
             if (in_array($newField['Type'], ['Server', 'Both'])) {
-                foreach ($selectedDatabases as $database) {
+                foreach ($selectedDatabasesWithConnections as $selectedDatabaseWithConnection) {
+                    $sqlQueriesWithConnections[] = [
+                        'connection' => $selectedDatabaseWithConnection,
+                        'queries' => [MysqlQueryGenerator::getAddColumnSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $newField)]
+                    ];
+                }
+                /*foreach ($selectedDatabases as $database) {
                     $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $newField);
                     $sqlQueries[] = $sql;
-                }
+                }*/
             }
         }
 
@@ -397,22 +416,36 @@ class TableFieldService implements TableFieldServiceInterface
         );
 
         foreach ($tableFieldsToDelete as $tableFieldToDelete) {
-            $tableFieldSpecificDatabases = $tableFieldToDelete->companyTableFields->pluck('company.DatabaseName')->toArray();
-            $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
+            $tableFieldSpecificDatabasesWithConnections = collect($tableFieldToDelete->companyTableFields->toArray())->map(function ($companyTableField) {
+                return collect($companyTableField['company'])->only([
+                    'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                ])->toArray();
+            })->toArray();
+            $selectedDatabasesWithConnections = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableFieldSpecificDatabasesWithConnections);
 
             $this->tableFieldRepository->findByIdAndDelete($tableFieldToDelete->Id);
             $this->companyTableFieldRepository->deleteByAttributes([
                 ['column' => 'TableFieldId', 'operand' => '=', 'value' => $tableFieldToDelete->Id]
             ]);
 
+            //$tableFieldSpecificDatabases = $tableFieldToDelete->companyTableFields->pluck('company.DatabaseName')->toArray();
+            //$selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
+
             // Generate Sql Queries if Server or Both
             if (in_array($tableFieldToDelete->Type, ['Server', 'Both'])) {
-                foreach ($selectedDatabases as $database) {
+                foreach ($selectedDatabasesWithConnections as $selectedDatabaseWithConnection) {
+                    $sqlQueriesWithConnections[] = [
+                        'connection' => $selectedDatabaseWithConnection,
+                        'queries' => [MysqlQueryGenerator::getDeleteColumnSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $tableFieldToDelete->Name)]
+                    ];
+                }
+                /*foreach ($selectedDatabases as $database) {
                     $sql = MysqlQueryGenerator::getDeleteColumnSql($database, $table->Name, $tableFieldToDelete->Name);
                     $sqlQueries[] = $sql;
-                }
+                }*/
             }
         }
+
 
         // Update Section
         $requestedUpdatedTableFields = $request->get('updatedTableFields');
@@ -444,12 +477,24 @@ class TableFieldService implements TableFieldServiceInterface
             $hasRenameOperation = in_array('Name', $requestedUpdatedTableField['updatedSections']);
             if ($hasRenameOperation) {
                 if (in_array($requestedUpdatedTableField['Type'], ['Server', 'Both'])) {
-                    $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
+                    $tableFieldSpecificDatabasesWithConnections = collect($existingTableFieldData->companyTableFields->toArray())->map(function ($companyTableField) {
+                        return collect($companyTableField['company'])->only([
+                            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                        ])->toArray();
+                    })->toArray();
+                    $selectedDatabasesWithConnectionsForUpdate = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableFieldSpecificDatabasesWithConnections);
+                    foreach ($selectedDatabasesWithConnectionsForUpdate as $selectedDatabaseWithConnection) {
+                        $sqlQueriesWithConnections[] = [
+                            'connection' => $selectedDatabaseWithConnection,
+                            'queries' => [MysqlQueryGenerator::getRenameColumnSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $existingTableFieldData->Name, $requestedUpdatedTableField)]
+                        ];
+                    }
+                    /*$tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                     $selectedDatabasesForUpdate = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                     foreach ($selectedDatabasesForUpdate as $database) {
                         $sql = MysqlQueryGenerator::getRenameColumnSql($database, $table->Name, $existingTableFieldData->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
-                    }
+                    }*/
                 }
             }
             /*-------------- Rename Column End -----------------*/
@@ -469,12 +514,25 @@ class TableFieldService implements TableFieldServiceInterface
                 )
             ) {
                 if (in_array($requestedUpdatedTableField['Type'], ['Server', 'Both'])) {
-                    $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
+                    $tableFieldSpecificDatabasesWithConnections = collect($existingTableFieldData->companyTableFields->toArray())->map(function ($companyTableField) {
+                        return collect($companyTableField['company'])->only([
+                            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                        ])->toArray();
+                    })->toArray();
+                    $selectedDatabasesWithConnectionsForColumnModification = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableFieldSpecificDatabasesWithConnections);
+                    foreach ($selectedDatabasesWithConnectionsForColumnModification as $selectedDatabaseWithConnection) {
+                        $sqlQueriesWithConnections[] = [
+                            'connection' => $selectedDatabaseWithConnection,
+                            'queries' => [MysqlQueryGenerator::getModifyColumnSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField)]
+                        ];
+                    }
+
+                    /*$tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                     $selectedDatabasesForColumnModification = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
                     foreach ($selectedDatabasesForColumnModification as $database) {
                         $sql = MysqlQueryGenerator::getModifyColumnSql($database, $table->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
-                    }
+                    }*/
                 }
             }
 
@@ -486,7 +544,46 @@ class TableFieldService implements TableFieldServiceInterface
                 )
             ) {
                 if (in_array($requestedUpdatedTableField['Type'], ['Server', 'Both'])) {
-                    $tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
+                    $tableFieldSpecificDatabasesWithConnections = collect($existingTableFieldData->companyTableFields->toArray())->map(function ($companyTableField) {
+                        return collect($companyTableField['company'])->only([
+                            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                        ])->toArray();
+                    })->toArray();
+                    $selectedDatabasesWithConnectionsForColumnModification = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableFieldSpecificDatabasesWithConnections);
+
+                    if (in_array('PrimaryKey', $requestedUpdatedTableField['updatedSections'])) {
+                        foreach ($selectedDatabasesWithConnectionsForColumnModification as $selectedDatabaseWithConnection) {
+                            if ($requestedUpdatedTableField['PrimaryKey']) {
+                                // Add Primary Key
+                                $sql = MysqlQueryGenerator::getAddPrimaryKeySql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField['Name']);
+                            } else {
+                                // Delete Primary Key
+                                $sql = MysqlQueryGenerator::getRemovePrimaryKeySql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField['Name']);
+                            }
+                            $sqlQueriesWithConnections[] = [
+                                'connection' => $selectedDatabaseWithConnection,
+                                'queries' => [$sql]
+                            ];
+                        }
+                    }
+
+                    if (in_array('Unique', $requestedUpdatedTableField['updatedSections'])) {
+                        foreach ($selectedDatabasesWithConnectionsForColumnModification as $selectedDatabaseWithConnection) {
+                            if ($requestedUpdatedTableField['Unique']) {
+                                // Add Unique Key
+                                $sql = MysqlQueryGenerator::getAddUniqueKeySql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField['Name']);
+                            } else {
+                                // Delete Unique Key
+                                $sql = MysqlQueryGenerator::getRemoveUniqueKeySql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField['Name']);
+                            }
+                            $sqlQueriesWithConnections[] = [
+                                'connection' => $selectedDatabaseWithConnection,
+                                'queries' => [$sql]
+                            ];
+                        }
+                    }
+
+                    /*$tableFieldSpecificDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                     $selectedDatabasesForColumnModification = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
 
                     if (in_array('PrimaryKey', $requestedUpdatedTableField['updatedSections'])) {
@@ -515,7 +612,7 @@ class TableFieldService implements TableFieldServiceInterface
 
                             $sqlQueries[] = $sql;
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -546,7 +643,37 @@ class TableFieldService implements TableFieldServiceInterface
 
 
                 if (in_array($requestedUpdatedTableField['Type'], ['Server', 'Both'])) {
-                    $existingTableFieldDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
+                    $existingTableFieldDatabasesWithConnections = collect($existingTableFieldData->companyTableFields->toArray())->map(function ($companyTableField) {
+                        return collect($companyTableField['company'])->only([
+                            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                        ])->toArray();
+                    })->toArray();
+
+                    $requestedDatabasesWithConnections = collect($requestedCompanies->toArray())->select([
+                        'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+                    ])->toArray();
+
+                    $changes = Helpers::getArrayChanges($existingTableFieldDatabasesWithConnections, $requestedDatabasesWithConnections);
+
+                    // Add Column to Databases
+                    $newDatabasesWithConnections = $changes['added'];
+                    foreach ($newDatabasesWithConnections as $newDatabaseWithConnection) {
+                        $sqlQueriesWithConnections[] = [
+                            'connection' => $newDatabaseWithConnection,
+                            'queries' => [MysqlQueryGenerator::getAddColumnSql($newDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField)]
+                        ];
+                    }
+
+                    // Drop Column from Databases
+                    $removedDatabasesWithConnections = $changes['removed'];
+                    foreach ($removedDatabasesWithConnections as $removedDatabaseWithConnection) {
+                        $sqlQueriesWithConnections[] = [
+                            'connection' => $removedDatabaseWithConnection,
+                            'queries' => [MysqlQueryGenerator::getDeleteColumnSql($removedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField['Name'])]
+                        ];
+                    }
+
+                    /*$existingTableFieldDatabases = $existingTableFieldData->companyTableFields->pluck('company.DatabaseName')->toArray();
                     $requestedDatabases = $requestedCompanies->pluck('DatabaseName')->toArray();
 
                     // Add Column to Databases
@@ -561,10 +688,11 @@ class TableFieldService implements TableFieldServiceInterface
                     foreach ($removedDatabases as $removedDatabase) {
                         $sql = MysqlQueryGenerator::getDeleteColumnSql($removedDatabase, $table->Name, $requestedUpdatedTableField['Name']);
                         $sqlQueries[] = $sql;
-                    }
+                    }*/
                 }
             }
             /*-------------- Add/Delete Field in/from Company End -----------------*/
+
 
             if (in_array('Type', $requestedUpdatedTableField['updatedSections'])) {
                 /**
@@ -572,6 +700,32 @@ class TableFieldService implements TableFieldServiceInterface
                  * Was a server or both type Field, Now become Client then need to remove from databases
                  */
                 if (in_array($existingTableFieldData->Type, ['Server', 'Both']) && $requestedUpdatedTableField['Type'] == 'Client') {
+                    // Remove column from Databases
+                    $tableFieldSpecificDatabasesWithConnections = $this->getDatabaseConnectionsByCompanyIds($requestedUpdatedTableField['companies']);
+                    $selectedDatabasesWithConnections = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableFieldSpecificDatabasesWithConnections);
+                    foreach ($selectedDatabasesWithConnections as $selectedDatabaseWithConnection) {
+                         $sqlQueriesWithConnections[] = [
+                            'connection' => $selectedDatabaseWithConnection,
+                            'queries' => [MysqlQueryGenerator::getDeleteColumnSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField['Name'])]
+                        ];
+                    }
+                }
+
+                if ($existingTableFieldData->Type == 'Client' && in_array($requestedUpdatedTableField['Type'], ['Server', 'Both'])) {
+                    // Add Columns in databases
+                    $tableFieldSpecificDatabasesWithConnections = $this->getDatabaseConnectionsByCompanyIds($requestedUpdatedTableField['companies']);
+                    $selectedDatabasesWithConnections = $this->getCandidateDatabasesWithConnections($companyTableDatabasesWithConnections, $tableModuleCompanyDatabasesWithConnections, $table, $tableFieldSpecificDatabasesWithConnections);
+
+                    foreach ($selectedDatabasesWithConnections as $selectedDatabaseWithConnection) {
+                        $sqlQueriesWithConnections[] = [
+                            'connection' => $selectedDatabaseWithConnection,
+                            'queries' => [MysqlQueryGenerator::getAddColumnSql($selectedDatabaseWithConnection['DatabaseName'], $table->Name, $requestedUpdatedTableField)]
+                        ];
+                    }
+                }
+
+
+                /*if (in_array($existingTableFieldData->Type, ['Server', 'Both']) && $requestedUpdatedTableField['Type'] == 'Client') {
                     // Remove column from Databases
                     $tableFieldSpecificDatabases = $this->getDatabaseNamesByCompanyIds($requestedUpdatedTableField['companies']);
                     $selectedDatabases = $this->getCandidateDatabases($companyTableDatabases, $tableModuleCompanyDatabases, $table, $tableFieldSpecificDatabases);
@@ -589,29 +743,26 @@ class TableFieldService implements TableFieldServiceInterface
                         $sql = MysqlQueryGenerator::getAddColumnSql($database, $table->Name, $requestedUpdatedTableField);
                         $sqlQueries[] = $sql;
                     }
-                }
+                }*/
             }
         }
 
 
-        $totalQueries = count($sqlQueries);
-        $successful = 0;
-        $failed = 0;
+        $sqlQueriesWithConnections = collect($sqlQueriesWithConnections)->groupBy('connection.DatabaseName')
+            ->map(function ($sqlQueriesWithConnection, $key) {
+                $data = [];
+                $queries = [];
+                foreach ($sqlQueriesWithConnection as $sqlQueryWithConnection) {
+                    $data['connection'] = $sqlQueryWithConnection['connection'];
+                    $queries = array_merge($queries, $sqlQueryWithConnection['queries']);
+                    $data['queries'] = $queries;
+                }
+                return $data;
+            })->values()->toArray();
 
         // Execute All Queries
         if (in_array($table->Type, ['Server', 'Both'])) {
-            foreach ($sqlQueries as $sql) {
-                try {
-                    DB::statement($sql);
-                    $successful += 1;
-                } catch (Exception $exception) {
-                    /*if (App::environment('production')) {
-                        return new ServiceDto($exception->getMessage(), 500);
-                    }*/
-                    $failed += 1;
-                    Log::error("Query execution failed (tableFieldsOperationsSaveAndExecute). \n Query: $sql \n Error Message: {$exception->getMessage()}");
-                }
-            }
+            dispatch(new RunQueriesByConnection($sqlQueriesWithConnections));
         }
 
         // Update Table Version
@@ -619,11 +770,30 @@ class TableFieldService implements TableFieldServiceInterface
             'Version' => $table->Version + 1
         ]);
 
-        return new ServiceDto(
+        return new ServiceDto("TableFields Operation Save And Execute Queued Successfully.", 200, []);
+
+        /*$totalQueries = count($sqlQueries);
+        $successful = 0;
+        $failed = 0;*/
+
+        // Execute All Queries
+        /*if (in_array($table->Type, ['Server', 'Both'])) {
+            foreach ($sqlQueries as $sql) {
+                try {
+                    DB::statement($sql);
+                    $successful += 1;
+                } catch (Exception $exception) {
+                    $failed += 1;
+                    Log::error("Query execution failed (tableFieldsOperationsSaveAndExecute). \n Query: $sql \n Error Message: {$exception->getMessage()}");
+                }
+            }
+        }*/
+
+        /*return new ServiceDto(
             "Total: $totalQueries\nSuccess: $successful\nFailed: $failed\nTableFields Operation Save And Execute Finished Successfully.",
             200,
             []
-        );
+        );*/
     }
 
     /**
@@ -647,6 +817,16 @@ class TableFieldService implements TableFieldServiceInterface
                 'AutoIncrement' => $newField['AutoIncrement']
             ]
         );
+    }
+
+    private function getDatabaseConnectionsByCompanyIds(array $companyIds): array
+    {
+        if ($companyIds) {
+            return $this->companyRepository->getByAttributes([
+                ['column' => 'Id', 'operand' => '=', 'value' => $companyIds]
+            ], ['CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'])->toArray();
+        }
+        return [];
     }
 
     public function tableFieldsOperationsSaveWithoutExecuting(Request $request): ServiceDto

@@ -2,6 +2,8 @@
 
 namespace App\Services\Traits;
 
+use App\Helpers\DbHelpers;
+
 trait TableHelperTrait
 {
     /**
@@ -36,4 +38,39 @@ trait TableHelperTrait
         }
         return $selectedDatabases;
     }
+
+    public function getCandidateDatabasesWithConnections(
+        $companyTableDatabasesWithConnections,
+        $tableModuleCompanyDatabasesWithConnections,
+        $table,
+        array $specificDatabasesWithConnection = []
+    ): array
+    {
+        if ($specificDatabasesWithConnection) {
+            return $specificDatabasesWithConnection;
+        }
+
+        $officeDatabaseWithConnection = DbHelpers::getOfficeDatabaseConnectionDetails();
+        $templateDatabaseWithConnection = DbHelpers::getTemplateDatabaseConnectionDetails();
+
+        $selectedDatabasesWithConnections = [];
+        // Company Specific Table
+        if ($companyTableDatabasesWithConnections) {
+            $selectedDatabasesWithConnections = $companyTableDatabasesWithConnections;
+        } else {
+            switch ($table->Database) {
+                case 'Company':
+                    $selectedDatabasesWithConnections = array_merge($tableModuleCompanyDatabasesWithConnections, [$templateDatabaseWithConnection]);
+                    break;
+                case 'Office':
+                    $selectedDatabasesWithConnections = [$officeDatabaseWithConnection];
+                    break;
+                case 'Both':
+                    $selectedDatabasesWithConnections = array_merge($tableModuleCompanyDatabasesWithConnections, [$templateDatabaseWithConnection, $officeDatabaseWithConnection]);
+                    break;
+            }
+        }
+        return $selectedDatabasesWithConnections;
+    }
+
 }

@@ -4,16 +4,14 @@ namespace App\Services\Module;
 
 
 use App\Contracts\ServiceDto;
+use App\Jobs\RunQueriesByConnection;
 use App\Repositories\Eloquent\Office\ApplicationModule\ApplicationModuleRepository;
 use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyModule\CompanyModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\Module\ModuleRepositoryInterface;
 use App\Repositories\Eloquent\Office\ModulePackageModule\ModulePackageModuleRepository;
 use App\Services\Traits\ModuleHelperTrait;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ModuleService implements ModuleServiceInterface
 {
@@ -159,6 +157,10 @@ class ModuleService implements ModuleServiceInterface
             ['column' => 'Id', 'operand' => '=', 'value' => $companyId]
         ]);
 
+        $connection = $company->only([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ]);
+
         $relations = [
             'subModules' => function ($q) {
                 $q->with(['tables' => function ($q) {
@@ -219,15 +221,24 @@ class ModuleService implements ModuleServiceInterface
             }
         }
 
-        foreach ($sqlQueries as $sqlQuery) {
+        $sqlQueriesWithConnection = [
+            [
+                'connection' => $connection,
+                'queries' => $sqlQueries,
+            ]
+        ];
+
+        dispatch(new RunQueriesByConnection($sqlQueriesWithConnection));
+
+        /*foreach ($sqlQueries as $sqlQuery) {
             try {
                 DB::statement($sqlQuery);
             } catch (Exception $exception) {
                 Log::error("Module Activation. Message: " . $exception->getMessage());
             }
-        }
+        }*/
 
-        return new ServiceDto("Module installed Successfully!!!", 200, []);
+        return new ServiceDto("Module install operation queued Successfully!!!", 200, []);
     }
 
 
@@ -237,6 +248,9 @@ class ModuleService implements ModuleServiceInterface
         $companyId = $request->get('CompanyId');
         $company = $this->companyRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $companyId]
+        ]);
+        $connection = $company->only([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
         ]);
 
         $relations = [
@@ -299,15 +313,25 @@ class ModuleService implements ModuleServiceInterface
             }
         }
 
-        foreach ($sqlQueries as $sqlQuery) {
+
+        $sqlQueriesWithConnection = [
+            [
+                'connection' => $connection,
+                'queries' => $sqlQueries,
+            ]
+        ];
+
+        dispatch(new RunQueriesByConnection($sqlQueriesWithConnection));
+
+        /*foreach ($sqlQueries as $sqlQuery) {
             try {
                 DB::statement($sqlQuery);
             } catch (Exception $exception) {
                 Log::error("Module Deactivation. Message: " . $exception->getMessage());
             }
-        }
+        }*/
 
-        return new ServiceDto("Module uninstalled Successfully!!!", 200, []);
+        return new ServiceDto("Module uninstalled operation queued Successfully!!!", 200, []);
     }
 
     public function getModulesByApplication(Request $request): ServiceDto
