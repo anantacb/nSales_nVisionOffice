@@ -8,6 +8,7 @@ use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\DataFilter\DataFilterRepositoryInterface;
 use App\Repositories\Eloquent\Office\Table\TableRepositoryInterface;
+use App\Services\Company\CompanyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -239,7 +240,12 @@ class DataFilterService implements DataFilterServiceInterface
 
         $queryRowCount = "SELECT COUNT(*) as Count FROM `{$company->DatabaseName}`.`{$table->Name}` WHERE " . $raw_query;
 
-        $rowCount = DB::select($queryRowCount)[0]->Count;
+        $connection = $company->only([
+            'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
+        ]);
+
+        CompanyService::setDatabaseConnection($connection);
+        $rowCount = DB::connection('mysql_company')->select($queryRowCount)[0]->Count;
 
         return new ServiceDto("DataFilter Result Retrieved Successfully.", 200, [
             'Query' => SqlFormatter::format($query),
