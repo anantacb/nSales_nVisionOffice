@@ -38,7 +38,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     private function getBaseQuery(Request $request): mixed
     {
         $query = $this->model
-            ->select('*', DB::raw('CASE WHEN UpdateTime IS NULL OR UpdateTime = "" THEN InsertTime ELSE UpdateTime END AS CalculatedOrderDate'));
+            ->select('*', DB::raw('CASE WHEN UpdateTime IS NULL THEN InsertTime ELSE UpdateTime END AS CalculatedOrderDate'));
 
         if ($request->has('sort')) {
             $query = $query->orderBy($request->get('sort')['field'], $request->get('sort')['type']);
