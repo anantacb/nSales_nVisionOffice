@@ -1083,7 +1083,7 @@ class CompanyService implements CompanyServiceInterface
 
         $updatedCompany = $this->companyRepository->findByIdAndUpdate(
             $request->get('Id'),
-            $request->except('Id')
+            $request->except(['Id', 'SelectedCompanyId'])
         );
 
         /**
