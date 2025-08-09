@@ -23,7 +23,7 @@ class WebShopPageService implements WebShopPageServiceInterface
 
     public function list(Request $request): ServiceDto
     {
-        $request = $request->except("CompanyId");
+        $request = $request->except(["CompanyId", 'SelectedCompanyId']);
 
         $attributes = [];
         foreach ($request as $column => $value) {
