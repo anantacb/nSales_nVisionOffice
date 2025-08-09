@@ -25,7 +25,7 @@ class CustomerService implements CustomerServiceInterface
 
     public function create(Request $request): ServiceDto
     {
-        $customer = $this->customerRepository->create($request->except(['CompanyId']));
+        $customer = $this->customerRepository->create($request->except(['CompanyId', 'SelectedCompanyId']));
         return new ServiceDto("Customer Created Successfully.", 200, $customer);
     }
 
@@ -33,7 +33,7 @@ class CustomerService implements CustomerServiceInterface
     {
         $customer = $this->customerRepository->findByIdAndUpdate(
             $request->get('Id'),
-            $request->except(['CompanyId'])
+            $request->except(['CompanyId', 'SelectedCompanyId'])
         );
         return new ServiceDto("Customer Updated Successfully.", 200, $customer);
     }
