@@ -33,7 +33,7 @@ class ItemService implements ItemServiceInterface
 
     public function update(Request $request): ServiceDto
     {
-        $updateData = $request->except(['CompanyId', 'InsertTime', 'UpdateTime', 'DeleteTime', 'ImportTime',
+        $updateData = $request->except(['CompanyId', 'SelectedCompanyId', 'InsertTime', 'UpdateTime', 'DeleteTime', 'ImportTime',
             'Number', 'image_urls', 'variant_exists'
         ]);
 

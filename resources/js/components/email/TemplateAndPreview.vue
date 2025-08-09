@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps, onMounted, ref, watch} from "vue";
+import {onMounted, ref} from "vue";
 import CodeMirrorEditor from "@/components/ui/FormElements/CodeMirrorEditor.vue";
 import {useNotificationStore} from "@/stores/notificationStore";
 import JsonEditorVue from "json-editor-vue";
