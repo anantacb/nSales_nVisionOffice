@@ -345,7 +345,7 @@ class CompanyService implements CompanyServiceInterface
      */
     public function create(Request $request): ServiceDto
     {
-        $company = $this->companyRepository->create($request->all());
+        $company = $this->companyRepository->create($request->except(['SelectedCompanyId']));
         $this->setUpDatabase($company);
         list($developerRole, $adminRole) = $this->setUpRoles($company);
         $this->setUpDevelopers($company, $developerRole);
