@@ -1168,13 +1168,13 @@ class CompanyService implements CompanyServiceInterface
             if ($company->imageHostAccount) {
                 // If this CDN is associated with only one company then delete
                 // Otherwise only delete from DB and keep the Image Host Account (storage zone, cdn)
-                $imageHostAccounts = $this->imageHostAccountRepository->getByAttributes([
+                /*$imageHostAccounts = $this->imageHostAccountRepository->getByAttributes([
                     ['column' => 'StorageZoneId', 'operand' => '=', 'value' => $company->imageHostAccount->StorageZoneId],
                 ]);
                 if ($imageHostAccounts->count() == 1) {
                     // Delete Image Hosting Account
                     $this->bunnyCdnRepository->deleteStorageZone($company->imageHostAccount->StorageZoneId);
-                }
+                }*/
 
                 // Delete Entry From DB
                 $this->imageHostAccountRepository->findByIdAndDelete($company->imageHostAccount->Id);
