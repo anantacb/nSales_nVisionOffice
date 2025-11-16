@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {booleanOptions} from "@/data/dropDownOptions";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
@@ -42,6 +42,7 @@ let ApplicationId = ref('');
 let CompanyId = ref(null);
 let RoleId = ref(null);
 let CompanyUserId = ref(null);
+let SendDraftOrderEmail = ref(0);
 
 let ApplicationOptions = ref([]);
 let CompanyOptions = ref([]);
@@ -290,6 +291,7 @@ async function createEmailConfiguration() {
         CompanyId: CompanyId.value,
         RoleId: RoleId.value,
         CompanyUserId: CompanyUserId.value,
+        SendDraftOrderEmail: SendDraftOrderEmail.value,
     };
 
     try {
@@ -302,6 +304,13 @@ async function createEmailConfiguration() {
         createEmailConfigurationRef.value.statusNormal();
     }
 }
+
+const selectedModuleIsOrder = computed(() => {
+    const selected = ModuleOptions.value.find(
+        module => module.value === ModuleId.value
+    );
+    return ['Order'].includes(selected?.label);
+});
 
 onMounted(async () => {
     createEmailConfigurationRef.value.statusLoading();
@@ -334,9 +343,9 @@ onMounted(async () => {
                             <div class="col-sm-8">
                                 <input id="Name" v-model="Name"
                                        :class="errors.Name ? `is-invalid form-control-sm` : `form-control-sm`"
-                                       class="form-control" name="Name"
+                                       autocomplete="off" class="form-control"
+                                       name="Name"
                                        required
-                                       autocomplete="off"
                                        type="text"
                                        @keyup="resetErrors"/>
                                 <InputErrorMessages v-if="errors.Name"
@@ -591,7 +600,7 @@ onMounted(async () => {
                                 Module<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Module" v-model="ModuleId" :options="ModuleOptions"
+                                <Select id="Module" v-model.number="ModuleId" :options="ModuleOptions"
                                         :required="true"
                                         :select-class="errors.Module ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Module"
@@ -600,6 +609,25 @@ onMounted(async () => {
                                                     :errorMessages="errors.Module"></InputErrorMessages>
                             </div>
                         </div>
+
+                        <div v-if="selectedModuleIsOrder" class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Module">
+                                SendDraftOrder<span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <Select
+                                    id="SendDraftOrderEmail"
+                                    v-model="SendDraftOrderEmail"
+                                    :options="booleanOptions"
+                                    :required="true"
+                                    :select-class="errors.SendDraftOrderEmail ? `is-invalid form-select-sm` : `form-select-sm`"
+                                    name="SendDraftOrderEmail"
+                                    @change="resetErrors"/>
+                                <InputErrorMessages v-if="errors.SendDraftOrderEmail"
+                                                    :errorMessages="errors.SendDraftOrderEmail"></InputErrorMessages>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class="col-lg-8 space-y-2">
