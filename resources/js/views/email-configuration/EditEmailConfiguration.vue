@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {booleanOptions} from "@/data/dropDownOptions";
 import {useNotificationStore} from "@/stores/notificationStore";
 import User from "@/models/Office/User";
@@ -17,6 +17,7 @@ const route = useRoute();
 const notificationStore = useNotificationStore();
 const {errors, setErrors, resetErrors} = useFormErrors();
 
+let EmailConfigurationModel = ref({});
 let ApplicationOptions = ref([]);
 let CompanyOptions = ref([]);
 let RoleOptions = ref([]);
@@ -264,6 +265,7 @@ async function updateEmailConfiguration() {
         CompanyId: EmailConfigurationModel.value.CompanyId,
         RoleId: EmailConfigurationModel.value.RoleId,
         CompanyUserId: EmailConfigurationModel.value.CompanyUserId,
+        SendDraftOrderEmail: EmailConfigurationModel.value.SendDraftOrderEmail,
     };
 
     try {
@@ -276,6 +278,13 @@ async function updateEmailConfiguration() {
     }
 
 }
+
+const selectedModuleIsOrder = computed(() => {
+    const selected = ModuleOptions.value.find(
+        module => module.value === EmailConfigurationModel.value.ModuleId
+    );
+    return ['Order'].includes(selected?.label);
+});
 
 onMounted(async () => {
     editEmailConfigurationRef.value.statusLoading();
@@ -311,8 +320,6 @@ onMounted(async () => {
     }
     editEmailConfigurationRef.value.statusNormal();
 });
-
-let EmailConfigurationModel = ref({});
 
 async function getEmailConfigurationDetails() {
     let {data} = await EmailConfiguration.details(route.params.id);
@@ -613,13 +620,32 @@ let backButtonRoute = localStorage.getItem('email-configuration-back-route') ?? 
                                 Module<span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-8">
-                                <Select id="Module" v-model="EmailConfigurationModel.ModuleId" :options="ModuleOptions"
+                                <Select id="Module" v-model.number="EmailConfigurationModel.ModuleId"
+                                        :options="ModuleOptions"
                                         :required="true"
                                         :select-class="errors.Module ? `is-invalid form-select-sm` : `form-select-sm`"
                                         name="Module"
                                         @change="resetErrors"/>
                                 <InputErrorMessages v-if="errors.Module"
                                                     :errorMessages="errors.Module"></InputErrorMessages>
+                            </div>
+                        </div>
+
+                        <div v-if="selectedModuleIsOrder" class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="Module">
+                                SendDraftOrderEmail<span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <Select
+                                    id="SendDraftOrder"
+                                    v-model.number="EmailConfigurationModel.SendDraftOrderEmail"
+                                    :options="booleanOptions"
+                                    :required="true"
+                                    :select-class="errors.SendDraftOrderEmail ? `is-invalid form-select-sm` : `form-select-sm`"
+                                    name="SendDraftOrderEmail"
+                                    @change="resetErrors"/>
+                                <InputErrorMessages v-if="errors.SendDraftOrderEmail"
+                                                    :errorMessages="errors.SendDraftOrderEmail"></InputErrorMessages>
                             </div>
                         </div>
                     </div>

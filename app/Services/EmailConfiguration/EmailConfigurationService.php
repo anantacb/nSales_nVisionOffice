@@ -40,6 +40,7 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
             'CompanyId' => $ApplyTo == 'Company' ? $request->get('CompanyId') : null,
             'RoleId' => $ApplyTo == 'Role' ? $request->get('RoleId') : null,
             'CompanyUserId' => $ApplyTo == 'User' ? $request->get('CompanyUserId') : null,
+            'SendDraftOrderEmail' => $request->get('SendDraftOrderEmail') ?? 0,
         ]);
         return new ServiceDto("Email Configuration Created Successfully.", 200, $emailConfiguration);
     }
@@ -72,6 +73,7 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
                 'CompanyId' => $ApplyTo == 'Company' ? $request->get('CompanyId') : null,
                 'RoleId' => $ApplyTo == 'Role' ? $request->get('RoleId') : null,
                 'CompanyUserId' => $ApplyTo == 'User' ? $request->get('CompanyUserId') : null,
+                'SendDraftOrderEmail' => $request->get('SendDraftOrderEmail') ?? 0,
             ]
         );
         return new ServiceDto("Email Configuration Updated Successfully.", 200, $emailConfiguration);
