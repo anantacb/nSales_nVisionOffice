@@ -48,6 +48,7 @@ class Create extends FormRequest
             'CompanyId' => 'required_if:ApplyTo,Company',
             'RoleId' => 'required_if:ApplyTo,Role',
             'CompanyUserId' => 'required_if:ApplyTo,User',
+            'SendDraftOrderEmail' => 'nullable|boolean|in:0,1',
         ];
     }
 }
