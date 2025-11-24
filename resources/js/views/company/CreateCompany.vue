@@ -44,6 +44,7 @@ let DefaultCurrency = ref('DKK');
 let TrialStartDate = ref(null);
 let TrialDays = ref(14);
 let Disabled = ref(0);
+let OnePlatformEnabled = ref(0);
 
 let Note = ref('');
 
@@ -126,6 +127,7 @@ async function createCompany() {
         Note: Note.value,
         ServiceUrl: ServiceUrl.value,
         GraphQLServiceURL: GraphQLServiceURL.value,
+        OnePlatformEnabled: OnePlatformEnabled.value,
     };
 
     try {
@@ -562,6 +564,19 @@ watch(Name, (newName, oldName) => {
                                         name="Disabled"/>
                                 <InputErrorMessages v-if="errors.Disabled"
                                                     :errorMessages="errors.Disabled"></InputErrorMessages>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-4 col-form-label col-form-label-sm" for="OnePlatformEnabled">
+                                One Platform<span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-8">
+                                <Select id="OnePlatformEnabled" v-model="OnePlatformEnabled" :options="booleanOptions"
+                                        :required="true"
+                                        :select-class="errors.OnePlatformEnabled ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="OnePlatformEnabled"/>
+                                <InputErrorMessages v-if="errors.OnePlatformEnabled"
+                                                    :errorMessages="errors.OnePlatformEnabled"></InputErrorMessages>
                             </div>
                         </div>
                     </div>

@@ -12,7 +12,7 @@ class Update extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,7 +22,7 @@ class Update extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'Id' => 'required|exists:Company,Id',
@@ -69,6 +69,7 @@ class Update extends FormRequest
             'Note' => 'nullable',
             'ServiceUrl' => 'required',
             'GraphQLServiceURL' => 'required',
+            'OnePlatformEnabled' => 'required',
         ];
     }
 }
