@@ -94,6 +94,7 @@ async function updateCompany() {
         Note: CompanyModel.value.Note,
         ServiceUrl: CompanyModel.value.ServiceUrl,
         GraphQLServiceURL: CompanyModel.value.GraphQLServiceURL,
+        OnePlatformEnabled: CompanyModel.value.OnePlatformEnabled,
     };
 
     try {
@@ -554,6 +555,21 @@ function nameChanged() {
                                                 name="Disabled"/>
                                         <InputErrorMessages v-if="errors.Disabled"
                                                             :errorMessages="errors.Disabled"></InputErrorMessages>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <label class="col-sm-4 col-form-label col-form-label-sm" for="OnePlatformEnabled">
+                                        One Platform<span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <Select id="OnePlatformEnabled" v-model="CompanyModel.OnePlatformEnabled"
+                                                :options="booleanOptions"
+                                                :required="true"
+                                                :select-class="errors.OnePlatformEnabled ? `is-invalid form-select-sm` : `form-select-sm`"
+                                                name="OnePlatformEnabled"/>
+                                        <InputErrorMessages v-if="errors.OnePlatformEnabled"
+                                                            :errorMessages="errors.OnePlatformEnabled"></InputErrorMessages>
                                     </div>
                                 </div>
 
