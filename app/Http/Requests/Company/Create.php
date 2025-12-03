@@ -11,7 +11,7 @@ class Create extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,7 +21,7 @@ class Create extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'Name' => 'required|unique:Company',
@@ -53,6 +53,7 @@ class Create extends FormRequest
             'Note' => 'nullable',
             'ServiceUrl' => 'required',
             'GraphQLServiceURL' => 'required',
+            'OnePlatformEnabled' => 'required',
         ];
     }
 }
