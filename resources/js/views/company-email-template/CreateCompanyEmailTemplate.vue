@@ -4,6 +4,7 @@ import router from "@/router";
 import {useCompanyStore} from "@/stores/companyStore";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
+import {useCompanyEmailTemplate} from "@/composables/useCompanyEmailTemplate";
 import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
 import Loader from "@/components/ui/Loader/Loader.vue";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
@@ -14,6 +15,7 @@ import TableHelper from "@/models/TableHelper";
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
+let {getDistinctColumnValues} = useCompanyEmailTemplate();
 
 const createEmailLayoutRef = ref(null);
 let LanguageOptions = ref([]);
@@ -93,13 +95,11 @@ async function getTableColumns() {
 }
 
 async function getColumnValues() {
-    let {
-        data,
-        message
-    } = await TableHelper.getColumnDistinctValues('Company', DatabaseTable.value, TableColumn.value, companyStore.selectedCompany.Id);
-    data.forEach((column, index) => {
-        ColumnValueOptions.value.push({label: column, value: column});
-    });
+    ColumnValueOptions.value = await getDistinctColumnValues(
+        DatabaseTable.value,
+        TableColumn.value,
+        companyStore.selectedCompany.Id
+    );
 }
 
 const showDatabaseFormElements = computed(() => {
