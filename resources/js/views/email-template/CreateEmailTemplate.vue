@@ -8,6 +8,8 @@ import Language from "@/models/Office/Language";
 import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
 import Loader from "@/components/ui/Loader/Loader.vue";
 import EmailTemplate from "@/models/Office/EmailTemplate";
+import TableHelper from "@/models/TableHelper";
+import TableField from "@/models/Office/TableField";
 
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
@@ -24,6 +26,23 @@ let LanguageId = ref('');
 let LayoutId = ref('');
 let Template = ref('');
 let Subject = ref('');
+let DatabaseTable = ref('');
+let TableColumn = ref('');
+let ColumnValue = ref('');
+let DatabaseTableOptions = ref([
+    {
+        label: 'Please Select',
+        value: ''
+    },
+    {
+        label: 'Orderhead',
+        value: 'Orderhead'
+    }
+]);
+let TableColumnOptions = ref([{
+    label: 'Please Select',
+    value: ''
+}]);
 
 function setTemplate(newEditorValue) {
     Template.value = newEditorValue;
@@ -42,6 +61,9 @@ async function createEmailTemplate() {
         LayoutId: LayoutId.value,
         Subject: Subject.value,
         Template: Template.value,
+        DatabaseTable: DatabaseTable.value,
+        TableColumn: TableColumn.value,
+        ColumnValue: ColumnValue.value,
     };
 
     try {
@@ -109,9 +131,38 @@ async function getLayoutOptionsByLanguage(initialLoad = false) {
     resetErrors();
 }
 
+function databaseTableChanged() {
+    TableColumn.value = '';
+    ColumnValue.value = '';
+    TableColumnOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    if (!DatabaseTable.value) {
+        return;
+    }
+    getTableColumns();
+}
+
+function tableColumnChanged() {
+    ColumnValue.value = '';
+}
+
+async function getTableColumns() {
+    let tableId = DatabaseTable.value === 'Orderhead' ? 6 : '';
+    let {data} = await TableField.getGeneralTableFields(tableId);
+    data.forEach((tableField) => {
+        TableColumnOptions.value.push({label: tableField.Name, value: tableField.Name});
+    });
+}
+
 const EmailTemplateObject = computed(() => {
     let emailEvent = EmailEvents.value[ElementName.value];
     return emailEvent && emailEvent.templateObject ? emailEvent.templateObject : {};
+});
+
+const showDatabaseFormElements = computed(() => {
+    return ElementName.value === 'ORDER_CONFIRMATION_MAIL';
 });
 
 onMounted(async () => {
@@ -201,6 +252,72 @@ onMounted(async () => {
 
                     </div>
 
+                    <div v-if="showDatabaseFormElements" class="row">
+                        <div class="col-lg-4 space-y-2 ">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="DatabaseTable">
+                                    Table
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="ElementName"
+                                        v-model="DatabaseTable"
+                                        :options="DatabaseTableOptions"
+                                        :required="false"
+                                        :select-class="errors.DatabaseTable ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="ElementName"
+                                        @change="resetErrors();databaseTableChanged()"
+                                    />
+                                    <InputErrorMessages v-if="errors.DatabaseTable"
+                                                        :errorMessages="errors.DatabaseTable"></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="Column">
+                                    Column<span v-if="!!DatabaseTable" class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="LanguageId"
+                                        v-model="TableColumn"
+                                        :options="TableColumnOptions"
+                                        :required="!!DatabaseTable"
+                                        :select-class="errors.TableColumn ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="Language"
+                                        @change="tableColumnChanged()"
+                                    />
+                                    <InputErrorMessages v-if="errors.TableColumn"
+                                                        :errorMessages="errors.TableColumn"></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="ColumnValue">
+                                    Value<span v-if="!!DatabaseTable" class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input
+                                        id="ColumnValue"
+                                        v-model="ColumnValue"
+                                        :class="errors.ColumnValue ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        :required="!!DatabaseTable"
+                                        autocomplete="off" class="form-control" name="ColumnValue"
+                                        placeholder="Column Value"
+                                        @keyup="resetErrors"
+                                    />
+                                    <InputErrorMessages v-if="errors.ColumnValue"
+                                                        :errorMessages="errors.ColumnValue">
+                                    </InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
 
                     <div class="row">
                         <div class="col-lg-12 space-y-2">

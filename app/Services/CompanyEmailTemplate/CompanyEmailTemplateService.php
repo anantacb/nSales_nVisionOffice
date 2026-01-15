@@ -66,7 +66,7 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
                 'Template' => $request->get('Template'),
                 'DatabaseTable' => $request->get('DatabaseTable'),
                 'TableColumn' => $request->get('TableColumn'),
-                'ColumnValue' => $request->get('ColumnValue'),
+                'ColumnValue' => $request->get('ColumnValue')
             ]
         );
         return new ServiceDto("Template Updated Successfully.", 200, $template);
@@ -148,7 +148,10 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
             'LanguageId' => $request->get('LanguageId'),
             'LayoutId' => $request->get('LayoutId'),
             'Subject' => $request->get('Subject'),
-            'Template' => $request->get('Template')
+            'Template' => $request->get('Template'),
+            'DatabaseTable' => $request->get('DatabaseTable'),
+            'TableColumn' => $request->get('TableColumn'),
+            'ColumnValue' => $request->get('ColumnValue')
         ]);
 
         return new ServiceDto("Email Template Copied Successfully.", 200, $companyEmailTemplate);
@@ -164,7 +167,7 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
             'Template' => $request->get('Template'),
             'DatabaseTable' => $request->get('DatabaseTable'),
             'TableColumn' => $request->get('TableColumn'),
-            'ColumnValue' => $request->get('ColumnValue'),
+            'ColumnValue' => $request->get('ColumnValue')
         ]);
         return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }

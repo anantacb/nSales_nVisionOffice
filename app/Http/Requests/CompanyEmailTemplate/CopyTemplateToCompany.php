@@ -27,14 +27,21 @@ class CopyTemplateToCompany extends FormRequest
         return [
             'ElementName' => [
                 'required',
-                Rule::unique('mysql_company.CompanyEmailTemplate')->where(function ($query) {
-                    return $query->where('LanguageId', $this->LanguageId);
-                }),
+                Rule::unique('mysql_company.CompanyEmailTemplate')
+                    ->where(function ($query) {
+                        return $query->where('LanguageId', $this->LanguageId)
+                            ->where('DatabaseTable', $this->DatabaseTable)
+                            ->where('TableColumn', $this->TableColumn)
+                            ->where('ColumnValue', $this->ColumnValue);
+                    }),
             ],
             'LanguageId' => 'required|exists:mysql_company.CompanyLanguage,Id',
             'LayoutId' => 'required|exists:mysql_company.CompanyEmailLayout,Id',
-            'Subject' => 'required',
-            'Template' => 'required',
+            'Subject' => 'required|string',
+            'Template' => 'required|string',
+            'DatabaseTable' => 'nullable',
+            'TableColumn' => 'required_with:DatabaseTable',
+            'ColumnValue' => 'required_with:DatabaseTable',
         ];
     }
 
@@ -42,6 +49,7 @@ class CopyTemplateToCompany extends FormRequest
     {
         return [
             'ElementName.required' => 'Element Name is required.',
+            'ElementName.unique' => 'ElementName is not unique with Language, Table, TableColumn, ColumnValue.',
             'LanguageId.required' => 'Language is required.',
             'LayoutId.required' => 'Layout is required.',
             'Subject.required' => 'Email Subject is required.',

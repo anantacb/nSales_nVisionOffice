@@ -171,6 +171,9 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
                     'Subject' => $emailTemplate->Subject,
                     'Template' => $emailTemplate->Template,
                     'LayoutId' => $companyEmailLayout->Id,
+                    'DatabaseTable' => $emailTemplate->DatabaseTable,
+                    'TableColumn' => $emailTemplate->TableColumn,
+                    'ColumnValue' => $emailTemplate->ColumnValue,
                 ]);
             }
         }

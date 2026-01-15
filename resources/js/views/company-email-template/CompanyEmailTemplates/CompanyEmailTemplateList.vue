@@ -136,9 +136,9 @@ function deleteTemplate(template, index) {
         <template v-slot:body-ModifiedElementName="props">
             {{ props.data.ModifiedElementName }}
             <template v-if="props.data.DatabaseTable">
-                <small> &nbsp; ({{ props.data.DatabaseTable }}->{{ props.data.TableColumn }} = {{
-                        props.data.ColumnValue
-                    }})</small>
+                <small> &nbsp;
+                    ({{ props.data.DatabaseTable }}->{{ props.data.TableColumn }} = {{ props.data.ColumnValue }})
+                </small>
             </template>
         </template>
         <template v-slot:body-Action="props">

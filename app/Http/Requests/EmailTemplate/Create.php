@@ -28,17 +28,21 @@ class Create extends FormRequest
             'LayoutId' => 'required|exists:EmailLayout,Id',
             'LanguageId' => 'required|exists:Language,Id',
             'Subject' => 'required|string|max:255',
-            'Template' => [
-                'required',
-                'string'
-            ],
+            'Template' => 'required|string',
 //            'ElementName' => 'required',
             'ElementName' => [
                 'required',
                 Rule::unique('EmailTemplate')->where(function ($query) {
-                    return $query->where('LanguageId', $this->LanguageId);
+                    return $query->where('LanguageId', $this->LanguageId)
+                        ->where('DatabaseTable', $this->DatabaseTable)
+                        ->where('TableColumn', $this->TableColumn)
+                        ->where('ColumnValue', $this->ColumnValue);
                 }),
             ],
+
+            'DatabaseTable' => 'nullable',
+            'TableColumn' => 'required_with:DatabaseTable',
+            'ColumnValue' => 'required_with:DatabaseTable',
         ];
 
     }
@@ -47,6 +51,7 @@ class Create extends FormRequest
     {
         return [
             'ElementName.required' => 'Layout Name is required.',
+            'ElementName.unique' => 'ElementName is not unique with Language, Table, TableColumn, ColumnValue.',
             'LanguageId.required' => 'Language is required.',
             'Template.required' => 'Template is required.',
         ];

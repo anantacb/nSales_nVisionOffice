@@ -1,5 +1,5 @@
 <script setup>
-import {nextTick, onMounted, ref, watch} from 'vue';
+import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useCompanyStore} from "@/stores/companyStore";
 import useGridManagement from "@/composables/useGridManagement";
@@ -12,10 +12,13 @@ import CompanyEmailTemplate from "@/models/Company/CompanyEmailTemplate";
 import CompanyEmailLayout from "@/models/Company/CompanyEmailLayout";
 import CompanyLanguage from "@/models/Company/CompanyLanguage";
 import _ from "lodash";
+import TableHelper from "@/models/TableHelper";
+import {useCompanyEmailTemplate} from "@/composables/useCompanyEmailTemplate";
 
 const companyStore = useCompanyStore();
 const notificationStore = useNotificationStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
+let {getDistinctColumnValues} = useCompanyEmailTemplate();
 
 const isLoading = ref(false);
 let tableData = ref([]);
@@ -70,6 +73,27 @@ setTableFields([
     {
         name: "Action",
         title: "Action"
+    }
+]);
+
+let DatabaseTableOptions = ref([
+    {
+        label: 'Please Select',
+        value: ''
+    },
+    {
+        label: 'Orderhead',
+        value: 'Orderhead'
+    }
+]);
+let TableColumnOptions = ref([{
+    label: 'Please Select',
+    value: ''
+}]);
+let ColumnValueOptions = ref([
+    {
+        label: 'Please Select',
+        value: ''
     }
 ]);
 
@@ -185,7 +209,7 @@ async function showPreviewModal(emailTemplate) {
 async function showCopyModal(emailTemplate) {
     isLoading.value = true;
     resetErrors();
-    SelectedEmailTemplate.value = emailTemplate;
+    SelectedEmailTemplate.value = JSON.parse(JSON.stringify(emailTemplate));
 
     if (!(SelectedEmailTemplate.value.ElementName in CompanyEmailEvents.value)) {
         SelectedEmailTemplate.value.ElementName = '';
@@ -193,6 +217,12 @@ async function showCopyModal(emailTemplate) {
 
     await setTemplateLanguageId();
     await getLayoutOptionsByLanguage(true);
+
+    if (SelectedEmailTemplate.value.DatabaseTable) {
+        await getTableColumns();
+        await getColumnValues();
+    }
+
     isLoading.value = false;
     copyTemplateRef.value.openModal();
 }
@@ -219,7 +249,6 @@ async function getDataForPreview(emailTemplate) {
     if (!previewTemplate.value) {
         notificationStore.showNotification("Unable to preview", "error");
     }
-
 }
 
 async function copyEmailTemplateToCompany() {
@@ -230,6 +259,9 @@ async function copyEmailTemplateToCompany() {
         LayoutId: SelectedEmailTemplate.value.LayoutId,
         Subject: SelectedEmailTemplate.value.Subject,
         Template: SelectedEmailTemplate.value.Template,
+        DatabaseTable: SelectedEmailTemplate.value.DatabaseTable,
+        TableColumn: SelectedEmailTemplate.value.TableColumn,
+        ColumnValue: SelectedEmailTemplate.value.ColumnValue,
     };
 
     try {
@@ -249,8 +281,58 @@ async function copyEmailTemplateToCompany() {
     } finally {
         isLoading.value = false;
     }
-
 }
+
+function databaseTableChanged() {
+    SelectedEmailTemplate.value.TableColumn = '';
+    TableColumnOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    SelectedEmailTemplate.value.ColumnValue = '';
+    ColumnValueOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    if (!SelectedEmailTemplate.value.DatabaseTable) {
+        return;
+    }
+    getTableColumns();
+}
+
+function tableColumnChanged() {
+    SelectedEmailTemplate.value.ColumnValue = '';
+    ColumnValueOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    if (!SelectedEmailTemplate.value.TableColumn) {
+        return;
+    }
+    getColumnValues();
+}
+
+async function getTableColumns() {
+    let {
+        data,
+        message
+    } = await TableHelper.getAllColumns('Company', SelectedEmailTemplate.value.DatabaseTable, companyStore.selectedCompany.Id);
+    data.forEach((column, index) => {
+        TableColumnOptions.value.push({label: column, value: column});
+    });
+}
+
+async function getColumnValues() {
+    ColumnValueOptions.value = await getDistinctColumnValues(
+        SelectedEmailTemplate.value.DatabaseTable,
+        SelectedEmailTemplate.value.TableColumn,
+        companyStore.selectedCompany.Id
+    );
+}
+
+const showDatabaseFormElements = computed(() => {
+    return SelectedEmailTemplate.value.ElementName === 'ORDER_CONFIRMATION_MAIL';
+});
 
 onMounted(async () => {
     await getEmailTemplatesForCompany();
@@ -286,6 +368,14 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
         @search="search"
         @sortBy="sortBy"
     >
+        <template v-slot:body-ModifiedElementName="props">
+            {{ props.data.ModifiedElementName }}
+            <template v-if="props.data.DatabaseTable">
+                <small> &nbsp;
+                    ({{ props.data.DatabaseTable }}->{{ props.data.TableColumn }} = {{ props.data.ColumnValue }})
+                </small>
+            </template>
+        </template>
         <template v-slot:body-Action="props">
             <button class="btn rounded-pill btn-alt-danger me-1" type="button"
                     @click="showCopyModal(props.data)">
@@ -422,7 +512,76 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
+                            <div v-if="showDatabaseFormElements" class="row">
+                                <div class="col-lg-4 space-y-2 ">
+                                    <div class="row">
+                                        <label class="col-sm-3 col-form-label col-form-label-sm" for="DatabaseTable">
+                                            Table
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <Select
+                                                id="ElementName"
+                                                v-model="SelectedEmailTemplate.DatabaseTable"
+                                                :options="DatabaseTableOptions"
+                                                :required="false"
+                                                :select-class="errors.DatabaseTable ? `is-invalid form-select-sm` : `form-select-sm`"
+                                                name="ElementName"
+                                                @change="resetErrors();databaseTableChanged()"
+                                            />
+                                            <InputErrorMessages v-if="errors.DatabaseTable"
+                                                                :errorMessages="errors.DatabaseTable"></InputErrorMessages>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 space-y-2">
+                                    <div class="row">
+                                        <label class="col-sm-3 col-form-label col-form-label-sm" for="Column">
+                                            Column<span v-if="!!SelectedEmailTemplate.DatabaseTable"
+                                                        class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <Select
+                                                id="LanguageId"
+                                                v-model="SelectedEmailTemplate.TableColumn"
+                                                :options="TableColumnOptions"
+                                                :required="!!SelectedEmailTemplate.DatabaseTable"
+                                                :select-class="errors.TableColumn ? `is-invalid form-select-sm` : `form-select-sm`"
+                                                name="Language"
+                                                @change="tableColumnChanged()"
+                                            />
+                                            <InputErrorMessages v-if="errors.TableColumn"
+                                                                :errorMessages="errors.TableColumn"></InputErrorMessages>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 space-y-2">
+                                    <div class="row">
+                                        <label class="col-sm-3 col-form-label col-form-label-sm" for="ColumnValue">
+                                            Value<span v-if="!!SelectedEmailTemplate.DatabaseTable"
+                                                       class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <Select
+                                                id="ColumnValue"
+                                                v-model="SelectedEmailTemplate.ColumnValue"
+                                                :options="ColumnValueOptions"
+                                                :required="!!SelectedEmailTemplate.DatabaseTable"
+                                                :select-class="errors.ColumnValue ? `is-invalid form-select-sm` : `form-select-sm`"
+                                                name="ColumnValue"
+                                                @change="resetErrors"
+                                            />
+                                            <InputErrorMessages v-if="errors.ColumnValue"
+                                                                :errorMessages="errors.ColumnValue"></InputErrorMessages>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-lg-12 space-y-2">
                                     <div class="row">
                                         <label class="col-sm-1 col-form-label col-form-label-sm" for="Subject">
@@ -444,8 +603,8 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
+
                         </div>
 
                     </div>

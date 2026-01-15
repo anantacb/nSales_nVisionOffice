@@ -9,6 +9,8 @@ import EmailLayout from "@/models/Office/EmailLayout";
 import EmailTemplate from "@/models/Office/EmailTemplate";
 import TemplateAndPreview from "@/components/email/TemplateAndPreview.vue";
 import Loader from "@/components/ui/Loader/Loader.vue";
+import TableHelper from "@/models/TableHelper";
+import TableField from "@/models/Office/TableField";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -21,6 +23,20 @@ let EmailTemplateModel = ref({});
 let EmailEvents = ref([]);
 const updateEmailLayoutRef = ref(null);
 const isLoading = ref(false);
+let DatabaseTableOptions = ref([
+    {
+        label: 'Please Select',
+        value: ''
+    },
+    {
+        label: 'Orderhead',
+        value: 'Orderhead'
+    }
+]);
+let TableColumnOptions = ref([{
+    label: 'Please Select',
+    value: ''
+}]);
 
 function setTemplate(newEditorValue) {
     EmailTemplateModel.value.Template = newEditorValue;
@@ -40,6 +56,9 @@ async function updateEmailTemplate() {
         LanguageId: EmailTemplateModel.value.LanguageId,
         Subject: EmailTemplateModel.value.Subject,
         Template: EmailTemplateModel.value.Template,
+        DatabaseTable: EmailTemplateModel.value.DatabaseTable,
+        TableColumn: EmailTemplateModel.value.TableColumn,
+        ColumnValue: EmailTemplateModel.value.ColumnValue,
     };
 
     try {
@@ -58,6 +77,9 @@ async function getEmailTemplateDetails() {
     isLoading.value = true;
     let {data} = await EmailTemplate.details(route.params.id);
     EmailTemplateModel.value = data;
+    if (EmailTemplateModel.value.DatabaseTable) {
+        await getTableColumns();
+    }
     isLoading.value = false;
 }
 
@@ -103,9 +125,38 @@ async function getLayoutOptionsByLanguage(initialLoad = false) {
     resetErrors();
 }
 
+function databaseTableChanged() {
+    EmailTemplateModel.value.TableColumn = '';
+    EmailTemplateModel.value.ColumnValue = '';
+    TableColumnOptions.value = [{
+        label: 'Please Select',
+        value: ''
+    }];
+    if (!EmailTemplateModel.value.DatabaseTable) {
+        return;
+    }
+    getTableColumns();
+}
+
+function tableColumnChanged() {
+    EmailTemplateModel.value.ColumnValue = '';
+}
+
+async function getTableColumns() {
+    let tableId = EmailTemplateModel.value.DatabaseTable === 'Orderhead' ? 6 : '';
+    let {data} = await TableField.getGeneralTableFields(tableId);
+    data.forEach((tableField) => {
+        TableColumnOptions.value.push({label: tableField.Name, value: tableField.Name});
+    });
+}
+
 const EmailTemplateObject = computed(() => {
     let emailEvent = EmailEvents.value[EmailTemplateModel.value.ElementName];
     return emailEvent && emailEvent.templateObject ? emailEvent.templateObject : {};
+});
+
+const showDatabaseFormElements = computed(() => {
+    return EmailTemplateModel.value.ElementName === 'ORDER_CONFIRMATION_MAIL';
 });
 
 onMounted(async () => {
@@ -201,6 +252,75 @@ onMounted(async () => {
 
                     </div>
 
+                    <div v-if="showDatabaseFormElements" class="row">
+                        <div class="col-lg-4 space-y-2 ">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="DatabaseTable">
+                                    Table
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="ElementName"
+                                        v-model="EmailTemplateModel.DatabaseTable"
+                                        :options="DatabaseTableOptions"
+                                        :required="false"
+                                        :select-class="errors.DatabaseTable ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="ElementName"
+                                        @change="resetErrors();databaseTableChanged()"
+                                    />
+                                    <InputErrorMessages
+                                        v-if="errors.DatabaseTable"
+                                        :errorMessages="errors.DatabaseTable"
+                                    ></InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="Column">
+                                    Column<span v-if="!!EmailTemplateModel.DatabaseTable"
+                                                class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <Select
+                                        id="LanguageId"
+                                        v-model="EmailTemplateModel.TableColumn"
+                                        :options="TableColumnOptions"
+                                        :required="!!EmailTemplateModel.DatabaseTable"
+                                        :select-class="errors.TableColumn ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        name="Language"
+                                        @change="tableColumnChanged()"
+                                    />
+                                    <InputErrorMessages v-if="errors.TableColumn" :errorMessages="errors.TableColumn">
+                                    </InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 space-y-2">
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="ColumnValue">
+                                    Value<span v-if="!!EmailTemplateModel.DatabaseTable"
+                                               class="text-danger">*</span>
+                                </label>
+                                <div class="col-sm-9">
+                                    <input
+                                        id="ColumnValue"
+                                        v-model="EmailTemplateModel.ColumnValue"
+                                        :class="errors.ColumnValue ? `is-invalid form-select-sm` : `form-select-sm`"
+                                        :required="!!EmailTemplateModel.DatabaseTable"
+                                        autocomplete="off" class="form-control" name="ColumnValue"
+                                        placeholder="Column Value"
+                                        @keyup="resetErrors"
+                                    />
+                                    <InputErrorMessages v-if="errors.ColumnValue" :errorMessages="errors.ColumnValue">
+                                    </InputErrorMessages>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
 
                     <div class="row">
                         <div class="col-lg-12 space-y-2">

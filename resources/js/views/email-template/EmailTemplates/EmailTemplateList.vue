@@ -121,6 +121,14 @@ function deleteTemplate(template, index) {
         @search="search"
         @sortBy="sortBy"
     >
+        <template v-slot:body-ModifiedElementName="props">
+            {{ props.data.ModifiedElementName }}
+            <template v-if="props.data.DatabaseTable">
+                <small> &nbsp;
+                    ({{ props.data.DatabaseTable }}->{{ props.data.TableColumn }} = {{ props.data.ColumnValue }})
+                </small>
+            </template>
+        </template>
         <template v-slot:body-Action="props">
             <router-link :to="{name: 'edit-email-template', params:{id: props.data.Id}}"
                          class="btn rounded-pill btn-alt-warning me-1">

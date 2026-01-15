@@ -29,10 +29,7 @@ class Update extends FormRequest
             'LayoutId' => 'required|exists:mysql_company.CompanyEmailLayout,Id',
             'LanguageId' => 'required|exists:mysql_company.CompanyLanguage,Id',
             'Subject' => 'required|string|max:255',
-            'Template' => [
-                'required',
-                'string'
-            ],
+            'Template' => 'required|string',
             'ElementName' => [
                 'required',
                 Rule::unique('mysql_company.CompanyEmailTemplate')

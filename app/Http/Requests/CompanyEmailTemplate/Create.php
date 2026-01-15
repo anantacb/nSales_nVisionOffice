@@ -38,10 +38,7 @@ class Create extends FormRequest
             'LayoutId' => 'required|exists:mysql_company.CompanyEmailLayout,Id',
             'LanguageId' => 'required|exists:mysql_company.CompanyLanguage,Id',
             'Subject' => 'required|string|max:255',
-            'Template' => [
-                'required',
-                'string'
-            ],
+            'Template' => 'required|string',
 
             'DatabaseTable' => 'nullable',
             'TableColumn' => 'required_with:DatabaseTable',

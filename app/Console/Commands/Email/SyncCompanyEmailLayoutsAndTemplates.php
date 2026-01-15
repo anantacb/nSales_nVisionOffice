@@ -141,7 +141,12 @@ class SyncCompanyEmailLayoutsAndTemplates extends Command
         }
     }
 
-    private function syncCompanyData(Collection $companyLanguages, Collection $companyLayouts, Collection $companyTemplates, array &$counters): void
+    private function syncCompanyData(
+        Collection $companyLanguages,
+        Collection $companyLayouts,
+        Collection $companyTemplates,
+        array      &$counters
+    ): void
     {
         foreach ($companyLanguages as $companyLanguage) {
             $officeLanguage = $this->officeLanguages->firstWhere('Code', $companyLanguage->Code);
@@ -163,9 +168,14 @@ class SyncCompanyEmailLayoutsAndTemplates extends Command
         }
     }
 
-    private function syncCompanyLayout(Model $companyLanguage, Model $officeLayout, Collection $companyLayouts, array &$counters): ?Model
+    private function syncCompanyLayout(
+        Model      $companyLanguage,
+        Model      $officeLayout,
+        Collection $companyLayouts,
+        array      &$counters
+    ): ?Model
     {
-        $companyLayout = $companyLayouts->firstWhere(
+        $companyLayout = $companyLayouts->first(
             fn($item) => $item->LanguageId === $companyLanguage->Id && $item->Name === $officeLayout->Name
         );
 
@@ -192,13 +202,24 @@ class SyncCompanyEmailLayoutsAndTemplates extends Command
         }
     }
 
-    private function syncCompanyTemplates(Model $companyLanguage, Model $officeLayout, Model $companyLayout, Collection $officeTemplates, Collection $companyTemplates, array &$counters): void
+    private function syncCompanyTemplates(
+        Model      $companyLanguage,
+        Model      $officeLayout,
+        Model      $companyLayout,
+        Collection $officeTemplates,
+        Collection $companyTemplates,
+        array      &$counters
+    ): void
     {
         $relevantTemplates = $officeTemplates->where('LayoutId', $officeLayout->Id);
 
         foreach ($relevantTemplates as $officeTemplate) {
-            $companyEmailTemplate = $companyTemplates->firstWhere(
-                fn($item) => $item->LanguageId === $companyLanguage->Id && $item->ElementName === $officeTemplate->ElementName
+            $companyEmailTemplate = $companyTemplates->first(
+                fn($item) => $item->LanguageId === $companyLanguage->Id &&
+                    $item->ElementName === $officeTemplate->ElementName &&
+                    $item->DatabaseTable === $officeTemplate->DatabaseTable &&
+                    $item->TableColumn === $officeTemplate->TableColumn &&
+                    $item->ColumnValue === $officeTemplate->ColumnValue
             );
 
             if (!$companyEmailTemplate) {
@@ -218,6 +239,9 @@ class SyncCompanyEmailLayoutsAndTemplates extends Command
                 'ElementName' => $officeTemplate->ElementName,
                 'Subject' => $officeTemplate->Subject,
                 'Template' => $officeTemplate->Template,
+                'DatabaseTable' => $officeTemplate->DatabaseTable,
+                'TableColumn' => $officeTemplate->TableColumn,
+                'ColumnValue' => $officeTemplate->ColumnValue,
             ]);
             return true;
         } catch (Exception $e) {
