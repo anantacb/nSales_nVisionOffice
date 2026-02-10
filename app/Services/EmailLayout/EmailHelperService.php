@@ -103,51 +103,15 @@ abstract class EmailHelperService
     }
 
     /**
-     * @param array $fields
-     * @param array $child
-     * @param $companyId
+     * @param array $layoutFields
+     * @param array $emailEvent
+     * @param null $companyId
      * @return array
-     *  Assign child elements based on relation type (HasMany or BelongsTo).
      */
-    public function assignRelation(array &$fields, array $child, $companyId = null): array
+    public function fetchFieldsData(array $layoutFields, array $emailEvent, $companyId = null): array
     {
-        $childFieldsData = $this->processChild($child, $companyId);
-
-        $relation = $child['Relation'] ?? "BelongsTo";
-        $relationKey = $relation === "HasMany" ? Str::plural($child['Name']) : $child['Name'];
-
-        if ($relation === "HasMany") {
-            $fields[$relationKey] = [$childFieldsData];
-        } else {
-            $fields[$relationKey] = $childFieldsData;
-        }
-
-        return $fields;
-    }
-
-    /**
-     * @param array $child
-     * @param $companyId
-     * @return array
-     *  Recursively process children and assign them based on their relation.
-     */
-    public function processChild(array $child, $companyId = null): array
-    {
-        $childFields = $this->getEventProperties($child['Fields'] ?? []);
-
-        if (isset($child['Table'])) {
-            $childTableFields = $this->fetchTableFields($child['Table'], $companyId);
-            $childFields = array_merge($childFields, $childTableFields);
-        }
-
-        // Handle nested children recursively
-        if (!empty($child['Children']) && is_array($child['Children'])) {
-            foreach ($child['Children'] as $nestedChild) {
-                $childFields = $this->assignRelation($childFields, $nestedChild, $companyId);
-            }
-        }
-
-        return $childFields;
+        $fields = array_merge($layoutFields, $this->getEventProperties($emailEvent['Fields'] ?? []));
+        return $this->fetchFields($fields, $emailEvent, $companyId);
     }
 
     /**
@@ -163,6 +127,30 @@ abstract class EmailHelperService
         }
 
         return $properties;
+    }
+
+    /**
+     * @param array $fields
+     * @param array $emailEvent
+     * @param null $companyId
+     * @return array
+     */
+    public function fetchFields(array $fields, array $emailEvent, $companyId = null): array
+    {
+        // Fetch fields from main table
+        if (isset($emailEvent['Table'])) {
+            $tableFields = $this->fetchTableFields($emailEvent['Table'], $companyId);
+            $fields = array_merge($tableFields, $fields);
+        }
+
+        // Handle children recursively
+        if (!empty($emailEvent['Children']) && is_array($emailEvent['Children'])) {
+            foreach ($emailEvent['Children'] as $child) {
+                $fields = $this->assignRelation($fields, $child, $companyId);
+            }
+        }
+
+        return $fields;
     }
 
     /**
@@ -195,6 +183,41 @@ abstract class EmailHelperService
         }
 
         return $fields;
+    }
+
+    /**
+     * @param array $fields
+     * @param array $child
+     * @param $companyId
+     * @return array
+     *  Assign child elements based on relation type (HasMany or BelongsTo).
+     */
+    public function assignRelation(array &$fields, array $child, $companyId = null): array
+    {
+        $childFieldsData = $this->processChild($child, $companyId);
+
+        $relation = $child['Relation'] ?? "BelongsTo";
+        $relationKey = $relation === "HasMany" ? Str::plural($child['Name']) : $child['Name'];
+
+        if ($relation === "HasMany") {
+            $fields[$relationKey] = [$childFieldsData];
+        } else {
+            $fields[$relationKey] = $childFieldsData;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @param array $child
+     * @param $companyId
+     * @return array
+     *  Recursively process children and assign them based on their relation.
+     */
+    public function processChild(array $child, $companyId = null): array
+    {
+        $childFields = $this->getEventProperties($child['Fields'] ?? []);
+        return $this->fetchFields($childFields, $child, $companyId);
     }
 
 }

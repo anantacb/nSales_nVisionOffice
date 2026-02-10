@@ -11,6 +11,7 @@ use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class EmailTemplateService extends EmailHelperService implements EmailTemplateServiceInterface
 {
@@ -114,27 +115,23 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         );
         $layoutFields = json_decode(json_encode($layoutFields), true);
         $emailEvents = json_decode(json_encode($emailEvents), true);
+        $layoutFields = $this->getEventProperties($layoutFields ?? []);
 
         $data = [];
         foreach ($emailEvents as $key => $emailEvent) {
-            $fields = $this->getEventProperties(array_merge($layoutFields, $emailEvent['Fields'] ?? []));
-
-            // Fetch fields from main table
-            if (isset($emailEvent['Table'])) {
-                $tableFields = $this->fetchTableFields($emailEvent['Table']);
-                $fields = array_merge($tableFields, $fields);
+            $parentFields = [];
+            if (isset($emailEvent['Parent']) && isset($emailEvents[$emailEvent['Parent']])) {
+                $parentFields = $data[$emailEvent['Parent']] ?
+                    $data[$emailEvent['Parent']]['templateObject'] :
+                    $this->fetchFieldsData($layoutFields, $emailEvents[$emailEvent['Parent']]);
             }
 
-            // Handle children recursively
-            if (!empty($emailEvent['Children']) && is_array($emailEvent['Children'])) {
-                foreach ($emailEvent['Children'] as $child) {
-                    $fields = $this->assignRelation($fields, $child);
-                }
-            }
+            $fields = $this->fetchFieldsData($layoutFields, $emailEvent);
+            $mergedFields = Arr::undot(Arr::dot($fields) + Arr::dot($parentFields));
 
             $data[$key] = [
                 'Title' => $emailEvent['Title'],
-                'templateObject' => $fields,
+                'templateObject' => $mergedFields,
             ];
         }
 
