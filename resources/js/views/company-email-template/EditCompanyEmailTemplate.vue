@@ -26,6 +26,7 @@ let CompanyEmailTemplateModel = ref({});
 let EmailEvents = ref([]);
 const updateEmailLayoutRef = ref(null);
 const isLoading = ref(false);
+let OrderElements = ref(['ORDER_CONFIRMATION_MAIL', 'RETURN_ORDER_MAIL']);
 
 let DatabaseTableOptions = ref([
     {
@@ -95,9 +96,9 @@ async function getColumnValues() {
     );
 }
 
-const showDatabaseFormElements = computed(() => {
-    return CompanyEmailTemplateModel.value.ElementName === 'ORDER_CONFIRMATION_MAIL';
-});
+const showDatabaseFormElements = computed(() =>
+    OrderElements.value.includes(CompanyEmailTemplateModel.value.ElementName)
+);
 
 function setTemplate(newEditorValue) {
     CompanyEmailTemplateModel.value.Template = newEditorValue;
@@ -294,12 +295,11 @@ onMounted(async () => {
                                 </label>
                                 <div class="col-sm-9">
                                     <Select
-                                        id="ElementName"
+                                        id="DatabaseTable"
                                         v-model="CompanyEmailTemplateModel.DatabaseTable"
                                         :options="DatabaseTableOptions"
-                                        :required="false"
                                         :select-class="errors.DatabaseTable ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="ElementName"
+                                        name="DatabaseTable"
                                         @change="resetErrors();databaseTableChanged()"
                                     />
                                     <InputErrorMessages v-if="errors.DatabaseTable"
@@ -310,18 +310,18 @@ onMounted(async () => {
 
                         <div class="col-lg-4 space-y-2">
                             <div class="row">
-                                <label class="col-sm-3 col-form-label col-form-label-sm" for="Column">
+                                <label class="col-sm-3 col-form-label col-form-label-sm" for="TableColumn">
                                     Column<span v-if="!!CompanyEmailTemplateModel.DatabaseTable"
                                                 class="text-danger">*</span>
                                 </label>
                                 <div class="col-sm-9">
                                     <Select
-                                        id="LanguageId"
+                                        id="TableColumn"
                                         v-model="CompanyEmailTemplateModel.TableColumn"
                                         :options="TableColumnOptions"
                                         :required="!!CompanyEmailTemplateModel.DatabaseTable"
                                         :select-class="errors.TableColumn ? `is-invalid form-select-sm` : `form-select-sm`"
-                                        name="Language"
+                                        name="TableColumn"
                                         @change="tableColumnChanged()"
                                     />
                                     <InputErrorMessages v-if="errors.TableColumn"
