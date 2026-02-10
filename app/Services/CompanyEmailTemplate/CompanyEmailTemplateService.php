@@ -11,6 +11,7 @@ use App\Services\EmailLayout\EmailHelperService;
 use App\Services\ModuleSetting\ModuleSettingServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class CompanyEmailTemplateService extends EmailHelperService implements CompanyEmailTemplateServiceInterface
 {
@@ -92,24 +93,20 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
 
         $data = [];
         foreach ($emailEvents as $key => $emailEvent) {
-            $fields = array_merge($layoutFields, $this->getEventProperties($emailEvent['Fields'] ?? []));
-
-            // Fetch fields from main table
-            if (isset($emailEvent['Table'])) {
-                $tableFields = $this->fetchTableFields($emailEvent['Table'], $request->get("CompanyId"));
-                $fields = array_merge($tableFields, $fields);
+            $parentFields = [];
+            if (isset($emailEvent['Parent']) && isset($emailEvents[$emailEvent['Parent']])) {
+                $parentFields = $data[$emailEvent['Parent']] ?
+                    $data[$emailEvent['Parent']]['templateObject'] :
+                    $this->fetchFieldsData($layoutFields, $emailEvents[$emailEvent['Parent']], $request->get("companyId"));
             }
 
-            // Handle children recursively
-            if (!empty($emailEvent['Children']) && is_array($emailEvent['Children'])) {
-                foreach ($emailEvent['Children'] as $child) {
-                    $fields = $this->assignRelation($fields, $child, $request->get("CompanyId"));
-                }
-            }
+            $fields = $this->fetchFieldsData($layoutFields, $emailEvent, $request->get("companyId"));
+            // merge parent and self fields, override parent
+            $mergedFields = Arr::undot(Arr::dot($fields) + Arr::dot($parentFields));
 
             $data[$key] = [
                 'Title' => $emailEvent['Title'],
-                'templateObject' => $fields,
+                'templateObject' => $mergedFields,
             ];
         }
 
