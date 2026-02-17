@@ -3,6 +3,7 @@
 namespace App\Services\CompanyEmailLayout;
 
 use App\Contracts\ServiceDto;
+use App\Helpers\Helpers;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyEmailTemplate\CompanyEmailTemplateRepositoryInterface;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
@@ -105,7 +106,7 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
         $layoutFields = json_decode(CompanyService::getSettingValue('CompanyEmail', 'LayoutFields'), true);
         $previewTemplateObject = array_merge(
             $this->getEventProperties($layoutFields ?? []),
-            array_filter($this->getCompanyDataForTemplate(), function ($value) {
+            array_filter(Helpers::getCompanyDataForTemplate(), function ($value) {
                 return $value !== '';
             })
         );
