@@ -3,6 +3,9 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class Helpers
 {
@@ -34,7 +37,6 @@ class Helpers
         ];
     }
 
-
     public static function getArrayChanges(array $old, array $new): array
     {
         // Normalize by sorting keys for a consistent comparison
@@ -60,4 +62,35 @@ class Helpers
             'removed' => $removed,
         ];
     }
+
+    /**
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public static function getCompanyDataForTemplate(): array
+    {
+        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        $addressParts = array_filter([
+            $selectedCompany->Street ?? null,
+            $selectedCompany->ZipCode ?? null,
+            $selectedCompany->City ?? null,
+        ]);
+        return [
+            'CompanyName' => $selectedCompany->CompanyName,
+            'CompanyStreet' => $selectedCompany->Street,
+            'CompanyZipCode' => $selectedCompany->ZipCode,
+            'CompanyCity' => $selectedCompany->City,
+            'CompanyPhone' => $selectedCompany->PhoneNo,
+            'CompanyEmail' => $selectedCompany->Email,
+            'CompanyFax' => $selectedCompany->FaxNo,
+            'CompanyVatNo' => $selectedCompany->VATNo,
+            'CompanyState' => $selectedCompany->State,
+            'CompanyAddress' => implode(', ', $addressParts),
+            'CompanyCountry' => $selectedCompany->Country,
+            'CompanyLogoUrl' => isset($selectedCompany['imageHostAccount']) ?
+                $selectedCompany['imageHostAccount']['Home'] . '/logo.png' : '',
+        ];
+    }
+
 }
