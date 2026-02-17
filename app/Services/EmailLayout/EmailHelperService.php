@@ -6,7 +6,6 @@ use App\Models\Office\Table;
 use App\Repositories\Eloquent\Office\TableField\TableFieldRepositoryInterface;
 use Exception;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -22,27 +21,6 @@ abstract class EmailHelperService
     public function __construct($tableFieldRepository)
     {
         $this->tableFieldRepository = $tableFieldRepository;
-    }
-
-    public static function getCompanyDataForTemplate(): array
-    {
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-
-        return [
-            'CompanyName' => $selectedCompany->CompanyName,
-            'CompanyStreet' => $selectedCompany->Street,
-            'CompanyZipCode' => $selectedCompany->ZipCode,
-            'CompanyCity' => $selectedCompany->City,
-            'CompanyPhone' => $selectedCompany->PhoneNo,
-            'CompanyEmail' => $selectedCompany->Email,
-            'CompanyFax' => $selectedCompany->FaxNo,
-            'CompanyVatNo' => $selectedCompany->VATNo,
-            'CompanyState' => $selectedCompany->State,
-            'CompanyAddress' => $selectedCompany->Street . ', ' . $selectedCompany->ZipCode . ', ' . $selectedCompany->City,
-            'CompanyCountry' => $selectedCompany->Country,
-            'CompanyLogoUrl' => isset($selectedCompany['imageHostAccount']) ?
-                $selectedCompany['imageHostAccount']['Home'] . '/logo.png' : '',
-        ];
     }
 
     /**
