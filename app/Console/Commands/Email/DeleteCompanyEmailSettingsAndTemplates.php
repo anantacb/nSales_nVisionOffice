@@ -148,11 +148,17 @@ class DeleteCompanyEmailSettingsAndTemplates extends Command
 
             if (in_array($this->applyOn, ['setting', 'both'])) {
                 $companySettings = $this->getCompanySpecificSettings($company->Id, $module);
-                foreach ($companySettings as $setting) {
-                    $updatedSetting = Arr::except($setting['Value'], $this->elementName);
 
-                    $counters['settings'] = Setting::where('Id', $setting['Id'])
-                        ->update(['Value' => json_encode($updatedSetting)]);
+                foreach ($companySettings as $setting) {
+                    $original = $setting['Value'];
+                    $updatedSetting = Arr::except($original, $this->elementName);
+                    $removedKeysCount = count(array_intersect(array_keys($original), $this->elementName));
+
+                    if ($removedKeysCount > 0) {
+                        Setting::where('Id', $setting['Id'])
+                            ->update(['Value' => json_encode($updatedSetting)]);
+                        $counters['settings'] = ($counters['settings'] ?? 0) + $removedKeysCount;
+                    }
                 }
             }
 
