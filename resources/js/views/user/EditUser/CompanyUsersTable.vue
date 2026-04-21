@@ -6,7 +6,7 @@ import {useJQueryDatatableTable} from "@/composables/useJQueryDatatableTable";
 
 let {columns, setColumns, onSort, sortBy, performDomActions} = useJQueryDatatableTable();
 
-const emit = defineEmits(['assignToCompany'])
+const emit = defineEmits(['assignToCompany', 'editRoles', 'editInitials'])
 const props = defineProps({
     companyUsers: {
         type: Array,
@@ -41,10 +41,13 @@ setColumns([
 const CompanyUsers = computed(() => {
     return props.companyUsers.map((companyUser) => {
         return {
+            CompanyUserId: companyUser.Id,
+            CompanyId: companyUser.CompanyId,
             LicenceType: companyUser.LicenceType,
             Initials: companyUser.Initials,
             CompanyName: companyUser.company.CompanyName,
-            Roles: companyUser.roles.map(role => role.Name)
+            Roles: companyUser.roles.map(role => role.Name),
+            RoleObjects: companyUser.roles.map(role => ({Id: role.Id, Name: role.Name}))
         }
     })
 });
@@ -99,12 +102,16 @@ onMounted(() => {
                                     <tr>
                                         <th scope="row">{{ rowIndex + 1 }}</th>
                                         <td>{{ row.CompanyName }}</td>
-                                        <td>{{ row.Initials }}</td>
+                                        <td class="editable-cell" title="Click to edit initials"
+                                            @click="emit('editInitials', row)">{{ row.Initials }}
+                                        </td>
                                         <td>{{ row.LicenceType }}</td>
-                                        <td><span v-for="role in row.Roles"
+                                        <td class="editable-cell" title="Click to edit roles"
+                                            @click="emit('editRoles', row)">
+                                            <span v-for="role in row.Roles"
                                                   :class="role === `Developer` ? `bg-danger-light text-danger` : (role === 'Administrator' ? `bg-success-light text-success`: `bg-info-light text-info`)"
                                                   class="fs-xs fw-semibold d-inline-block py-1 px-3 rounded-pill"
-                                        >{{ role }}</span>
+                                            >{{ role }}</span>
                                         </td>
                                     </tr>
                                 </template>
@@ -157,6 +164,14 @@ onMounted(() => {
     border-top: 2px solid;
     top: 4px;
     opacity: 0.3;
+}
+
+.editable-cell {
+    cursor: pointer;
+}
+
+.editable-cell:hover {
+    background-color: rgba(0, 0, 0, 0.03);
 }
 
 th.sort {
