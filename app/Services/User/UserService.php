@@ -125,8 +125,6 @@ class UserService implements UserServiceInterface
             ]);
         }
 
-        // TODO Send Mail
-
         return new ServiceDto('User Created Successfully', 200, $user);
     }
 
@@ -159,8 +157,6 @@ class UserService implements UserServiceInterface
                 'CompanyUserId' => $companyUser->Id
             ]);
         }
-
-        // TODO Send Mail
 
         return new ServiceDto('User Assigned Successfully', 200, []);
     }
@@ -205,36 +201,57 @@ class UserService implements UserServiceInterface
             'Note' => $request->get('Note')
         ]);
 
-        $companyUser->load('companyUserRoles');
+        $this->syncCompanyUserRoles($companyUser, $request->get('RoleIds'));
 
+        return new ServiceDto('User Updated Successfully', 200, []);
+    }
+
+    public function updateCompanyUserRoles(Request $request): ServiceDto
+    {
+        $companyUserId = $request->get('CompanyUserId');
+        $companyUser = $this->companyUserRepository->findById($companyUserId);
+
+        $this->syncCompanyUserRoles($companyUser, $request->get('RoleIds'));
+
+        return new ServiceDto('Roles Updated Successfully', 200, []);
+    }
+
+    public function updateCompanyUserInitials(Request $request): ServiceDto
+    {
+        $this->companyUserRepository->findByIdAndUpdate(
+            $request->get('CompanyUserId'),
+            ['Initials' => $request->get('Initials')]
+        );
+
+        return new ServiceDto('Initials Updated Successfully', 200, []);
+    }
+
+    protected function syncCompanyUserRoles($companyUser, array $requestedRoleIds): void
+    {
+        $companyUser->load('companyUserRoles');
 
         $currentRoleIds = $companyUser->companyUserRoles->pluck('RoleId')->toArray();
 
-        $requestedRoleIds = $request->get('RoleIds');
-
-        if ($currentRoleIds !== $requestedRoleIds) {
-            $newRoleIds = array_diff($requestedRoleIds, $currentRoleIds);
-            $deletedRoleIds = array_diff($currentRoleIds, $requestedRoleIds);
-
-            foreach ($deletedRoleIds as $deletedRoleId) {
-                $this->companyUserRoleRepository->deleteByAttributes([
-                        ['column' => 'RoleId', 'operand' => '=', 'value' => $deletedRoleId],
-                        ['column' => 'CompanyUserId', 'operand' => '=', 'value' => $companyUserId]
-                    ]
-                );
-            }
-
-            foreach ($newRoleIds as $newRoleId) {
-                $this->companyUserRoleRepository->create([
-                    'RoleId' => $newRoleId,
-                    'CompanyUserId' => $companyUserId
-                ]);
-            }
+        if ($currentRoleIds === $requestedRoleIds) {
+            return;
         }
 
-        // TODO Send Mail
+        $newRoleIds = array_diff($requestedRoleIds, $currentRoleIds);
+        $deletedRoleIds = array_diff($currentRoleIds, $requestedRoleIds);
 
-        return new ServiceDto('User Updated Successfully', 200, []);
+        foreach ($deletedRoleIds as $deletedRoleId) {
+            $this->companyUserRoleRepository->deleteByAttributes([
+                ['column' => 'RoleId', 'operand' => '=', 'value' => $deletedRoleId],
+                ['column' => 'CompanyUserId', 'operand' => '=', 'value' => $companyUser->Id]
+            ]);
+        }
+
+        foreach ($newRoleIds as $newRoleId) {
+            $this->companyUserRoleRepository->create([
+                'RoleId' => $newRoleId,
+                'CompanyUserId' => $companyUser->Id
+            ]);
+        }
     }
 
     public function details(Request $request): ServiceDto
