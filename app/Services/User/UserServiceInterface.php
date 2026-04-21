@@ -23,6 +23,10 @@ interface UserServiceInterface
 
     public function updateCompanyUser(Request $request): ServiceDto;
 
+    public function updateCompanyUserRoles(Request $request): ServiceDto;
+
+    public function updateCompanyUserInitials(Request $request): ServiceDto;
+
     public function tagDeveloperToAllCompanies(Request $request): ServiceDto;
 
     public function assignToCompany(Request $request): ServiceDto;

@@ -177,6 +177,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/users/company-users', [UserController::class, 'getCompanyUsers']);
     Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);
     Route::post('/users/company-user/update', [UserController::class, 'updateCompanyUser']);
+    Route::post('/users/company-user/update-roles', [UserController::class, 'updateCompanyUserRoles']);
+    Route::post('/users/company-user/update-initials', [UserController::class, 'updateCompanyUserInitials']);
     Route::post('/users/company-user/delete', [UserController::class, 'deleteCompanyUser']);
     Route::post('/users/company-user/details', [UserController::class, 'companyUserDetails']);
 
