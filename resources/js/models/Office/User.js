@@ -173,6 +173,30 @@ export default class User {
         });
     }
 
+    static updateCompanyUserRoles(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/users/company-user/update-roles', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static updateCompanyUserInitials(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/users/company-user/update-initials', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static assignUserToCompany(CompanyId, formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/user/assign-to-company', {

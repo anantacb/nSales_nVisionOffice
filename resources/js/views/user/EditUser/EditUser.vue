@@ -5,6 +5,8 @@ import User from "@/models/Office/User";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
 import CompanyUsersTable from "@/views/user/EditUser/CompanyUsersTable.vue";
+import EditRolesModal from "@/views/user/EditUser/EditRolesModal.vue";
+import EditInitialsModal from "@/views/user/EditUser/EditInitialsModal.vue";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import {booleanOptions, cultureOptions, licenceTypeOptions} from "@/data/dropDownOptions";
 import VueSelect from "vue-select";
@@ -27,6 +29,8 @@ let CompanyUsers = ref([]);
 
 const updateUserRef = ref(null);
 const modal = ref(null);
+const editRolesModal = ref(null);
+const editInitialsModal = ref(null);
 
 async function updateUser() {
     updateUserRef.value.statusLoading();
@@ -70,6 +74,20 @@ async function getUserDetails() {
 
 function previewAssignToCompanyForm() {
     modal.value.openModal();
+}
+
+function openEditRoles(row) {
+    editRolesModal.value.openWith(row);
+}
+
+function openEditInitials(row) {
+    editInitialsModal.value.openWith(row);
+}
+
+async function onCompanyUserUpdated() {
+    updateUserRef.value.statusLoading();
+    await getUserDetails();
+    updateUserRef.value.statusNormal();
 }
 
 
@@ -255,7 +273,11 @@ function resetAssignUserToCompanyForm() {
             <div class="col-lg-8">
                 <CompanyUsersTable :company-users="CompanyUsers"
                                    @assignToCompany="previewAssignToCompanyForm"
+                                   @editRoles="openEditRoles"
+                                   @editInitials="openEditInitials"
                 />
+                <EditRolesModal ref="editRolesModal" @updated="onCompanyUserUpdated"/>
+                <EditInitialsModal ref="editInitialsModal" @updated="onCompanyUserUpdated"/>
             </div>
         </div>
 

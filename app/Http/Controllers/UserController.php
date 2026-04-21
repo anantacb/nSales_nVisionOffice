@@ -10,6 +10,8 @@ use App\Http\Requests\User\DetailsOrDeleteCompanyUser;
 use App\Http\Requests\User\GetAllCompanyUsers;
 use App\Http\Requests\User\Update;
 use App\Http\Requests\User\UpdateCompanyUser;
+use App\Http\Requests\User\UpdateCompanyUserInitials;
+use App\Http\Requests\User\UpdateCompanyUserRoles;
 use App\Services\User\UserServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
@@ -93,6 +95,20 @@ class UserController extends Controller
     public function updateCompanyUser(UpdateCompanyUser $request): JsonResponse
     {
         $response = $this->service->updateCompanyUser($request);
+
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function updateCompanyUserRoles(UpdateCompanyUserRoles $request): JsonResponse
+    {
+        $response = $this->service->updateCompanyUserRoles($request);
+
+        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+    }
+
+    public function updateCompanyUserInitials(UpdateCompanyUserInitials $request): JsonResponse
+    {
+        $response = $this->service->updateCompanyUserInitials($request);
 
         return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
     }
