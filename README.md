@@ -13,7 +13,7 @@
 
 ### If Using Valet and default php version is not 8
 
-- valet isolate php@8.2
+- valet isolate php@8.4
 
 ### Copy env file
 
