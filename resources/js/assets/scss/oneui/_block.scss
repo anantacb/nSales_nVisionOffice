@@ -5,8 +5,8 @@
 .block {
   margin-bottom: $space-base;
   background-color: $white;
-  box-shadow: 0 1px 2px rgba(shade-color($body-bg-dark, 3%), 0.5),
-    0 1px 2px rgba(shade-color($body-bg-dark, 3%), 0.5);
+  box-shadow: 0 1px 2px rgba(shade-color($oneui-body-bg-dark, 3%), 0.5),
+    0 1px 2px rgba(shade-color($oneui-body-bg-dark, 3%), 0.5);
 
   & &,
   .content-side & {
@@ -36,7 +36,7 @@
   }
 
   &-default {
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
   }
 }
 
@@ -88,7 +88,7 @@
 // Block Variations
 .block {
   &.block-bordered {
-    border: 1px solid $body-bg-dark;
+    border: 1px solid $oneui-body-bg-dark;
     box-shadow: none;
   }
 

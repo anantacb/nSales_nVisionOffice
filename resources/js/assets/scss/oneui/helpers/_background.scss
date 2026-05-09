@@ -108,8 +108,8 @@
 @include bg-variant(".bg-danger-op ", rgba($danger-light, 0.95));
 
 @include bg-variant(".bg-body", $body-bg);
-@include bg-variant(".bg-body-light", $body-bg-light);
-@include bg-variant(".bg-body-dark", $body-bg-dark);
+@include bg-variant(".bg-body-light", $oneui-body-bg-light);
+@include bg-variant(".bg-body-dark", $oneui-body-bg-dark);
 @include bg-variant(".bg-body-extra-light", $white);
 @include bg-variant(".bg-muted", $gray-600);
 

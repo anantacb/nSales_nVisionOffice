@@ -111,12 +111,15 @@ function getRowData(data, field) {
 }
 
 function sortByField(field) {
-    if (sortBy.value === field.sortField && sortOrder.value !== "desc") {
+    if (sortBy.value !== field.sortField) {
+        sortBy.value = field.sortField;
+        sortOrder.value = "asc";
+    } else if (sortOrder.value === "asc") {
         sortOrder.value = "desc";
     } else {
-        sortOrder.value = "asc";
+        sortBy.value = "";
+        sortOrder.value = "";
     }
-    sortBy.value = field.sortField;
     emit("sortBy", {field: sortBy.value, order: sortOrder.value});
 }
 
@@ -181,12 +184,15 @@ watch(() => props.searchString, () => {
                         <span class="mr-1" v-html="getTitle(field)"></span>
                     </slot>
                     <span :class="{ disabled: field.sortField !== sortBy }" class="sort-icon">
-                        <img
+                        <i
                             v-if="field.sortField === sortBy && sortOrder === 'desc'"
-                            alt=""
-                            src="/img/chevron-down.svg"
-                        />
-                        <img v-else alt="" src="/img/chevron-up.svg"/>
+                            class="fa fa-sort-down"
+                        ></i>
+                        <i
+                            v-else-if="field.sortField === sortBy"
+                            class="fa fa-sort-up"
+                        ></i>
+                        <i v-else class="fa fa-sort"></i>
                     </span>
                 </a>
                 <slot v-else :name="'head-' + field.name" v-bind:field="field">
@@ -258,7 +264,8 @@ watch(() => props.searchString, () => {
         .data-grid-head-item {
             background-color: white;
 
-            span {
+            span,
+            i {
                 color: black;
             }
         }
@@ -295,27 +302,32 @@ watch(() => props.searchString, () => {
         align-items: flex-end;
         background-color: #1f2937;
 
-        span {
+        span,
+        i {
             color: white;
         }
 
         .sort-link {
             text-decoration: none;
-            color: #29235c;
+            color: inherit;
+            gap: 0.5rem;
+            align-items: center;
         }
 
         .sort-icon {
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
+            align-items: center;
         }
 
-        .sort-icon img {
-            width: 1.2rem;
+        .sort-icon i {
+            font-size: 0.85rem;
+            color: inherit;
+            opacity: 0.85;
         }
 
-        .sort-icon.disabled {
-            opacity: 0;
-            pointer-events: unset;
+        .sort-icon.disabled i {
+            opacity: 0.35;
         }
     }
 

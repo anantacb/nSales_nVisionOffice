@@ -15,8 +15,8 @@
 
   .fc-button-primary {
     color: $body-color;
-    background-color: $body-bg-dark;
-    border-color: $body-bg-dark;
+    background-color: $oneui-body-bg-dark;
+    border-color: $oneui-body-bg-dark;
 
     &:not(:disabled):hover {
       color: $body-color;
@@ -27,8 +27,8 @@
     &:not(:disabled).fc-button-active,
     &:not(:disabled):active {
       color: $body-color;
-      background-color: $body-bg-light;
-      border-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
+      border-color: $oneui-body-bg-light;
     }
 
     &:focus,
@@ -42,7 +42,7 @@
   td,
   .fc-scrollgrid,
   .fc-list {
-    border-color: $body-bg-dark;
+    border-color: $oneui-body-bg-dark;
   }
 
   .fc-h-event {
@@ -56,11 +56,11 @@
     font-size: $font-size-sm;
     font-weight: 600;
     text-transform: uppercase;
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
   }
 
   .fc-list-day-cushion {
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
   }
 
   @include media-breakpoint-down(xl) {

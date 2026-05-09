@@ -57,7 +57,7 @@
   &:hover,
   &:focus {
     color: $body-color;
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
     outline: 0 !important;
 
     > .nav-main-link-icon {
@@ -313,20 +313,20 @@
 .page-header-dark #page-header {
   // Headings
   .nav-main-heading {
-    color: darken($body-bg-dark, 35%);
+    color: darken($oneui-body-bg-dark, 35%);
   }
 
   // Default links
   .nav-main-link {
-    color: darken($body-bg-dark, 20%);
+    color: darken($oneui-body-bg-dark, 20%);
 
     > .nav-main-link-icon {
-      color: rgba(darken($body-bg-dark, 20%), 0.5);
+      color: rgba(darken($oneui-body-bg-dark, 20%), 0.5);
     }
 
     &:hover,
     &:focus {
-      color: darken($body-bg-dark, 25%);
+      color: darken($oneui-body-bg-dark, 25%);
       background-color: rgba(0, 0, 0, 0.2);
 
       > .nav-main-link-icon {
@@ -348,7 +348,7 @@
     background-color: rgba(0, 0, 0, 0.15);
 
     .nav-main-link {
-      color: darken($body-bg-dark, 30%);
+      color: darken($oneui-body-bg-dark, 30%);
 
       &:hover,
       &:focus,

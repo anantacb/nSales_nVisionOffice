@@ -33,7 +33,7 @@
 
   // Page header
   &.page-header-dark #page-header {
-    color: darken($body-color-light, 8%);
+    color: darken($oneui-body-color-light, 8%);
     background-color: $header-dark-bg;
   }
 
@@ -102,11 +102,11 @@
 
   // Sidebar and Side Overlay
   #sidebar .content-header {
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
   }
 
   &.sidebar-dark #sidebar {
-    color: $body-color-light;
+    color: $oneui-body-color-light;
     background-color: $sidebar-dark-bg;
 
     .content-header {

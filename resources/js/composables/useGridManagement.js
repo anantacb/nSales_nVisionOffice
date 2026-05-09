@@ -32,6 +32,10 @@ export default function useGridManagement() {
     }
 
     function setSortBy(field, order) {
+        if (!field || !order) {
+            request.value.order = {};
+            return;
+        }
         request.value.order = [
             {"column": field, "sort": order}
         ];

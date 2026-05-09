@@ -22,7 +22,7 @@
 
 // Tabs block variation
 .nav-tabs-block {
-  background-color: $body-bg-light;
+  background-color: $oneui-body-bg-light;
   border-bottom: none;
 
   .nav-item {
@@ -40,7 +40,7 @@
     &:hover,
     &:focus {
       color: $primary;
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
       border-color: transparent;
     }
   }
@@ -56,7 +56,7 @@
 // Tabs block alternative variation
 .nav-tabs-alt {
   background-color: transparent;
-  border-bottom-color: $body-bg-dark;
+  border-bottom-color: $oneui-body-bg-dark;
 
   .nav-item {
     margin-bottom: -1px;
@@ -94,7 +94,7 @@
 
   a {
     &:hover {
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
     }
 
     &:active {
@@ -114,7 +114,7 @@
   justify-content: center;
   width: $sidebar-mini-nav-width;
   height: $sidebar-mini-nav-width;
-  color: darken($body-bg-dark, 15%);
+  color: darken($oneui-body-bg-dark, 15%);
   font-size: 1rem;
 
   i {
@@ -132,7 +132,7 @@
   }
 
   &:active {
-    color: darken($body-bg-dark, 15%);
+    color: darken($oneui-body-bg-dark, 15%);
 
     i {
       transform: scale(0.9);

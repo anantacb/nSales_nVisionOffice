@@ -107,7 +107,7 @@
 
 // Color variation
 .ribbon-light {
-  @include ribbon-variation($body-bg-dark, $body-color);
+  @include ribbon-variation($oneui-body-bg-dark, $body-color);
 }
 
 .ribbon-dark {

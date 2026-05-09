@@ -9,11 +9,11 @@
     $primary-dark,
     $primary-darker,
     $body-bg,
-    $body-bg-dark,
-    $body-bg-light,
+    $oneui-body-bg-dark,
+    $oneui-body-bg-light,
     $body-color,
-    $body-color-dark,
-    $body-color-light,
+    $oneui-body-color-dark,
+    $oneui-body-color-light,
     $link-color,
     $link-hover-color
 ) {
@@ -23,7 +23,7 @@
         #side-overlay,
         #page-loader {
             background-color: darken($primary-darker, 3%);
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
         }
 
         // Typography
@@ -39,12 +39,12 @@
         .h4,
         .h5,
         .h6 {
-            color: $body-bg-dark;
+            color: $oneui-body-bg-dark;
         }
 
         .content-heading,
         .content-heading small {
-            color: darken($body-bg-light, 30%);
+            color: darken($oneui-body-bg-light, 30%);
         }
 
         hr {
@@ -57,7 +57,7 @@
 
         .story p,
         p.story {
-            color: darken($body-bg-dark, 20%);
+            color: darken($oneui-body-bg-dark, 20%);
         }
 
         // Links
@@ -78,7 +78,7 @@
         @include bg-variant(".bg-body-light", lighten($primary-darker, 3%));
         @include bg-variant(".bg-body-dark", darken($primary-darker, 4.5%));
         @include bg-variant(".bg-body-extra-light", $primary-darker);
-        @include bg-variant(".bg-muted", darken($body-bg-light, 30%));
+        @include bg-variant(".bg-muted", darken($oneui-body-bg-light, 30%));
 
         // Contextual text colors
         @include text-emphasis-variant(".text-primary", lighten($primary, 5%));
@@ -102,17 +102,17 @@
         );
         @include text-emphasis-variant(
                 ".text-body-color",
-                darken($body-bg-dark, 10%)
+                darken($oneui-body-bg-dark, 10%)
         );
         @include text-emphasis-variant(
                 ".text-body-color-dark",
-                darken($body-bg-dark, 20%)
+                darken($oneui-body-bg-dark, 20%)
         );
-        @include text-emphasis-variant(".text-body-color-light", $body-bg-dark);
+        @include text-emphasis-variant(".text-body-color-light", $oneui-body-bg-dark);
 
-        @include text-emphasis-variant(".text-dark", darken($body-bg-dark, 20%));
+        @include text-emphasis-variant(".text-dark", darken($oneui-body-bg-dark, 20%));
 
-        @include text-emphasis-variant(".text-muted", darken($body-bg-light, 30%));
+        @include text-emphasis-variant(".text-muted", darken($oneui-body-bg-light, 30%));
 
         // Buttons
         .btn-secondary,
@@ -129,7 +129,7 @@
 
         // Nav links
         .nav-link {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
 
             &:hover,
             &:focus {
@@ -140,7 +140,7 @@
         // Nav Pills
         .nav-pills {
             .nav-link {
-                color: darken($body-bg-dark, 30%);
+                color: darken($oneui-body-bg-dark, 30%);
 
                 &:hover,
                 &:focus {
@@ -168,7 +168,7 @@
 
             .nav-link.active,
             .nav-item.show .nav-link {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: transparent;
                 border-color: lighten($primary-darker, 6%) lighten($primary-darker, 6%) $primary-darker;
             }
@@ -180,7 +180,7 @@
 
             .nav-link {
                 border-color: transparent;
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
 
                 &:hover,
                 &:focus {
@@ -192,7 +192,7 @@
 
             .nav-link.active,
             .nav-item.show .nav-link {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: $primary-darker;
                 border-color: transparent;
             }
@@ -203,7 +203,7 @@
             border-bottom-color: lighten($primary-darker, 3%);
 
             .nav-link {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: transparent;
                 border-color: transparent;
 
@@ -218,7 +218,7 @@
 
             .nav-link.active,
             .nav-item.show .nav-link {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: transparent;
                 border-color: transparent;
                 box-shadow: inset 0 -3px $primary;
@@ -269,20 +269,20 @@
             }
 
             > .card-header .block-title small {
-                color: darken($body-bg-light, 30%);
+                color: darken($oneui-body-bg-light, 30%);
             }
         }
 
         // Pagination
         .page-link {
-            color: darken($body-bg-dark, 30%);
+            color: darken($oneui-body-bg-dark, 30%);
 
             &:hover {
-                color: darken($body-bg-dark, 20%);
+                color: darken($oneui-body-bg-dark, 20%);
             }
 
             &:focus {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: transparent;
             }
         }
@@ -292,33 +292,33 @@
         }
 
         .page-item.disabled .page-link {
-            color: darken($body-bg-dark, 50%);
+            color: darken($oneui-body-bg-dark, 50%);
             background-color: transparent;
             border-bottom: transparent;
         }
 
         // List Group
         .list-group-item-action {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
 
             &:hover,
             &:focus {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: lighten($primary-darker, 4.5%);
             }
 
             &:active {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: darken($primary-darker, 3%);
             }
 
             &.disabled {
-                color: darken($body-bg-dark, 40%);
+                color: darken($oneui-body-bg-dark, 40%);
             }
         }
 
         .list-group-item {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: lighten($primary-darker, 3%);
             border-color: darken($primary-darker, 4.5%);
 
@@ -394,41 +394,41 @@
         }
 
         .popover-header {
-            color: $body-bg-dark;
+            color: $oneui-body-bg-dark;
             background-color: lighten($primary-darker, 3%);
             border-bottom-color: darken($primary-darker, 4.5%);
         }
 
         .popover-body {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: lighten($primary-darker, 3%);
         }
 
         // Dropdowns
         .dropdown-menu {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: lighten($primary-darker, 3%);
             border-color: lighten($primary-darker, 3%);
             box-shadow: 0 0.25rem 2rem rgba($black, 0.25);
 
             .dropdown-item {
-                color: darken($body-bg-dark, 15%);
+                color: darken($oneui-body-bg-dark, 15%);
 
                 &:hover,
                 &:focus {
-                    color: darken($body-bg-dark, 10%);
+                    color: darken($oneui-body-bg-dark, 10%);
                     background-color: lighten($primary-darker, 8%);
                 }
 
                 &.active,
                 &:active {
-                    color: darken($body-bg-dark, 5%);
+                    color: darken($oneui-body-bg-dark, 5%);
                     background-color: lighten($primary-darker, 12%);
                 }
 
                 &.disabled,
                 &:disabled {
-                    color: darken($body-bg-dark, 50%);
+                    color: darken($oneui-body-bg-dark, 50%);
                 }
             }
 
@@ -437,24 +437,24 @@
             }
 
             .dropdown-item-text {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
             }
 
             .dropdown-header {
-                color: darken($body-bg-dark, 25%) !important;
+                color: darken($oneui-body-bg-dark, 25%) !important;
             }
         }
 
         // Tables
         .table {
-            --#{$variable-prefix}table-striped-color: #{$body-bg-light};
+            --#{$variable-prefix}table-striped-color: #{$oneui-body-bg-light};
             --#{$variable-prefix}table-striped-bg: #{darken($primary-darker, 1.5%)};
-            --#{$variable-prefix}table-active-color: #{$body-bg-light};
+            --#{$variable-prefix}table-active-color: #{$oneui-body-bg-light};
             --#{$variable-prefix}table-active-bg: #{lighten($primary-darker, 6%)};
-            --#{$variable-prefix}table-hover-color: #{$body-bg-light};
+            --#{$variable-prefix}table-hover-color: #{$oneui-body-bg-light};
             --#{$variable-prefix}table-hover-bg: #{darken($primary-darker, 2.5%)};
 
-            color: $body-bg-light;
+            color: $oneui-body-bg-light;
             border-color: darken($primary-darker, 6%);
         }
 
@@ -470,11 +470,11 @@
 
         // Forms
         .form-text {
-            color: darken($body-bg-dark, 30%);
+            color: darken($oneui-body-bg-dark, 30%);
         }
 
         .form-control::placeholder {
-            color: darken($body-bg-dark, 40%);
+            color: darken($oneui-body-bg-dark, 40%);
         }
 
         .form-floating > .form-control::placeholder {
@@ -483,7 +483,7 @@
 
         .form-control,
         .form-select {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: darken($primary-darker, 4.5%);
             border-color: lighten($primary-darker, 8%);
 
@@ -501,13 +501,13 @@
 
         .form-select {
             &:focus::-ms-value {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
                 background-color: darken($primary-darker, 4.5%);
             }
         }
 
         .form-control-plaintext {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
         }
 
         @include form-validation-state(
@@ -522,7 +522,7 @@
         );
 
         .form-control.form-control-alt {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             border-color: darken($primary-darker, 3%);
             background-color: darken($primary-darker, 3%);
 
@@ -563,7 +563,7 @@
         }
 
         .input-group-text {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: darken($primary-darker, 3%);
             border-color: lighten($primary-darker, 8%);
         }
@@ -730,7 +730,7 @@
         }
 
         .toast-header {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: lighten($primary-darker, 6%);
         }
 
@@ -788,7 +788,7 @@
 
             .block-title {
                 small {
-                    color: darken($body-bg-light, 30%);
+                    color: darken($oneui-body-bg-light, 30%);
                 }
             }
 
@@ -814,7 +814,7 @@
         }
 
         a.block {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
 
             &.block-link-pop {
                 &:hover {
@@ -838,26 +838,26 @@
         }
 
         .btn-block-option {
-            color: darken($body-bg-light, 30%);
+            color: darken($oneui-body-bg-light, 30%);
 
             .block-header-default & {
-                color: darken($body-bg-light, 35%);
+                color: darken($oneui-body-bg-light, 35%);
             }
 
             &:hover,
             &:focus {
-                color: darken($body-bg-light, 40%);
+                color: darken($oneui-body-bg-light, 40%);
             }
 
             &:active {
-                color: darken($body-bg-light, 30%);
+                color: darken($oneui-body-bg-light, 30%);
             }
         }
 
         a.btn-block-option:focus,
         .active > a.btn-block-option,
         .show > button.btn-block-option {
-            color: darken($body-bg-light, 40%);
+            color: darken($oneui-body-bg-light, 40%);
         }
 
         .block.block-themed {
@@ -905,7 +905,7 @@
             border-color: lighten($primary-darker, 6%);
 
             .dz-message {
-                color: darken($body-bg-dark, 10%);
+                color: darken($oneui-body-bg-dark, 10%);
             }
 
             &:hover {
@@ -925,23 +925,23 @@
         // FullCalendar
         .fc-theme-standard {
             a {
-                color: darken($body-bg-dark, 15%);
+                color: darken($oneui-body-bg-dark, 15%);
             }
 
             .fc-button-primary {
-                color: darken($body-bg-dark, 15%);
+                color: darken($oneui-body-bg-dark, 15%);
                 background-color: darken($primary-darker, 4.5%);
                 border-color: darken($primary-darker, 4.5%);
 
                 &:not(:disabled):hover {
-                    color: darken($body-bg-dark, 10%);
+                    color: darken($oneui-body-bg-dark, 10%);
                     background-color: lighten($primary-darker, 3%);
                     border-color: lighten($primary-darker, 3%);
                 }
 
                 &:not(:disabled).fc-button-active,
                 &:not(:disabled):active {
-                    color: darken($body-bg-dark, 10%);
+                    color: darken($oneui-body-bg-dark, 10%);
                     background-color: lighten($primary-darker, 3%);
                     border-color: lighten($primary-darker, 3%);
                 }
@@ -975,7 +975,7 @@
         .flatpickr-input.form-control[readonly],
         .input.form-control:disabled,
         .input.form-control[readonly] {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
             background-color: darken($primary-darker, 4.5%);
             border-color: lighten($primary-darker, 8%);
         }
@@ -1023,16 +1023,16 @@
         }
 
         .vs__search::placeholder {
-            color: darken($body-bg-dark, 40%);
+            color: darken($oneui-body-bg-dark, 40%);
         }
 
         .vs__selected {
             background-color: lighten($primary-darker, 8%);
-            color: darken($body-bg-light, 30%);
+            color: darken($oneui-body-bg-light, 30%);
         }
 
         .vs__search {
-            color: darken($body-bg-dark, 10%);
+            color: darken($oneui-body-bg-dark, 10%);
         }
     }
 }

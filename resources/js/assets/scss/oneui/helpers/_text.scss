@@ -24,11 +24,11 @@
 @include text-emphasis-variant(".text-danger-light", $danger-light);
 
 @include text-emphasis-variant(".text-body-bg", $body-bg);
-@include text-emphasis-variant(".text-body-bg-dark", $body-bg-dark);
-@include text-emphasis-variant(".text-body-bg-light", $body-bg-light);
+@include text-emphasis-variant(".text-body-bg-dark", $oneui-body-bg-dark);
+@include text-emphasis-variant(".text-body-bg-light", $oneui-body-bg-light);
 @include text-emphasis-variant(".text-body-color", $body-color);
-@include text-emphasis-variant(".text-body-color-dark", $body-color-dark);
-@include text-emphasis-variant(".text-body-color-light", $body-color-light);
+@include text-emphasis-variant(".text-body-color-dark", $oneui-body-color-dark);
+@include text-emphasis-variant(".text-body-color-light", $oneui-body-color-light);
 
 @include text-emphasis-variant(".text-muted", $text-muted);
 @include text-emphasis-variant(".text-white", $white);
@@ -49,7 +49,7 @@
 
 .page-header-dark #page-header,
 .sidebar-dark #sidebar {
-  @include text-emphasis-variant(".text-dual", $body-color-light);
+  @include text-emphasis-variant(".text-dual", $oneui-body-color-light);
 }
 
 // Default Color Theme

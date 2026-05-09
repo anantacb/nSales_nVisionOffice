@@ -9,11 +9,11 @@
   $primary-dark,
   $primary-darker,
   $body-bg,
-  $body-bg-dark,
-  $body-bg-light,
+  $oneui-body-bg-dark,
+  $oneui-body-bg-light,
   $body-color,
-  $body-color-dark,
-  $body-color-light,
+  $oneui-body-color-dark,
+  $oneui-body-color-light,
   $link-color,
   $link-hover-color,
   $input-btn-focus-color,
@@ -51,7 +51,7 @@
 
   // Typography
   hr {
-    border-top-color: $body-bg-dark;
+    border-top-color: $oneui-body-bg-dark;
   }
 
   // Contextual text colors
@@ -62,19 +62,19 @@
   @include text-emphasis-variant(".text-primary-lighter", $primary-lighter);
 
   @include text-emphasis-variant(".text-body-bg", $body-bg);
-  @include text-emphasis-variant(".text-body-bg-light", $body-bg-light);
-  @include text-emphasis-variant(".text-body-bg-dark", $body-bg-dark);
+  @include text-emphasis-variant(".text-body-bg-light", $oneui-body-bg-light);
+  @include text-emphasis-variant(".text-body-bg-dark", $oneui-body-bg-dark);
 
   @include text-emphasis-variant(".text-body-color", $body-color);
-  @include text-emphasis-variant(".text-body-color-dark", $body-color-dark);
-  @include text-emphasis-variant(".text-body-color-light", $body-color-light);
+  @include text-emphasis-variant(".text-body-color-dark", $oneui-body-color-dark);
+  @include text-emphasis-variant(".text-body-color-light", $oneui-body-color-light);
 
   // Contextual dual text colors (for dark header/sidebar)
   @include text-emphasis-variant(".text-dual", $primary-dark);
 
   .page-header-dark #page-header,
   .sidebar-dark #sidebar {
-    @include text-emphasis-variant(".text-dual", $body-color-light);
+    @include text-emphasis-variant(".text-dual", $oneui-body-color-light);
   }
 
   // Contextual background colors
@@ -86,8 +86,8 @@
   @include bg-variant(".bg-primary-light", $primary-light);
   @include bg-variant(".bg-primary-lighter", $primary-lighter);
   @include bg-variant(".bg-body", $body-bg);
-  @include bg-variant(".bg-body-light", $body-bg-light);
-  @include bg-variant(".bg-body-dark", $body-bg-dark);
+  @include bg-variant(".bg-body-light", $oneui-body-bg-light);
+  @include bg-variant(".bg-body-dark", $oneui-body-bg-dark);
 
   // Elements
   @include bg-variant(".bg-header-light", $header-bg);
@@ -132,10 +132,10 @@
     @include button-variant(
       $body-bg,
       $body-bg,
-      $body-color-dark,
+      $oneui-body-color-dark,
       shade-color($body-bg, 10%),
       shade-color($body-bg, 10%),
-      shade-color($body-color-dark, 15%)
+      shade-color($oneui-body-color-dark, 15%)
     );
   }
 
@@ -192,24 +192,24 @@
 
   // Nav Tabs
   .nav-tabs {
-    border-bottom-color: $body-bg-dark;
+    border-bottom-color: $oneui-body-bg-dark;
 
     .nav-link {
       &:hover,
       &:focus {
-        border-color: $body-bg-dark $body-bg-dark $body-bg-dark;
+        border-color: $oneui-body-bg-dark $oneui-body-bg-dark $oneui-body-bg-dark;
       }
     }
 
     .nav-link.active,
     .nav-item.show .nav-link {
-      border-color: $body-bg-dark $body-bg-dark $white;
+      border-color: $oneui-body-bg-dark $oneui-body-bg-dark $white;
     }
   }
 
   // Tabs block variation
   .nav-tabs-block {
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
 
     .nav-link {
       border-color: transparent;
@@ -218,7 +218,7 @@
       &:hover,
       &:focus {
         color: $primary;
-        background-color: $body-bg-light;
+        background-color: $oneui-body-bg-light;
         border-color: transparent;
       }
     }
@@ -233,7 +233,7 @@
 
   // Tabs block alternative variation
   .nav-tabs-alt {
-    border-bottom-color: $body-bg-dark;
+    border-bottom-color: $oneui-body-bg-dark;
 
     .nav-link {
       color: $body-color;
@@ -264,7 +264,7 @@
       border-bottom-color: $body-bg;
 
       &:hover {
-        background-color: $body-bg-light;
+        background-color: $oneui-body-bg-light;
       }
 
       &:active {
@@ -280,24 +280,24 @@
   // Cards
   .card {
     &.card-borderless {
-      box-shadow: 0 1px 2px rgba(shade-color($body-bg-dark, 3%), 0.5),
-        0 1px 2px rgba(shade-color($body-bg-dark, 3%), 0.5);
+      box-shadow: 0 1px 2px rgba(shade-color($oneui-body-bg-dark, 3%), 0.5),
+        0 1px 2px rgba(shade-color($oneui-body-bg-dark, 3%), 0.5);
     }
 
     > .card-header:not(.bg-transparent),
     > .card-footer:not(.bg-transparent) {
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
     }
 
     > .card-header:not(.border-bottom-0),
     > .card-footer:not(.border-top-0) {
-      border-color: $body-bg-dark;
+      border-color: $oneui-body-bg-dark;
     }
 
     &:not(.card-borderless) {
       &,
       > .card-header {
-        border-color: $body-bg-dark;
+        border-color: $oneui-body-bg-dark;
       }
     }
   }
@@ -306,7 +306,7 @@
   .page-item {
     &.active .page-link {
       color: $primary;
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
       border-color: $primary;
     }
   }
@@ -331,17 +331,17 @@
     &:hover,
     &:focus {
       color: $body-color;
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
     }
 
     &:active {
       color: $body-color;
-      background-color: $body-bg-dark;
+      background-color: $oneui-body-bg-dark;
     }
   }
 
   .list-group-item {
-    border-color: $body-bg-dark;
+    border-color: $oneui-body-bg-dark;
 
     &.active {
       color: $white;
@@ -352,12 +352,12 @@
 
   // Popovers
   .popover {
-    border-color: $body-bg-dark;
+    border-color: $oneui-body-bg-dark;
   }
 
   .bs-popover-top {
     .popover-arrow::before {
-      border-top-color: fade-in($body-bg-dark, 0.05);
+      border-top-color: fade-in($oneui-body-bg-dark, 0.05);
     }
 
     .popover-arrow::after {
@@ -367,7 +367,7 @@
 
   .bs-popover-end {
     .popover-arrow::before {
-      border-right-color: fade-in($body-bg-dark, 0.05);
+      border-right-color: fade-in($oneui-body-bg-dark, 0.05);
     }
 
     .popover-arrow::after {
@@ -377,7 +377,7 @@
 
   .bs-popover-bottom {
     .popover-arrow::before {
-      border-bottom-color: fade-in($body-bg-dark, 0.05);
+      border-bottom-color: fade-in($oneui-body-bg-dark, 0.05);
     }
 
     .popover-arrow::after {
@@ -387,7 +387,7 @@
 
   .bs-popover-start {
     .popover-arrow::before {
-      border-left-color: fade-in($body-bg-dark, 0.05);
+      border-left-color: fade-in($oneui-body-bg-dark, 0.05);
     }
 
     .popover-arrow::after {
@@ -412,16 +412,16 @@
 
   // Modals
   .modal-header {
-    border-bottom-color: $body-bg-dark;
+    border-bottom-color: $oneui-body-bg-dark;
   }
 
   .modal-footer {
-    border-top-color: $body-bg-dark;
+    border-top-color: $oneui-body-bg-dark;
   }
 
   // Dropdowns
   .dropdown-menu {
-    border-color: $body-bg-dark;
+    border-color: $oneui-body-bg-dark;
   }
 
   .dropdown-divider {
@@ -433,14 +433,14 @@
 
     &:hover,
     &:focus {
-      color: $body-color-dark;
+      color: $oneui-body-color-dark;
       background-color: $body-bg;
     }
 
     &.active,
     &:active {
       color: $body-color;
-      background-color: $body-bg-dark;
+      background-color: $oneui-body-bg-dark;
     }
   }
 
@@ -450,11 +450,11 @@
     --#{$variable-prefix}table-active-bg: #{$body-bg};
     --#{$variable-prefix}table-hover-bg: #{darken($body-bg, 1.5%)};
 
-    border-color: $body-bg-dark;
+    border-color: $oneui-body-bg-dark;
   }
 
   .table > :not(:last-child) > :last-child > * {
-    border-bottom-color: $body-bg-dark;
+    border-bottom-color: $oneui-body-bg-dark;
   }
 
   @include table-variant("primary", $primary-lighter);
@@ -491,8 +491,8 @@
     background-color: $body-bg;
 
     &:focus {
-      border-color: $body-bg-dark;
-      background-color: $body-bg-dark;
+      border-color: $oneui-body-bg-dark;
+      background-color: $oneui-body-bg-dark;
       box-shadow: none;
     }
   }
@@ -511,8 +511,8 @@
   }
 
   .input-group-text.input-group-text-alt {
-    background-color: $body-bg-dark;
-    border-color: $body-bg-dark;
+    background-color: $oneui-body-bg-dark;
+    border-color: $oneui-body-bg-dark;
   }
 
   .form-check-input {
@@ -547,10 +547,10 @@
 
   .form-block {
     .form-check-label {
-      border: 2px solid $body-bg-dark;
+      border: 2px solid $oneui-body-bg-dark;
 
       &:hover {
-        border-color: darken($body-bg-dark, 5%);
+        border-color: darken($oneui-body-bg-dark, 5%);
       }
 
       &::before {
@@ -569,25 +569,25 @@
 
     .form-check-input:disabled:not([checked]) + .form-check-label:hover,
     .form-check-input[readonly]:not([checked]) + .form-check-label:hover {
-      border-color: $body-bg-dark;
+      border-color: $oneui-body-bg-dark;
     }
   }
 
   // Borders
   .border {
-    border-color: $body-bg-dark !important;
+    border-color: $oneui-body-bg-dark !important;
   }
   .border-top {
-    border-top-color: $body-bg-dark !important;
+    border-top-color: $oneui-body-bg-dark !important;
   }
   .border-end {
-    border-right-color: $body-bg-dark !important;
+    border-right-color: $oneui-body-bg-dark !important;
   }
   .border-bottom {
-    border-bottom-color: $body-bg-dark !important;
+    border-bottom-color: $oneui-body-bg-dark !important;
   }
   .border-start {
-    border-left-color: $body-bg-dark !important;
+    border-left-color: $oneui-body-bg-dark !important;
   }
 
   @each $color, $value in $theme-colors {
@@ -624,7 +624,7 @@
   #page-container {
     // Page header
     &.page-header-dark #page-header {
-      color: darken($body-color-light, 8%);
+      color: darken($oneui-body-color-light, 8%);
       background-color: $header-dark-bg;
     }
 
@@ -646,11 +646,11 @@
 
     // Sidebar and Side Overlay
     #sidebar .content-header {
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
     }
 
     &.sidebar-dark #sidebar {
-      color: $body-color-light;
+      color: $oneui-body-color-light;
       background-color: $sidebar-dark-bg;
 
       .content-header {
@@ -662,20 +662,20 @@
   // Sidebar
   #sidebar.with-mini-nav {
     .sidebar-mini-nav {
-      color: $body-color-light;
+      color: $oneui-body-color-light;
       background-color: lighten($sidebar-dark-bg, 3%);
     }
   }
 
   // Blocks
   .block-header-default {
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
   }
 
   // Block Variations
   .block {
     &.block-bordered {
-      border-color: $body-bg-dark;
+      border-color: $oneui-body-bg-dark;
     }
 
     &.block-themed > .block-header {
@@ -757,7 +757,7 @@
 
     &:hover {
       color: $body-color;
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
 
       > .nav-main-link-icon {
         color: $black;
@@ -803,15 +803,15 @@
   .page-header-dark #page-header {
     // Headings
     .nav-main-heading {
-      color: darken($body-bg-dark, 35%);
+      color: darken($oneui-body-bg-dark, 35%);
     }
 
     // Default links
     .nav-main-link {
-      color: darken($body-bg-dark, 20%);
+      color: darken($oneui-body-bg-dark, 20%);
 
       > .nav-main-link-icon {
-        color: rgba(darken($body-bg-dark, 20%), 0.5);
+        color: rgba(darken($oneui-body-bg-dark, 20%), 0.5);
       }
 
       &:hover,
@@ -838,7 +838,7 @@
       background-color: rgba(0, 0, 0, 0.15);
 
       .nav-main-link {
-        color: darken($body-bg-dark, 30%);
+        color: darken($oneui-body-bg-dark, 30%);
 
         &:hover,
         &:focus,
@@ -891,14 +891,14 @@
       border-bottom-color: $body-bg;
 
       &:hover {
-        background-color: $body-bg-light;
+        background-color: $oneui-body-bg-light;
       }
     }
   }
 
   // Sidebar Mini Nav
   .mini-nav-item {
-    color: darken($body-bg-dark, 15%);
+    color: darken($oneui-body-bg-dark, 15%);
 
     &.active {
       background-color: lighten($sidebar-dark-bg, 6%);
@@ -911,7 +911,7 @@
     }
 
     &:active {
-      color: darken($body-bg-dark, 15%);
+      color: darken($oneui-body-bg-dark, 15%);
     }
   }
 
@@ -929,7 +929,7 @@
 
   // Ribbons
   .ribbon-light {
-    @include ribbon-variation($body-bg-dark, $body-color);
+    @include ribbon-variation($oneui-body-bg-dark, $body-color);
   }
 
   .ribbon-primary {
@@ -938,7 +938,7 @@
 
   // DropzoneJS
   .dropzone {
-    background-color: $body-bg-light;
+    background-color: $oneui-body-bg-light;
     border-color: $input-border-color;
 
     .dz-message {
@@ -963,8 +963,8 @@
 
     .fc-button-primary {
       color: $body-color;
-      background-color: $body-bg-dark;
-      border-color: $body-bg-dark;
+      background-color: $oneui-body-bg-dark;
+      border-color: $oneui-body-bg-dark;
 
       &:not(:disabled):hover {
         color: $body-color;
@@ -975,8 +975,8 @@
       &:not(:disabled).fc-button-active,
       &:not(:disabled):active {
         color: $body-color;
-        background-color: $body-bg-light;
-        border-color: $body-bg-light;
+        background-color: $oneui-body-bg-light;
+        border-color: $oneui-body-bg-light;
       }
 
       &:focus,
@@ -990,7 +990,7 @@
     td,
     .fc-scrollgrid,
     .fc-list {
-      border-color: $body-bg-dark;
+      border-color: $oneui-body-bg-dark;
     }
 
     .fc-h-event {
@@ -1000,7 +1000,7 @@
 
     .fc-col-header-cell,
     .fc-list-day-cushion {
-      background-color: $body-bg-light;
+      background-color: $oneui-body-bg-light;
     }
   }
 
@@ -1056,7 +1056,7 @@
   }
 
   // Vueform Slider
-  --slider-bg: #{$body-bg-dark};
+  --slider-bg: #{$oneui-body-bg-dark};
   --slider-connect-bg: #{$primary};
   --slider-tooltip-bg: #{$primary};
   --slider-handle-ring-color: #{$primary};

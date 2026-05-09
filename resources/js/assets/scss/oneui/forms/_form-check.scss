@@ -28,12 +28,12 @@
   .form-check-label {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid $body-bg-dark;
+    border: 2px solid $oneui-body-bg-dark;
     border-radius: $border-radius-sm;
     cursor: pointer;
 
     &:hover {
-      border-color: darken($body-bg-dark, 5%);
+      border-color: darken($oneui-body-bg-dark, 5%);
     }
 
     &::before {
@@ -77,6 +77,6 @@
 
   .form-check-input:disabled:not([checked]) + .form-check-label:hover,
   .form-check-input[readonly]:not([checked]) + .form-check-label:hover {
-    border-color: $body-bg-dark;
+    border-color: $oneui-body-bg-dark;
   }
 }

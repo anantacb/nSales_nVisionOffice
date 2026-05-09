@@ -4,8 +4,8 @@
 
 .card {
   &.card-borderless {
-    box-shadow: 0 1px 2px rgba(shade-color($body-bg-dark, 3%), 0.5),
-      0 1px 2px rgba(shade-color($body-bg-dark, 3%), 0.5);
+    box-shadow: 0 1px 2px rgba(shade-color($oneui-body-bg-dark, 3%), 0.5),
+      0 1px 2px rgba(shade-color($oneui-body-bg-dark, 3%), 0.5);
   }
 
   &.card-square {

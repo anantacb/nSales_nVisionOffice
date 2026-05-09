@@ -13,11 +13,11 @@ $info-light: tint-color($info, 80%) !default;
 $warning-light: tint-color($warning, 80%) !default;
 $danger-light: tint-color($danger, 80%) !default;
 
-$body-bg-dark: darken($body-bg, 4.5%) !default;
-$body-bg-light: lighten($body-bg, 3.5%) !default;
+$oneui-body-bg-dark: darken($body-bg, 4.5%) !default;
+$oneui-body-bg-light: lighten($body-bg, 3.5%) !default;
 
-$body-color-dark: shade-color($body-color, 8%) !default;
-$body-color-light: #e9ecef !default;
+$oneui-body-color-dark: shade-color($body-color, 8%) !default;
+$oneui-body-color-light: #e9ecef !default;
 
 // Paragraphs
 

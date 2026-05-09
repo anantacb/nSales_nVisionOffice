@@ -29,10 +29,10 @@
   @include button-variant(
     $body-bg,
     $body-bg,
-    $body-color-dark,
+    $oneui-body-color-dark,
     shade-color($body-bg, 10%),
     shade-color($body-bg, 10%),
-    shade-color($body-color-dark, 15%)
+    shade-color($oneui-body-color-dark, 15%)
   );
 }
 
