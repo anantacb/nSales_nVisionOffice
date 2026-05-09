@@ -1,13 +1,18 @@
 <script setup>
-import {ref, onMounted} from "vue";
-import CKEditor from "@ckeditor/ckeditor5-vue";
-// You can import one of the following CKEditor variation (only one at a time)
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-// import InlineEditor from '@ckeditor/ckeditor5-build-inline'
-// import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
-// import BalloonBlockEditor from '@ckeditor/ckeditor5-build-balloon-block'
-
-const ckeditor = CKEditor.component;
+import { Ckeditor } from '@ckeditor/ckeditor5-vue';
+import {
+    ClassicEditor,
+    Essentials,
+    Paragraph,
+    Heading,
+    Bold,
+    Italic,
+    Link,
+    List,
+    BlockQuote,
+    Undo,
+} from 'ckeditor5';
+import 'ckeditor5/ckeditor5.css';
 
 const props = defineProps({
     modelValue: {
@@ -17,28 +22,24 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
-const editorData = ref(props.modelValue);
-const editorConfig = ref({});
 
-onMounted(() => {
-    editorData.value = props.modelValue;
-});
+const editorConfig = {
+    plugins: [Essentials, Paragraph, Heading, Bold, Italic, Link, List, BlockQuote, Undo],
+    toolbar: ['undo', 'redo', '|', 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+    licenseKey: 'GPL',
+};
 
-function onEditorReady(editor) {
-    editor.model.document.on('change:data', () => {
-        const data = editor.getData();
-        // console.log('Editor data changed:', data);
-        emit('update:modelValue', data);
-        emit('change', data);
-    });
+function onInput(value) {
+    emit('update:modelValue', value);
+    emit('change', value);
 }
 </script>
 
 <template>
-    <ckeditor
-        v-model="editorData"
-        :config="editorConfig"
+    <Ckeditor
         :editor="ClassicEditor"
-        @ready="onEditorReady"
+        :model-value="modelValue"
+        :config="editorConfig"
+        @update:model-value="onInput"
     />
 </template>
