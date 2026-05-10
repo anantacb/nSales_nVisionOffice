@@ -1,5 +1,18 @@
 <?php
 
+use App\Models\Office\Company;
+use App\Models\Office\CompanyUser;
+use App\Models\Office\Currency;
+use App\Models\Office\ImageHostAccount;
+use App\Models\Office\Module;
+use App\Models\Office\ModuleSetting;
+use App\Models\Office\Role;
+use App\Models\Office\Setting;
+use App\Models\Office\User;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 return [
@@ -16,6 +29,32 @@ return [
     */
 
     'default' => env('CACHE_DRIVER', 'file'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Cache Classes
+    |--------------------------------------------------------------------------
+    |
+    | Laravel 13 restricts cache unserialization by default. This application
+    | intentionally caches selected Eloquent models and their loaded relations.
+    |
+    */
+
+    'serializable_classes' => [
+        User::class,
+        CompanyUser::class,
+        Role::class,
+        Company::class,
+        Currency::class,
+        EloquentCollection::class,
+        ImageHostAccount::class,
+        Module::class,
+        ModuleSetting::class,
+        Setting::class,
+        Collection::class,
+        Carbon::class,
+        CarbonImmutable::class,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -105,6 +144,6 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'),
+    'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_cache'),
 
 ];

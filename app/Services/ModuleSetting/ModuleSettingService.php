@@ -134,7 +134,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         if ($moduleSetting->DataType == 'String') {
             if (isJSON($moduleSetting->Value)) {
                 $moduleSetting->IsJson = true;
-                $moduleSetting->Value = json_decode($moduleSetting->Value);
+                $moduleSetting->Value = json_decode($moduleSetting->Value, true);
             }
         }
 
