@@ -31,10 +31,10 @@ class TranslationService implements TranslationServiceInterface
     public function create(Request $request): ServiceDto
     {
         $translation = $this->translationRepository->create([
-            'LanguageId' => $request->get('LanguageId'),
-            'Type' => $request->get('Type'),
-            'ElementName' => $request->get('ElementName'),
-            'Translations' => $request->get('Translations')
+            'LanguageId' => $request->input('LanguageId'),
+            'Type' => $request->input('Type'),
+            'ElementName' => $request->input('ElementName'),
+            'Translations' => $request->input('Translations')
         ]);
         return new ServiceDto("Translation Created Successfully.", 200, $translation);
     }
@@ -42,12 +42,12 @@ class TranslationService implements TranslationServiceInterface
     public function update(Request $request): ServiceDto
     {
         $translation = $this->translationRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'LanguageId' => $request->get('LanguageId'),
-                'Type' => $request->get('Type'),
-                'ElementName' => $request->get('ElementName'),
-                'Translations' => $request->get('Translations')
+                'LanguageId' => $request->input('LanguageId'),
+                'Type' => $request->input('Type'),
+                'ElementName' => $request->input('ElementName'),
+                'Translations' => $request->input('Translations')
             ]
         );
         return new ServiceDto("Translation Updated Successfully.", 200, $translation);
@@ -55,7 +55,7 @@ class TranslationService implements TranslationServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->translationRepository->findByIdAndDelete($request->get('TranslationId'));
+        $this->translationRepository->findByIdAndDelete($request->input('TranslationId'));
         return new ServiceDto("Translation Deleted Successfully.", 200);
     }
 
@@ -64,7 +64,7 @@ class TranslationService implements TranslationServiceInterface
         $relations = ['language'];
 
         $translation = $this->translationRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TranslationId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('TranslationId')]
         ], $relations);
 
         return new ServiceDto("Translation Retrieved Successfully.", 200, $translation);

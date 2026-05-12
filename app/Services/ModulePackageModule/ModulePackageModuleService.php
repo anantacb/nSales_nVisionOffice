@@ -18,15 +18,15 @@ class ModulePackageModuleService implements ModulePackageModuleServiceInterface
     public function create(Request $request): ServiceDto
     {
         $this->modulePackageModuleRepository->create([
-            'ModulePackageId' => $request->get('ModulePackageId'),
-            'ModuleId' => $request->get('ModuleId')
+            'ModulePackageId' => $request->input('ModulePackageId'),
+            'ModuleId' => $request->input('ModuleId')
         ]);
         return new ServiceDto("Modules Assigned to ModulePackage Successfully.", 200);
     }
 
     public function delete(Request $request): ServiceDto
     {
-        $this->modulePackageModuleRepository->findByIdAndDelete($request->get('ModulePackageModuleId'));
+        $this->modulePackageModuleRepository->findByIdAndDelete($request->input('ModulePackageModuleId'));
         return new ServiceDto("Modules Removed from ModulePackage Successfully.", 200);
     }
 }

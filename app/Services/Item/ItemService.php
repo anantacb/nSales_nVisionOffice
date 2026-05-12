@@ -38,7 +38,7 @@ class ItemService implements ItemServiceInterface
         ]);
 
         $item = $this->repository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             $updateData
         );
 
@@ -47,14 +47,14 @@ class ItemService implements ItemServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->repository->findByIdAndDelete($request->get('CustomerId'));
+        $this->repository->findByIdAndDelete($request->input('CustomerId'));
         return new ServiceDto("Item Deleted Successfully.", 200);
     }
 
     public function details(Request $request): ServiceDto
     {
         $attributes = [
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('ItemId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('ItemId')]
         ];
         $item = $this->repository->firstByAttributes($attributes);
 

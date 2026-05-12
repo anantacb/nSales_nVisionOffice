@@ -17,63 +17,63 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
 
     public function create(Request $request): ServiceDto
     {
-        $ApplyTo = $request->get('ApplyTo');
+        $ApplyTo = $request->input('ApplyTo');
         $emailConfiguration = $this->emailConfigurationRepository->create([
-            'Name' => $request->get('Name'),
-            'TemplateType' => $request->get('TemplateType'),
-            'Disabled' => $request->get('Disabled'),
-            'From' => $request->get('From'),
-            'To' => $request->get('To'),
-            'Cc' => $request->get('Cc'),
-            'Bcc' => $request->get('Bcc'),
-            'SendToCompany' => $request->get('SendToCompany'),
-            'SendToUser' => $request->get('SendToUser'),
-            'SendToCustomer' => $request->get('SendToCustomer'),
-            'SendToSupplier' => $request->get('SendToSupplier'),
-            'SendToEmployee' => $request->get('SendToEmployee'),
-            'Subject' => $request->get('Subject'),
-            'Body' => $request->get('Body'),
-            'Description' => $request->get('Description'),
-            'TemplatePath' => $request->get('TemplatePath'),
-            'ModuleId' => $request->get('ModuleId'),
-            'ApplicationId' => $ApplyTo == 'Application' ? $request->get('ApplicationId') : null,
-            'CompanyId' => $ApplyTo == 'Company' ? $request->get('CompanyId') : null,
-            'RoleId' => $ApplyTo == 'Role' ? $request->get('RoleId') : null,
-            'CompanyUserId' => $ApplyTo == 'User' ? $request->get('CompanyUserId') : null,
-            'SendDraftOrderEmail' => $request->get('SendDraftOrderEmail') ?? 0,
+            'Name' => $request->input('Name'),
+            'TemplateType' => $request->input('TemplateType'),
+            'Disabled' => $request->input('Disabled'),
+            'From' => $request->input('From'),
+            'To' => $request->input('To'),
+            'Cc' => $request->input('Cc'),
+            'Bcc' => $request->input('Bcc'),
+            'SendToCompany' => $request->input('SendToCompany'),
+            'SendToUser' => $request->input('SendToUser'),
+            'SendToCustomer' => $request->input('SendToCustomer'),
+            'SendToSupplier' => $request->input('SendToSupplier'),
+            'SendToEmployee' => $request->input('SendToEmployee'),
+            'Subject' => $request->input('Subject'),
+            'Body' => $request->input('Body'),
+            'Description' => $request->input('Description'),
+            'TemplatePath' => $request->input('TemplatePath'),
+            'ModuleId' => $request->input('ModuleId'),
+            'ApplicationId' => $ApplyTo == 'Application' ? $request->input('ApplicationId') : null,
+            'CompanyId' => $ApplyTo == 'Company' ? $request->input('CompanyId') : null,
+            'RoleId' => $ApplyTo == 'Role' ? $request->input('RoleId') : null,
+            'CompanyUserId' => $ApplyTo == 'User' ? $request->input('CompanyUserId') : null,
+            'SendDraftOrderEmail' => $request->input('SendDraftOrderEmail') ?? 0,
         ]);
         return new ServiceDto("Email Configuration Created Successfully.", 200, $emailConfiguration);
     }
 
     public function update(Request $request): ServiceDto
     {
-        $ApplyTo = $request->get('ApplyTo');
+        $ApplyTo = $request->input('ApplyTo');
 
         $emailConfiguration = $this->emailConfigurationRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'TemplateType' => $request->get('TemplateType'),
-                'Disabled' => $request->get('Disabled'),
-                'From' => $request->get('From'),
-                'To' => $request->get('To'),
-                'Cc' => $request->get('Cc'),
-                'Bcc' => $request->get('Bcc'),
-                'SendToCompany' => $request->get('SendToCompany'),
-                'SendToUser' => $request->get('SendToUser'),
-                'SendToCustomer' => $request->get('SendToCustomer'),
-                'SendToSupplier' => $request->get('SendToSupplier'),
-                'SendToEmployee' => $request->get('SendToEmployee'),
-                'Subject' => $request->get('Subject'),
-                'Body' => $request->get('Body'),
-                'Description' => $request->get('Description'),
-                'TemplatePath' => $request->get('TemplatePath'),
-                'ModuleId' => $request->get('ModuleId'),
-                'ApplicationId' => $ApplyTo == 'Application' ? $request->get('ApplicationId') : null,
-                'CompanyId' => $ApplyTo == 'Company' ? $request->get('CompanyId') : null,
-                'RoleId' => $ApplyTo == 'Role' ? $request->get('RoleId') : null,
-                'CompanyUserId' => $ApplyTo == 'User' ? $request->get('CompanyUserId') : null,
-                'SendDraftOrderEmail' => $request->get('SendDraftOrderEmail') ?? 0,
+                'Name' => $request->input('Name'),
+                'TemplateType' => $request->input('TemplateType'),
+                'Disabled' => $request->input('Disabled'),
+                'From' => $request->input('From'),
+                'To' => $request->input('To'),
+                'Cc' => $request->input('Cc'),
+                'Bcc' => $request->input('Bcc'),
+                'SendToCompany' => $request->input('SendToCompany'),
+                'SendToUser' => $request->input('SendToUser'),
+                'SendToCustomer' => $request->input('SendToCustomer'),
+                'SendToSupplier' => $request->input('SendToSupplier'),
+                'SendToEmployee' => $request->input('SendToEmployee'),
+                'Subject' => $request->input('Subject'),
+                'Body' => $request->input('Body'),
+                'Description' => $request->input('Description'),
+                'TemplatePath' => $request->input('TemplatePath'),
+                'ModuleId' => $request->input('ModuleId'),
+                'ApplicationId' => $ApplyTo == 'Application' ? $request->input('ApplicationId') : null,
+                'CompanyId' => $ApplyTo == 'Company' ? $request->input('CompanyId') : null,
+                'RoleId' => $ApplyTo == 'Role' ? $request->input('RoleId') : null,
+                'CompanyUserId' => $ApplyTo == 'User' ? $request->input('CompanyUserId') : null,
+                'SendDraftOrderEmail' => $request->input('SendDraftOrderEmail') ?? 0,
             ]
         );
         return new ServiceDto("Email Configuration Updated Successfully.", 200, $emailConfiguration);
@@ -129,7 +129,7 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->emailConfigurationRepository->findByIdAndDelete($request->get('EmailConfigurationId'));
+        $this->emailConfigurationRepository->findByIdAndDelete($request->input('EmailConfigurationId'));
         return new ServiceDto("Email Configuration Deleted Successfully.", 200);
     }
 
@@ -145,7 +145,7 @@ class EmailConfigurationService implements EmailConfigurationServiceInterface
         ];
 
         $emailConfiguration = $this->emailConfigurationRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailConfigurationId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('EmailConfigurationId')]
         ], $relations);
 
         return new ServiceDto("Email Configuration Retrieved Successfully.", 200, $emailConfiguration);

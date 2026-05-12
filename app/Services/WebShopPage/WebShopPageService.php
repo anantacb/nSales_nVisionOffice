@@ -38,7 +38,7 @@ class WebShopPageService implements WebShopPageServiceInterface
 
     public function createPages(Request $request): ServiceDto
     {
-        $pages = $request->get("pages");
+        $pages = $request->input("pages");
 
         $textTypes = ["Header", "SubHeader", "Body", "Footer"];
 
@@ -66,7 +66,7 @@ class WebShopPageService implements WebShopPageServiceInterface
 
     public function createPagesContentForMissingLanguages(Request $request): ServiceDto
     {
-        $pages = $request->get("pages");
+        $pages = $request->input("pages");
         $types = ["Header", "SubHeader", "Body", "Footer"];
         if (count($pages) > 0) {
             foreach ($pages as $pageId => $langCodes) {

@@ -75,7 +75,7 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
     {
         $count = $this->companyLanguageRepository->totalCount();
         $companyLanguage = $this->companyLanguageRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyLanguageId')]
         ]);
         if ($count == 1) {
             return new ServiceDto("You have to keep at least one language.", 422);
@@ -85,13 +85,13 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
         }
 
         $this->companyTranslationRepository->deleteByAttributes([
-            ['column' => 'CompanyLanguageId', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
+            ['column' => 'CompanyLanguageId', 'operand' => '=', 'value' => $request->input('CompanyLanguageId')]
         ]);
         $this->companyEmailTemplateRepository->deleteByAttributes([
-            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
+            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->input('CompanyLanguageId')]
         ]);
         $this->companyEmailLayoutRepository->deleteByAttributes([
-            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')]
+            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->input('CompanyLanguageId')]
         ]);
 
         if (CompanyService::isModuleEnabled('WSPage')) {
@@ -114,7 +114,7 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
 
     public function addCompanyLanguage(Request $request): ServiceDto
     {
-        $language = $this->languageRepository->findById($request->get('LanguageId'));
+        $language = $this->languageRepository->findById($request->input('LanguageId'));
         $exists = $this->companyLanguageRepository->firstByAttributes([
             ['column' => 'Name', 'operand' => '=', 'value' => $language->Name]
         ]);
@@ -217,7 +217,7 @@ class CompanyLanguageService implements CompanyLanguageServiceInterface
         ]);
         $this->companyLanguageRepository->getByAttributesAndUpdate(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyLanguageId')],
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyLanguageId')],
             ],
             [
                 'IsDefault' => 1

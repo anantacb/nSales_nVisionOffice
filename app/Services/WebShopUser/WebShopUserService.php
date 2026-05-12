@@ -20,7 +20,7 @@ class WebShopUserService implements WebShopUserServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $response = $this->webShopUserRepository->findByKeyValue($request->get("Key"), $request->get("Value"));
+        $response = $this->webShopUserRepository->findByKeyValue($request->input("Key"), $request->input("Value"));
         return new ServiceDto("WebShopUser Retrieved Successfully.", 200, $response);
     }
 
@@ -28,13 +28,13 @@ class WebShopUserService implements WebShopUserServiceInterface
     {
         try {
             $user = new WebShopUser();
-            $user->Name = $request->get("Name");
-            $user->Name = $request->get("Name");
-            $user->Email = $request->get("Email");
-            $user->Login = $request->get("Login");
-            $user->Initials = $request->get("Login");
-            $user->AccountNumber = $request->get("AccountNumber");
-            $user->Password = bcrypt($request->get("Login"));
+            $user->Name = $request->input("Name");
+            $user->Name = $request->input("Name");
+            $user->Email = $request->input("Email");
+            $user->Login = $request->input("Login");
+            $user->Initials = $request->input("Login");
+            $user->AccountNumber = $request->input("AccountNumber");
+            $user->Password = bcrypt($request->input("Login"));
 
             $user->save();
 

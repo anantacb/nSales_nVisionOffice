@@ -30,10 +30,10 @@ class LanguageService implements LanguageServiceInterface
     public function create(Request $request): ServiceDto
     {
         $language = $this->languageRepository->create([
-            'Name' => $request->get('Name'),
-            'Locale' => $request->get('Locale'),
-            'Code' => $request->get('Code'),
-            'IsDefault' => $request->get('IsDefault')
+            'Name' => $request->input('Name'),
+            'Locale' => $request->input('Locale'),
+            'Code' => $request->input('Code'),
+            'IsDefault' => $request->input('IsDefault')
         ]);
         return new ServiceDto("Language Created Successfully.", 200, $language);
     }
@@ -41,12 +41,12 @@ class LanguageService implements LanguageServiceInterface
     public function update(Request $request): ServiceDto
     {
         $language = $this->languageRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'Locale' => $request->get('Locale'),
-                'Code' => $request->get('Code'),
-                'IsDefault' => $request->get('IsDefault')
+                'Name' => $request->input('Name'),
+                'Locale' => $request->input('Locale'),
+                'Code' => $request->input('Code'),
+                'IsDefault' => $request->input('IsDefault')
             ]
         );
         return new ServiceDto("Language Updated Successfully.", 200, $language);
@@ -62,9 +62,9 @@ class LanguageService implements LanguageServiceInterface
     public function delete(Request $request): ServiceDto
     {
         $this->translationRepository->deleteByAttributes([
-            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('LanguageId')]
+            ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->input('LanguageId')]
         ]);
-        $this->languageRepository->findByIdAndDelete($request->get('LanguageId'));
+        $this->languageRepository->findByIdAndDelete($request->input('LanguageId'));
         return new ServiceDto("Language Deleted Successfully.", 200);
     }
 
@@ -73,7 +73,7 @@ class LanguageService implements LanguageServiceInterface
         $relations = [];
 
         $language = $this->languageRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('LanguageId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('LanguageId')]
         ], $relations);
 
         return new ServiceDto("Language Retrieved Successfully.", 200, $language);

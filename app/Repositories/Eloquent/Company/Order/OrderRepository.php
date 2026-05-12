@@ -41,11 +41,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->select('*', DB::raw('CASE WHEN UpdateTime IS NULL THEN InsertTime ELSE UpdateTime END AS CalculatedOrderDate'));
 
         if ($request->has('sort')) {
-            $query = $query->orderBy($request->get('sort')['field'], $request->get('sort')['type']);
+            $query = $query->orderBy($request->input('sort')['field'], $request->input('sort')['type']);
         }
 
         if ($request->has('initials')) {
-            $query = $query->where('Employee', $request->get('initials'));
+            $query = $query->where('Employee', $request->input('initials'));
         }
 
         // Search
@@ -65,7 +65,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     private function getFilteredQueryAndPaginatedResult(Request $request, $query): mixed
     {
         if ($request->has('filters')) {
-            $filters = $request->get('filters');
+            $filters = $request->input('filters');
 
             $query = $query->where(function ($que) use ($filters) {
                 // OrderOrigin filter
@@ -140,11 +140,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         return $this->model->select('UUID', 'OrderDate', 'TotalExVat', 'OrderNumber', 'ExportStatus', 'Type', 'CustomerCurrency')
             ->whereHas('customer', function ($query) use ($request) {
-                $query->where('Id', $request->get('CustomerId'));
+                $query->where('Id', $request->input('CustomerId'));
             })
             /*->where(function ($q) use ($request) {
-                if ($request->get('initials')) {
-                    $q->where('Employee', $request->get('initials'));
+                if ($request->input('initials')) {
+                    $q->where('Employee', $request->input('initials'));
                 }
             })*/
             ->latest()->limit($ordersLimit)->get();

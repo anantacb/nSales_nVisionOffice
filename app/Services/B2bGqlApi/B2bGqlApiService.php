@@ -22,10 +22,10 @@ class B2bGqlApiService
 
     public function getItemGroupsAndItem(Request $request): ServiceDto
     {
-        if (Cache::has("company_" . $request->get("CompanyId"))) {
-            $company = Cache::get("company_" . $request->get("CompanyId"));
+        if (Cache::has("company_" . $request->input("CompanyId"))) {
+            $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->get("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"));
         }
 
         $response = $this->repository->createLoginToken($company->DomainName, "appsubmission", "appsubmission");

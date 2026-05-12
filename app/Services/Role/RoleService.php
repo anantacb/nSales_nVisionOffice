@@ -19,9 +19,9 @@ class RoleService implements RoleServiceInterface
     public function getAssignableRolesByCompany(Request $request): ServiceDto
     {
         $filters = [
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
         ];
-        if (!$request->get('WithDeveloper')) {
+        if (!$request->input('WithDeveloper')) {
             $filters[] = ['column' => 'Type', 'operand' => '!=', 'value' => 'Developer'];
         }
         $roles = $this->roleRepository->getByAttributes($filters, '', ['Id', 'Name', 'Type', 'CompanyId']);
@@ -39,10 +39,10 @@ class RoleService implements RoleServiceInterface
     public function create(Request $request): ServiceDto
     {
         $role = $this->roleRepository->create([
-            'CompanyId' => $request->get('CompanyId'),
-            'Name' => $request->get('Name'),
-            'Type' => $request->get('Type'),
-            'Description' => $request->get('Description'),
+            'CompanyId' => $request->input('CompanyId'),
+            'Name' => $request->input('Name'),
+            'Type' => $request->input('Type'),
+            'Description' => $request->input('Description'),
         ]);
         return new ServiceDto("Role Created Successfully.", 200, $role);
     }
@@ -50,10 +50,10 @@ class RoleService implements RoleServiceInterface
     public function update(Request $request): ServiceDto
     {
         $role = $this->roleRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'Description' => $request->get('Description')
+                'Name' => $request->input('Name'),
+                'Description' => $request->input('Description')
             ]
         );
         return new ServiceDto("Role Updated Successfully.", 200, $role);
@@ -61,7 +61,7 @@ class RoleService implements RoleServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->roleRepository->findByIdAndDelete($request->get('RoleId'));
+        $this->roleRepository->findByIdAndDelete($request->input('RoleId'));
         return new ServiceDto("Role Deleted Successfully.", 200);
     }
 
@@ -74,7 +74,7 @@ class RoleService implements RoleServiceInterface
         ];
 
         $role = $this->roleRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('RoleId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('RoleId')]
         ], $relations);
 
         return new ServiceDto("DataFilter Retrieved Successfully.", 200, $role);

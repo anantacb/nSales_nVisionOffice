@@ -27,7 +27,7 @@ class ThemeService implements ThemeServiceInterface
 
     public function getCompanyTheme(Request $request): ServiceDto
     {
-        $data = $this->repository->getCompanyTheme($request->get("CompanyId"));
+        $data = $this->repository->getCompanyTheme($request->input("CompanyId"));
         return new ServiceDto("Company Theme Retrieved Successfully.", 200, $data);
     }
 

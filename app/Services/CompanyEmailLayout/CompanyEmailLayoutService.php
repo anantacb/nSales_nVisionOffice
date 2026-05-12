@@ -45,7 +45,7 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
         $relations = [];
 
         $layout = $this->repository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('EmailLayoutId')]
         ], $relations);
 
         return new ServiceDto("Layout Retrieved Successfully.", 200, $layout);
@@ -54,11 +54,11 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function update(Request $request): ServiceDto
     {
         $layout = $this->repository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'LanguageId' => $request->get('LanguageId'),
-                'Template' => $request->get('Template')
+                'Name' => $request->input('Name'),
+                'LanguageId' => $request->input('LanguageId'),
+                'Template' => $request->input('Template')
             ]
         );
         return new ServiceDto("Layout Updated Successfully.", 200, $layout);
@@ -68,7 +68,7 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     {
         $emailLayouts = $this->repository->getByAttributes(
             [
-                ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('LanguageId')]
+                ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->input('LanguageId')]
             ]
             , '', '', 'Name'
         );
@@ -95,9 +95,9 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function delete(Request $request): ServiceDto
     {
 //        $this->companyEmailTemplateRepository->deleteByAttributes([
-//            ['column' => 'LayoutId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+//            ['column' => 'LayoutId', 'operand' => '=', 'value' => $request->input('EmailLayoutId')]
 //        ]);
-        $this->repository->findByIdAndDelete($request->get('EmailLayoutId'));
+        $this->repository->findByIdAndDelete($request->input('EmailLayoutId'));
         return new ServiceDto("Layout Deleted Successfully.", 200);
     }
 
@@ -117,9 +117,9 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function copyLayoutToCompany(Request $request): ServiceDto
     {
         $companyEmailTemplate = $this->repository->create([
-            'Name' => $request->get('Name'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Template' => $request->get('Template')
+            'Name' => $request->input('Name'),
+            'LanguageId' => $request->input('LanguageId'),
+            'Template' => $request->input('Template')
         ]);
 
         return new ServiceDto("Email Layout Copied Successfully.", 200, $companyEmailTemplate);
@@ -128,9 +128,9 @@ class CompanyEmailLayoutService extends EmailHelperService implements CompanyEma
     public function create(Request $request): ServiceDto
     {
         $layout = $this->repository->create([
-            'Name' => $request->get('Name'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Template' => $request->get('Template')
+            'Name' => $request->input('Name'),
+            'LanguageId' => $request->input('LanguageId'),
+            'Template' => $request->input('Template')
         ]);
         return new ServiceDto("Email Layout Created Successfully.", 200, $layout);
     }

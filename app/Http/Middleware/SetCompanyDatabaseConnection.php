@@ -23,7 +23,7 @@ class SetCompanyDatabaseConnection
             throw new Exception('Company Id (CompanyId) is needed.', 422);
         }
 
-        CompanyService::setCompanyDatabaseConnection($request->get('CompanyId'));
+        CompanyService::setCompanyDatabaseConnection($request->input('CompanyId'));
         return $next($request);
     }
 }

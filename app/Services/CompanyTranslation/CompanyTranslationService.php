@@ -30,17 +30,17 @@ class CompanyTranslationService implements CompanyTranslationServiceInterface
 
     public function syncCompanyTranslations(Request $request): ServiceDto
     {
-        SyncCompanyTranslations::dispatch($request->get('CompanyId'))->onQueue('translations');
+        SyncCompanyTranslations::dispatch($request->input('CompanyId'))->onQueue('translations');
         return new ServiceDto("Translations will be available for all elements in a few moments. Please check after sometime.", 200, []);
     }
 
     public function create(Request $request): ServiceDto
     {
         $companyTranslation = $this->companyTranslationRepository->create([
-            'CompanyLanguageId' => $request->get('CompanyLanguageId'),
-            'Type' => $request->get('Type'),
-            'ElementName' => $request->get('ElementName'),
-            'Translations' => $request->get('Translations')
+            'CompanyLanguageId' => $request->input('CompanyLanguageId'),
+            'Type' => $request->input('Type'),
+            'ElementName' => $request->input('ElementName'),
+            'Translations' => $request->input('Translations')
         ]);
         return new ServiceDto("Translation Created Successfully.", 200, $companyTranslation);
     }
@@ -48,12 +48,12 @@ class CompanyTranslationService implements CompanyTranslationServiceInterface
     public function update(Request $request): ServiceDto
     {
         $translation = $this->companyTranslationRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'CompanyLanguageId' => $request->get('CompanyLanguageId'),
-                'Type' => $request->get('Type'),
-                'ElementName' => $request->get('ElementName'),
-                'Translations' => $request->get('Translations')
+                'CompanyLanguageId' => $request->input('CompanyLanguageId'),
+                'Type' => $request->input('Type'),
+                'ElementName' => $request->input('ElementName'),
+                'Translations' => $request->input('Translations')
             ]
         );
         return new ServiceDto("Translation Updated Successfully.", 200, $translation);
@@ -61,7 +61,7 @@ class CompanyTranslationService implements CompanyTranslationServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->companyTranslationRepository->findByIdAndDelete($request->get('CompanyTranslationId'));
+        $this->companyTranslationRepository->findByIdAndDelete($request->input('CompanyTranslationId'));
         return new ServiceDto("Translation Deleted Successfully.", 200);
     }
 
@@ -70,7 +70,7 @@ class CompanyTranslationService implements CompanyTranslationServiceInterface
         $relations = ['companyLanguage'];
 
         $translation = $this->companyTranslationRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyTranslationId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyTranslationId')]
         ], $relations);
 
         return new ServiceDto("Company Translation Retrieved Successfully.", 200, $translation);

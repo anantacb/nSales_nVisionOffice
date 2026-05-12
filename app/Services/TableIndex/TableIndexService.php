@@ -52,7 +52,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function getTableIndices(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $relations = [
             'companyTableIndices' => function ($q) {
                 $q->with([
@@ -72,7 +72,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function getTableIndicesOperationPreviews(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -96,7 +96,7 @@ class TableIndexService implements TableIndexServiceInterface
             $sqlQueries = [];
 
             // Add Section
-            foreach ($request->get('newIndices') as $newIndex) {
+            foreach ($request->input('newIndices') as $newIndex) {
                 if (in_array($newIndex['Type'], ['Server', 'Both'])) {
                     // This Field Is CompanySpecific
                     $tableIndexSpecificDatabases = $this->getDatabaseNamesByCompanyIds($newIndex['companies']);
@@ -112,7 +112,7 @@ class TableIndexService implements TableIndexServiceInterface
             // Delete Section
             $tableIndicesToDelete = $this->tableIndexRepository->getByAttributes(
                 [
-                    ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableIndexIdsToDelete')]
+                    ['column' => 'Id', 'operand' => '=', 'value' => $request->input('tableIndexIdsToDelete')]
                 ],
                 ['companyTableIndices.company']
             );
@@ -130,7 +130,7 @@ class TableIndexService implements TableIndexServiceInterface
             }
 
             // Update Section
-            $requestedUpdatedTableIndices = $request->get('updatedTableIndices');
+            $requestedUpdatedTableIndices = $request->input('updatedTableIndices');
             $updatedTableIndicesRows = $this->tableIndexRepository->getByAttributes(
                 [
                     ['column' => 'Id', 'operand' => '=', 'value' => collect($requestedUpdatedTableIndices)->pluck('Id')->toArray()]
@@ -187,7 +187,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function tableIndicesOperationsSaveAndExecute(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -214,7 +214,7 @@ class TableIndexService implements TableIndexServiceInterface
         $sqlQueries = [];
 
         // Add Section
-        foreach ($request->get('newIndices') as $newIndex) {
+        foreach ($request->input('newIndices') as $newIndex) {
             // Entry In TableIndex Table
             $this->entryInTableIndexTable($newIndex);
 
@@ -247,7 +247,7 @@ class TableIndexService implements TableIndexServiceInterface
         // Delete Section
         $tableIndicesToDelete = $this->tableIndexRepository->getByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableIndexIdsToDelete')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('tableIndexIdsToDelete')]
             ],
             ['companyTableIndices.company']
         );
@@ -282,7 +282,7 @@ class TableIndexService implements TableIndexServiceInterface
         }
 
         // Update Section
-        $requestedUpdatedTableIndices = $request->get('updatedTableIndices');
+        $requestedUpdatedTableIndices = $request->input('updatedTableIndices');
         $updatedTableIndicesRows = $this->tableIndexRepository->getByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => collect($requestedUpdatedTableIndices)->pluck('Id')->toArray()]
@@ -461,7 +461,7 @@ class TableIndexService implements TableIndexServiceInterface
 
     public function tableIndicesOperationsSaveWithoutExecuting(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -473,7 +473,7 @@ class TableIndexService implements TableIndexServiceInterface
         //$companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();
 
         // Add Section
-        foreach ($request->get('newIndices') as $newIndex) {
+        foreach ($request->input('newIndices') as $newIndex) {
             // Entry In TableIndex Table
             $this->entryInTableIndexTable($newIndex);
         }
@@ -481,7 +481,7 @@ class TableIndexService implements TableIndexServiceInterface
         // Delete Section
         $tableIndicesToDelete = $this->tableIndexRepository->getByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableIndexIdsToDelete')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('tableIndexIdsToDelete')]
             ],
             ['companyTableIndices.company']
         );
@@ -494,7 +494,7 @@ class TableIndexService implements TableIndexServiceInterface
         }
 
         // Update Section
-        $requestedUpdatedTableIndices = $request->get('updatedTableIndices');
+        $requestedUpdatedTableIndices = $request->input('updatedTableIndices');
         $updatedTableIndicesRows = $this->tableIndexRepository->getByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => collect($requestedUpdatedTableIndices)->pluck('Id')->toArray()]

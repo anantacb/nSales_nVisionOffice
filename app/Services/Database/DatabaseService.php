@@ -31,7 +31,7 @@ class DatabaseService implements DatabaseServiceInterface
 
     public function copyDBtoDevServer(Request $request): ServiceDto
     {
-        $selectedDatabases = $request->get('selectedDatabases');
+        $selectedDatabases = $request->input('selectedDatabases');
 
         foreach ($selectedDatabases as $database) {
             //$dbType = stripos($database, 'NVISION_OFFICE') !== false ? 'office' : 'company';

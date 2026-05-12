@@ -38,7 +38,7 @@ class UserIsAdminOrDeveloper
             }
             return $userCompanyWiseRoles;
         });
-        $selectedCompanyId = $request->get('SelectedCompanyId');
+        $selectedCompanyId = $request->input('SelectedCompanyId');
         $selectedCompany = collect($userCompanyWiseRoles)->firstWhere('CompanyId', $selectedCompanyId);
         if (!$selectedCompany || empty(array_intersect($selectedCompany['RoleTypes'], ['Developer', 'Administrator']))) {
             return ApiResponseTransformer::error([], 'Access Denied.', 403);

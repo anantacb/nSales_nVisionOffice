@@ -25,11 +25,11 @@ class TableHelperService implements TableHelperServiceInterface
 
     public function getColumnDistinctValues(Request $request): ServiceDto
     {
-        $databaseType = $request->get("DatabaseType");
-        $tableName = $request->get('TableName');
-        $columName = $request->get('ColumnName');
+        $databaseType = $request->input("DatabaseType");
+        $tableName = $request->input('TableName');
+        $columName = $request->input('ColumnName');
         if ($databaseType == 'Company') {
-            CompanyService::setCompanyDatabaseConnection($request->get('CompanyId'));
+            CompanyService::setCompanyDatabaseConnection($request->input('CompanyId'));
         }
         $namespacedModel = "App\Models\\$databaseType\\$tableName";
         $model = new $namespacedModel();
@@ -116,11 +116,11 @@ class TableHelperService implements TableHelperServiceInterface
 
     public function getEnumValues(Request $request): ServiceDto
     {
-        $databaseType = $request->get("DatabaseType");
-        $tableName = $request->get('TableName');
-        $columName = $request->get('ColumnName');
+        $databaseType = $request->input("DatabaseType");
+        $tableName = $request->input('TableName');
+        $columName = $request->input('ColumnName');
         if ($databaseType == 'Company') {
-            CompanyService::setCompanyDatabaseConnection($request->get('CompanyId'));
+            CompanyService::setCompanyDatabaseConnection($request->input('CompanyId'));
         }
         $namespacedModel = "App\Models\\$databaseType\\$tableName";
         $model = new $namespacedModel();
@@ -130,9 +130,9 @@ class TableHelperService implements TableHelperServiceInterface
 
     public function getAllTableColumnNames(Request $request): ServiceDto
     {
-        $databaseType = $request->get("DatabaseType");
-        $tableName = $request->get('TableName');
-        $companyId = $request->get('CompanyId');
+        $databaseType = $request->input("DatabaseType");
+        $tableName = $request->input('TableName');
+        $companyId = $request->input('CompanyId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Name', 'operand' => '=', 'value' => $tableName]

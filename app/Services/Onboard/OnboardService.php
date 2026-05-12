@@ -25,19 +25,19 @@ class OnboardService implements OnboardServiceInterface
     public function getCompanyOnboardStatus(Request $request): ServiceDto
     {
         $attributes = [
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get("CompanyId")],
-            ['column' => 'Type', 'operand' => '=', 'value' => strtolower($request->get("Application"))]
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input("CompanyId")],
+            ['column' => 'Type', 'operand' => '=', 'value' => strtolower($request->input("Application"))]
         ];
 
         $onboardStatus = $this->onboardStatusRepository->firstByAttributes($attributes);
 
-        if (Cache::has("company_" . $request->get("CompanyId"))) {
-            $company = Cache::get("company_" . $request->get("CompanyId"));
+        if (Cache::has("company_" . $request->input("CompanyId"))) {
+            $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->get("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"));
         }
 
-        if (strtolower($request->get("Application")) === "retailer") {
+        if (strtolower($request->input("Application")) === "retailer") {
             $onboardStatusSetting = $company->module_settings['System']['RetailerOnboardSteps'] ?? null;
         } else {
             $onboardStatusSetting = $company->module_settings['System']['WebshopOnboardSteps'] ?? null;
@@ -55,12 +55,12 @@ class OnboardService implements OnboardServiceInterface
     public function updateCompanyOnboardStatus(Request $request): ServiceDto
     {
         $matchingAttributes = [
-            "CompanyId" => $request->get("CompanyId"),
-            "Type" => strtolower($request->get("Application"))
+            "CompanyId" => $request->input("CompanyId"),
+            "Type" => strtolower($request->input("Application"))
         ];
 
         $allStepCompleted = 0;
-        foreach ($request->get("Status") as $step) {
+        foreach ($request->input("Status") as $step) {
             $allStepCompleted = $step["IsCompleted"];
             if(!$allStepCompleted) {
                 break;
@@ -68,7 +68,7 @@ class OnboardService implements OnboardServiceInterface
         }
 
         $updateAttributes = [
-            "Progress" => json_encode($request->get("Status")),
+            "Progress" => json_encode($request->input("Status")),
             "Completed" => $allStepCompleted
         ];
 

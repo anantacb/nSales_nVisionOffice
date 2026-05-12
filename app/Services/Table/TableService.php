@@ -73,11 +73,11 @@ class TableService implements TableServiceInterface
 
     private function generateCreateTableSqlQueriesWithConnection(Request $request): array
     {
-        //$module = $this->moduleRepository->findById($request->get('module'));
+        //$module = $this->moduleRepository->findById($request->input('module'));
         //$moduleEnabledCompanies = $this->moduleRepository->getRelationData($module, 'companies');
         $module = $this->moduleRepository->firstByAttributes([
             [
-                'column' => 'Id', 'operand' => '=', 'value' => $request->get('module')
+                'column' => 'Id', 'operand' => '=', 'value' => $request->input('module')
             ]
         ], ['companies']);
         $moduleEnabledCompanies = $module->companies;
@@ -88,8 +88,8 @@ class TableService implements TableServiceInterface
             'CloudSqlMigrated', 'DomainName', 'DatabaseName', 'DatabaseHost', 'DatabaseUser', 'DatabasePassword'
         ])->toArray();
 
-        if ($request->get('selectedCompanies')) {
-            $moduleNotEnabledCompanyIds = array_diff($request->get('selectedCompanies'), $moduleEnabledCompanyIds);
+        if ($request->input('selectedCompanies')) {
+            $moduleNotEnabledCompanyIds = array_diff($request->input('selectedCompanies'), $moduleEnabledCompanyIds);
             $moduleNotEnabledCompanyIdsNames = $this->companyRepository->getByAttributes([
                 ['column' => 'Id', 'operand' => '=', 'value' => $moduleNotEnabledCompanyIds]
             ])->mapWithKeys(function ($company) {
@@ -108,7 +108,7 @@ class TableService implements TableServiceInterface
                 ];
             } else {
                 $selectedCompanies = $this->companyRepository->getByAttributes([
-                    ['column' => 'Id', 'operand' => '=', 'value' => $request->get('selectedCompanies')]
+                    ['column' => 'Id', 'operand' => '=', 'value' => $request->input('selectedCompanies')]
                 ]);
                 $selectedDBNames = $selectedCompanies->pluck('DatabaseName')->toArray();
                 $selectedDatabasesWithConnections = collect($selectedCompanies->toArray())->select([
@@ -120,9 +120,9 @@ class TableService implements TableServiceInterface
         $officeDatabaseWithConnection = DbHelpers::getOfficeDatabaseConnectionDetails();
         $templateDatabaseWithConnection = DbHelpers::getTemplateDatabaseConnectionDetails();
 
-        switch ($request->get('database')) {
+        switch ($request->input('database')) {
             case 'Company':
-                if (!$request->get('selectedCompanies')) {
+                if (!$request->input('selectedCompanies')) {
                     $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE']);
                     $selectedDatabasesWithConnections = array_merge($selectedDatabasesWithConnections, [$templateDatabaseWithConnection]);
                 }
@@ -132,7 +132,7 @@ class TableService implements TableServiceInterface
                 $selectedDatabasesWithConnections = [$officeDatabaseWithConnection];
                 break;
             case 'Both':
-                if (!$request->get('selectedCompanies')) {
+                if (!$request->input('selectedCompanies')) {
                     $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
                     $selectedDatabasesWithConnections = array_merge($selectedDatabasesWithConnections, [$templateDatabaseWithConnection, $officeDatabaseWithConnection]);
                 }
@@ -150,8 +150,8 @@ class TableService implements TableServiceInterface
             'databases' => $selectedDBNames
         ];
 
-        $tableName = $request->get('name');
-        if (in_array($request->get('type'), ['Server', 'Both'])) {
+        $tableName = $request->input('name');
+        if (in_array($request->input('type'), ['Server', 'Both'])) {
             $columnDefinitions = config('initialColumnDefinitionsMysql');
             $sqlPreviews = [];
             foreach ($selectedDBNames as $databaseName) {
@@ -171,14 +171,14 @@ class TableService implements TableServiceInterface
             }
             $data['sqlPreviewsWithConnections'] = $sqlPreviewsWithConnections;
 
-            if ($request->get('type') == 'Server') {
+            if ($request->input('type') == 'Server') {
                 $data['sqlitePreviewMessage'] = "No Sql Generated as Type is `Server`";
-            } elseif ($request->get('type') == 'Both') {
+            } elseif ($request->input('type') == 'Both') {
                 $columnDefinitions = config('initialColumnDefinitionsSqlite');
                 $data['sqlitePreviews'] = [SqliteQueryGenerator::getCreateTableSql($tableName, $columnDefinitions)];
                 $data['sqlitePreview'] = true;
             }
-        } elseif ($request->get('type') == 'Client') {
+        } elseif ($request->input('type') == 'Client') {
             $columnDefinitions = config('initialColumnDefinitionsSqlite');
             $data['sqlitePreviews'] = [SqliteQueryGenerator::getCreateTableSql($tableName, $columnDefinitions)];
             $data['sqlitePreview'] = true;
@@ -219,27 +219,27 @@ class TableService implements TableServiceInterface
         try {
             // Insert into `Table` table
             $table = $this->tableRepository->create([
-                'ModuleId' => $request->get('module'),
-                //'CompanyId' => $request->get('CompanyId'),
-                'Name' => $request->get('name'),
-                'Type' => $request->get('type'),
-                'Database' => $request->get('database'),
-                'Note' => $request->get('note'),
-                'Disabled' => $request->get('disabled'),
-                //'Deleted' => $request->get('Deleted'),
+                'ModuleId' => $request->input('module'),
+                //'CompanyId' => $request->input('CompanyId'),
+                'Name' => $request->input('name'),
+                'Type' => $request->input('type'),
+                'Database' => $request->input('database'),
+                'Note' => $request->input('note'),
+                'Disabled' => $request->input('disabled'),
+                //'Deleted' => $request->input('Deleted'),
                 'MappingTableName' => '',
-                //'AutoMapping' => $request->get('AutoMapping'),
+                //'AutoMapping' => $request->input('AutoMapping'),
                 'Version' => 0,
-                'ClientSync' => $request->get('clientSync') ?? "",
-                'AutoNumbering' => $request->get('autoNumbering'),
-                'SqlTruncate' => $request->get('sqlTruncate'),
-                'EnableSqlTruncate' => $request->get('enableTruncate'),
-                'SqlSeed' => $request->get('sqlSeed')
+                'ClientSync' => $request->input('clientSync') ?? "",
+                'AutoNumbering' => $request->input('autoNumbering'),
+                'SqlTruncate' => $request->input('sqlTruncate'),
+                'EnableSqlTruncate' => $request->input('enableTruncate'),
+                'SqlSeed' => $request->input('sqlSeed')
             ]);
 
             // Insert into `CompanyTable` table if for specific company
-            if ($request->get('selectedCompanies')) {
-                foreach ($request->get('selectedCompanies') as $selectedCompanyId) {
+            if ($request->input('selectedCompanies')) {
+                foreach ($request->input('selectedCompanies') as $selectedCompanyId) {
                     $this->companyTableRepository->create([
                         'CompanyId' => $selectedCompanyId,
                         'TableId' => $table->Id
@@ -256,7 +256,7 @@ class TableService implements TableServiceInterface
                         'SortOrder' => $columnDefinition['SortOrder'],
                         'Name' => $columnDefinition['Name'],
                         'DataType' => $columnDefinition['DataType'],
-                        'Type' => $request->get('type'),
+                        'Type' => $request->input('type'),
                         'Length' => $columnDefinition['Length'],
                         'Nullable' => $columnDefinition['Nullable'],
                         'Unique' => $columnDefinition['Unique'],
@@ -299,7 +299,7 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->firstByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TableId')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('TableId')]
             ],
             ['companyTables.company', 'module.companies']
         );
@@ -395,7 +395,7 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->firstByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('Id')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('Id')]
             ],
             [
                 'companyTables.company',
@@ -406,7 +406,7 @@ class TableService implements TableServiceInterface
         );
 
         $existingCompanyTableCompanyIds = $table->companyTables->pluck('CompanyId')->toArray();
-        $requestCompanyIds = $request->get('CompanyIds');
+        $requestCompanyIds = $request->input('CompanyIds');
 
         $deletedCompanyIds = array_diff($existingCompanyTableCompanyIds, $requestCompanyIds); // in old, not in new
         $addedCompanyIds = array_diff($requestCompanyIds, $existingCompanyTableCompanyIds); // in new, not in old
@@ -457,13 +457,13 @@ class TableService implements TableServiceInterface
         }
 
         $table->update([
-            'Disabled' => $request->get('Disabled'),
-            'ClientSync' => $request->get('ClientSync') ?? "",
-            'AutoNumbering' => $request->get('AutoNumbering'),
-            'EnableSqlTruncate' => $request->get('EnableSqlTruncate'),
-            'SqlTruncate' => $request->get('SqlTruncate'),
-            'SqlSeed' => $request->get('SqlSeed'),
-            'Note' => $request->get('Note'),
+            'Disabled' => $request->input('Disabled'),
+            'ClientSync' => $request->input('ClientSync') ?? "",
+            'AutoNumbering' => $request->input('AutoNumbering'),
+            'EnableSqlTruncate' => $request->input('EnableSqlTruncate'),
+            'SqlTruncate' => $request->input('SqlTruncate'),
+            'SqlSeed' => $request->input('SqlSeed'),
+            'Note' => $request->input('Note'),
         ]);
 
         return new ServiceDto("Table Updated Successfully.", 200, $table);
@@ -473,7 +473,7 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->firstByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('TableId')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('TableId')]
             ],
             ['companyTables.company', 'module.companies']
         );
@@ -485,7 +485,7 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->firstByAttributes(
             [
-                ['column' => 'Name', 'operand' => '=', 'value' => $request->get('TableName')]
+                ['column' => 'Name', 'operand' => '=', 'value' => $request->input('TableName')]
             ],
             ['companyTables.company', 'module.companies']
         );
@@ -497,7 +497,7 @@ class TableService implements TableServiceInterface
     {
         $table = $this->tableRepository->getByAttributes(
             [
-                ['column' => 'ModuleId', 'operand' => '=', 'value' => $request->get('moduleId')]
+                ['column' => 'ModuleId', 'operand' => '=', 'value' => $request->input('moduleId')]
             ],
             [], ['Name', 'Id']
         );
@@ -507,13 +507,13 @@ class TableService implements TableServiceInterface
 
     private function generateCreateTableSqlQueries(Request $request): array
     {
-        $module = $this->moduleRepository->findById($request->get('module'));
+        $module = $this->moduleRepository->findById($request->input('module'));
         $moduleEnabledCompanies = $this->moduleRepository->getRelationData($module, 'companies');
         $moduleEnabledCompanyIds = $moduleEnabledCompanies->pluck('Id')->toArray();
         $selectedDBNames = $moduleEnabledCompanies->pluck('DatabaseName')->toArray();
 
-        if ($request->get('selectedCompanies')) {
-            $moduleNotEnabledCompanyIds = array_diff($request->get('selectedCompanies'), $moduleEnabledCompanyIds);
+        if ($request->input('selectedCompanies')) {
+            $moduleNotEnabledCompanyIds = array_diff($request->input('selectedCompanies'), $moduleEnabledCompanyIds);
             $moduleNotEnabledCompanyIdsNames = $this->companyRepository->getByAttributes([
                 ['column' => 'Id', 'operand' => '=', 'value' => $moduleNotEnabledCompanyIds]
             ])->mapWithKeys(function ($company) {
@@ -532,15 +532,15 @@ class TableService implements TableServiceInterface
                 ];
             } else {
                 $selectedCompanies = $this->companyRepository->getByAttributes([
-                    ['column' => 'Id', 'operand' => '=', 'value' => $request->get('selectedCompanies')]
+                    ['column' => 'Id', 'operand' => '=', 'value' => $request->input('selectedCompanies')]
                 ]);
                 $selectedDBNames = $selectedCompanies->pluck('DatabaseName')->toArray();
             }
         }
 
-        switch ($request->get('database')) {
+        switch ($request->input('database')) {
             case 'Company':
-                if (!$request->get('selectedCompanies')) {
+                if (!$request->input('selectedCompanies')) {
                     $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE']);
                 }
                 break;
@@ -548,7 +548,7 @@ class TableService implements TableServiceInterface
                 $selectedDBNames = ['NVISION_OFFICE'];
                 break;
             case 'Both':
-                if (!$request->get('selectedCompanies')) {
+                if (!$request->input('selectedCompanies')) {
                     $selectedDBNames = array_merge($selectedDBNames, ['NVISION_TEMPLATE', 'NVISION_OFFICE']);
                 }
                 break;
@@ -564,8 +564,8 @@ class TableService implements TableServiceInterface
             'databases' => $selectedDBNames
         ];
 
-        $tableName = $request->get('name');
-        if (in_array($request->get('type'), ['Server', 'Both'])) {
+        $tableName = $request->input('name');
+        if (in_array($request->input('type'), ['Server', 'Both'])) {
             $columnDefinitions = config('initialColumnDefinitionsMysql');
             $sqlPreviews = [];
             foreach ($selectedDBNames as $databaseName) {
@@ -573,14 +573,14 @@ class TableService implements TableServiceInterface
             }
             $data['sqlPreview'] = true;
             $data['sqlPreviews'] = $sqlPreviews;
-            if ($request->get('type') == 'Server') {
+            if ($request->input('type') == 'Server') {
                 $data['sqlitePreviewMessage'] = "No Sql Generated as Type is `Server`";
-            } elseif ($request->get('type') == 'Both') {
+            } elseif ($request->input('type') == 'Both') {
                 $columnDefinitions = config('initialColumnDefinitionsSqlite');
                 $data['sqlitePreviews'] = [SqliteQueryGenerator::getCreateTableSql($tableName, $columnDefinitions)];
                 $data['sqlitePreview'] = true;
             }
-        } elseif ($request->get('type') == 'Client') {
+        } elseif ($request->input('type') == 'Client') {
             $columnDefinitions = config('initialColumnDefinitionsSqlite');
             $data['sqlitePreviews'] = [SqliteQueryGenerator::getCreateTableSql($tableName, $columnDefinitions)];
             $data['sqlitePreview'] = true;

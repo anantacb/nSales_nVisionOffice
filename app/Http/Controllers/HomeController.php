@@ -47,16 +47,16 @@ class HomeController extends Controller
 
     public function cacheClear(Request $request)
     {
-        if ($request->get('nvisionOfficeCache')) {
+        if ($request->input('nvisionOfficeCache')) {
             Artisan::call('cache:clear');
         }
-        if ($request->get('nsalesOfficeCache')) {
+        if ($request->input('nsalesOfficeCache')) {
             $this->nsalesOfficeRestApiRepository->cacheClear();
         }
-        if ($request->get('nvmGqlCache')) {
+        if ($request->input('nvmGqlCache')) {
             $this->nvmGqlApiRepository->cacheClear();
         }
-        if ($request->get('b2bGqlCache')) {
+        if ($request->input('b2bGqlCache')) {
             $this->b2bGqlApiRepository->cacheClear();
         }
         return ApiResponseTransformer::success([], 'Cache Cleared Successfully.');

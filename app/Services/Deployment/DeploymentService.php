@@ -22,10 +22,10 @@ class DeploymentService implements DeploymentServiceInterface
 
     public function getCompanyDeploymentStatus(Request $request): ServiceDto
     {
-        if (Cache::has("company_" . $request->get("CompanyId"))) {
-            $company = Cache::get("company_" . $request->get("CompanyId"));
+        if (Cache::has("company_" . $request->input("CompanyId"))) {
+            $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->get("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"));
         }
 
         $response = $this->repository->getCompanyDeploymentStatus($company->DomainName);
@@ -42,13 +42,13 @@ class DeploymentService implements DeploymentServiceInterface
 
     public function startCompanyDeployment(Request $request): ServiceDto
     {
-        if (Cache::has("company_" . $request->get("CompanyId"))) {
-            $company = Cache::get("company_" . $request->get("CompanyId"));
+        if (Cache::has("company_" . $request->input("CompanyId"))) {
+            $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->get("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"));
         }
 
-        $response = $this->repository->startCompanyDeployment($company->DomainName, $request->get("prod"), $request->get("dev"));
+        $response = $this->repository->startCompanyDeployment($company->DomainName, $request->input("prod"), $request->input("dev"));
 
         $companyDeploymentStatus = [];
         if ($response['success']) {

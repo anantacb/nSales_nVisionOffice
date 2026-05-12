@@ -65,11 +65,11 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
     public function create(Request $request): ServiceDto
     {
         $layout = $this->templateRepository->create([
-            'ElementName' => $request->get('ElementName'),
-            'LayoutId' => $request->get('LayoutId'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Subject' => $request->get('Subject'),
-            'Template' => $request->get('Template')
+            'ElementName' => $request->input('ElementName'),
+            'LayoutId' => $request->input('LayoutId'),
+            'LanguageId' => $request->input('LanguageId'),
+            'Subject' => $request->input('Subject'),
+            'Template' => $request->input('Template')
         ]);
         return new ServiceDto("Email Template Created Successfully.", 200, $layout);
     }
@@ -79,7 +79,7 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
         $relations = [];
 
         $layout = $this->templateRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailTemplateId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('EmailTemplateId')]
         ], $relations);
 
         return new ServiceDto("Template Retrieved Successfully.", 200, $layout);
@@ -88,13 +88,13 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
     public function update(Request $request): ServiceDto
     {
         $layout = $this->templateRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'ElementName' => $request->get('ElementName'),
-                'LayoutId' => $request->get('LayoutId'),
-                'LanguageId' => $request->get('LanguageId'),
-                'Subject' => $request->get('Subject'),
-                'Template' => $request->get('Template')
+                'ElementName' => $request->input('ElementName'),
+                'LayoutId' => $request->input('LayoutId'),
+                'LanguageId' => $request->input('LanguageId'),
+                'Subject' => $request->input('Subject'),
+                'Template' => $request->input('Template')
             ]
         );
         return new ServiceDto("Template Updated Successfully.", 200, $layout);
@@ -159,7 +159,7 @@ class EmailTemplateService extends EmailHelperService implements EmailTemplateSe
 
     public function delete(Request $request): ServiceDto
     {
-        $this->templateRepository->findByIdAndDelete($request->get('EmailTemplateId'));
+        $this->templateRepository->findByIdAndDelete($request->input('EmailTemplateId'));
         return new ServiceDto("Template Deleted Successfully.", 200);
     }
 

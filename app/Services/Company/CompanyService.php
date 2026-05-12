@@ -247,7 +247,7 @@ class CompanyService implements CompanyServiceInterface
     {
         $companies = $this->companyRepository->getByAttributes([], '', ['Id', 'Name', 'CompanyName'], 'Name', false, [
             [
-                "relation" => "modules", "column" => "Module.Id", "operator" => "=", "values" => $request->get("moduleId")
+                "relation" => "modules", "column" => "Module.Id", "operator" => "=", "values" => $request->input("moduleId")
             ]
         ]);
         return new ServiceDto("Companies retrieved!!!", 200, $companies);
@@ -277,16 +277,16 @@ class CompanyService implements CompanyServiceInterface
         ];
 
         $sourceCompany = $this->companyRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('SourceCompanyId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('SourceCompanyId')]
         ], $relations);
 
         // create company
         $targetCompany = $this->companyRepository->create(array_merge(
             [
-                'Name' => $request->get('Name'),
-                'DomainName' => $request->get('DomainName'),
-                'DatabaseName' => $request->get('DatabaseName'),
-                'CompanyName' => $request->get('CompanyName'),
+                'Name' => $request->input('Name'),
+                'DomainName' => $request->input('DomainName'),
+                'DatabaseName' => $request->input('DatabaseName'),
+                'CompanyName' => $request->input('CompanyName'),
             ],
             collect($sourceCompany)->except([
                 'Id', 'InsertTime', 'UpdateTime', 'DeleteTime', // Default Columns For laravel
@@ -300,10 +300,10 @@ class CompanyService implements CompanyServiceInterface
 
         $targetCompany->load($relations);
 
-        $withData = $request->get('WithData');
+        $withData = $request->input('WithData');
         $this->cloneDatabaseAndData($sourceCompany, $targetCompany, $withData);
 
-        $withRolesAndUsers = $request->get('WithRolesAndUsers');
+        $withRolesAndUsers = $request->input('WithRolesAndUsers');
         list($developerRole, $adminRole, $mappedRoles) = $this->cloneRoles($sourceCompany, $targetCompany, $withRolesAndUsers);
 
         $mappedUsers = [];
@@ -313,7 +313,7 @@ class CompanyService implements CompanyServiceInterface
             $mappedUsers = $this->cloneUsersWithRoles($sourceCompany, $targetCompany, $mappedRoles);
         }
 
-        $withSettings = $request->get('WithSettings');
+        $withSettings = $request->input('WithSettings');
         $this->cloneSettings($sourceCompany, $targetCompany, $withSettings);
 
         if (App::environment('production')) {
@@ -327,10 +327,10 @@ class CompanyService implements CompanyServiceInterface
 
         $this->cloneCompanyThemes($sourceCompany, $targetCompany);
 
-        $withDataFilters = $request->get('WithDataFilters');
+        $withDataFilters = $request->input('WithDataFilters');
         $this->cloneDataFilters($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withDataFilters);
 
-        $withEmailConfigurations = $request->get('WithEmailConfigurations');
+        $withEmailConfigurations = $request->input('WithEmailConfigurations');
         $this->cloneEmailConfigurations($sourceCompany, $targetCompany, $mappedRoles, $mappedUsers, $withRolesAndUsers, $withEmailConfigurations);
 
         if (!$withData) {
@@ -758,7 +758,7 @@ class CompanyService implements CompanyServiceInterface
 
                 $company_data->module_settings = $formatted_module_settings;
 
-                return $company_data;
+                return $company_data->toArray();
             }
         );
 
@@ -768,7 +768,7 @@ class CompanyService implements CompanyServiceInterface
 
     public static function setDatabaseConnection($company): void
     {
-        //Log::info("Setting database connection for company: " . $company['DomainName']);
+        //Log::info("Setting database connection for company:" . $company['DomainName']);
         if (App::environment('local')) {
             DbHelpers::connectDB($company['DatabaseName']);
         } else {
@@ -1078,11 +1078,11 @@ class CompanyService implements CompanyServiceInterface
         ];
 
         $initialCompany = $this->companyRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('Id')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('Id')]
         ], $relations);
 
         $updatedCompany = $this->companyRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             $request->except(['Id', 'SelectedCompanyId'])
         );
 
@@ -1139,14 +1139,14 @@ class CompanyService implements CompanyServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        $company = $this->companyRepository->findById($request->input('CompanyId'));
         return new ServiceDto("Company Retrieved Successfully.", 200, $company);
     }
 
     public function delete(Request $request): ServiceDto
     {
         $company = $this->companyRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyId')]
         ], ["imageHostAccount", "postmarkEmailServer"]);
 
         $connection = $company->only([
@@ -1200,7 +1200,7 @@ class CompanyService implements CompanyServiceInterface
             'companyUsers'
         ];
         $user = $this->userRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('UserId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('UserId')]
         ], $relations);
 
         $assignedCompanyIds = $user->companyUsers->pluck('CompanyId')->toArray();
@@ -1214,7 +1214,7 @@ class CompanyService implements CompanyServiceInterface
 
     public function getCompanyCustomDomains(Request $request): ServiceDto
     {
-        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        $company = $this->companyRepository->findById($request->input('CompanyId'));
 
         return new ServiceDto("Company Custom Domain Retrieved Successfully.", 200, $company->CustomDomainsArray);
     }
@@ -1224,7 +1224,7 @@ class CompanyService implements CompanyServiceInterface
      */
     public function addCompanyCustomDomain(Request $request): ServiceDto
     {
-        $response = $this->nsalesAdminDjangoApiRepository->addCompanyCustomDomain($request->get('CustomDomain'), $request->get('UUID'));
+        $response = $this->nsalesAdminDjangoApiRepository->addCompanyCustomDomain($request->input('CustomDomain'), $request->input('UUID'));
         if (!$response['success']) {
             $errorData = [];
             $statusCode = $response['status_code'];
@@ -1243,11 +1243,11 @@ class CompanyService implements CompanyServiceInterface
 
     public function updateCompanyDomainToDB($request)
     {
-        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        $company = $this->companyRepository->findById($request->input('CompanyId'));
         $companyCustomDomains = $company->CustomDomainsArray;
-        $companyCustomDomains[] = $request->get('CustomDomain');
+        $companyCustomDomains[] = $request->input('CustomDomain');
         $updateCompany = $this->companyRepository->findByIdAndUpdate(
-            $request->get('CompanyId'),
+            $request->input('CompanyId'),
             [
                 'CustomDomains' => $companyCustomDomains,
             ]
@@ -1260,7 +1260,7 @@ class CompanyService implements CompanyServiceInterface
     public function getPostmarkServer(Request $request): ServiceDto
     {
         $postmarkServer = $this->postmarkEmailServerRepository->firstByAttributes([
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
         ]);
         $postmarkServer = $postmarkServer?->only(['ServerName', 'ServerId', 'ServerLink']);
         return new ServiceDto('Postmark Server Retrieved Successfully.', 200, $postmarkServer ?? []);
@@ -1269,12 +1269,12 @@ class CompanyService implements CompanyServiceInterface
     public function createPostmarkServer(Request $request): ServiceDto
     {
         $company = $this->companyRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyId')]
         ]);
         $postmarkToken = $this->setUpPostmarkEmail($company);
         if ($postmarkToken) {
             $postmarkServer = $this->postmarkEmailServerRepository->firstByAttributes([
-                ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
+                ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
             ])->only(['ServerName', 'ServerId', 'ServerLink']);
             return new ServiceDto('Postmark Server Added Successfully.', 200, $postmarkServer);
         } else {
@@ -1288,7 +1288,7 @@ class CompanyService implements CompanyServiceInterface
     public function deleteCompanyCustomDomain(Request $request): ServiceDto
     {
         if ($request->has('HostId')) {
-            $response = $this->nsalesAdminDjangoApiRepository->deleteCompanyCustomDomain($request->get('HostId'));
+            $response = $this->nsalesAdminDjangoApiRepository->deleteCompanyCustomDomain($request->input('HostId'));
 
             if (!$response['success']) {
                 return new ServiceDto($response["message"], $response['status_code'], []);
@@ -1301,17 +1301,17 @@ class CompanyService implements CompanyServiceInterface
 
     public function deleteCompanyDomainToDB($request)
     {
-        $company = $this->companyRepository->findById($request->get('CompanyId'));
+        $company = $this->companyRepository->findById($request->input('CompanyId'));
         $companyCustomDomains = $company->CustomDomainsArray;
         $companyCustomDomains = array_filter(
             $companyCustomDomains,
             function ($domain) use ($request) {
-                return $domain !== $request->get('CustomDomain');
+                return $domain !== $request->input('CustomDomain');
             }
         );
 
         $updateCompany = $this->companyRepository->findByIdAndUpdate(
-            $request->get('CompanyId'),
+            $request->input('CompanyId'),
             [
                 'CustomDomains' => $companyCustomDomains,
             ]

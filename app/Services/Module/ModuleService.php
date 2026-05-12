@@ -54,7 +54,7 @@ class ModuleService implements ModuleServiceInterface
 
     public function getActivatedAndAvailableModulesByCompany(Request $request): ServiceDto
     {
-        $companyId = $request->get('CompanyId');
+        $companyId = $request->input('CompanyId');
         $companyModules = $this->companyModuleRepository->getByAttributes([
                 ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
             ]
@@ -136,7 +136,7 @@ class ModuleService implements ModuleServiceInterface
 
     public function getActivatedModulesByCompany(Request $request): ServiceDto
     {
-        $companyId = $request->get('CompanyId');
+        $companyId = $request->input('CompanyId');
         $companyModules = $this->companyModuleRepository->getByAttributes([
             ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
         ]);
@@ -151,8 +151,8 @@ class ModuleService implements ModuleServiceInterface
 
     public function activateModule(Request $request): ServiceDto
     {
-        $requestModule = $request->get('module');
-        $companyId = $request->get('CompanyId');
+        $requestModule = $request->input('module');
+        $companyId = $request->input('CompanyId');
         $company = $this->companyRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $companyId]
         ]);
@@ -244,8 +244,8 @@ class ModuleService implements ModuleServiceInterface
 
     public function deactivateModule(Request $request): ServiceDto
     {
-        $requestModule = $request->get('module');
-        $companyId = $request->get('CompanyId');
+        $requestModule = $request->input('module');
+        $companyId = $request->input('CompanyId');
         $company = $this->companyRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $companyId]
         ]);
@@ -337,7 +337,7 @@ class ModuleService implements ModuleServiceInterface
     public function getModulesByApplication(Request $request): ServiceDto
     {
         $moduleIds = $this->applicationModuleRepository->getByAttributes([
-            ['column' => 'ApplicationId', 'operand' => '=', 'value' => $request->get('ApplicationId')]
+            ['column' => 'ApplicationId', 'operand' => '=', 'value' => $request->input('ApplicationId')]
         ])->pluck('ModuleId')->toArray();
 
         $modules = $this->moduleRepository->getByAttributes([
@@ -350,7 +350,7 @@ class ModuleService implements ModuleServiceInterface
     public function getAssignableModulesByApplication(Request $request): ServiceDto
     {
         $moduleIds = $this->applicationModuleRepository->getByAttributes([
-            ['column' => 'ApplicationId', 'operand' => '=', 'value' => $request->get('ApplicationId')]
+            ['column' => 'ApplicationId', 'operand' => '=', 'value' => $request->input('ApplicationId')]
         ])->pluck('ModuleId')->toArray();
 
         $modules = $this->moduleRepository->getByAttributes([
@@ -363,7 +363,7 @@ class ModuleService implements ModuleServiceInterface
     public function getAssignableModulesByModulePackage(Request $request): ServiceDto
     {
         $moduleIds = $this->modulePackageModuleRepository->getByAttributes([
-            ['column' => 'ModulePackageId', 'operand' => '=', 'value' => $request->get('ModulePackageId')]
+            ['column' => 'ModulePackageId', 'operand' => '=', 'value' => $request->input('ModulePackageId')]
         ])->pluck('ModuleId')->toArray();
 
         $modules = $this->moduleRepository->getByAttributes([
@@ -377,24 +377,24 @@ class ModuleService implements ModuleServiceInterface
     public function create(Request $request): ServiceDto
     {
         $module = $this->moduleRepository->create([
-            'ModuleId' => $request->get('ModuleId'),
-            'Name' => $request->get('Name'),
-            'Description' => $request->get('Description'),
-            'Note' => $request->get('Note'),
-            'Type' => $request->get('Type'),
-            'Disabled' => $request->get('Disabled'),
-            'SyncOfficeData' => $request->get('SyncOfficeData'),
-            'ViewPath' => $request->get('ViewPath'),
-            'MainTableName' => $request->get('MainTableName') ?? '',
-            'IsGenericModule' => $request->get('IsGenericModule') ?? '',
-            'MenuVisible' => $request->get('MenuVisible') ?? 1,
-            'MenuTitle' => $request->get('MenuTitle') ?? '',
-            'MenuSubTitle' => $request->get('MenuSubTitle') ?? '',
-            'MenuGroup' => $request->get('MenuGroup') ?? '',
-            'MenuOrder' => $request->get('MenuOrder') ?? 0,
-            'MenuIcon' => $request->get('MenuIcon') ?? '',
-            'ElementNameSingular' => $request->get('ElementNameSingular') ?? '',
-            'ElementNamePlural' => $request->get('ElementNamePlural') ?? '',
+            'ModuleId' => $request->input('ModuleId'),
+            'Name' => $request->input('Name'),
+            'Description' => $request->input('Description'),
+            'Note' => $request->input('Note'),
+            'Type' => $request->input('Type'),
+            'Disabled' => $request->input('Disabled'),
+            'SyncOfficeData' => $request->input('SyncOfficeData'),
+            'ViewPath' => $request->input('ViewPath'),
+            'MainTableName' => $request->input('MainTableName') ?? '',
+            'IsGenericModule' => $request->input('IsGenericModule') ?? '',
+            'MenuVisible' => $request->input('MenuVisible') ?? 1,
+            'MenuTitle' => $request->input('MenuTitle') ?? '',
+            'MenuSubTitle' => $request->input('MenuSubTitle') ?? '',
+            'MenuGroup' => $request->input('MenuGroup') ?? '',
+            'MenuOrder' => $request->input('MenuOrder') ?? 0,
+            'MenuIcon' => $request->input('MenuIcon') ?? '',
+            'ElementNameSingular' => $request->input('ElementNameSingular') ?? '',
+            'ElementNamePlural' => $request->input('ElementNamePlural') ?? '',
         ]);
         return new ServiceDto("Module Created Successfully.", 200, $module);
     }
@@ -402,26 +402,26 @@ class ModuleService implements ModuleServiceInterface
     public function update(Request $request): ServiceDto
     {
         $module = $this->moduleRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'ModuleId' => $request->get('ModuleId'),
-                'Name' => $request->get('Name'),
-                'Description' => $request->get('Description'),
-                'Note' => $request->get('Note'),
-                'Type' => $request->get('Type'),
-                'Disabled' => $request->get('Disabled'),
-                'SyncOfficeData' => $request->get('SyncOfficeData'),
-                'ViewPath' => $request->get('ViewPath'),
-                'MainTableName' => $request->get('MainTableName') ?? '',
-                'IsGenericModule' => $request->get('IsGenericModule') ?? '',
-                'MenuVisible' => $request->get('MenuVisible') ?? 1,
-                'MenuTitle' => $request->get('MenuTitle') ?? '',
-                'MenuSubTitle' => $request->get('MenuSubTitle') ?? '',
-                'MenuGroup' => $request->get('MenuGroup') ?? '',
-                'MenuOrder' => $request->get('MenuOrder') ?? 0,
-                'MenuIcon' => $request->get('MenuIcon') ?? '',
-                'ElementNameSingular' => $request->get('ElementNameSingular') ?? '',
-                'ElementNamePlural' => $request->get('ElementNamePlural') ?? '',
+                'ModuleId' => $request->input('ModuleId'),
+                'Name' => $request->input('Name'),
+                'Description' => $request->input('Description'),
+                'Note' => $request->input('Note'),
+                'Type' => $request->input('Type'),
+                'Disabled' => $request->input('Disabled'),
+                'SyncOfficeData' => $request->input('SyncOfficeData'),
+                'ViewPath' => $request->input('ViewPath'),
+                'MainTableName' => $request->input('MainTableName') ?? '',
+                'IsGenericModule' => $request->input('IsGenericModule') ?? '',
+                'MenuVisible' => $request->input('MenuVisible') ?? 1,
+                'MenuTitle' => $request->input('MenuTitle') ?? '',
+                'MenuSubTitle' => $request->input('MenuSubTitle') ?? '',
+                'MenuGroup' => $request->input('MenuGroup') ?? '',
+                'MenuOrder' => $request->input('MenuOrder') ?? 0,
+                'MenuIcon' => $request->input('MenuIcon') ?? '',
+                'ElementNameSingular' => $request->input('ElementNameSingular') ?? '',
+                'ElementNamePlural' => $request->input('ElementNamePlural') ?? '',
             ]
         );
         return new ServiceDto("Module Updated Successfully.", 200, $module);
@@ -437,7 +437,7 @@ class ModuleService implements ModuleServiceInterface
         ];
         $module = $this->moduleRepository
             ->firstByAttributes([
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('ModuleId')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('ModuleId')]
             ], $relations);
 
         return new ServiceDto("Module Retrieved Successfully.", 200, $module);
@@ -445,7 +445,7 @@ class ModuleService implements ModuleServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->moduleRepository->findByIdAndDelete($request->get('ModuleId'));
+        $this->moduleRepository->findByIdAndDelete($request->input('ModuleId'));
         return new ServiceDto("Module Deleted Successfully.", 200, []);
     }
 }

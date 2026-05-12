@@ -31,8 +31,8 @@ class ModulePackageService implements ModulePackageServiceInterface
     public function create(Request $request): ServiceDto
     {
         $modulePackage = $this->modulePackageRepository->create([
-            'Name' => $request->get('Name'),
-            'Type' => $request->get('Type')
+            'Name' => $request->input('Name'),
+            'Type' => $request->input('Type')
         ]);
         return new ServiceDto("ModulePackage Created Successfully.", 200, $modulePackage);
     }
@@ -40,10 +40,10 @@ class ModulePackageService implements ModulePackageServiceInterface
     public function update(Request $request): ServiceDto
     {
         $modulePackage = $this->modulePackageRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'Type' => $request->get('Type')
+                'Name' => $request->input('Name'),
+                'Type' => $request->input('Type')
             ]
         );
         return new ServiceDto("ModulePackage Updated Successfully.", 200, $modulePackage);
@@ -60,10 +60,10 @@ class ModulePackageService implements ModulePackageServiceInterface
     {
         $this->modulePackageModuleRepository->deleteByAttributes(
             [
-                ['column' => 'ModulePackageId', 'operand' => '=', 'value' => $request->get('ModulePackageId')]
+                ['column' => 'ModulePackageId', 'operand' => '=', 'value' => $request->input('ModulePackageId')]
             ]
         );
-        $this->modulePackageRepository->findByIdAndDelete($request->get('ModulePackageId'));
+        $this->modulePackageRepository->findByIdAndDelete($request->input('ModulePackageId'));
         return new ServiceDto("ModulePackage Deleted Successfully.", 200);
     }
 
@@ -77,7 +77,7 @@ class ModulePackageService implements ModulePackageServiceInterface
             }
         ];
         $modulePackage = $this->modulePackageRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('ModulePackageId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('ModulePackageId')]
         ], $relations);
         return new ServiceDto("ModulePackage Retrieved Successfully.", 200, $modulePackage);
     }

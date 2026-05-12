@@ -28,13 +28,13 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
                 ->whereBetween('OrderDate', [$startDate, $endDate])
                 ->whereIn('Status', ['Closed', 'Sent'])
                 ->where(function ($q) use ($request) {
-                    if ($request->get('Initials')) {
-                        $q->where('Employee', $request->get('Initials'));
+                    if ($request->input('Initials')) {
+                        $q->where('Employee', $request->input('Initials'));
                     }
                 });
         })->join('Item', function ($join) use ($request) {
             $join->on('Orderline.ItemNumber', '=', 'Item.Number')
-                ->where('Item.Id', $request->get('ItemId'));
+                ->where('Item.Id', $request->input('ItemId'));
         })
             ->select(DB::raw('sum(Orderline.TotalExVat) as TotalExVat, Orderhead.CustomerCurrency'))
             ->groupBy('Orderhead.CustomerCurrency')
@@ -50,15 +50,15 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     public function quantityOrderedByDatesByItem(Request $request, $startDate, $endDate): int
     {
         return $this->model->whereHas('item', function ($query) use ($request) {
-            $query->where('Id', $request->get('ItemId'));
+            $query->where('Id', $request->input('ItemId'));
         })
             ->whereHas('order', function ($query) use ($request, $startDate, $endDate) {
                 $query
                     ->whereBetween('OrderDate', [$startDate, $endDate])
                     ->whereIn('Status', ['Closed', 'Sent'])
                     ->where(function ($q) use ($request) {
-                        if ($request->get('Initials')) {
-                            $q->where('Employee', $request->get('Initials'));
+                        if ($request->input('Initials')) {
+                            $q->where('Employee', $request->input('Initials'));
                         }
                     });
             })

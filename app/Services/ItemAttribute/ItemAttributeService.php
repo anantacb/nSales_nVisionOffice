@@ -21,12 +21,12 @@ class ItemAttributeService implements ItemAttributeServiceInterface
      */
     public function updateItemAttributesByItem(Request $request): ServiceDto
     {
-        foreach ($request->get('ItemAttributes') as $itemAttribute) {
+        foreach ($request->input('ItemAttributes') as $itemAttribute) {
             $data = [
                 'TypeCode' => $itemAttribute['TypeCode'],
                 'Language' => $itemAttribute['Language'],
                 'Value' => $itemAttribute['Value'],
-                'ItemNumber' => $request->get('ItemNumber')
+                'ItemNumber' => $request->input('ItemNumber')
             ];
 
             if (!isset($itemAttribute['Id'])) {
@@ -36,7 +36,7 @@ class ItemAttributeService implements ItemAttributeServiceInterface
             }
         }
 
-        $itemAttributes = $this->repository->getItemAttributesByItem($request->get('ItemId'));
+        $itemAttributes = $this->repository->getItemAttributesByItem($request->input('ItemId'));
 
         return new ServiceDto("Itemattribute updated successfully.", 200, $itemAttributes);
     }
@@ -47,7 +47,7 @@ class ItemAttributeService implements ItemAttributeServiceInterface
      */
     public function getItemAttributesByItem(Request $request): ServiceDto
     {
-        $itemAttributes = $this->repository->getItemAttributesByItem($request->get('ItemId'));
+        $itemAttributes = $this->repository->getItemAttributesByItem($request->input('ItemId'));
 
         return new ServiceDto("Itemattribute retrieved successfully.", 200, $itemAttributes);
     }
@@ -58,7 +58,7 @@ class ItemAttributeService implements ItemAttributeServiceInterface
      */
     public function delete(Request $request): ServiceDto
     {
-        $this->repository->findByIdAndDelete($request->get('ItemAttributeId'));
+        $this->repository->findByIdAndDelete($request->input('ItemAttributeId'));
 
         return new ServiceDto("Itemattribute deleted successfully.", 200, []);
     }

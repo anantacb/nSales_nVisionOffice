@@ -87,38 +87,38 @@ class UserService implements UserServiceInterface
         $hash = strtoupper(sha1($salt . $password));
 
         $user = $this->userRepository->create([
-            'Name' => $request->get('Name'),
-            'Initials' => $request->get('Initials'),
-            'PhoneNo' => $request->get('PhoneNo'),
-            'MobileNo' => $request->get('MobileNo'),
-            'Email' => $request->get('Email'),
-            'Login' => $request->get('Email'),
-            'CultureName' => $request->get('CultureName'),
+            'Name' => $request->input('Name'),
+            'Initials' => $request->input('Initials'),
+            'PhoneNo' => $request->input('PhoneNo'),
+            'MobileNo' => $request->input('MobileNo'),
+            'Email' => $request->input('Email'),
+            'Login' => $request->input('Email'),
+            'CultureName' => $request->input('CultureName'),
             'Hash' => $hash,
             'Salt' => $salt,
-            'Disabled' => $request->get('Disabled'),
+            'Disabled' => $request->input('Disabled'),
         ]);
 
         $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->get('CompanyId')]
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
         ], [], '', 'Number', true);
 
         $number = $latestCompanyUser->Number + 1;
 
         $companyUser = $this->companyUserRepository->create([
-            'CompanyId' => $request->get('CompanyId'),
+            'CompanyId' => $request->input('CompanyId'),
             'UserId' => $user->Id,
             'Number' => $number,
-            'CultureName' => $request->get('CultureName'),
-            'Initials' => $request->get('Initials'),
-            'LicenceType' => $request->get('LicenceType'),
-            'Territory' => $request->get('Territory'),
-            'Commission' => $request->get('Commission'),
-            'Billable' => $request->get('Billable'),
-            'Note' => $request->get('Note')
+            'CultureName' => $request->input('CultureName'),
+            'Initials' => $request->input('Initials'),
+            'LicenceType' => $request->input('LicenceType'),
+            'Territory' => $request->input('Territory'),
+            'Commission' => $request->input('Commission'),
+            'Billable' => $request->input('Billable'),
+            'Note' => $request->input('Note')
         ]);
 
-        foreach ($request->get('RoleIds') as $roleId) {
+        foreach ($request->input('RoleIds') as $roleId) {
             $this->companyUserRoleRepository->create([
                 'RoleId' => $roleId,
                 'CompanyUserId' => $companyUser->Id
@@ -130,8 +130,8 @@ class UserService implements UserServiceInterface
 
     public function assignToCompany(Request $request): ServiceDto
     {
-        $userId = $request->get('UserId');
-        $companyId = $request->get('CompanyId');
+        $userId = $request->input('UserId');
+        $companyId = $request->input('CompanyId');
         $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
             ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
         ], [], '', 'Number', true);
@@ -142,16 +142,16 @@ class UserService implements UserServiceInterface
             'CompanyId' => $companyId,
             'UserId' => $userId,
             'Number' => $number,
-            'CultureName' => $request->get('CultureName'),
-            'Initials' => $request->get('Initials'),
-            'LicenceType' => $request->get('LicenceType'),
-            'Territory' => $request->get('Territory'),
-            'Commission' => $request->get('Commission'),
-            'Billable' => $request->get('Billable'),
-            'Note' => $request->get('Note')
+            'CultureName' => $request->input('CultureName'),
+            'Initials' => $request->input('Initials'),
+            'LicenceType' => $request->input('LicenceType'),
+            'Territory' => $request->input('Territory'),
+            'Commission' => $request->input('Commission'),
+            'Billable' => $request->input('Billable'),
+            'Note' => $request->input('Note')
         ]);
 
-        foreach ($request->get('RoleIds') as $roleId) {
+        foreach ($request->input('RoleIds') as $roleId) {
             $this->companyUserRoleRepository->create([
                 'RoleId' => $roleId,
                 'CompanyUserId' => $companyUser->Id
@@ -163,8 +163,8 @@ class UserService implements UserServiceInterface
 
     public function companyUserDetails(Request $request): ServiceDto
     {
-        $companyUserId = $request->get('UserId');
-        $companyId = $request->get('CompanyId');
+        $companyUserId = $request->input('UserId');
+        $companyId = $request->input('CompanyId');
         $relations = [
             'companyUser' => function ($q) use ($companyId) {
                 $q->with([
@@ -193,25 +193,25 @@ class UserService implements UserServiceInterface
 
     public function updateCompanyUser(Request $request): ServiceDto
     {
-        $companyUserId = $request->get('CompanyUserId');
+        $companyUserId = $request->input('CompanyUserId');
         $companyUser = $this->companyUserRepository->findByIdAndUpdate($companyUserId, [
-            'Initials' => $request->get('Initials'),
-            'LicenceType' => $request->get('LicenceType'),
-            'Territory' => $request->get('Territory'),
-            'Note' => $request->get('Note')
+            'Initials' => $request->input('Initials'),
+            'LicenceType' => $request->input('LicenceType'),
+            'Territory' => $request->input('Territory'),
+            'Note' => $request->input('Note')
         ]);
 
-        $this->syncCompanyUserRoles($companyUser, $request->get('RoleIds'));
+        $this->syncCompanyUserRoles($companyUser, $request->input('RoleIds'));
 
         return new ServiceDto('User Updated Successfully', 200, []);
     }
 
     public function updateCompanyUserRoles(Request $request): ServiceDto
     {
-        $companyUserId = $request->get('CompanyUserId');
+        $companyUserId = $request->input('CompanyUserId');
         $companyUser = $this->companyUserRepository->findById($companyUserId);
 
-        $this->syncCompanyUserRoles($companyUser, $request->get('RoleIds'));
+        $this->syncCompanyUserRoles($companyUser, $request->input('RoleIds'));
 
         return new ServiceDto('Roles Updated Successfully', 200, []);
     }
@@ -219,8 +219,8 @@ class UserService implements UserServiceInterface
     public function updateCompanyUserInitials(Request $request): ServiceDto
     {
         $this->companyUserRepository->findByIdAndUpdate(
-            $request->get('CompanyUserId'),
-            ['Initials' => $request->get('Initials')]
+            $request->input('CompanyUserId'),
+            ['Initials' => $request->input('Initials')]
         );
 
         return new ServiceDto('Initials Updated Successfully', 200, []);
@@ -256,7 +256,7 @@ class UserService implements UserServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $userId = $request->get('UserId');
+        $userId = $request->input('UserId');
 
         $relations = [
             'companyUsers' => function ($q) {
@@ -273,13 +273,13 @@ class UserService implements UserServiceInterface
 
     public function update(Request $request): ServiceDto
     {
-        $userId = $request->get('Id');
+        $userId = $request->input('Id');
         $user = $this->userRepository->findByIdAndUpdate($userId, [
-            'Name' => $request->get('Name'),
-            'PhoneNo' => $request->get('PhoneNo'),
-            'MobileNo' => $request->get('MobileNo'),
-            'Email' => $request->get('Email'),
-            'Login' => $request->get('Email')
+            'Name' => $request->input('Name'),
+            'PhoneNo' => $request->input('PhoneNo'),
+            'MobileNo' => $request->input('MobileNo'),
+            'Email' => $request->input('Email'),
+            'Login' => $request->input('Email')
         ]);
 
         return new ServiceDto('User Updated Successfully', 200, $user);
@@ -287,7 +287,7 @@ class UserService implements UserServiceInterface
 
     public function getAllCompanyUsers(Request $request): ServiceDto
     {
-        $companyId = $request->get('CompanyId');
+        $companyId = $request->input('CompanyId');
         $relations = [
             'user' => function ($q) {
                 $q->select(['Id', 'Name', 'Initials']);
@@ -295,7 +295,7 @@ class UserService implements UserServiceInterface
         ];
 
         $filter_by_relation = [];
-        if ($request->get('ExcludeDevelopers')) {
+        if ($request->input('ExcludeDevelopers')) {
             $filter_by_relation = [
                 ["relation" => 'roles', "column" => "Type", "operator" => "!=", "values" => 'Developer'],
             ];
@@ -309,7 +309,7 @@ class UserService implements UserServiceInterface
 
     public function tagDeveloperToAllCompanies(Request $request): ServiceDto
     {
-        $userId = $request->get('UserId');
+        $userId = $request->input('UserId');
 
         $user = $this->userRepository->firstByAttributes([
             ['column' => 'Id', 'operand' => '=', 'value' => $userId]

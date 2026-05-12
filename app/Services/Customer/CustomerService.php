@@ -32,7 +32,7 @@ class CustomerService implements CustomerServiceInterface
     public function update(Request $request): ServiceDto
     {
         $customer = $this->customerRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             $request->except(['CompanyId', 'SelectedCompanyId'])
         );
         return new ServiceDto("Customer Updated Successfully.", 200, $customer);
@@ -40,17 +40,17 @@ class CustomerService implements CustomerServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->customerRepository->findByIdAndDelete($request->get('CustomerId'));
+        $this->customerRepository->findByIdAndDelete($request->input('CustomerId'));
         return new ServiceDto("Customer Deleted Successfully.", 200);
     }
 
     public function details(Request $request): ServiceDto
     {
         $attributes = [
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CustomerId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CustomerId')]
         ];
-        /*if ($request->get('initials')) {
-            $attributes[] = ['column' => 'Employee', 'operand' => '=', 'value' => $request->get('initials')];
+        /*if ($request->input('initials')) {
+            $attributes[] = ['column' => 'Employee', 'operand' => '=', 'value' => $request->input('initials')];
         }*/
 
         $customer = $this->customerRepository->firstByAttributes($attributes);

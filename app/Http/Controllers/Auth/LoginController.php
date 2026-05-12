@@ -63,7 +63,7 @@ class LoginController extends Controller
 
     protected function attemptLogin(Request $request)
     {
-        $user = User::with('companyUsers.roles')->where('Email', $request->get('email'))->first();
+        $user = User::with('companyUsers.roles')->where('Email', $request->input('email'))->first();
         // check user exist
         if (!$user) {
             return [
@@ -109,7 +109,7 @@ class LoginController extends Controller
             ];
         }*/
 
-        $psw = sha1($user->Salt . $request->get('password'));
+        $psw = sha1($user->Salt . $request->input('password'));
         $psw = strtoupper($psw);
 
         // auth user

@@ -82,11 +82,11 @@ class OrderService implements OrderServiceInterface
     public function details(Request $request): ServiceDto
     {
         $attributes = [
-            ['column' => 'UUID', 'operand' => '=', 'value' => $request->get('UUID')]
+            ['column' => 'UUID', 'operand' => '=', 'value' => $request->input('UUID')]
         ];
 
-        if ($request->get('initials')) {
-            $attributes[] = ['column' => 'Employee', 'operand' => '=', 'value' => $request->get('initials')];
+        if ($request->input('initials')) {
+            $attributes[] = ['column' => 'Employee', 'operand' => '=', 'value' => $request->input('initials')];
         }
 
         $relations = ['orderLines' => function ($q) {
@@ -104,10 +104,10 @@ class OrderService implements OrderServiceInterface
     public function delete(Request $request): ServiceDto
     {
         $this->orderLineRepository->deleteByAttributes([
-            ['column' => 'OrderUUID', 'operand' => '=', 'value' => $request->get('UUID')]
+            ['column' => 'OrderUUID', 'operand' => '=', 'value' => $request->input('UUID')]
         ]);
         $this->orderRepository->deleteByAttributes([
-            ['column' => 'UUID', 'operand' => '=', 'value' => $request->get('UUID')]
+            ['column' => 'UUID', 'operand' => '=', 'value' => $request->input('UUID')]
         ]);
 
         return new ServiceDto("Order Deleted successfully.", 200, []);
@@ -130,7 +130,7 @@ class OrderService implements OrderServiceInterface
     public function reExportOrder(Request $request): ServiceDto
     {
         $order = $this->orderRepository->firstByAttributes([
-            ['column' => 'UUID', 'operand' => '=', 'value' => $request->get('UUID')]
+            ['column' => 'UUID', 'operand' => '=', 'value' => $request->input('UUID')]
         ]);
 
         $this->orderRepository->update($order, [

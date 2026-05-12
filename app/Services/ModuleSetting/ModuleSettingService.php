@@ -51,7 +51,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function getAllModuleSettingsByCompanyId(Request $request): ServiceDto
     {
-        $companyId = $request->get('CompanyId');
+        $companyId = $request->input('CompanyId');
 
         $defaultModuleNames = ['System'];
 
@@ -134,7 +134,7 @@ class ModuleSettingService implements ModuleSettingServiceInterface
         if ($moduleSetting->DataType == 'String') {
             if (isJSON($moduleSetting->Value)) {
                 $moduleSetting->IsJson = true;
-                $moduleSetting->Value = json_decode($moduleSetting->Value);
+                $moduleSetting->Value = json_decode($moduleSetting->Value, true);
             }
         }
 
@@ -143,9 +143,9 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function updateModuleSettingsByCompanyId(Request $request): ServiceDto
     {
-        $companyId = $request->get('CompanyId');
+        $companyId = $request->input('CompanyId');
 
-        foreach ($request->get('ModuleSettings') as $moduleSetting) {
+        foreach ($request->input('ModuleSettings') as $moduleSetting) {
             if ($moduleSetting['setting']) {
                 $this->settingRepository->findByIdAndUpdate($moduleSetting['setting']['Id'], [
                     'Value' => gettype($moduleSetting['Value']) == 'array' ? json_encode($moduleSetting['Value']) : $moduleSetting['Value']
@@ -167,17 +167,17 @@ class ModuleSettingService implements ModuleSettingServiceInterface
     public function create(Request $request): ServiceDto
     {
         $moduleSetting = $this->moduleSettingRepository->create([
-            'ModuleId' => $request->get('ModuleId'),
-            'Name' => $request->get('Name'),
-            'DataType' => $request->get('DataType'),
-            'Options' => $request->get('Options'),
-            'Value' => $request->get('Value') ?? "",
-            'ValueExpression' => $request->get('ValueExpression'),
-            'CoreSetting' => $request->get('CoreSetting'),
-            'Note' => $request->get('Note'),
-            'Readonly' => $request->get('Readonly'),
-            'Visible' => $request->get('Visible'),
-            'Disabled' => $request->get('Disabled'),
+            'ModuleId' => $request->input('ModuleId'),
+            'Name' => $request->input('Name'),
+            'DataType' => $request->input('DataType'),
+            'Options' => $request->input('Options'),
+            'Value' => $request->input('Value') ?? "",
+            'ValueExpression' => $request->input('ValueExpression'),
+            'CoreSetting' => $request->input('CoreSetting'),
+            'Note' => $request->input('Note'),
+            'Readonly' => $request->input('Readonly'),
+            'Visible' => $request->input('Visible'),
+            'Disabled' => $request->input('Disabled'),
         ]);
         $this->clearAllServerCaches();
         return new ServiceDto("Setting Created Successfully.", 200, $moduleSetting);
@@ -198,19 +198,19 @@ class ModuleSettingService implements ModuleSettingServiceInterface
     public function update(Request $request): ServiceDto
     {
         $moduleSetting = $this->moduleSettingRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'ModuleId' => $request->get('ModuleId'),
-                'Name' => $request->get('Name'),
-                'DataType' => $request->get('DataType'),
-                'Options' => $request->get('Options'),
-                'Value' => $request->get('Value') ?? "",
-                'ValueExpression' => $request->get('ValueExpression'),
-                'CoreSetting' => $request->get('CoreSetting'),
-                'Note' => $request->get('Note'),
-                'Readonly' => $request->get('Readonly'),
-                'Visible' => $request->get('Visible'),
-                'Disabled' => $request->get('Disabled'),
+                'ModuleId' => $request->input('ModuleId'),
+                'Name' => $request->input('Name'),
+                'DataType' => $request->input('DataType'),
+                'Options' => $request->input('Options'),
+                'Value' => $request->input('Value') ?? "",
+                'ValueExpression' => $request->input('ValueExpression'),
+                'CoreSetting' => $request->input('CoreSetting'),
+                'Note' => $request->input('Note'),
+                'Readonly' => $request->input('Readonly'),
+                'Visible' => $request->input('Visible'),
+                'Disabled' => $request->input('Disabled'),
             ]
         );
         $this->clearAllServerCaches();
@@ -219,15 +219,15 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function details(Request $request): ServiceDto
     {
-        $moduleSetting = $this->moduleSettingRepository->findById($request->get('ModuleSettingId'));
+        $moduleSetting = $this->moduleSettingRepository->findById($request->input('ModuleSettingId'));
         return new ServiceDto("Setting Retrieved Successfully.", 200, $moduleSetting);
     }
 
     public function delete(Request $request): ServiceDto
     {
-        $this->moduleSettingRepository->findByIdAndDelete($request->get('ModuleSettingId'));
+        $this->moduleSettingRepository->findByIdAndDelete($request->input('ModuleSettingId'));
         $this->settingRepository->deleteByAttributes([
-            ['column' => 'ModuleSettingId', 'operand' => '=', 'value' => $request->get('ModuleSettingId')]
+            ['column' => 'ModuleSettingId', 'operand' => '=', 'value' => $request->input('ModuleSettingId')]
         ]);
         $this->clearAllServerCaches();
         return new ServiceDto("Setting Deleted Successfully.", 200, []);
@@ -245,9 +245,9 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function getModuleSettingsByName(Request $request): ServiceDto
     {
-        $companyId = $request->get('CompanyId');
+        $companyId = $request->input('CompanyId');
 
-        $settings = $request->get("Settings");
+        $settings = $request->input("Settings");
         $settings = array_map(function ($setting) {
             $exploded = explode('.', $setting);
             $moduleName = array_shift($exploded);
@@ -301,8 +301,8 @@ class ModuleSettingService implements ModuleSettingServiceInterface
 
     public function getCoreModuleSettingsByName(Request $request): ServiceDto
     {
-        $module = $request->get('Module');
-        $settingKeys = $request->get('SettingKeys');
+        $module = $request->input('Module');
+        $settingKeys = $request->input('SettingKeys');
 
         $settings = $this->getCoreModuleSettings($module, $settingKeys);
         return new ServiceDto("ModuleSettings retrieved!!!", 200, $settings);

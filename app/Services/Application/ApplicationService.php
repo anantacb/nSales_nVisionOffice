@@ -25,9 +25,9 @@ class ApplicationService implements ApplicationServiceInterface
     public function create(Request $request): ServiceDto
     {
         $application = $this->applicationRepository->create([
-            'Name' => $request->get('Name'),
-            'Platform' => $request->get('Platform'),
-            'OperatingSystem' => $request->get('OperatingSystem')
+            'Name' => $request->input('Name'),
+            'Platform' => $request->input('Platform'),
+            'OperatingSystem' => $request->input('OperatingSystem')
         ]);
         return new ServiceDto("Application Created Successfully.", 200, $application);
     }
@@ -35,11 +35,11 @@ class ApplicationService implements ApplicationServiceInterface
     public function update(Request $request): ServiceDto
     {
         $application = $this->applicationRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'Platform' => $request->get('Platform'),
-                'OperatingSystem' => $request->get('OperatingSystem')
+                'Name' => $request->input('Name'),
+                'Platform' => $request->input('Platform'),
+                'OperatingSystem' => $request->input('OperatingSystem')
             ]
         );
         return new ServiceDto("Application Updated Successfully.", 200, $application);
@@ -54,7 +54,7 @@ class ApplicationService implements ApplicationServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->applicationRepository->findByIdAndDelete($request->get('ApplicationId'));
+        $this->applicationRepository->findByIdAndDelete($request->input('ApplicationId'));
         return new ServiceDto("Application Deleted Successfully.", 200);
     }
 
@@ -75,7 +75,7 @@ class ApplicationService implements ApplicationServiceInterface
         ];
 
         $application = $this->applicationRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('ApplicationId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('ApplicationId')]
         ], $relations);
 
         return new ServiceDto("Application Retrieved Successfully.", 200, $application);

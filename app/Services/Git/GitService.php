@@ -19,10 +19,10 @@ class GitService implements GitServiceInterface
 
     public function getCompanyBranches(Request $request): ServiceDto
     {
-        if (Cache::has("company_" . $request->get("CompanyId"))) {
-            $company = Cache::get("company_" . $request->get("CompanyId"));
+        if (Cache::has("company_" . $request->input("CompanyId"))) {
+            $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->get("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"));
         }
 
         $companyBranches = [
@@ -46,10 +46,10 @@ class GitService implements GitServiceInterface
 
     public function createCompanyBranches(Request $request): ServiceDto
     {
-        if (Cache::has("company_" . $request->get("CompanyId"))) {
-            $company = Cache::get("company_" . $request->get("CompanyId"));
+        if (Cache::has("company_" . $request->input("CompanyId"))) {
+            $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->get("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"));
         }
 
         $companyBranches = [

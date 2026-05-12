@@ -52,9 +52,9 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     public function create(Request $request): ServiceDto
     {
         $layout = $this->layoutRepository->create([
-            'Name' => $request->get('Name'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Template' => $request->get('Template')
+            'Name' => $request->input('Name'),
+            'LanguageId' => $request->input('LanguageId'),
+            'Template' => $request->input('Template')
         ]);
         return new ServiceDto("Email Layout Created Successfully.", 200, $layout);
     }
@@ -64,7 +64,7 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
         $relations = [];
 
         $layout = $this->layoutRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('EmailLayoutId')]
         ], $relations);
 
         return new ServiceDto("Layout Retrieved Successfully.", 200, $layout);
@@ -73,11 +73,11 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     public function update(Request $request): ServiceDto
     {
         $layout = $this->layoutRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'LanguageId' => $request->get('LanguageId'),
-                'Template' => $request->get('Template')
+                'Name' => $request->input('Name'),
+                'LanguageId' => $request->input('LanguageId'),
+                'Template' => $request->input('Template')
             ]
         );
         return new ServiceDto("Layout Updated Successfully.", 200, $layout);
@@ -87,7 +87,7 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     {
         $emailLayouts = $this->layoutRepository->getByAttributes(
             [
-                ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->get('LanguageId')]
+                ['column' => 'LanguageId', 'operand' => '=', 'value' => $request->input('LanguageId')]
             ]
             , '', '', 'Name'
         );
@@ -114,9 +114,9 @@ class EmailLayoutService extends EmailHelperService implements EmailLayoutServic
     public function delete(Request $request): ServiceDto
     {
 //        $this->templateRepository->deleteByAttributes([
-//            ['column' => 'LayoutId', 'operand' => '=', 'value' => $request->get('EmailLayoutId')]
+//            ['column' => 'LayoutId', 'operand' => '=', 'value' => $request->input('EmailLayoutId')]
 //        ]);
-        $this->layoutRepository->findByIdAndDelete($request->get('EmailLayoutId'));
+        $this->layoutRepository->findByIdAndDelete($request->input('EmailLayoutId'));
         return new ServiceDto("Layout Deleted Successfully.", 200);
     }
 

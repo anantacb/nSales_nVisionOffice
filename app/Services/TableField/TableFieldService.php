@@ -46,7 +46,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function getTableFields(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $relations = [
             'companyTableFields' => function ($q) {
                 $q->with([
@@ -82,8 +82,8 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function getCompanyAllTableFields(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
-        $companyId = $request->get('CompanyId');
+        $tableId = $request->input('TableId');
+        $companyId = $request->input('CompanyId');
         $generalTableFields = $this->tableFieldRepository->getGeneralTableFields($tableId);
         $companySpecificTableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId);
         return new ServiceDto("Company Specific TableFields Retrieved Successfully.", 200, [
@@ -94,7 +94,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function getGeneralTableFields(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $tableFields = $this->tableFieldRepository->getGeneralTableFields($tableId, [
             'Id', 'Name', 'DataType', 'Type', 'DefaultValue', 'TableId', 'CompanyId',
         ]);
@@ -103,8 +103,8 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function getCompanySpecificTableFields(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
-        $companyId = $request->get('CompanyId');
+        $tableId = $request->input('TableId');
+        $companyId = $request->input('CompanyId');
         $tableFields = $this->tableFieldRepository->getCompanySpecificTableFields($tableId, $companyId, [
             'Id', 'Name', 'DataType', 'Type', 'DefaultValue', 'TableId', 'CompanyId'
         ]);
@@ -113,7 +113,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function getTableFieldsOperationPreviews(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -137,7 +137,7 @@ class TableFieldService implements TableFieldServiceInterface
             $sqlQueries = [];
 
             // Add Section
-            foreach ($request->get('newFields') as $newField) {
+            foreach ($request->input('newFields') as $newField) {
                 if (in_array($newField['Type'], ['Server', 'Both'])) {
                     // This Field Is CompanySpecific
                     $tableFieldSpecificDatabases = $this->getDatabaseNamesByCompanyIds($newField['companies']);
@@ -153,7 +153,7 @@ class TableFieldService implements TableFieldServiceInterface
             // Delete Section
             $tableFieldsToDelete = $this->tableFieldRepository->getByAttributes(
                 [
-                    ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableFieldIdsToDelete')]
+                    ['column' => 'Id', 'operand' => '=', 'value' => $request->input('tableFieldIdsToDelete')]
                 ],
                 ['companyTableFields.company']
             );
@@ -171,7 +171,7 @@ class TableFieldService implements TableFieldServiceInterface
             }
 
             // Update Section
-            $requestedUpdatedTableFields = $request->get('updatedTableFields');
+            $requestedUpdatedTableFields = $request->input('updatedTableFields');
             $updatedTableFieldsRows = $this->tableFieldRepository->getByAttributes(
                 [
                     ['column' => 'Id', 'operand' => '=', 'value' => collect($requestedUpdatedTableFields)->pluck('Id')->toArray()]
@@ -318,7 +318,7 @@ class TableFieldService implements TableFieldServiceInterface
             $data['sqlPreviews'] = collect($sqlQueries)->map(function ($sqlQuery) {
                 return SqlFormatter::format($sqlQuery);
             })->toArray();
-        } elseif ($request->get('type') == 'Client') {
+        } elseif ($request->input('type') == 'Client') {
             $data['sqlitePreviews'] = [];
             $data['sqlitePreview'] = true;
             $data['sqlPreviewMessage'] = "No Sql generated as Type is `Client`";
@@ -339,7 +339,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function tableFieldsOperationsSaveAndExecute(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -366,7 +366,7 @@ class TableFieldService implements TableFieldServiceInterface
         $sqlQueries = [];
 
         // Add Section
-        foreach ($request->get('newFields') as $newField) {
+        foreach ($request->input('newFields') as $newField) {
             // Entry In TableField Table
             $newTableField = $this->createTableField($newField);
 
@@ -410,7 +410,7 @@ class TableFieldService implements TableFieldServiceInterface
         // Delete Section
         $tableFieldsToDelete = $this->tableFieldRepository->getByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableFieldIdsToDelete')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('tableFieldIdsToDelete')]
             ],
             ['companyTableFields.company']
         );
@@ -448,7 +448,7 @@ class TableFieldService implements TableFieldServiceInterface
 
 
         // Update Section
-        $requestedUpdatedTableFields = $request->get('updatedTableFields');
+        $requestedUpdatedTableFields = $request->input('updatedTableFields');
         $updatedTableFieldsRows = $this->tableFieldRepository->getByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => collect($requestedUpdatedTableFields)->pluck('Id')->toArray()]
@@ -831,7 +831,7 @@ class TableFieldService implements TableFieldServiceInterface
 
     public function tableFieldsOperationsSaveWithoutExecuting(Request $request): ServiceDto
     {
-        $tableId = $request->get('TableId');
+        $tableId = $request->input('TableId');
         $table = $this->tableRepository->firstByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => $tableId]
@@ -843,7 +843,7 @@ class TableFieldService implements TableFieldServiceInterface
         $companyTableDatabases = $table->companyTables->pluck('company.DatabaseName')->toArray();
 
         // Add Section
-        foreach ($request->get('newFields') as $newField) {
+        foreach ($request->input('newFields') as $newField) {
             // Entry In TableField Table
             $newTableField = $this->createTableField($newField);
 
@@ -866,7 +866,7 @@ class TableFieldService implements TableFieldServiceInterface
         // Delete Section
         $tableFieldsToDelete = $this->tableFieldRepository->getByAttributes(
             [
-                ['column' => 'Id', 'operand' => '=', 'value' => $request->get('tableFieldIdsToDelete')]
+                ['column' => 'Id', 'operand' => '=', 'value' => $request->input('tableFieldIdsToDelete')]
             ],
             ['companyTableFields.company']
         );
@@ -879,7 +879,7 @@ class TableFieldService implements TableFieldServiceInterface
         }
 
         // Update Section
-        $requestedUpdatedTableFields = $request->get('updatedTableFields');
+        $requestedUpdatedTableFields = $request->input('updatedTableFields');
         $updatedTableFieldsRows = $this->tableFieldRepository->getByAttributes(
             [
                 ['column' => 'Id', 'operand' => '=', 'value' => collect($requestedUpdatedTableFields)->pluck('Id')->toArray()]

@@ -18,7 +18,7 @@ class WebShopTextService implements WebShopTextServiceInterface
 
     public function getByItem(Request $request): ServiceDto
     {
-        $webShopTexts = $this->getWebShopTextsByItem($request->get('ItemId'));
+        $webShopTexts = $this->getWebShopTextsByItem($request->input('ItemId'));
         return new ServiceDto("Web Shop Texts retrieved successfully.", 200, $webShopTexts);
     }
 
@@ -40,9 +40,9 @@ class WebShopTextService implements WebShopTextServiceInterface
     public function updateByItem(Request $request): ServiceDto
     {
 
-        foreach ($request->get('WebShopTexts') as $webShopText) {
+        foreach ($request->input('WebShopTexts') as $webShopText) {
             $data = [
-                'ElementNumber' => $request->get('ItemNumber'),
+                'ElementNumber' => $request->input('ItemNumber'),
                 'ElementType' => $webShopText['ElementType'],
                 'Language' => $webShopText['Language'],
                 'Text' => $webShopText['Text'] ?? "",
@@ -56,7 +56,7 @@ class WebShopTextService implements WebShopTextServiceInterface
             }
         }
 
-        $webShopTexts = $this->getWebShopTextsByItem($request->get('ItemId'));
+        $webShopTexts = $this->getWebShopTextsByItem($request->input('ItemId'));
         return new ServiceDto("Web Shop Texts update successfully.", 200, $webShopTexts);
     }
 

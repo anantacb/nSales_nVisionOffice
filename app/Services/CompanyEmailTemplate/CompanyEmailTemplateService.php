@@ -50,7 +50,7 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
         $relations = [];
 
         $template = $this->templateRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('EmailTemplateId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('EmailTemplateId')]
         ], $relations);
 
         return new ServiceDto("Template Retrieved Successfully.", 200, $template);
@@ -59,16 +59,16 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
     public function update(Request $request): ServiceDto
     {
         $template = $this->templateRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'ElementName' => $request->get('ElementName'),
-                'LayoutId' => $request->get('LayoutId'),
-                'LanguageId' => $request->get('LanguageId'),
-                'Subject' => $request->get('Subject'),
-                'Template' => $request->get('Template'),
-                'DatabaseTable' => $request->get('DatabaseTable'),
-                'TableColumn' => $request->get('TableColumn'),
-                'ColumnValue' => $request->get('ColumnValue'),
+                'ElementName' => $request->input('ElementName'),
+                'LayoutId' => $request->input('LayoutId'),
+                'LanguageId' => $request->input('LanguageId'),
+                'Subject' => $request->input('Subject'),
+                'Template' => $request->input('Template'),
+                'DatabaseTable' => $request->input('DatabaseTable'),
+                'TableColumn' => $request->input('TableColumn'),
+                'ColumnValue' => $request->input('ColumnValue'),
             ]
         );
         return new ServiceDto("Template Updated Successfully.", 200, $template);
@@ -98,10 +98,10 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
             if (isset($emailEvent['Parent']) && isset($emailEvents[$emailEvent['Parent']])) {
                 $parentFields = $data[$emailEvent['Parent']] ?
                     $data[$emailEvent['Parent']]['templateObject'] :
-                    $this->fetchFieldsData($layoutFields, $emailEvents[$emailEvent['Parent']], $request->get("companyId"));
+                    $this->fetchFieldsData($layoutFields, $emailEvents[$emailEvent['Parent']], $request->input("companyId"));
             }
 
-            $fields = $this->fetchFieldsData($layoutFields, $emailEvent, $request->get("companyId"));
+            $fields = $this->fetchFieldsData($layoutFields, $emailEvent, $request->input("companyId"));
             // merge parent and self fields, override parent
             $mergedFields = Arr::undot(Arr::dot($fields) + Arr::dot($parentFields));
 
@@ -135,18 +135,18 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
 
     public function delete(Request $request): ServiceDto
     {
-        $this->templateRepository->findByIdAndDelete($request->get('EmailTemplateId'));
+        $this->templateRepository->findByIdAndDelete($request->input('EmailTemplateId'));
         return new ServiceDto("Template Deleted Successfully.", 200);
     }
 
     public function copyTemplateToCompany(Request $request): ServiceDto
     {
         $companyEmailTemplate = $this->templateRepository->create([
-            'ElementName' => $request->get('ElementName'),
-            'LanguageId' => $request->get('LanguageId'),
-            'LayoutId' => $request->get('LayoutId'),
-            'Subject' => $request->get('Subject'),
-            'Template' => $request->get('Template')
+            'ElementName' => $request->input('ElementName'),
+            'LanguageId' => $request->input('LanguageId'),
+            'LayoutId' => $request->input('LayoutId'),
+            'Subject' => $request->input('Subject'),
+            'Template' => $request->input('Template')
         ]);
 
         return new ServiceDto("Email Template Copied Successfully.", 200, $companyEmailTemplate);
@@ -155,14 +155,14 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
     public function create(Request $request): ServiceDto
     {
         $template = $this->templateRepository->create([
-            'ElementName' => $request->get('ElementName'),
-            'LayoutId' => $request->get('LayoutId'),
-            'LanguageId' => $request->get('LanguageId'),
-            'Subject' => $request->get('Subject'),
-            'Template' => $request->get('Template'),
-            'DatabaseTable' => $request->get('DatabaseTable'),
-            'TableColumn' => $request->get('TableColumn'),
-            'ColumnValue' => $request->get('ColumnValue'),
+            'ElementName' => $request->input('ElementName'),
+            'LayoutId' => $request->input('LayoutId'),
+            'LanguageId' => $request->input('LanguageId'),
+            'Subject' => $request->input('Subject'),
+            'Template' => $request->input('Template'),
+            'DatabaseTable' => $request->input('DatabaseTable'),
+            'TableColumn' => $request->input('TableColumn'),
+            'ColumnValue' => $request->input('ColumnValue'),
         ]);
         return new ServiceDto("Email Template Created Successfully.", 200, $template);
     }

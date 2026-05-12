@@ -34,47 +34,47 @@ class DataFilterService implements DataFilterServiceInterface
 
     public function create(Request $request): ServiceDto
     {
-        $ApplyTo = $request->get('ApplyTo');
+        $ApplyTo = $request->input('ApplyTo');
         $dataFilter = $this->dataFilterRepository->create([
-            'Name' => $request->get('Name'),
-            'Type' => $request->get('Type'),
-            'Description' => $request->get('Description'),
-            'Disabled' => $request->get('Disabled'),
+            'Name' => $request->input('Name'),
+            'Type' => $request->input('Type'),
+            'Description' => $request->input('Description'),
+            'Disabled' => $request->input('Disabled'),
 
-            'Value' => $request->get('Value'),
-            'ValueExpression' => $request->get('ValueExpression'),
+            'Value' => $request->input('Value'),
+            'ValueExpression' => $request->input('ValueExpression'),
 
-            'ModuleId' => $request->get('ModuleId'),
-            'TableId' => $request->get('TableId'),
-            'ApplicationId' => $ApplyTo == 'Application' ? $request->get('ApplicationId') : null,
-            'CompanyId' => $ApplyTo == 'Company' ? $request->get('CompanyId') : null,
-            'RoleId' => $ApplyTo == 'Role' ? $request->get('RoleId') : null,
-            'CompanyUserId' => $ApplyTo == 'User' ? $request->get('CompanyUserId') : null,
+            'ModuleId' => $request->input('ModuleId'),
+            'TableId' => $request->input('TableId'),
+            'ApplicationId' => $ApplyTo == 'Application' ? $request->input('ApplicationId') : null,
+            'CompanyId' => $ApplyTo == 'Company' ? $request->input('CompanyId') : null,
+            'RoleId' => $ApplyTo == 'Role' ? $request->input('RoleId') : null,
+            'CompanyUserId' => $ApplyTo == 'User' ? $request->input('CompanyUserId') : null,
         ]);
         return new ServiceDto("DataFilter Created Successfully.", 200, $dataFilter);
     }
 
     public function update(Request $request): ServiceDto
     {
-        $ApplyTo = $request->get('ApplyTo');
+        $ApplyTo = $request->input('ApplyTo');
 
         $dataFilter = $this->dataFilterRepository->findByIdAndUpdate(
-            $request->get('Id'),
+            $request->input('Id'),
             [
-                'Name' => $request->get('Name'),
-                'Type' => $request->get('Type'),
-                'Description' => $request->get('Description'),
-                'Disabled' => $request->get('Disabled'),
+                'Name' => $request->input('Name'),
+                'Type' => $request->input('Type'),
+                'Description' => $request->input('Description'),
+                'Disabled' => $request->input('Disabled'),
 
-                'Value' => $request->get('Value'),
-                'ValueExpression' => $request->get('ValueExpression'),
+                'Value' => $request->input('Value'),
+                'ValueExpression' => $request->input('ValueExpression'),
 
-                'ModuleId' => $request->get('ModuleId'),
-                'TableId' => $request->get('TableId'),
-                'ApplicationId' => $ApplyTo == 'Application' ? $request->get('ApplicationId') : null,
-                'CompanyId' => $ApplyTo == 'Company' ? $request->get('CompanyId') : null,
-                'RoleId' => $ApplyTo == 'Role' ? $request->get('RoleId') : null,
-                'CompanyUserId' => $ApplyTo == 'User' ? $request->get('CompanyUserId') : null,
+                'ModuleId' => $request->input('ModuleId'),
+                'TableId' => $request->input('TableId'),
+                'ApplicationId' => $ApplyTo == 'Application' ? $request->input('ApplicationId') : null,
+                'CompanyId' => $ApplyTo == 'Company' ? $request->input('CompanyId') : null,
+                'RoleId' => $ApplyTo == 'Role' ? $request->input('RoleId') : null,
+                'CompanyUserId' => $ApplyTo == 'User' ? $request->input('CompanyUserId') : null,
             ]
         );
         return new ServiceDto("DataFilter Updated Successfully.", 200, $dataFilter);
@@ -136,7 +136,7 @@ class DataFilterService implements DataFilterServiceInterface
 
     public function delete(Request $request): ServiceDto
     {
-        $this->dataFilterRepository->findByIdAndDelete($request->get('DataFilterId'));
+        $this->dataFilterRepository->findByIdAndDelete($request->input('DataFilterId'));
         return new ServiceDto("DataFilter Deleted Successfully.", 200);
     }
 
@@ -152,7 +152,7 @@ class DataFilterService implements DataFilterServiceInterface
         ];
 
         $dataFilter = $this->dataFilterRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('DataFilterId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('DataFilterId')]
         ], $relations);
 
         return new ServiceDto("DataFilter Retrieved Successfully.", 200, $dataFilter);
@@ -161,7 +161,7 @@ class DataFilterService implements DataFilterServiceInterface
     public function getFilterResult(Request $request): ServiceDto
     {
         $requestedDataFilter = $this->dataFilterRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('DataFilterId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('DataFilterId')]
         ]);
 
         $table = $this->tableRepository->firstByAttributes([
@@ -172,7 +172,7 @@ class DataFilterService implements DataFilterServiceInterface
             'companyUserRoles', 'user'
         ];
         $companyUser = $this->companyUserRepository->firstByAttributes([
-            ['column' => 'Id', 'operand' => '=', 'value' => $request->get('CompanyUserId')]
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyUserId')]
         ], $companyUserRelations);
 
         $company = $this->companyRepository->firstByAttributes([
