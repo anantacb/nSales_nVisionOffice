@@ -14,26 +14,26 @@ class CurrencyService
      * @param float $amount
      * @param string $from
      * @param string $to
-     * @return mixed
+     * @return float
      */
-    public static function convert(float $amount, string $from, string $to): mixed
+    public static function convert(float $amount, string $from, string $to): float
     {
         $currency = Cache::remember(
             'currency_' . $from . '_' . $to,
             Carbon::now()->addHours(24),
             function () use ($from, $to) {
-                return Currency::where('From', $from)->where('To', $to)->first();
+                return Currency::where('From', $from)->where('To', $to)->first()?->toArray();
             }
         );
 
         if (!$currency) {
             // $selected_company = Session::get('selected_company');
-            $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-            Log::debug("Error in Currency Conversion. Company Id: $selectedCompany->Id From: $from to: $to");
+            $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
+            Log::debug("Error in Currency Conversion. Company Id: {$selectedCompany['Id']} From: $from to: $to");
             return $amount;
         }
 
-        return $amount * $currency->Rate;
+        return $amount * $currency['Rate'];
     }
 
     /**

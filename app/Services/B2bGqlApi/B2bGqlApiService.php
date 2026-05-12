@@ -25,10 +25,10 @@ class B2bGqlApiService
         if (Cache::has("company_" . $request->input("CompanyId"))) {
             $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->input("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"))->toArray();
         }
 
-        $response = $this->repository->createLoginToken($company->DomainName, "appsubmission", "appsubmission");
+        $response = $this->repository->createLoginToken($company['DomainName'], "appsubmission", "appsubmission");
         if ($response["success"]) {
             $authToken = $response["data"]["token"];
 

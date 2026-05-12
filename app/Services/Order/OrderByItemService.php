@@ -43,10 +43,10 @@ class OrderByItemService extends OrderHelperService implements OrderByItemServic
 
     private function getCompanyData(): array
     {
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
         return [
             'company' => $selectedCompany,
-            'currency' => CurrencyService::formattedCurrency($selectedCompany->DefaultCurrency),
+            'currency' => CurrencyService::formattedCurrency($selectedCompany['DefaultCurrency'] ?? null),
             'date' => Carbon::now(self::TIMEZONE)
         ];
     }

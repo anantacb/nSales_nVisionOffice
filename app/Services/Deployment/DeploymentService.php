@@ -25,10 +25,10 @@ class DeploymentService implements DeploymentServiceInterface
         if (Cache::has("company_" . $request->input("CompanyId"))) {
             $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->input("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"))->toArray();
         }
 
-        $response = $this->repository->getCompanyDeploymentStatus($company->DomainName);
+        $response = $this->repository->getCompanyDeploymentStatus($company['DomainName']);
 
         $companyDeploymentStatus = [];
         if ($response['success']) {
@@ -45,10 +45,10 @@ class DeploymentService implements DeploymentServiceInterface
         if (Cache::has("company_" . $request->input("CompanyId"))) {
             $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->input("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"))->toArray();
         }
 
-        $response = $this->repository->startCompanyDeployment($company->DomainName, $request->input("prod"), $request->input("dev"));
+        $response = $this->repository->startCompanyDeployment($company['DomainName'], $request->input("prod"), $request->input("dev"));
 
         $companyDeploymentStatus = [];
         if ($response['success']) {

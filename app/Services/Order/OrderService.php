@@ -53,7 +53,7 @@ class OrderService implements OrderServiceInterface
     public function modifyOrderType(Model|Collection|array $order): void
     {
         if ($order->Type == "") {
-            if (Cache::get('company_' . request()->get('CompanyId'))->IntegrationType == "Standard") {
+            if ((Cache::get('company_' . request()->input('CompanyId'))['IntegrationType'] ?? null) == "Standard") {
                 $order->Type = "SalesBuddy App";
             } else {
                 $order->Type = "nVision Mobile";

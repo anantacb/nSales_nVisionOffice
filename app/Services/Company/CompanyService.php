@@ -183,9 +183,8 @@ class CompanyService implements CompanyServiceInterface
      */
     public static function isModuleEnabled(string $moduleName): bool
     {
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        $modules = $selectedCompany->modules->toArray();
-        return in_array($moduleName, array_column($modules, 'Name'));
+        $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
+        return in_array($moduleName, array_column($selectedCompany['modules'] ?? [], 'Name'));
     }
 
     /**
@@ -194,16 +193,22 @@ class CompanyService implements CompanyServiceInterface
      */
     public static function getSettingValue(string $moduleName, string $key)
     {
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
-        return $selectedCompany->module_settings[$moduleName][$key] ?? null;
+        $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
+        return $selectedCompany['module_settings'][$moduleName][$key] ?? null;
     }
 
     public static function getSettingsKeys(string $moduleName, string $keyLike): array
     {
-        $selectedCompanySettings = array_keys(Cache::get('company_' . request()->get('CompanyId'))->module_settings[$moduleName]);
+        $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
+        $selectedCompanySettings = array_keys($selectedCompany['module_settings'][$moduleName] ?? []);
         return array_filter($selectedCompanySettings, function ($value) use ($keyLike) {
             return (stripos($value, $keyLike) !== false);
         });
+    }
+
+    public static function forgetCompanyCache(int $companyId): void
+    {
+        Cache::forget('company_' . $companyId);
     }
 
     public function getAllCompanies(Request $request): ServiceDto

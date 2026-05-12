@@ -34,13 +34,13 @@ class OnboardService implements OnboardServiceInterface
         if (Cache::has("company_" . $request->input("CompanyId"))) {
             $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->input("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"))->toArray();
         }
 
         if (strtolower($request->input("Application")) === "retailer") {
-            $onboardStatusSetting = $company->module_settings['System']['RetailerOnboardSteps'] ?? null;
+            $onboardStatusSetting = $company['module_settings']['System']['RetailerOnboardSteps'] ?? null;
         } else {
-            $onboardStatusSetting = $company->module_settings['System']['WebshopOnboardSteps'] ?? null;
+            $onboardStatusSetting = $company['module_settings']['System']['WebshopOnboardSteps'] ?? null;
         }
 
         if (!$onboardStatus) {

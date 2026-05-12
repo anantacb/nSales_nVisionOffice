@@ -2,6 +2,8 @@ import {defineConfig} from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
+const inSail = process.env.LARAVEL_SAIL === '1';
+
 export default defineConfig({
     define: {
         // enable hydration mismatch details in production build
@@ -14,7 +16,7 @@ export default defineConfig({
                 'resources/js/app.js',
             ],
             refresh: true,
-            valetTls: 'nvisionoffice.test',
+            ...(inSail ? {} : {valetTls: 'nvisionoffice.test'}),
         }),
         vue({
             template: {
@@ -25,6 +27,9 @@ export default defineConfig({
             },
         }),
     ],
+    server: inSail
+        ? {host: '0.0.0.0', port: 5173, hmr: {host: 'localhost'}}
+        : undefined,
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',

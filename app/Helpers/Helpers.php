@@ -70,24 +70,24 @@ class Helpers
      */
     public static function getCompanyDataForTemplate(): array
     {
-        $selectedCompany = Cache::get('company_' . request()->get('CompanyId'));
+        $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
         $addressParts = array_filter([
-            $selectedCompany->Street ?? null,
-            $selectedCompany->ZipCode ?? null,
-            $selectedCompany->City ?? null,
+            $selectedCompany['Street'] ?? null,
+            $selectedCompany['ZipCode'] ?? null,
+            $selectedCompany['City'] ?? null,
         ]);
         return [
-            'CompanyName' => $selectedCompany->CompanyName,
-            'CompanyStreet' => $selectedCompany->Street,
-            'CompanyZipCode' => $selectedCompany->ZipCode,
-            'CompanyCity' => $selectedCompany->City,
-            'CompanyPhone' => $selectedCompany->PhoneNo,
-            'CompanyEmail' => $selectedCompany->Email,
-            'CompanyFax' => $selectedCompany->FaxNo,
-            'CompanyVatNo' => $selectedCompany->VATNo,
-            'CompanyState' => $selectedCompany->State,
+            'CompanyName' => $selectedCompany['CompanyName'] ?? null,
+            'CompanyStreet' => $selectedCompany['Street'] ?? null,
+            'CompanyZipCode' => $selectedCompany['ZipCode'] ?? null,
+            'CompanyCity' => $selectedCompany['City'] ?? null,
+            'CompanyPhone' => $selectedCompany['PhoneNo'] ?? null,
+            'CompanyEmail' => $selectedCompany['Email'] ?? null,
+            'CompanyFax' => $selectedCompany['FaxNo'] ?? null,
+            'CompanyVatNo' => $selectedCompany['VATNo'] ?? null,
+            'CompanyState' => $selectedCompany['State'] ?? null,
             'CompanyAddress' => implode(', ', $addressParts),
-            'CompanyCountry' => $selectedCompany->Country,
+            'CompanyCountry' => $selectedCompany['Country'] ?? null,
             'CompanyLogoUrl' => isset($selectedCompany['imageHostAccount']) ?
                 $selectedCompany['imageHostAccount']['Home'] . '/logo.png' : '',
         ];

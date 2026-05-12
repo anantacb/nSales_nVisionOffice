@@ -22,12 +22,12 @@ class GitService implements GitServiceInterface
         if (Cache::has("company_" . $request->input("CompanyId"))) {
             $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->input("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"))->toArray();
         }
 
         $companyBranches = [
-            "company/dev/$company->DomainName",
-            "company/prod/$company->DomainName"
+            "company/dev/{$company['DomainName']}",
+            "company/prod/{$company['DomainName']}"
         ];
 
         $response = [];
@@ -49,12 +49,12 @@ class GitService implements GitServiceInterface
         if (Cache::has("company_" . $request->input("CompanyId"))) {
             $company = Cache::get("company_" . $request->input("CompanyId"));
         } else {
-            $company = $this->companyRepository->findById($request->input("CompanyId"));
+            $company = $this->companyRepository->findById($request->input("CompanyId"))->toArray();
         }
 
         $companyBranches = [
-            "company/dev/$company->DomainName",
-            "company/prod/$company->DomainName"
+            "company/dev/{$company['DomainName']}",
+            "company/prod/{$company['DomainName']}"
         ];
 
         $baseBranches = [
