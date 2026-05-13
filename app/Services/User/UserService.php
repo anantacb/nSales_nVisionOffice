@@ -10,6 +10,7 @@ use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryIn
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserService implements UserServiceInterface
 {
@@ -82,83 +83,87 @@ class UserService implements UserServiceInterface
 
     public function createCompanyUser(Request $request): ServiceDto
     {
-        $salt = generateRandomString(32, true);
-        $password = generateRandomString(8);
-        $hash = strtoupper(sha1($salt . $password));
+        return DB::transaction(function () use ($request) {
+            $salt = generateRandomString(32, true);
+            $password = generateRandomString(8);
+            $hash = strtoupper(sha1($salt . $password));
 
-        $user = $this->userRepository->create([
-            'Name' => $request->input('Name'),
-            'Initials' => $request->input('Initials'),
-            'PhoneNo' => $request->input('PhoneNo'),
-            'MobileNo' => $request->input('MobileNo'),
-            'Email' => $request->input('Email'),
-            'Login' => $request->input('Email'),
-            'CultureName' => $request->input('CultureName'),
-            'Hash' => $hash,
-            'Salt' => $salt,
-            'Disabled' => $request->input('Disabled'),
-        ]);
-
-        $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
-        ], [], '', 'Number', true);
-
-        $number = $latestCompanyUser->Number + 1;
-
-        $companyUser = $this->companyUserRepository->create([
-            'CompanyId' => $request->input('CompanyId'),
-            'UserId' => $user->Id,
-            'Number' => $number,
-            'CultureName' => $request->input('CultureName'),
-            'Initials' => $request->input('Initials'),
-            'LicenceType' => $request->input('LicenceType'),
-            'Territory' => $request->input('Territory'),
-            'Commission' => $request->input('Commission'),
-            'Billable' => $request->input('Billable'),
-            'Note' => $request->input('Note')
-        ]);
-
-        foreach ($request->input('RoleIds') as $roleId) {
-            $this->companyUserRoleRepository->create([
-                'RoleId' => $roleId,
-                'CompanyUserId' => $companyUser->Id
+            $user = $this->userRepository->create([
+                'Name' => $request->input('Name'),
+                'Initials' => $request->input('Initials'),
+                'PhoneNo' => $request->input('PhoneNo'),
+                'MobileNo' => $request->input('MobileNo'),
+                'Email' => $request->input('Email'),
+                'Login' => $request->input('Email'),
+                'CultureName' => $request->input('CultureName'),
+                'Hash' => $hash,
+                'Salt' => $salt,
+                'Disabled' => $request->input('Disabled'),
             ]);
-        }
 
-        return new ServiceDto('User Created Successfully', 200, $user);
+            $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
+                ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
+            ], [], '', 'Number', true);
+
+            $number = $latestCompanyUser->Number + 1;
+
+            $companyUser = $this->companyUserRepository->create([
+                'CompanyId' => $request->input('CompanyId'),
+                'UserId' => $user->Id,
+                'Number' => $number,
+                'CultureName' => $request->input('CultureName'),
+                'Initials' => $request->input('Initials'),
+                'LicenceType' => $request->input('LicenceType'),
+                'Territory' => $request->input('Territory'),
+                'Commission' => $request->input('Commission'),
+                'Billable' => $request->input('Billable'),
+                'Note' => $request->input('Note')
+            ]);
+
+            foreach ($request->input('RoleIds') as $roleId) {
+                $this->companyUserRoleRepository->create([
+                    'RoleId' => $roleId,
+                    'CompanyUserId' => $companyUser->Id
+                ]);
+            }
+
+            return new ServiceDto('User Created Successfully', 200, $user);
+        });
     }
 
     public function assignToCompany(Request $request): ServiceDto
     {
-        $userId = $request->input('UserId');
-        $companyId = $request->input('CompanyId');
-        $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
-            ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
-        ], [], '', 'Number', true);
+        return DB::transaction(function () use ($request) {
+            $userId = $request->input('UserId');
+            $companyId = $request->input('CompanyId');
+            $latestCompanyUser = $this->companyUserRepository->firstByAttributes([
+                ['column' => 'CompanyId', 'operand' => '=', 'value' => $companyId]
+            ], [], '', 'Number', true);
 
-        $number = $latestCompanyUser->Number + 1;
+            $number = $latestCompanyUser->Number + 1;
 
-        $companyUser = $this->companyUserRepository->create([
-            'CompanyId' => $companyId,
-            'UserId' => $userId,
-            'Number' => $number,
-            'CultureName' => $request->input('CultureName'),
-            'Initials' => $request->input('Initials'),
-            'LicenceType' => $request->input('LicenceType'),
-            'Territory' => $request->input('Territory'),
-            'Commission' => $request->input('Commission'),
-            'Billable' => $request->input('Billable'),
-            'Note' => $request->input('Note')
-        ]);
-
-        foreach ($request->input('RoleIds') as $roleId) {
-            $this->companyUserRoleRepository->create([
-                'RoleId' => $roleId,
-                'CompanyUserId' => $companyUser->Id
+            $companyUser = $this->companyUserRepository->create([
+                'CompanyId' => $companyId,
+                'UserId' => $userId,
+                'Number' => $number,
+                'CultureName' => $request->input('CultureName'),
+                'Initials' => $request->input('Initials'),
+                'LicenceType' => $request->input('LicenceType'),
+                'Territory' => $request->input('Territory'),
+                'Commission' => $request->input('Commission'),
+                'Billable' => $request->input('Billable'),
+                'Note' => $request->input('Note')
             ]);
-        }
 
-        return new ServiceDto('User Assigned Successfully', 200, []);
+            foreach ($request->input('RoleIds') as $roleId) {
+                $this->companyUserRoleRepository->create([
+                    'RoleId' => $roleId,
+                    'CompanyUserId' => $companyUser->Id
+                ]);
+            }
+
+            return new ServiceDto('User Assigned Successfully', 200, []);
+        });
     }
 
     public function companyUserDetails(Request $request): ServiceDto
@@ -193,27 +198,31 @@ class UserService implements UserServiceInterface
 
     public function updateCompanyUser(Request $request): ServiceDto
     {
-        $companyUserId = $request->input('CompanyUserId');
-        $companyUser = $this->companyUserRepository->findByIdAndUpdate($companyUserId, [
-            'Initials' => $request->input('Initials'),
-            'LicenceType' => $request->input('LicenceType'),
-            'Territory' => $request->input('Territory'),
-            'Note' => $request->input('Note')
-        ]);
+        return DB::transaction(function () use ($request) {
+            $companyUserId = $request->input('CompanyUserId');
+            $companyUser = $this->companyUserRepository->findByIdAndUpdate($companyUserId, [
+                'Initials' => $request->input('Initials'),
+                'LicenceType' => $request->input('LicenceType'),
+                'Territory' => $request->input('Territory'),
+                'Note' => $request->input('Note')
+            ]);
 
-        $this->syncCompanyUserRoles($companyUser, $request->input('RoleIds'));
+            $this->syncCompanyUserRoles($companyUser, $request->input('RoleIds'));
 
-        return new ServiceDto('User Updated Successfully', 200, []);
+            return new ServiceDto('User Updated Successfully', 200, []);
+        });
     }
 
     public function updateCompanyUserRoles(Request $request): ServiceDto
     {
-        $companyUserId = $request->input('CompanyUserId');
-        $companyUser = $this->companyUserRepository->findById($companyUserId);
+        return DB::transaction(function () use ($request) {
+            $companyUserId = $request->input('CompanyUserId');
+            $companyUser = $this->companyUserRepository->findById($companyUserId);
 
-        $this->syncCompanyUserRoles($companyUser, $request->input('RoleIds'));
+            $this->syncCompanyUserRoles($companyUser, $request->input('RoleIds'));
 
-        return new ServiceDto('Roles Updated Successfully', 200, []);
+            return new ServiceDto('Roles Updated Successfully', 200, []);
+        });
     }
 
     public function updateCompanyUserInitials(Request $request): ServiceDto
