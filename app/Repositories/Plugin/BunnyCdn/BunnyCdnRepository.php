@@ -16,7 +16,7 @@ class BunnyCdnRepository
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client(['timeout' => 120, 'connect_timeout' => 5]);
         $this->baseUrl = env('BUNNY_CDN_BASE_URL');
     }
 

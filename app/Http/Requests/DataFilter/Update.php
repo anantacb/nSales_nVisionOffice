@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\DataFilter;
 
+use App\Rules\IsSafeWhereFragment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Update extends FormRequest
@@ -31,8 +32,26 @@ class Update extends FormRequest
             'Description' => 'nullable',
             'Disabled' => 'required|boolean',
 
-            'Value' => 'required_without:ValueExpression',
-            'ValueExpression' => 'required_without:Value',
+            'Value' => [
+                'required_without:ValueExpression',
+                'nullable',
+                'string',
+                'max:2000',
+                'regex:/^[^;`]*$/',
+                'not_regex:/(--|\/\*|\*\/)/',
+                'not_regex:/\b(UNION|DROP|DELETE|INSERT|UPDATE|ALTER|TRUNCATE|EXEC|EXECUTE|GRANT|REVOKE|OUTFILE|LOAD_FILE|INFORMATION_SCHEMA|SLEEP|BENCHMARK)\b/i',
+                new IsSafeWhereFragment(),
+            ],
+            'ValueExpression' => [
+                'required_without:Value',
+                'nullable',
+                'string',
+                'max:2000',
+                'regex:/^[^;`]*$/',
+                'not_regex:/(--|\/\*|\*\/)/',
+                'not_regex:/\b(UNION|DROP|DELETE|INSERT|UPDATE|ALTER|TRUNCATE|EXEC|EXECUTE|GRANT|REVOKE|OUTFILE|LOAD_FILE|INFORMATION_SCHEMA|SLEEP|BENCHMARK)\b/i',
+                new IsSafeWhereFragment(),
+            ],
 
             'ApplyTo' => 'required|in:Application,Company,Role,User',
             'ModuleId' => 'required',

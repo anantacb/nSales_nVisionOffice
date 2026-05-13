@@ -2,13 +2,14 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class WebShopTextForSEO implements Rule
+class WebShopTextForSEO implements ValidationRule
 {
-    protected $robots;
-    protected $request;
+    protected array $robots;
+    protected ParameterBag $request;
 
     public function __construct(ParameterBag $request)
     {
@@ -16,35 +17,12 @@ class WebShopTextForSEO implements Rule
         $this->request = $request;
     }
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-//        dd($attribute, $value);
-//        dd($this->request->has('WebShopTexts'));
-//        dd($this->request->get('ItemNumber'));
-//        dd($this->request->get('WebShopTexts'));
         $index = explode('.', $attribute)[1];
         $type = $this->request->get('WebShopTexts')[$index]["Type"];
-        if ($type === "SEORobot") {
-            return in_array($value, $this->robots);
+        if ($type === "SEORobot" && !in_array($value, $this->robots)) {
+            $fail('This input value is invalid.');
         }
-        return true;
     }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return 'This input value is invalid.';
-    }
-
 }

@@ -61,7 +61,7 @@ use Illuminate\Support\Facades\Route;
 });*/
 
 Route::prefix('auth')->group(function () {
-    Route::post('login', [LoginController::class, 'login']);
+    Route::middleware('throttle:login')->post('login', [LoginController::class, 'login']);
 });
 
 Route::prefix('auth')->middleware(['auth:api'])->group(function () {
@@ -226,10 +226,10 @@ Route::middleware(['auth:api'])->group(function () {
 
     // DataFilter
     Route::post('/data-filters', [DataFilterController::class, 'getDataFilters']);
-    Route::post('/data-filter/create', [DataFilterController::class, 'create']);
-    Route::post('/data-filter/update', [DataFilterController::class, 'update']);
+    Route::middleware(['developer'])->post('/data-filter/create', [DataFilterController::class, 'create']);
+    Route::middleware(['developer'])->post('/data-filter/update', [DataFilterController::class, 'update']);
     Route::post('/data-filter/details', [DataFilterController::class, 'details']);
-    Route::post('/data-filter/delete', [DataFilterController::class, 'delete']);
+    Route::middleware(['developer'])->post('/data-filter/delete', [DataFilterController::class, 'delete']);
 
     Route::post('/data-filters/company-data-filters', [DataFilterController::class, 'getCompanyDataFilters']);
     Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);

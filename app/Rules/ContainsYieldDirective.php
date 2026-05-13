@@ -2,41 +2,22 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class ContainsYieldDirective implements Rule
+class ContainsYieldDirective implements ValidationRule
 {
     protected $template;
 
-    /**
-     * Create a new rule instance.
-     *
-     * @param string $template
-     */
     public function __construct($template)
     {
         $this->template = $template;
     }
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        return $this->template && str_contains($this->template, "@yield('content')");
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return "The selected layout's template does not contain @yield('content').";
+        if (!$this->template || !str_contains($this->template, "@yield('content')")) {
+            $fail("The selected layout's template does not contain @yield('content').");
+        }
     }
 }

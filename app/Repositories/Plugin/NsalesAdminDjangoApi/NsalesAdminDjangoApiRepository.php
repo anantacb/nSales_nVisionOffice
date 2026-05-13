@@ -19,7 +19,7 @@ class NsalesAdminDjangoApiRepository
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client(['timeout' => 60, 'connect_timeout' => 5]);
         $this->baseUrl = env('DJANGO_API_URL');
         $this->username = env('DJANGO_API_USERNAME');
         $this->password = env('DJANGO_API_PASSWORD');

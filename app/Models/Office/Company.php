@@ -3,6 +3,7 @@
 namespace App\Models\Office;
 
 use App\Models\BaseModel;
+use App\Services\Company\CompanyService;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,6 +17,12 @@ class Company extends BaseModel
 //        'CustomDomains' => 'string',
 //    ];
     protected $appends = ['CustomDomainsArray'];
+
+    protected static function booted(): void
+    {
+        static::saved(fn (Company $company) => CompanyService::forgetCompanyCache($company->Id));
+        static::deleted(fn (Company $company) => CompanyService::forgetCompanyCache($company->Id));
+    }
 
     public function getCustomDomainsArrayAttribute(): array
     {

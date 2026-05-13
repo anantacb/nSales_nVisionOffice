@@ -13,6 +13,7 @@
         "awobaz/compoships": "^2.2",
         "doctrine/dbal": "^4.0",
         "google/cloud-translate": "^1.19",
+        "greenlion/php-sql-parser": "^4.7",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.46",

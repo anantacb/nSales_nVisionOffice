@@ -14,11 +14,11 @@ class NsalesOfficeRestApiRepository
 
     public function __construct()
     {
-        if (App::environment(['production', 'development'])) {
-            $this->client = new Client();
-        } else {
-            $this->client = new Client(['verify' => false]);
+        $clientOptions = ['timeout' => 60, 'connect_timeout' => 5];
+        if (!App::environment(['production', 'development'])) {
+            $clientOptions['verify'] = false;
         }
+        $this->client = new Client($clientOptions);
         $this->baseUrl = env('NSALES_OFFICE_APP_URL');
     }
 

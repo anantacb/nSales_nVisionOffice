@@ -2,33 +2,25 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class ValidCname implements Rule
+class ValidCname implements ValidationRule
 {
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // Normalize input: remove leading 'www.' if present
-        $baseDomain = ltrim($value, 'www.');
-
-        // Domains to check: input as is + the alternative (with or without 'www.')
+        $baseDomain = ltrim((string) $value, 'www.');
         $domainsToCheck = [$baseDomain, 'www.' . $baseDomain];
 
         foreach ($domainsToCheck as $domain) {
             $records = dns_get_record($domain, DNS_CNAME);
-
             foreach ($records as $record) {
                 if (isset($record['target']) && str_ends_with($record['target'], 'nsales.io')) {
-                    return true;
+                    return;
                 }
             }
         }
 
-        return false; // Invalid if no matching CNAME found
-    }
-
-    public function message()
-    {
-        return 'The :attribute must have a CNAME pointing to nsales.io';
+        $fail('The :attribute must have a CNAME pointing to nsales.io');
     }
 }
