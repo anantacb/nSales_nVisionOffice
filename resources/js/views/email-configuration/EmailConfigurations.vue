@@ -1,5 +1,5 @@
 <script setup>
-import EmailConfigurationList from "@/components/email-configuration/EmailConfigurations/EmailConfigurationList.vue";
+import EmailConfigurationList from "@/components/email-configuration/EmailConfigurationList.vue";
 </script>
 
 <template>

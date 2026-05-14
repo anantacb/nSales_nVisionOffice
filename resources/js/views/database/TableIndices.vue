@@ -2,7 +2,7 @@
 import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
 import {useTemplateStore} from "@/stores/templateStore";
-import TableIndicesFormComponent from "@/components/database/ManageTableIndices/TableIndicesForm.vue";
+import TableIndicesFormComponent from "@/components/database/TableIndicesForm.vue";
 import Table from "@/models/Office/Table";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import {useNotificationStore} from "@/stores/notificationStore";

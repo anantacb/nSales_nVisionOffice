@@ -1,5 +1,5 @@
 <script setup>
-import CustomerList from "@/components/customer/Customers/CustomerList.vue";
+import CustomerList from "@/components/customer/CustomerList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 
 const companyStore = useCompanyStore();

@@ -1,8 +1,8 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
-import ItemOverview from "@/components/item/ItemDetails/ItemOverview.vue";
-import ItemTabs from "@/components/item/ItemDetails/ItemTabs.vue";
+import ItemOverview from "@/components/item/ItemOverview.vue";
+import ItemTabs from "@/components/item/ItemTabs.vue";
 
 const route = useRoute();
 let backButtonRoute = localStorage.getItem('item-details-back-route') ?? 'items';

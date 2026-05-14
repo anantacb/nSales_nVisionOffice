@@ -1,5 +1,5 @@
 <script setup>
-import CompanyUserList from "@/components/user/CompanyUsers/CompanyUserList.vue";
+import CompanyUserList from "@/components/user/CompanyUserList.vue";
 </script>
 
 <template>

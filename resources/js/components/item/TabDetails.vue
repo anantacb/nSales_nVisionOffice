@@ -18,8 +18,8 @@ import Item from "@/models/Company/Item";
 import WebShopLanguage from "@/models/Company/WebShopLanguage";
 import ItemAttribute from "@/models/Company/ItemAttribute";
 import BaseBlock from "@/components/BaseBlock.vue";
-import ItemAttributes from "@/components/item/ItemDetails/TabAttributes.vue";
-import ItemOverview from "@/components/item/ItemDetails/ItemOverview.vue";
+import ItemAttributes from "@/components/item/TabAttributes.vue";
+import ItemOverview from "@/components/item/ItemOverview.vue";
 
 const route = useRoute();
 const authStore = useAuthStore();

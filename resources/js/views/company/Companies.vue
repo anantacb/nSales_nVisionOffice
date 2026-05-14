@@ -1,5 +1,5 @@
 <script setup>
-import CompanyList from "@/components/company/Companies/CompanyList.vue";
+import CompanyList from "@/components/company/CompanyList.vue";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import slugify from "@sindresorhus/slugify";
 import {ref, watch} from "vue";

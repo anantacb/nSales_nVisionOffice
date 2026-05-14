@@ -1,5 +1,5 @@
 <script setup>
-import CompanyLanguageList from "@/components/company-language/CompanyLanguages/CompanyLanguageList.vue";
+import CompanyLanguageList from "@/components/company-language/CompanyLanguageList.vue";
 import {onMounted, ref, watch} from "vue";
 import useCompanyInfos from "@/composables/useCompanyInfos";
 import {useNotificationStore} from "@/stores/notificationStore";

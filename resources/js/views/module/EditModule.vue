@@ -5,10 +5,10 @@ import {useFormErrors} from "@/composables/useFormErrors";
 import {booleanOptions} from "@/data/dropDownOptions";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useRoute} from "vue-router";
-import CompaniesTable from "@/components/module/EditModule/CompaniesTable.vue";
-import ApplicationsTable from "@/components/module/EditModule/ApplicationsTable.vue";
-import TablesTable from "@/components/module/EditModule/TablesTable.vue";
-import SubModulesTable from "@/components/module/EditModule/SubModulesTable.vue";
+import CompaniesTable from "@/components/module/CompaniesTable.vue";
+import ApplicationsTable from "@/components/module/ApplicationsTable.vue";
+import TablesTable from "@/components/module/TablesTable.vue";
+import SubModulesTable from "@/components/module/SubModulesTable.vue";
 
 const notificationStore = useNotificationStore();
 

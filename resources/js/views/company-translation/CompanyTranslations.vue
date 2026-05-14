@@ -1,5 +1,5 @@
 <script setup>
-import CompanyTranslationList from "@/components/company-translation/CompanyTranslations/CompanyTranslationList.vue";
+import CompanyTranslationList from "@/components/company-translation/CompanyTranslationList.vue";
 import {watch} from "vue";
 import router from "@/router";
 import useCompanyInfos from "@/composables/useCompanyInfos";

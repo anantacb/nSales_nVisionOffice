@@ -1,5 +1,5 @@
 <script setup>
-import ModuleList from "@/components/module/Modules/ModuleList.vue";</script>
+import ModuleList from "@/components/module/ModuleList.vue";</script>
 
 <template>
     <!-- Hero -->

@@ -1,5 +1,5 @@
 <script setup>
-import CreateTableForm from "@/components/database/CreateTable/CreateTableForm.vue";
+import CreateTableForm from "@/components/database/CreateTableForm.vue";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import {ref} from "vue";
 import Table from "@/models/Office/Table";

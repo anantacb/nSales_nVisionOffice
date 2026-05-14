@@ -1,5 +1,5 @@
 <script setup>
-import OrderList from "@/components/order/Orders/OrderList.vue";
+import OrderList from "@/components/order/OrderList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 import {ref} from "vue";
 

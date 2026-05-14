@@ -1,5 +1,5 @@
 <script setup>
-import RoleList from "@/components/roles/Roles/RoleList.vue";
+import RoleList from "@/components/roles/RoleList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 
 const companyStore = useCompanyStore();

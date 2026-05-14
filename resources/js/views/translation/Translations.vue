@@ -1,5 +1,5 @@
 <script setup>
-import TranslationList from "@/components/translation/Translations/TranslationList.vue";
+import TranslationList from "@/components/translation/TranslationList.vue";
 import Translation from "@/models/Office/Translation";
 import {useTemplateStore} from "@/stores/templateStore";
 import {useNotificationStore} from "@/stores/notificationStore";

@@ -1,5 +1,5 @@
 <script setup>
-import CompanyEmailLayoutList from "@/components/company-email-layout/CompanyEmailLayouts/CompanyEmailLayoutList.vue";
+import CompanyEmailLayoutList from "@/components/company-email-layout/CompanyEmailLayoutList.vue";
 </script>
 
 <template>

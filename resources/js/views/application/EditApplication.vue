@@ -4,7 +4,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
 import Application from "@/models/Office/Application";
-import ApplicationModulesTable from "@/components/application/EditApplication/ApplicationModulesTable.vue";
+import ApplicationModulesTable from "@/components/application/ApplicationModulesTable.vue";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import Module from "@/models/Office/Module";
 import {booleanOptions} from "@/data/dropDownOptions";

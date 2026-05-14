@@ -1,5 +1,5 @@
 <script setup>
-import ModulePackageList from "@/components/module-package/ModulePackages/ModulePackageList.vue";
+import ModulePackageList from "@/components/module-package/ModulePackageList.vue";
 </script>
 
 <template>

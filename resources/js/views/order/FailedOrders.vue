@@ -1,5 +1,5 @@
 <script setup>
-import FailedOrderList from "@/components/order/Failed-Orders/FailedOrderList.vue";
+import FailedOrderList from "@/components/order/FailedOrderList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 import {ref} from "vue";
 
