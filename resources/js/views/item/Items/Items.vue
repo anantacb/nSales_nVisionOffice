@@ -1,5 +1,5 @@
 <script setup>
-import ItemList from "@/views/item/Items/ItemList.vue";
+import ItemList from "@/components/item/Items/ItemList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 
 const companyStore = useCompanyStore();

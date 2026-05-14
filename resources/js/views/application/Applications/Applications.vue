@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationList from "@/views/application/Applications/ApplicationList.vue";
+import ApplicationList from "@/components/application/Applications/ApplicationList.vue";
 </script>
 
 <template>

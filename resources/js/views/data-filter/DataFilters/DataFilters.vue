@@ -1,5 +1,5 @@
 <script setup>
-import DataFilterList from "@/views/data-filter/DataFilters/DataFilterList.vue";
+import DataFilterList from "@/components/data-filter/DataFilters/DataFilterList.vue";
 </script>
 
 <template>

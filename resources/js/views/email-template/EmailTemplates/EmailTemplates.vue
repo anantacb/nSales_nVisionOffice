@@ -1,5 +1,5 @@
 <script setup>
-import EmailTemplateList from "@/views/email-template/EmailTemplates/EmailTemplateList.vue";
+import EmailTemplateList from "@/components/email-template/EmailTemplates/EmailTemplateList.vue";
 </script>
 
 <template>

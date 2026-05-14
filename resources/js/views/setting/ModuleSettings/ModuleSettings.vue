@@ -1,5 +1,5 @@
 <script setup>
-import ModuleSettingList from "@/views/setting/ModuleSettings/ModuleSettingList.vue";
+import ModuleSettingList from "@/components/setting/ModuleSettings/ModuleSettingList.vue";
 </script>
 
 <template>

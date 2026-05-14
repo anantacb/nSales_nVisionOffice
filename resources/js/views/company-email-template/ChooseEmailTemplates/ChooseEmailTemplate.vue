@@ -1,5 +1,5 @@
 <script setup>
-import ChooseEmailTemplateList from "@/views/company-email-template/ChooseEmailTemplates/ChooseEmailTemplateList.vue";
+import ChooseEmailTemplateList from "@/components/company-email-template/ChooseEmailTemplates/ChooseEmailTemplateList.vue";
 </script>
 
 <template>

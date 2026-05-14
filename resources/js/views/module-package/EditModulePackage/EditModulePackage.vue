@@ -4,7 +4,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import {useRoute} from "vue-router";
 import ModulePackage from "@/models/Office/ModulePackage";
-import ModulePackageModulesTable from "@/views/module-package/EditModulePackage/ModulePackageModulesTable.vue";
+import ModulePackageModulesTable from "@/components/module-package/EditModulePackage/ModulePackageModulesTable.vue";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import Module from "@/models/Office/Module";
 import ModulePackageModule from "@/models/Office/ModulePackageModule";

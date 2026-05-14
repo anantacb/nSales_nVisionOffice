@@ -1,7 +1,7 @@
 <script setup>
 
 import CompanyEmailConfigurationList
-    from "@/views/email-configuration/CompanyEmailConfigurations/CompanyEmailConfigurationList.vue";
+    from "@/components/email-configuration/CompanyEmailConfigurations/CompanyEmailConfigurationList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 
 const companyStore = useCompanyStore();

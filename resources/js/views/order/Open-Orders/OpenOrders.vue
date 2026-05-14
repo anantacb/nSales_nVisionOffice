@@ -1,5 +1,5 @@
 <script setup>
-import OpenOrderList from "@/views/order/Open-Orders/OpenOrderList.vue";
+import OpenOrderList from "@/components/order/Open-Orders/OpenOrderList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 import {ref} from "vue";
 

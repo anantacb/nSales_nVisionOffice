@@ -2,7 +2,7 @@
 import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRoute} from "vue-router";
 import {useTemplateStore} from "@/stores/templateStore";
-import TableFieldsFormComponent from "@/views/database/ManageTableFields/TableFieldsForm.vue";
+import TableFieldsFormComponent from "@/components/database/ManageTableFields/TableFieldsForm.vue";
 import Table from "@/models/Office/Table";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import TableField from "@/models/Office/TableField";

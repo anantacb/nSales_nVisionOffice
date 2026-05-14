@@ -1,5 +1,5 @@
 <script setup>
-import DeveloperList from "@/views/user/Developers/DeveloperList.vue";
+import DeveloperList from "@/components/user/Developers/DeveloperList.vue";
 import {ref} from "vue";
 
 const developerListRef = ref(null);

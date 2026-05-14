@@ -1,6 +1,6 @@
 <script setup>
 
-import TableList from "@/views/database/Tables/TableList.vue";</script>
+import TableList from "@/components/database/Tables/TableList.vue";</script>
 
 <template>
     <!-- Hero -->

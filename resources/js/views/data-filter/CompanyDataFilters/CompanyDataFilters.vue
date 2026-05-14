@@ -1,5 +1,5 @@
 <script setup>
-import DataFilterList from "@/views/data-filter/CompanyDataFilters/CompanyDataFilterList.vue";
+import DataFilterList from "@/components/data-filter/CompanyDataFilters/CompanyDataFilterList.vue";
 import {useCompanyStore} from "@/stores/companyStore";
 import ModalComponent from "@/components/ui/Modal/Modal.vue";
 import User from "@/models/Office/User";
