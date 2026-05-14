@@ -13,105 +13,105 @@ const {checkAccess} = useCheckAccess();
 const Login = () => import("@/views/auth/Login.vue");
 const Home = () => import("@/views/Home.vue");
 
-const Tables = () => import("@/views/database/Tables/Tables.vue");
-const CreateTable = () => import("@/views/database/CreateTable/CreateTable.vue");
+const Tables = () => import("@/views/database/Tables.vue");
+const CreateTable = () => import("@/views/database/CreateTable.vue");
 const EditTable = () => import("@/views/database/EditTable.vue");
-const TableFields = () => import("@/views/database/ManageTableFields/TableFields.vue");
-const TableIndices = () => import("@/views/database/ManageTableIndices/TableIndices.vue");
+const TableFields = () => import("@/views/database/TableFields.vue");
+const TableIndices = () => import("@/views/database/TableIndices.vue");
 
-const CopyDatabase = () => import("@/views/database/CopyDatabase/CopyDatabase.vue");
+const CopyDatabase = () => import("@/views/database/CopyDatabase.vue");
 
-const ModuleSettings = () => import("@/views/setting/ModuleSettings/ModuleSettings.vue");
+const ModuleSettings = () => import("@/views/setting/ModuleSettings.vue");
 const CreateModuleSetting = () => import("@/views/setting/CreateModuleSetting.vue");
 const EditModuleSetting = () => import("@/views/setting/EditModuleSetting.vue");
 const UpdateSetting = () => import("@/views/setting/UpdateSetting.vue");
 
-const Modules = () => import("@/views/module/Modules/Modules.vue");
+const Modules = () => import("@/views/module/Modules.vue");
 const CreateModule = () => import("@/views/module/CreateModule.vue");
-const EditModule = () => import("@/views/module/EditModule/EditModule.vue");
+const EditModule = () => import("@/views/module/EditModule.vue");
 const ActivateModule = () => import("@/views/module/ActivateModule.vue");
 
-const Companies = () => import("@/views/company/Companies/Companies.vue");
+const Companies = () => import("@/views/company/Companies.vue");
 const CreateCompany = () => import("@/views/company/CreateCompany.vue");
 const EditCompany = () => import("@/views/company/EditCompany.vue");
 
-const Users = () => import("@/views/user/Users/Users.vue");
-const EditUser = () => import("@/views/user/EditUser/EditUser.vue");
-const Developers = () => import("@/views/user/Developers/Developers.vue");
-const CompanyUsers = () => import("@/views/user/CompanyUsers/CompanyUsers.vue");
+const Users = () => import("@/views/user/Users.vue");
+const EditUser = () => import("@/views/user/EditUser.vue");
+const Developers = () => import("@/views/user/Developers.vue");
+const CompanyUsers = () => import("@/views/user/CompanyUsers.vue");
 const CreateCompanyUser = () => import("@/views/user/CreateCompanyUser.vue");
 const EditCompanyUser = () => import("@/views/user/EditCompanyUser.vue");
 
-const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations/EmailConfigurations.vue');
+const EmailConfigurations = () => import('@/views/email-configuration/EmailConfigurations.vue');
 const CreateEmailConfiguration = () => import('@/views/email-configuration/CreateEmailConfiguration.vue');
-const CompanyEmailConfigurations = () => import('@/views/email-configuration/CompanyEmailConfigurations/CompanyEmailConfigurations.vue');
+const CompanyEmailConfigurations = () => import('@/views/email-configuration/CompanyEmailConfigurations.vue');
 const EditEmailConfiguration = () => import('@/views/email-configuration/EditEmailConfiguration.vue');
 
-const DataFilters = () => import('@/views/data-filter/DataFilters/DataFilters.vue');
+const DataFilters = () => import('@/views/data-filter/DataFilters.vue');
 const CreateDataFilter = () => import('@/views/data-filter/CreateDataFilter.vue');
 const EditDataFilter = () => import('@/views/data-filter/EditDataFilter.vue');
 
-const Applications = () => import('@/views/application/Applications/Applications.vue');
+const Applications = () => import('@/views/application/Applications.vue');
 const CreateApplication = () => import('@/views/application/CreateApplication.vue');
-const EditApplication = () => import('@/views/application/EditApplication/EditApplication.vue');
+const EditApplication = () => import('@/views/application/EditApplication.vue');
 
-const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters/CompanyDataFilters.vue');
+const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters.vue');
 
-const Roles = () => import('@/views/roles/Roles/Roles.vue');
+const Roles = () => import('@/views/roles/Roles.vue');
 const CreateRole = () => import('@/views/roles/CreateRole.vue');
 const EditRole = () => import('@/views/roles/EditRole.vue');
 
-const Orders = () => import('@/views/order/Orders/Orders.vue');
-const OpenOrders = () => import('@/views/order/Open-Orders/OpenOrders.vue');
-const FailedOrders = () => import('@/views/order/Failed-Orders/FailedOrders.vue');
-const OrderDetails = () => import("@/views/order/Orders/OrderDetails.vue");
+const Orders = () => import('@/views/order/Orders.vue');
+const OpenOrders = () => import('@/views/order/OpenOrders.vue');
+const FailedOrders = () => import('@/views/order/FailedOrders.vue');
+const OrderDetails = () => import("@/views/order/OrderDetails.vue");
 
-const Customers = () => import('@/views/customer/Customers/Customers.vue');
+const Customers = () => import('@/views/customer/Customers.vue');
 const CreateCustomer = () => import('@/views/customer/CreateCustomer.vue');
 const CustomerDetails = () => import('@/views/customer/CustomerDetails.vue');
-const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits/CustomerVisits.vue');
+const CustomerVisits = () => import('@/views/customer-visit/CustomerVisits.vue');
 
-const Items = () => import('@/views/item/Items/Items.vue');
-const ItemDetails = () => import('@/views/item/ItemDetails/ItemDetails.vue');
+const Items = () => import('@/views/item/Items.vue');
+const ItemDetails = () => import('@/views/item/ItemDetails.vue');
 
-const Languages = () => import('@/views/language/Languages/Languages.vue');
+const Languages = () => import('@/views/language/Languages.vue');
 const CreateLanguage = () => import('@/views/language/CreateLanguage.vue');
 const EditLanguage = () => import('@/views/language/EditLanguage.vue');
 
-const Translations = () => import('@/views/translation/Translations/Translations.vue');
+const Translations = () => import('@/views/translation/Translations.vue');
 const CreateTranslation = () => import('@/views/translation/CreateTranslation.vue');
 const EditTranslation = () => import('@/views/translation/EditTranslation.vue');
 
-const CompanyLanguages = () => import('@/views/company-language/CompanyLanguages/CompanyLanguages.vue');
+const CompanyLanguages = () => import('@/views/company-language/CompanyLanguages.vue');
 
-const CompanyTranslations = () => import('@/views/company-translation/CompanyTranslations/CompanyTranslations.vue');
+const CompanyTranslations = () => import('@/views/company-translation/CompanyTranslations.vue');
 const CreateCompanyTranslation = () => import('@/views/company-translation/CreateCompanyTranslation.vue');
 const EditCompanyTranslation = () => import('@/views/company-translation/EditCompanyTranslation.vue');
 
-const ModulePackages = () => import('@/views/module-package/ModulePackages/ModulePackages.vue');
+const ModulePackages = () => import('@/views/module-package/ModulePackages.vue');
 const CreateModulePackage = () => import('@/views/module-package/CreateModulePackage.vue');
-const EditModulePackage = () => import('@/views/module-package/EditModulePackage/EditModulePackage.vue');
+const EditModulePackage = () => import('@/views/module-package/EditModulePackage.vue');
 
 const OnboardWebshop = () => import("@/views/onboard/Webshop.vue");
 const OnboardRetailer = () => import("@/views/onboard/Retailer.vue");
 
-const EmailLayouts = () => import('@/views/email-layout/EmailLayouts/EmailLayouts.vue');
+const EmailLayouts = () => import('@/views/email-layout/EmailLayouts.vue');
 const CreateEmailLayout = () => import('@/views/email-layout/CreateEmailLayout.vue');
 const EditEmailLayout = () => import('@/views/email-layout/EditEmailLayout.vue');
 
-const EmailTemplates = () => import('@/views/email-template/EmailTemplates/EmailTemplates.vue');
+const EmailTemplates = () => import('@/views/email-template/EmailTemplates.vue');
 const CreateEmailTemplate = () => import('@/views/email-template/CreateEmailTemplate.vue');
 const EditEmailTemplate = () => import('@/views/email-template/EditEmailTemplate.vue');
 
-const CompanyEmailLayouts = () => import('@/views/company-email-layout/CompanyEmailLayouts/CompanyEmailLayouts.vue');
+const CompanyEmailLayouts = () => import('@/views/company-email-layout/CompanyEmailLayouts.vue');
 const CreateCompanyEmailLayout = () => import('@/views/company-email-layout/CreateCompanyEmailLayout.vue');
 const EditCompanyEmailLayout = () => import('@/views/company-email-layout/EditCompanyEmailLayout.vue');
-const ChooseEmailLayout = () => import('@/views/company-email-layout/ChooseEmailLayouts/ChooseEmailLayout.vue');
+const ChooseEmailLayout = () => import('@/views/company-email-layout/ChooseEmailLayout.vue');
 
-const CompanyEmailTemplates = () => import('@/views/company-email-template/CompanyEmailTemplates/CompanyEmailTemplates.vue');
+const CompanyEmailTemplates = () => import('@/views/company-email-template/CompanyEmailTemplates.vue');
 const CreateCompanyEmailTemplate = () => import('@/views/company-email-template/CreateCompanyEmailTemplate.vue');
 const EditCompanyEmailTemplate = () => import('@/views/company-email-template/EditCompanyEmailTemplate.vue');
-const ChooseEmailTemplate = () => import('@/views/company-email-template/ChooseEmailTemplates/ChooseEmailTemplate.vue');
+const ChooseEmailTemplate = () => import('@/views/company-email-template/ChooseEmailTemplate.vue');
 
 const NotFound = () => import('@/views/404View.vue');
 
