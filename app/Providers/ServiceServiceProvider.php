@@ -60,6 +60,7 @@ use App\Services\Order\OrderByItemService;
 use App\Services\Order\OrderByItemServiceInterface;
 use App\Services\Order\OrderService;
 use App\Services\Order\OrderServiceInterface;
+use App\Services\Resolvers\CompanyServiceResolver;
 use App\Services\Role\RoleService;
 use App\Services\Role\RoleServiceInterface;
 use App\Services\Table\TableService;
@@ -117,34 +118,43 @@ class ServiceServiceProvider extends ServiceProvider
         $this->app->bind(ApplicationServiceInterface::class, ApplicationService::class);
         $this->app->bind(EmailConfigurationServiceInterface::class, EmailConfigurationService::class);
         $this->app->bind(DataFilterServiceInterface::class, DataFilterService::class);
-        $this->app->bind(OrderServiceInterface::class, OrderService::class);
-        $this->app->bind(OrderByCustomerServiceInterface::class, OrderByCustomerService::class);
-        $this->app->bind(ItemServiceInterface::class, ItemService::class);
-        $this->app->bind(ItemAttributeServiceInterface::class, ItemAttributeService::class);
-        $this->app->bind(OrderByItemServiceInterface::class, OrderByItemService::class);
         $this->app->bind(ApplicationModuleServiceInterface::class, ApplicationModuleService::class);
-        $this->app->bind(CustomerServiceInterface::class, CustomerService::class);
-        $this->app->bind(CustomerVisitServiceInterface::class, CustomerVisitService::class);
         $this->app->bind(LanguageServiceInterface::class, LanguageService::class);
         $this->app->bind(TranslationServiceInterface::class, TranslationService::class);
-        $this->app->bind(CompanyLanguageServiceInterface::class, CompanyLanguageService::class);
-        $this->app->bind(CompanyTranslationServiceInterface::class, CompanyTranslationService::class);
-        $this->app->bind(WebShopLanguageServiceInterface::class, WebShopLanguageService::class);
         $this->app->bind(ModulePackageServiceInterface::class, ModulePackageService::class);
         $this->app->bind(ModulePackageModuleServiceInterface::class, ModulePackageModuleService::class);
-        $this->app->bind(WebShopTextServiceInterface::class, WebShopTextService::class);
         $this->app->bind(DatabaseServiceInterface::class, DatabaseService::class);
-        $this->app->bind(WebShopUserServiceInterface::class, WebShopUserService::class);
-        $this->app->bind(WebShopPageServiceInterface::class, WebShopPageService::class);
         $this->app->bind(ThemeServiceInterface::class, ThemeService::class);
-        $this->app->bind(DocumentApiServiceInterface::class, DocumentApiService::class);
         $this->app->bind(GitServiceInterface::class, GitService::class);
         $this->app->bind(DeploymentServiceInterface::class, DeploymentService::class);
         $this->app->bind(OnboardServiceInterface::class, OnboardService::class);
         $this->app->bind(EmailLayoutServiceInterface::class, EmailLayoutService::class);
         $this->app->bind(EmailTemplateServiceInterface::class, EmailTemplateService::class);
-        $this->app->bind(CompanyEmailLayoutServiceInterface::class, CompanyEmailLayoutService::class);
-        $this->app->bind(CompanyEmailTemplateServiceInterface::class, CompanyEmailTemplateService::class);
         $this->app->bind(GoogleBuildServiceInterface::class, GoogleBuildService::class);
+
+        $this->bindOverridable(OrderServiceInterface::class, OrderService::class);
+        $this->bindOverridable(OrderByCustomerServiceInterface::class, OrderByCustomerService::class);
+        $this->bindOverridable(ItemServiceInterface::class, ItemService::class);
+        $this->bindOverridable(ItemAttributeServiceInterface::class, ItemAttributeService::class);
+        $this->bindOverridable(OrderByItemServiceInterface::class, OrderByItemService::class);
+        $this->bindOverridable(CustomerServiceInterface::class, CustomerService::class);
+        $this->bindOverridable(CustomerVisitServiceInterface::class, CustomerVisitService::class);
+        $this->bindOverridable(CompanyLanguageServiceInterface::class, CompanyLanguageService::class);
+        $this->bindOverridable(CompanyTranslationServiceInterface::class, CompanyTranslationService::class);
+        $this->bindOverridable(WebShopLanguageServiceInterface::class, WebShopLanguageService::class);
+        $this->bindOverridable(WebShopTextServiceInterface::class, WebShopTextService::class);
+        $this->bindOverridable(WebShopUserServiceInterface::class, WebShopUserService::class);
+        $this->bindOverridable(WebShopPageServiceInterface::class, WebShopPageService::class);
+        $this->bindOverridable(DocumentApiServiceInterface::class, DocumentApiService::class);
+        $this->bindOverridable(CompanyEmailLayoutServiceInterface::class, CompanyEmailLayoutService::class);
+        $this->bindOverridable(CompanyEmailTemplateServiceInterface::class, CompanyEmailTemplateService::class);
+
+    }
+
+    private function bindOverridable(string $interface, string $baseConcrete): void
+    {
+        $this->app->bind($interface, function () use ($baseConcrete) {
+            return $this->app->make(CompanyServiceResolver::resolveConcrete($baseConcrete));
+        });
     }
 }
