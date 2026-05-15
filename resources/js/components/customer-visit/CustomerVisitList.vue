@@ -15,7 +15,7 @@ const companyStore = useCompanyStore();
 let tableData = ref([]);
 let paginationData = ref(null);
 let isLoading = ref(true);
-let filterLists = ref({});
+let filterLists = ref({Account: '', Employee: '', DateStart: null});
 let {numberFormat, dateFormat} = useFormatter();
 let dateFormatStr = ref('DD-MM-YYYY');
 let filterOptionsForAccount = ref();
@@ -78,10 +78,9 @@ setTableFields([
     }
 ]);
 
-setSearchColumns(['Name', 'CustomerAccount', 'OrderNumber']);
+setSearchColumns(['CustomerBillingName', 'Account', 'Note']);
 
 onMounted(() => {
-    setPageNo(1);
     getCustomerVisits();
     resetFilterLists();
     getFilterOptions();

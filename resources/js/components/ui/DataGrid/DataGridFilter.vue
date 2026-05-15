@@ -6,6 +6,12 @@ const debounceSearch = _.debounce(function (value) {
     emit('change', value);
 }, 500);
 
+function clearSearch() {
+    debounceSearch.cancel();
+    emit("update:modelValue", "");
+    emit('change', "");
+}
+
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const props = defineProps({
@@ -25,8 +31,12 @@ const props = defineProps({
         <div class="input-group search-input-group">
             <input :value="props.modelValue" aria-describedby="search-addon" aria-label="Search" class="form-control"
                    name="Search" placeholder="Search..." type="text" @input="debounceSearch($event.target.value)">
-            <span id="search-addon" class="input-group-text">
-                    <i class="fa fa-search"></i>
+            <span v-if="props.modelValue" aria-label="Clear search" class="input-group-text clear-addon"
+                  role="button" @click="clearSearch">
+                <i class="fa fa-times"></i>
+            </span>
+            <span v-else id="search-addon" class="input-group-text">
+                <i class="fa fa-search"></i>
             </span>
         </div>
     </div>
@@ -58,6 +68,14 @@ const props = defineProps({
             margin-left: -1px;
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
+        }
+
+        .clear-addon {
+            cursor: pointer;
+
+            &:hover i {
+                color: #dc3545;
+            }
         }
     }
 }

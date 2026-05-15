@@ -94,10 +94,11 @@ setTableFields([
 setSearchColumns(['Name', 'CustomerAccount', 'OrderNumber']);
 
 onMounted(() => {
-    setPageNo(1);
+    if (Array.isArray(request.value.filters)) {
+        resetFilters();
+    }
     getOrders();
     getOrderOrigins();
-    resetFilters();
 });
 
 watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {

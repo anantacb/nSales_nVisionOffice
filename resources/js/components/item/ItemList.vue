@@ -82,7 +82,6 @@ setTableFields([
 setSearchColumns(['Number', 'Name1', 'Group']);
 
 onMounted(() => {
-    setPageNo(1);
     getItems();
 });
 watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {

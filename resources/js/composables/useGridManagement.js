@@ -1,4 +1,6 @@
 import {ref} from "vue";
+import {onBeforeRouteLeave, useRoute} from "vue-router";
+import {useListStateStore} from "@/stores/listStateStore";
 
 export default function useGridManagement() {
     let tableFields = ref([]);
@@ -10,6 +12,16 @@ export default function useGridManagement() {
         order: {},
         pagination: {"page_no": 1, "per_page": 20},
         query: ""
+    });
+
+    const route = useRoute();
+    const listStateStore = useListStateStore();
+    const restored = listStateStore.consume(route?.name);
+    if (restored) {
+        request.value = restored;
+    }
+    onBeforeRouteLeave((to, from) => {
+        listStateStore.save(from.name, request.value);
     });
 
     function setTableFields(value) {

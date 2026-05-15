@@ -67,7 +67,6 @@ setTableFields([
 setSearchColumns(['Account', 'Name', 'Email']);
 
 onMounted(() => {
-    setPageNo(1);
     getCustomers();
 });
 

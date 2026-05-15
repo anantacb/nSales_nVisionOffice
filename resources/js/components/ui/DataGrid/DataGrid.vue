@@ -56,7 +56,7 @@ let sortBy = ref("");
 let sortOrder = ref("");
 let gridHeaderHeight = ref("0px");
 let expandedElementIndex = ref(0);
-let searchText = ref("");
+let searchText = ref(props.searchString);
 
 const modifiedTableFields = computed(() => {
     let tableFields = [...props.tableFields];
