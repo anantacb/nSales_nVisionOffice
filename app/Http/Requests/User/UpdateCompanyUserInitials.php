@@ -3,7 +3,6 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateCompanyUserInitials extends FormRequest
 {
@@ -30,11 +29,11 @@ class UpdateCompanyUserInitials extends FormRequest
             'Initials' => [
                 'required',
                 'string',
-                Rule::unique('CompanyUser', 'Initials')
-                    ->where(function ($q) {
-                        $q->where('CompanyId', '=', $this->request->get('CompanyId'));
-                    })
-                    ->ignore($this->request->get('CompanyUserId'), 'Id'),
+//                Rule::unique('CompanyUser', 'Initials')
+//                    ->where(function ($q) {
+//                        $q->where('CompanyId', '=', $this->request->get('CompanyId'));
+//                    })
+//                    ->ignore($this->request->get('CompanyUserId'), 'Id'),
             ],
         ];
     }
