@@ -3,7 +3,6 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateCompanyUser extends FormRequest
 {
@@ -30,11 +29,12 @@ class UpdateCompanyUser extends FormRequest
             'CompanyUserId' => 'required',
             'Initials' => [
                 'required',
-                Rule::unique('CompanyUser', 'Initials')
-                    ->where(function ($q) {
-                        $q->where('CompanyId', '=', $this->request->get('CompanyId'));
-                    })
-                    ->ignore($this->request->get('CompanyUserId'), 'Id'),
+                'string',
+//                Rule::unique('CompanyUser', 'Initials')
+//                    ->where(function ($q) {
+//                        $q->where('CompanyId', '=', $this->request->get('CompanyId'));
+//                    })
+//                    ->ignore($this->request->get('CompanyUserId'), 'Id'),
             ],
             'LicenceType' => 'required|in:NvisionMobile,NsalesOffice',
             'CultureName' => 'required',
