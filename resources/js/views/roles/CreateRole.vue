@@ -62,7 +62,7 @@ onMounted(async () => {
 <template>
     <div class="content">
 
-        <BaseBlock ref="createRoleRef" :title="`Create Role for (${companyStore.selectedCompany.Name})`" content-full>
+        <BaseBlock ref="createRoleRef" :title="`Create Company Role for (${companyStore.selectedCompany.Name})`" content-full>
 
             <template #options>
                 <router-link :to="{name:'roles'}" class="btn btn-sm btn-outline-info">

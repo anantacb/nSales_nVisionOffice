@@ -127,6 +127,12 @@
             );
         }
 
+        // Plain buttons (no color variant) inherit body color, which stays dark
+        // in this theme — make their text/icon visible on dark backgrounds.
+        .btn:not([class*="btn-"]) {
+            color: $oneui-body-bg-light;
+        }
+
         // Nav links
         .nav-link {
             color: darken($oneui-body-bg-dark, 10%);
@@ -447,6 +453,7 @@
 
         // Tables
         .table {
+            --#{$variable-prefix}table-bg: #{$primary-darker};
             --#{$variable-prefix}table-striped-color: #{$oneui-body-bg-light};
             --#{$variable-prefix}table-striped-bg: #{darken($primary-darker, 1.5%)};
             --#{$variable-prefix}table-active-color: #{$oneui-body-bg-light};
@@ -460,6 +467,11 @@
 
         .table > :not(:last-child) > :last-child > * {
             border-bottom-color: darken($primary-darker, 6%);
+        }
+
+        .table > thead:not(.table-dark) > tr > th {
+            color: $oneui-body-bg-light;
+            background-color: lighten($primary-darker, 6%);
         }
 
         @include table-variant("primary", rgba(shade-color($primary, 20%), 0.75));

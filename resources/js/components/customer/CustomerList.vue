@@ -23,6 +23,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy
 } = useGridManagement()
 
@@ -76,6 +77,11 @@ watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
         getCustomers();
     }
 });
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -139,6 +145,7 @@ function deleteCustomer(customer, index) {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

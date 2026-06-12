@@ -3,6 +3,7 @@ import {onMounted, ref} from "vue";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
 import Role from "@/models/Office/Role";
+import RolePermissionsBlock from "@/components/roles/RolePermissionsBlock.vue";
 import {useRoute} from "vue-router";
 
 const route = useRoute();
@@ -10,8 +11,9 @@ const route = useRoute();
 const notificationStore = useNotificationStore();
 const {errors, setErrors, resetErrors} = useFormErrors();
 
-
 const editRoleRef = ref(null);
+
+let RoleModel = ref({});
 
 async function updateRole() {
     editRoleRef.value.statusLoading();
@@ -25,14 +27,13 @@ async function updateRole() {
     };
 
     try {
-        let {data, message} = await Role.update(formData);
+        let {message} = await Role.update(formData);
         editRoleRef.value.statusNormal();
         notificationStore.showNotification(message);
     } catch (error) {
         setErrors(error.response.data.errors);
         editRoleRef.value.statusNormal();
     }
-
 }
 
 onMounted(async () => {
@@ -41,19 +42,16 @@ onMounted(async () => {
     editRoleRef.value.statusNormal();
 });
 
-let RoleModel = ref({});
-
 async function getRoleDetails() {
     let {data} = await Role.details(route.params.id);
     RoleModel.value = data;
 }
-
 </script>
 
 <template>
     <div class="content">
 
-        <BaseBlock ref="editRoleRef" content-full title="Edit Role">
+        <BaseBlock ref="editRoleRef" content-full title="Edit Company Role">
 
             <template #options>
                 <router-link :to="{name:'roles'}" class="btn btn-sm btn-outline-info">
@@ -119,6 +117,8 @@ async function getRoleDetails() {
             </form>
 
         </BaseBlock>
+
+        <RolePermissionsBlock :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
 
     </div>
 </template>

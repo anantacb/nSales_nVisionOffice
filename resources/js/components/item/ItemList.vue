@@ -25,6 +25,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy
 } = useGridManagement();
 
@@ -107,6 +108,11 @@ async function getItems() {
     }
 }
 
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
+
 function goToPage(pageNo) {
     setPageNo(pageNo);
     getItems();
@@ -175,6 +181,7 @@ onUnmounted(() => {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

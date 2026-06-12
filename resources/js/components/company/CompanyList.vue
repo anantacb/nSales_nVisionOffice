@@ -31,6 +31,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy
 } = useGridManagement();
 
@@ -80,6 +81,11 @@ setSearchColumns(['Name', 'DomainName', 'DatabaseName', 'CompanyName']);
 onMounted(() => {
     getCompanies();
 });
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -149,6 +155,7 @@ watch(() => props.refreshData, async (newValue) => {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

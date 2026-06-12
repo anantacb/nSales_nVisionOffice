@@ -40,7 +40,8 @@ export default function useGridManagement() {
     }
 
     function setPerPage(value) {
-        request.value.search_columns = value;
+        request.value.pagination.per_page = value;
+        request.value.pagination.page_no = 1;
     }
 
     function setSortBy(field, order) {

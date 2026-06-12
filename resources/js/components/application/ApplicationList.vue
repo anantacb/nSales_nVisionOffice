@@ -19,6 +19,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy
 } = useGridManagement();
 
@@ -49,6 +50,11 @@ setSearchColumns(["Name", "Platform", "OperatingSystem"]);
 onMounted(() => {
     getApplications();
 });
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -112,6 +118,7 @@ function deleteApplication(application, index) {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

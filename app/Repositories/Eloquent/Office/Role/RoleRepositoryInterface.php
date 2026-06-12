@@ -20,4 +20,10 @@ interface RoleRepositoryInterface extends BaseRepositoryInterface
      * ]
      */
     public function paginatedDataCompanyWise(array $request);
+
+    /**
+     * Paginated listing of default/template roles (CompanyId IS NULL).
+     * Same request shape as paginatedDataCompanyWise.
+     */
+    public function paginatedDataDefault(array $request);
 }

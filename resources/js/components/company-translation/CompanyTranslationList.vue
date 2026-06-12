@@ -23,6 +23,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy,
     resetRequest
 } = useGridManagement();
@@ -55,6 +56,11 @@ setSearchColumns(['Type', 'ElementName']);
 onMounted(() => {
     getCompanyTranslations();
 });
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -131,6 +137,7 @@ watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

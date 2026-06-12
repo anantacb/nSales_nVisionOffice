@@ -42,6 +42,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy
 } = useGridManagement();
 
@@ -74,6 +75,11 @@ setTableFields([
 ]);
 
 setSearchColumns(['ElementName']);
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -283,6 +289,7 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

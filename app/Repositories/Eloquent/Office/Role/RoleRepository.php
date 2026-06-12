@@ -69,6 +69,58 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
 
         $query = $query->where('CompanyId', $request['CompanyId']);
 
+        return $this->applyQueryRest($query, $request);
+    }
+
+    /**
+     * Paginated listing of default/template roles (rows with CompanyId IS NULL).
+     * Same shape as paginatedDataCompanyWise but scoped to templates.
+     */
+    public function paginatedDataDefault(array $request)
+    {
+        $query = $this->model;
+
+        if (isset($request["selected_columns"]) && $request["selected_columns"]) {
+            $query = $query->select($request["selected_columns"]);
+        }
+
+        if (isset($request["relations"]) && count($request["relations"]) > 0) {
+            foreach ($request['relations'] as $relation) {
+                if (isset($relation["columns"]) && is_array($relation["columns"]) && count($relation["columns"]) > 0) {
+                    $query = $query->with($relation["name"] . ":" . implode(",", $relation["columns"]));
+                } else {
+                    $query = $query->with($relation["name"]);
+                }
+            }
+        }
+
+        if (isset($request["filters"]) && count($request["filters"]) > 0) {
+            foreach ($request["filters"] as $filter) {
+                if (is_array($filter["values"])) {
+                    if ($filter["operator"] === "!=") {
+                        $query = $query->whereNotIn($filter["column"], $filter["values"]);
+                    } else {
+                        $query = $query->whereIn($filter["column"], $filter["values"]);
+                    }
+                } else {
+                    $query = $query->where($filter["column"], $filter["operator"], $filter["values"]);
+                }
+            }
+        }
+
+        if (isset($request["filter_by_relation"]) && count($request["filter_by_relation"]) > 0) {
+            foreach ($request["filter_by_relation"] as $filter) {
+                $query = $this->getWhereHas($query, $filter);
+            }
+        }
+
+        $query = $query->whereNull('CompanyId');
+
+        return $this->applyQueryRest($query, $request);
+    }
+
+    private function applyQueryRest($query, array $request)
+    {
         // Search
         if (isset($request["query"]) && $request["query"] && isset($request["search_columns"])) {
             if (is_array($request["search_columns"])) {

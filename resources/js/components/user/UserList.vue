@@ -18,6 +18,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy,
     resetRequest
 } = useGridManagement();
@@ -61,6 +62,11 @@ onMounted(async () => {
     await getUsers();
 });
 
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
+
 function goToPage(pageNo) {
     setPageNo(pageNo);
     getUsers();
@@ -98,6 +104,7 @@ async function getUsers() {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

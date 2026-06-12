@@ -78,8 +78,12 @@ use App\Repositories\Eloquent\Office\OnboardStatus\OnboardStatusRepository;
 use App\Repositories\Eloquent\Office\OnboardStatus\OnboardStatusRepositoryInterface;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepository;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepositoryInterface;
+use App\Repositories\Eloquent\Office\Permission\PermissionRepository;
+use App\Repositories\Eloquent\Office\Permission\PermissionRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepository;
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
+use App\Repositories\Eloquent\Office\RolePermission\RolePermissionRepository;
+use App\Repositories\Eloquent\Office\RolePermission\RolePermissionRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepository;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Table\TableRepository;
@@ -141,6 +145,8 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(CompanyUserRoleRepositoryInterface::class, CompanyUserRoleRepository::class);
+        $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
+        $this->app->bind(RolePermissionRepositoryInterface::class, RolePermissionRepository::class);
 
         $this->app->bind(ApplicationRepositoryInterface::class, ApplicationRepository::class);
         $this->app->bind(ApplicationModuleRepositoryInterface::class, ApplicationModuleRepository::class);

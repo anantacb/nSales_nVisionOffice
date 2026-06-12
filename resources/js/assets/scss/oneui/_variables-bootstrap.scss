@@ -232,7 +232,9 @@ $dropdown-box-shadow: 0 0.25rem 2rem rgba($black, 0.08) !default;
 
 $dropdown-link-color: $body-color !default;
 $dropdown-link-hover-color: $body-color !default;
-$dropdown-link-hover-bg: $body-bg !default;
+// $body-bg matches the default dropdown menu background, so it gives no
+// visible hover; darken it so the hovered item stands out from the menu.
+$dropdown-link-hover-bg: darken($body-bg, 5%) !default;
 
 $dropdown-link-active-color: $body-color !default;
 $dropdown-link-active-bg: darken($body-bg, 4.5%) !default;

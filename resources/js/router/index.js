@@ -60,6 +60,12 @@ const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters.
 const Roles = () => import('@/views/roles/Roles.vue');
 const CreateRole = () => import('@/views/roles/CreateRole.vue');
 const EditRole = () => import('@/views/roles/EditRole.vue');
+const DefaultRoles = () => import('@/views/roles/DefaultRoles.vue');
+const CreateDefaultRole = () => import('@/views/roles/CreateDefaultRole.vue');
+const EditDefaultRole = () => import('@/views/roles/EditDefaultRole.vue');
+const Permissions = () => import('@/views/permission/Permissions.vue');
+const CreatePermission = () => import('@/views/permission/CreatePermission.vue');
+const EditPermission = () => import('@/views/permission/EditPermission.vue');
 
 const Orders = () => import('@/views/order/Orders.vue');
 const OpenOrders = () => import('@/views/order/OpenOrders.vue');
@@ -555,6 +561,68 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+
+            {
+                path: "role/default-roles",
+                name: "default-roles",
+                component: DefaultRoles,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "role/default-role/create",
+                name: "create-default-role",
+                component: CreateDefaultRole,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "role/default-role/:id/edit",
+                name: "edit-default-role",
+                component: EditDefaultRole,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: false,
+                    roles: ['Developer']
+                }
+            },
+
+            {
+                path: "permission/permissions",
+                name: "permissions",
+                component: Permissions,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "permission/create",
+                name: "create-permission",
+                component: CreatePermission,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: ['Developer']
+                }
+            },
+            {
+                path: "permission/:id/edit",
+                name: "edit-permission",
+                component: EditPermission,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
                     roles: ['Developer']
                 }
             },

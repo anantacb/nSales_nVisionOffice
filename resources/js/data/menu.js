@@ -243,17 +243,50 @@ export default {
             roles: ["Developer"],
             sub: [
                 {
-                    name: "Roles",
+                    name: "Company Roles",
                     icon: "fa fa-user-tag",
                     to: "roles",
                     roles: ["Developer"],
                 },
                 {
-                    name: "Create Role",
+                    name: "Create Company Role",
                     icon: "fa fa-plus",
                     to: "create-role",
                     roles: ["Developer"],
-                }
+                },
+                {
+                    name: "Default Roles",
+                    icon: "fa fa-star",
+                    to: "default-roles",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Create Default Role",
+                    icon: "fa fa-plus",
+                    to: "create-default-role",
+                    roles: ["Developer"],
+                },
+            ],
+        },
+
+        {
+            name: "Permission",
+            icon: "fa fa-shield-alt",
+            subActivePaths: ["permission"],
+            roles: ["Developer"],
+            sub: [
+                {
+                    name: "Permissions",
+                    icon: "fa fa-shield-alt",
+                    to: "permissions",
+                    roles: ["Developer"],
+                },
+                {
+                    name: "Create Permission",
+                    icon: "fa fa-plus",
+                    to: "create-permission",
+                    roles: ["Developer"],
+                },
             ],
         },
 

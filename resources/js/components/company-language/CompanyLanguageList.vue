@@ -26,6 +26,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy,
     resetRequest
 } = useGridManagement();
@@ -63,6 +64,11 @@ setSearchColumns(['Name', 'Locale', 'Code']);
 onMounted(() => {
     getCompanyLanguages();
 });
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -169,6 +175,7 @@ function setAsDefaultLanguage(companyLanguageId, index) {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

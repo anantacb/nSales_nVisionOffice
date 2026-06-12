@@ -19,6 +19,7 @@ const {
     setSearchColumns,
     setSearchQuery,
     setPageNo,
+    setPerPage,
     setSortBy,
     resetRequest
 } = useGridManagement();
@@ -62,6 +63,11 @@ setSearchColumns(['Name', 'MainTableName', 'Description']);
 onMounted(() => {
     getModules();
 });
+
+function changePerPage(perPage) {
+    setPerPage(perPage);
+    goToPage(1);
+}
 
 function goToPage(pageNo) {
     setPageNo(pageNo);
@@ -125,6 +131,7 @@ function deleteModule(module, index) {
         :tableFields="tableFields"
         @expand=""
         @paginate="goToPage"
+        @perPageChange="changePerPage"
         @search="search"
         @sortBy="sortBy"
     >

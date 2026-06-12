@@ -13,6 +13,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerVisitController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DataFilterController;
+use App\Http\Controllers\DefaultRoleController;
 use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\DocumentAPIController;
 use App\Http\Controllers\EmailConfigurationController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\OnboardController;
 use App\Http\Controllers\OrderByCustomerController;
 use App\Http\Controllers\OrderByItemController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableFieldController;
@@ -240,6 +242,25 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/role/update', [RoleController::class, 'update']);
     Route::post('/role/delete', [RoleController::class, 'delete']);
     Route::post('/role/details', [RoleController::class, 'details']);
+
+    // Permission
+    Route::post('/permissions/list', [PermissionController::class, 'listAll']);
+    Route::post('/role/permissions', [PermissionController::class, 'getRolePermissions']);
+    Route::middleware(['admin-or-developer'])->post('/role/permissions/sync', [PermissionController::class, 'syncRolePermissions']);
+
+    // Permission CRUD (developer-only)
+    Route::middleware(['developer'])->post('/permissions', [PermissionController::class, 'getPermissions']);
+    Route::middleware(['developer'])->post('/permission/create', [PermissionController::class, 'create']);
+    Route::middleware(['developer'])->post('/permission/update', [PermissionController::class, 'update']);
+    Route::middleware(['developer'])->post('/permission/details', [PermissionController::class, 'details']);
+    Route::middleware(['developer'])->post('/permission/delete', [PermissionController::class, 'delete']);
+
+    // Default (template) Role
+    Route::post('/default-roles/list', [DefaultRoleController::class, 'getDefaultRoles']);
+    Route::post('/default-role/details', [DefaultRoleController::class, 'details']);
+    Route::middleware(['developer'])->post('/default-role/create', [DefaultRoleController::class, 'create']);
+    Route::middleware(['developer'])->post('/default-role/update', [DefaultRoleController::class, 'update']);
+    Route::middleware(['developer'])->post('/default-role/delete', [DefaultRoleController::class, 'delete']);
 
     // Theme
     Route::post('/themes', [ThemeController::class, 'getThemes']);

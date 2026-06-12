@@ -50,7 +50,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['expand', 'sortBy', 'search', 'paginate']);
+const emit = defineEmits(['expand', 'sortBy', 'search', 'paginate', 'perPageChange']);
 
 let sortBy = ref("");
 let sortOrder = ref("");
@@ -249,7 +249,8 @@ watch(() => props.searchString, () => {
             </template>
         </div>
 
-        <DataGridPagination v-if="props.pagination" :pagination="props.pagination" @paginate="goToPage"/>
+        <DataGridPagination v-if="props.pagination" :pagination="props.pagination" @paginate="goToPage"
+                            @perPageChange="$emit('perPageChange', $event)"/>
     </div>
 </template>
 
