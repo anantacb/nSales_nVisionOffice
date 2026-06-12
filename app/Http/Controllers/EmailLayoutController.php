@@ -25,55 +25,55 @@ class EmailLayoutController extends Controller
     public function getEmailLayoutOptionsByLanguage(EmailLayoutOptionsByLanguage $request): JsonResponse
     {
         $response = $this->service->getEmailLayoutOptionsByLanguage($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getEmailLayouts(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getEmailLayouts($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function create(Create $request): JsonResponse
     {
         $response = $this->service->create($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function update(Update $request): JsonResponse
     {
         $response = $this->service->update($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getDataForPreview(PreviewTemplate $request): JsonResponse
     {
         $response = $this->service->getDataForPreview($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getPreviewTemplateObject(): JsonResponse
     {
         $response = $this->service->getPreviewTemplateObject();
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getEmailLayoutsForCompany(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getEmailLayoutsForCompany($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

@@ -28,92 +28,89 @@ class CompanyController extends Controller
     public function getAllCompanies(Request $request): JsonResponse
     {
         $response = $this->service->getAllCompanies($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getAuthUserCompanies(Request $request): JsonResponse
     {
         $response = $this->service->getAuthUserCompanies($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getModuleEnabledCompanies(ModuleEnabledCompanies $request): JsonResponse
     {
         $response = $this->service->getModuleEnabledCompanies($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getAssignableCompaniesByUser(AssignableUserCompanies $request): JsonResponse
     {
         $response = $this->service->getAssignableCompaniesByUser($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanies(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getCompanies($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function create(Create $request): JsonResponse
     {
         $response = $this->service->create($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function cloneCompany(CloneCompany $request): JsonResponse
     {
         $response = $this->service->cloneCompany($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function update(Update $request): JsonResponse
     {
         $response = $this->service->update($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanyCustomDomains(Request $request): JsonResponse
     {
         $response = $this->service->getCompanyCustomDomains($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function addCompanyCustomDomain(AddCustomDomain $request): JsonResponse
     {
         $response = $this->service->addCompanyCustomDomain($request);
-        $status = $response->statusCode === 200 ? 'success' : 'error';
-        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function deleteCompanyCustomDomain(DeleteCustomDomain $request): JsonResponse
     {
         $response = $this->service->deleteCompanyCustomDomain($request);
-        $status = $response->statusCode === 200 ? 'success' : 'error';
-        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getPostmarkServer(Request $request): JsonResponse
     {
         $response = $this->service->getPostmarkServer($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
     public function createPostmarkServer(Request $request): JsonResponse
     {
         $response = $this->service->createPostmarkServer($request);
-        $status = $response->statusCode === 200 ? 'success' : 'error';
-        return ApiResponseTransformer::{$status}($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

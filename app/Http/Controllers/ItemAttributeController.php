@@ -21,19 +21,19 @@ class ItemAttributeController extends Controller
     public function getItemAttributesByItem(DetailsByItem $request): JsonResponse
     {
         $response = $this->service->getItemAttributesByItem($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateItemAttributesByItem(Update $request): JsonResponse
     {
         $response = $this->service->updateItemAttributesByItem($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(Delete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

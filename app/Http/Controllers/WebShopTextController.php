@@ -20,13 +20,13 @@ class WebShopTextController extends Controller
     public function getByItem(GetByItem $request): JsonResponse
     {
         $response = $this->service->getByItem($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateByItem(UpdateOrCreateByItem $request): JsonResponse
     {
         $response = $this->service->updateByItem($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

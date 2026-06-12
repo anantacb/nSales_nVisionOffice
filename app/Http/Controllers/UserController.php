@@ -29,94 +29,94 @@ class UserController extends Controller
     public function authUserDetails(): JsonResponse
     {
         $response = $this->service->authUserDetails();
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getAllCompanyUsers(GetAllCompanyUsers $request): JsonResponse
     {
         $response = $this->service->getAllCompanyUsers($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getDevelopers(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getDevelopers($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getUsers(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getUsers($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanyUsers(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getCompanyUsers($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function createCompanyUser(CreateCompanyUser $request): JsonResponse
     {
         $response = $this->service->createCompanyUser($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function companyUserDetails(DetailsOrDeleteCompanyUser $request): JsonResponse
     {
         $response = $this->service->companyUserDetails($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function update(Update $request): JsonResponse
     {
         $response = $this->service->update($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tagDeveloperToAllCompanies(Request $request): JsonResponse
     {
         $response = $this->service->tagDeveloperToAllCompanies($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateCompanyUser(UpdateCompanyUser $request): JsonResponse
     {
         $response = $this->service->updateCompanyUser($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateCompanyUserRoles(UpdateCompanyUserRoles $request): JsonResponse
     {
         $response = $this->service->updateCompanyUserRoles($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateCompanyUserInitials(UpdateCompanyUserInitials $request): JsonResponse
     {
         $response = $this->service->updateCompanyUserInitials($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function assignToCompany(AssignToCompany $request): JsonResponse
     {
         $response = $this->service->assignToCompany($request);
 
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

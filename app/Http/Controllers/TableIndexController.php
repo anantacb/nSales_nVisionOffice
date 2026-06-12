@@ -20,24 +20,24 @@ class TableIndexController extends Controller
     public function getTableIndices(GetTableIndices $request): JsonResponse
     {
         $response = $this->service->getTableIndices($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tableIndicesOperationPreviews(Request $request): JsonResponse
     {
         $response = $this->service->getTableIndicesOperationPreviews($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tableIndicesOperationsSaveAndExecute(Request $request): JsonResponse
     {
         $response = $this->service->tableIndicesOperationsSaveAndExecute($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tableIndicesOperationsSaveWithoutExecuting(Request $request): JsonResponse
     {
         $response = $this->service->tableIndicesOperationsSaveWithoutExecuting($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

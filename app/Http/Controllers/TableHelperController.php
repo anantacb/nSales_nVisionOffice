@@ -21,18 +21,18 @@ class TableHelperController extends Controller
     public function getColumnDistinctValues(GetColumnDistinctValues $request): JsonResponse
     {
         $response = $this->tableHelperService->getColumnDistinctValues($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getEnumValues(GetEnumValues $request): JsonResponse
     {
         $response = $this->tableHelperService->getEnumValues($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getAllTableColumnNames(GetAllTableColumns $request): JsonResponse
     {
         $response = $this->tableHelperService->getAllTableColumnNames($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

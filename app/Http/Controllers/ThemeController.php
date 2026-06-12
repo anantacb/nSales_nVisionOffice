@@ -19,18 +19,18 @@ class ThemeController extends Controller
     public function getThemes()
     {
         $response = $this->service->getThemes();
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanyTheme(Request $request)
     {
         $response = $this->service->getCompanyTheme($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function triggerBuild($themeId)
     {
         $response = $this->service->triggerBuild($themeId);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

@@ -23,42 +23,42 @@ class TableFieldController extends Controller
     public function getTableFields(GetTableFields $request): JsonResponse
     {
         $response = $this->service->getTableFields($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getGeneralTableFields(GetGeneralTableFields $request): JsonResponse
     {
         $response = $this->service->getGeneralTableFields($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanySpecificTableFields(GetCompanySpecificTableFields $request): JsonResponse
     {
         $response = $this->service->getCompanySpecificTableFields($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanyAllTableFields(GetCompanyAllTableFields $request): JsonResponse
     {
         $response = $this->service->getCompanyAllTableFields($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tableFieldsOperationPreviews(Request $request): JsonResponse
     {
         $response = $this->service->getTableFieldsOperationPreviews($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tableFieldsOperationsSaveAndExecute(Request $request): JsonResponse
     {
         $response = $this->service->tableFieldsOperationsSaveAndExecute($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function tableFieldsOperationsSaveWithoutExecuting(Request $request): JsonResponse
     {
         $response = $this->service->tableFieldsOperationsSaveWithoutExecuting($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

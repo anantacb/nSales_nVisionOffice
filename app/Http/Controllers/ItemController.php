@@ -21,19 +21,19 @@ class ItemController extends Controller
     public function getItems(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getItems($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function update(Update $request): JsonResponse
     {
         $response = $this->service->update($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

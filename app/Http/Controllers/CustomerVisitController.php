@@ -20,13 +20,13 @@ class CustomerVisitController extends Controller
     public function getCustomerVisits(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getCustomerVisits($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getDistinctValue(Request $request): JsonResponse
     {
         $response = $this->service->getDistinctValue($request->columnName);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

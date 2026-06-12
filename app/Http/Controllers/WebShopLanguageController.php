@@ -19,7 +19,7 @@ class WebShopLanguageController extends Controller
     public function getAllWebShopLanguages(Request $request): JsonResponse
     {
         $response = $this->service->getAllWebShopLanguages($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

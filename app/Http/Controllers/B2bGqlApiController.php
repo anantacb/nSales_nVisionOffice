@@ -20,7 +20,7 @@ class B2bGqlApiController extends Controller
     {
         try {
             $response = $this->service->getItemGroupsAndItem($request);
-            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+            return ApiResponseTransformer::respond($response);
         } catch (\Exception $e) {
             return ApiResponseTransformer::error("", $e->getMessage(), 400);
         }

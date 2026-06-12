@@ -20,6 +20,6 @@ class DocumentAPIController extends Controller
     public function getCompanyDocumentApi(Request $request): JsonResponse
     {
         $response = $this->service->getCompanyDocumentApi($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

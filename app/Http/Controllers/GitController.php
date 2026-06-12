@@ -20,7 +20,7 @@ class GitController extends Controller
     {
         try {
             $response = $this->service->getCompanyBranches($request);
-            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+            return ApiResponseTransformer::respond($response);
         } catch (\Exception $e) {
             return ApiResponseTransformer::error([], $e->getMessage(), $e->getCode());
         }
@@ -30,7 +30,7 @@ class GitController extends Controller
     {
         try {
             $response = $this->service->createCompanyBranches($request);
-            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+            return ApiResponseTransformer::respond($response);
         } catch (\Exception $e) {
             return ApiResponseTransformer::error([], $e->getMessage(), $e->getCode());
         }

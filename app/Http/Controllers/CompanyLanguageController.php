@@ -22,34 +22,30 @@ class CompanyLanguageController extends Controller
     public function getAllCompanyLanguages(Request $request): JsonResponse
     {
         $response = $this->service->getAllCompanyLanguages($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCompanyLanguages(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getCompanyLanguages($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        if ($response->statusCode == 200) {
-            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
-        } else {
-            return ApiResponseTransformer::error($response->data, $response->message, $response->statusCode);
-        }
+        return ApiResponseTransformer::respond($response);
     }
 
     public function addCompanyLanguage(AddCompanyLanguage $request): JsonResponse
     {
         $response = $this->service->addCompanyLanguage($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function setAsDefaultLanguage(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->setAsDefaultLanguage($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

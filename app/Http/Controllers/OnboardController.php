@@ -19,12 +19,12 @@ class OnboardController extends Controller
     public function getCompanyOnboardStatus(Request $request)
     {
         $response = $this->service->getCompanyOnboardStatus($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateCompanyOnboardStatus(Request $request)
     {
         $response = $this->service->updateCompanyOnboardStatus($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

@@ -19,7 +19,7 @@ class OrderByCustomerController extends Controller
     public function latestOrdersByCustomer(SalesOrDelete $request): JsonResponse
     {
         $response = $this->service->latestOrdersByCustomer($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

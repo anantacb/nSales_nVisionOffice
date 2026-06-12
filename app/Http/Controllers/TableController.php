@@ -24,58 +24,54 @@ class TableController extends Controller
     public function getTables(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getTables($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getDetails(DetailsOrDeleteTable $request): JsonResponse
     {
         $response = $this->service->getDetails($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getDetailsByName(DetailsByName $request): JsonResponse
     {
         $response = $this->service->getDetailsByName($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCreateTablePreview(CreateTable $request): JsonResponse
     {
         $response = $this->service->getCreateTablePreview($request);
-        if ($response->statusCode == 200) {
-            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
-        } else {
-            return ApiResponseTransformer::error($response->data, $response->message, $response->statusCode);
-        }
+        return ApiResponseTransformer::respond($response);
     }
 
     public function createTableSaveAndExecute(CreateTable $request): JsonResponse
     {
         $response = $this->service->createTableSaveAndExecute($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function createTableSaveWithoutExecuting(CreateTable $request): JsonResponse
     {
         $response = $this->service->createTableSaveWithoutExecuting($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(DetailsOrDeleteTable $request): JsonResponse
     {
         $response = $this->service->deleteTable($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function update(UpdateTable $request): JsonResponse
     {
         $response = $this->service->updateTable($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getByModule(Request $request): JsonResponse
     {
         $response = $this->service->getByModule($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

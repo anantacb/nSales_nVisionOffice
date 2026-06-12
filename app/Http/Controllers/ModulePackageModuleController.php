@@ -20,12 +20,12 @@ class ModulePackageModuleController extends Controller
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function create(Create $request): JsonResponse
     {
         $response = $this->service->create($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

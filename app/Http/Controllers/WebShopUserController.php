@@ -18,14 +18,14 @@ class WebShopUserController extends Controller
     public function details(Request $request)
     {
         $response = $this->service->details($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function createTestUser(Request $request)
     {
         try {
             $response = $this->service->createTestUser($request);
-            return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+            return ApiResponseTransformer::respond($response);
         } catch (\Exception $e) {
             return ApiResponseTransformer::error("", $e->getMessage(), 400);
         }

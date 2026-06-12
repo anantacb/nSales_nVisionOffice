@@ -18,18 +18,18 @@ class WebShopPageController extends Controller
     public function list(Request $request)
     {
         $response = $this->service->list($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function createPages(Request $request)
     {
         $response = $this->service->createPages($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function createPagesContentForMissingLanguages(Request $request)
     {
         $response = $this->service->createPagesContentForMissingLanguages($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }

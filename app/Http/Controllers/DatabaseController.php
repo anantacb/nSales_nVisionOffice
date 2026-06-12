@@ -20,13 +20,13 @@ class DatabaseController extends Controller
     public function getAllCompanies(Request $request): JsonResponse
     {
         $response = $this->service->getAllCompanies($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
     
     public function copyDBtoDev(CopyDB $request): JsonResponse
     {
         $response = $this->service->copyDBtoDevServer($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

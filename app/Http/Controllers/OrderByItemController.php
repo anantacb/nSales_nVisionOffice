@@ -19,25 +19,25 @@ class OrderByItemController extends Controller
     public function totalSalesYearlyByItem(SalesOrOrders $request): JsonResponse
     {
         $response = $this->service->totalSalesYearly($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function totalSalesMonthlyByItem(SalesOrOrders $request): JsonResponse
     {
         $response = $this->service->totalSalesMonthly($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function totalQuantityYearlyByItem(SalesOrOrders $request): JsonResponse
     {
         $response = $this->service->totalQuantityYearly($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function totalQuantityMonthlyByItem(SalesOrOrders $request): JsonResponse
     {
         $response = $this->service->totalQuantityMonthly($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

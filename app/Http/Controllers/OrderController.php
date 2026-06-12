@@ -21,43 +21,43 @@ class OrderController extends Controller
     public function getOrders(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getOrders($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getOpenOrders(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getOpenOrders($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getFailedOrders(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getFailedOrders($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getOrderOriginOptions(): JsonResponse
     {
         $response = $this->service->getOrderOriginOptions();
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function reExportOrder(ReExportOrExportPdf $request): JsonResponse
     {
         $response = $this->service->reExportOrder($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 }

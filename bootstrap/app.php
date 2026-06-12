@@ -1,5 +1,9 @@
 <?php
 
+use App\Exceptions\ApiExceptionHandler;
+use App\Http\Middleware\SetCompanyDatabaseConnection;
+use App\Http\Middleware\UserIsAdminOrDeveloper;
+use App\Http\Middleware\UserIsDeveloper;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -7,10 +11,9 @@ use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
-        apiPrefix: 'api',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(headers: Request::HEADER_X_FORWARDED_FOR
@@ -32,9 +35,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'company'            => \App\Http\Middleware\SetCompanyDatabaseConnection::class,
-            'developer'          => \App\Http\Middleware\UserIsDeveloper::class,
-            'admin-or-developer' => \App\Http\Middleware\UserIsAdminOrDeveloper::class,
+            'company' => SetCompanyDatabaseConnection::class,
+            'developer' => UserIsDeveloper::class,
+            'admin-or-developer' => UserIsAdminOrDeveloper::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -43,5 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password',
             'password_confirmation',
         ]);
+
+        $exceptions->render(fn(Throwable $e, Request $request) => ApiExceptionHandler::render($e, $request));
     })
     ->create();

@@ -24,55 +24,55 @@ class ModuleSettingController extends Controller
     public function getAllModuleSettingsByCompany(Request $request): JsonResponse
     {
         $response = $this->service->getAllModuleSettingsByCompanyId($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
 
     public function getModuleSettings(PaginatedDataRequest $request): JsonResponse
     {
         $response = $this->service->getModuleSettings($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getModuleSettingsByName(Request $request)
     {
         $response = $this->service->getModuleSettingsByName($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function getCoreModuleSettingsByName(CoreModuleSettings $request)
     {
         $response = $this->service->getCoreModuleSettingsByName($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function updateModuleSettingsByCompany(Request $request): JsonResponse
     {
         $response = $this->service->updateModuleSettingsByCompanyId($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function create(Create $request): JsonResponse
     {
         $response = $this->service->create($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function update(Update $request): JsonResponse
     {
         $response = $this->service->update($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function details(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->details($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
-        return ApiResponseTransformer::success($response->data, $response->message, $response->statusCode);
+        return ApiResponseTransformer::respond($response);
     }
 }
