@@ -41,7 +41,7 @@ class PermissionSeeder extends Seeder
         // Role-grantable permissions (IsDeveloperOnly = 0). Administrator bypasses implicitly;
         // other role-Types must hold the explicit grant.
         'roleGrantable' => [
-            ['module' => 'Order', 'permissions' => ['Order'],
+            ['module' => 'Order', 'permissions' => ['Order', 'OrderLine'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'Claim', 'permissions' => ['Claim'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
@@ -158,9 +158,9 @@ class PermissionSeeder extends Seeder
         $upsert = function (
             string $permissionName,
             string $action,
-            int $isDeveloperOnly,
-            ?int $moduleId,
-            ?int $applicationId
+            int    $isDeveloperOnly,
+            ?int   $moduleId,
+            ?int   $applicationId
         ) use (&$upserted): void {
             $aliases = "$permissionName.$action";
             $description = sprintf(

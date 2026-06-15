@@ -118,11 +118,16 @@ When the ENUM was applied, pre-existing `Role` rows with `Type` values outside t
 
 ### Seeder defaults
 
-The `RolePermissionBackfillSeeder` (Phase A) bootstraps `RolePermission` rows for the bypass Types only:
+Defaults are seeded in two layers (see **Phase A2** for the full model):
 
-- `Type='Developer'` → grant every Permission (including `IsDeveloperOnly=1`).
-- `Type='Administrator'` → grant every Permission where `IsDeveloperOnly=0`.
-- All other Types → no defaults. Each tenant configures their Manager/Employee/Client/etc. roles via the EditRole UI to match their business workflow.
+1. **`RolePermissionBackfillSeeder`** bootstraps `RolePermission` rows for the **bypass Types** on every existing role:
+   - `Type='Developer'` → grant every Permission (including `IsDeveloperOnly=1`).
+   - `Type='Administrator'` → grant every Permission where `IsDeveloperOnly=0`.
+   - It also strips any `IsDeveloperOnly=1` grant from non-Developer roles (data hygiene).
+
+2. **`DefaultRolePermissionSeeder`** owns the **DefaultRole templates** — `Role` rows with `CompanyId = NULL`, one per Type — and grants each Type a curated baseline permission set (Developer = all; Administrator = all role-grantable; the seven custom Types = curated, role-grantable-only slug lists). These templates are the source of truth that company roles are projected from.
+
+All other Types still have no *per-role* defaults beyond what their template projects; tenants further tailor each company role via the EditRole UI.
 
 ---
 
@@ -150,11 +155,12 @@ Throughout the rest of this runbook, "**slug**" means `Permission.Aliases`. The 
 | Area | Status | Open work |
 |---|---|---|
 | Schema | ✅ Done | None. `RolePermission` has Id/timestamps/unique; `Permission` has `Description`/`IsDeveloperOnly`; `Role.Type` is ENUM-constrained; `CompanyUserRolePermission` dropped. |
-| Phase A — Models + seeders | ⏳ Not started | `Permission` model, `RolePermission` pivot, `Role::permissions()` relation, both seeders. **Catalog is empty** — `PermissionSeeder` is the unblocking step. |
-| Phase B — Service/repo/controller/routes | ⏳ Not started | Three endpoints (`/permissions/list`, `/role/permissions`, `/role/permissions/sync`) + supporting classes. |
-| Phase C — `UserHasPermission` middleware | ⏳ Not started | New middleware + alias in `bootstrap/app.php`. Legacy `developer` / `admin-or-developer` stay untouched. |
-| Phase D — Auth response + frontend wiring | ⏳ Not started | `CompanyService::getAuthUserCompanies` to include `permissions[]`; `authStore`, `companyStore`, `useCheckAccess`, router, `BaseNavigation.vue`. |
-| Phase E — `EditRole.vue` permission grid | ⏳ Not started | New grid UI in the existing edit view; `resources/js/models/Office/Permission.js`. |
+| Phase A — Models + seeders | ✅ Done | `Permission` + `RolePermission` models, `Role::permissions()`, `PermissionSeeder`, `RolePermissionBackfillSeeder`, `DefaultRolePermissionSeeder` all exist. `User::hasPermission()` still pending (Phase C). |
+| Phase A2 — DefaultRole templates → company-role projection | ⏳ Planned | Catalog reconciliation (`OrderLine.*`); two artisan commands (backfill + top-up); `CompanyService::createRoles` to copy template grants. **This is the current focus.** |
+| Phase B — Service/repo/controller/routes | ✅ Done | `PermissionService`, both repositories, `PermissionController`, request classes, and the three routes are in place. A `DefaultRole` template-management feature (controller/service/requests/frontend) was added on top. |
+| Phase C — `UserHasPermission` middleware | ⏳ Not started | New middleware + `permission` alias in `bootstrap/app.php` (not yet registered). `User::hasPermission()` helper. Legacy `developer` / `admin-or-developer` stay untouched. |
+| Phase D — Auth response + frontend wiring | ⏳ Partial | `Permission.js` model + `components/permission/` exist. Still need: `CompanyService::getAuthUserCompanies` `permissions[]`; `authStore`/`companyStore`/`useCheckAccess`/router/`BaseNavigation.vue`. |
+| Phase E — `EditRole.vue` permission grid | ⏳ Partial | `RolePermissionsBlock.vue` exists; wiring/UX unverified. |
 | Phase F — Cache invalidation + legacy migration | ⏳ Not started | Sync-time cache flush; incremental route migration off `developer` middleware. |
 
 ---
@@ -259,6 +265,87 @@ Administrator bypass applies; can also be granted explicitly to any custom role 
 - `RolePermission` exists with the unique index.
 - Running both seeders idempotently leaves the row counts unchanged on the second run.
 - Each existing Developer role has full permission coverage (including `IsDeveloperOnly=1`). Each existing Administrator role has full coverage of the role-grantable subset only (`IsDeveloperOnly=0`).
+
+---
+
+## Phase A2 — DefaultRole templates → company-role projection
+
+**Goal:** make every company role inherit the permission baseline of its DefaultRole template, both for existing companies (a one-off backfill) and going forward (on company creation + an incremental top-up when a template changes).
+
+### Model
+
+- A **DefaultRole template** is a `Role` row with `CompanyId = NULL`. There is exactly one per `Type` (`firstOrCreate` on `(Type, CompanyId=NULL)` in `DefaultRolePermissionSeeder`). It carries the curated baseline grants for that Type.
+- A **company role** is a `Role` row with `CompanyId = <id>`. Created by `CompanyService::createRoles` cloning the templates into the new company.
+- **There is no `DefaultRoleId` foreign key.** A company role is matched back to its template purely by **`Role.Type`**. All company roles sharing a Type are projected from that Type's single template.
+
+### The gap this phase closes
+
+`CompanyService::createRoles` (`app/Services/Company/CompanyService.php:419`) clones each template into a company copying only `Name/Type/Description` — it does **not** copy the template's `RolePermission` rows. So today every company role has zero permissions, and the baseline granted to templates by `DefaultRolePermissionSeeder` never reaches actual users. Projection (below) plus a `createRoles` fix close this.
+
+### Projection semantics
+
+- **Additive only.** Projection uses `insertOrIgnore` against `UNIQUE(RoleId, PermissionId)` — it grants any template permission the company role is missing and **never removes** existing grants. Manual edits made in the EditRole UI are preserved. (A `--prune` full-sync flag can be added later if a hard reset is ever needed.)
+- **Dev-only safety is inherited from the templates.** The Developer template holds all permissions (incl. `IsDeveloperOnly=1`); non-Developer templates exclude dev-only slugs (enforced by `DefaultRolePermissionSeeder`). Projecting from a template therefore cannot leak a dev-only grant onto a non-Developer company role.
+- Multiple same-Type roles in one company all receive that Type's baseline, then diverge via EditRole.
+
+### Catalog reconciliation (step 1)
+
+`DefaultRolePermissionSeeder` grants `OrderLine.{Create,Read,Update,Delete}`, but `PermissionSeeder` defines no `OrderLine` resource — those grants are silently skipped today. Add `OrderLine` to the existing Order entry so the slugs exist (ModuleId resolves via `Module.Name = 'Order'`, per the slug-vs-module convention):
+
+```php
+['module' => 'Order', 'permissions' => ['Order', 'OrderLine'], 'actions' => ['Create','Read','Update','Delete']],
+```
+
+This is the only referenced-but-missing slug; reconcile it so re-running the seeders reports no "unknown slug" warnings.
+
+### New repository primitives — `RolePermissionRepository` (+ interface)
+
+Alongside the existing `syncForRole()` (full replace), add two additive primitives reused by both the commands and the `createRoles` fix:
+
+- `permissionIdsForRole(int $roleId): array` — granted `PermissionId`s for a role.
+- `grantMissing(int $roleId, array $permissionIds): int` — `DB::table('RolePermission')->insertOrIgnore(...)` with `InsertTime/UpdateTime`; returns rows inserted. Idempotent via the unique index.
+
+### Shared projector — `app/Services/DefaultRole/DefaultRolePermissionProjector.php` (new)
+
+A DI service (injects `RoleRepositoryInterface` + `RolePermissionRepositoryInterface`) so both commands stay thin and the traversal isn't duplicated:
+
+```php
+project(?array $types, ?array $companyIds, ?array $permissionSlugs, bool $dryRun): array  // report
+```
+
+- Loads templates (`CompanyId IS NULL`) keyed by Type, each with its `permissionIdsForRole()`.
+- For each requested Type (or all): takes the template's permission IDs, optionally narrowed to `permissionSlugs` the template actually holds (slug→Id via `Permission.Aliases`).
+- Loads company roles (`CompanyId NOT NULL`) of that Type, optionally filtered by `companyIds`, and `grantMissing()` each (or counts the delta when `dryRun`).
+- Returns a report: roles processed, grants inserted, Types skipped (no template), unknown slugs.
+
+### Two artisan commands — `app/Console/Commands/Permission/`
+
+Styled after the existing `*ToCompanies` commands (`app/Console/Commands/AddModuleToCompanies.php`); Laravel auto-discovers them.
+
+- **Backfill (step 3)** — `permissions:backfill-from-default-roles {--companyId=*} {--dry-run}` → `project(types:null, companyIds, slugs:null, dryRun)`. Projects every Type's template onto all matching company roles. Run once to seed existing tenants.
+- **Top-up (step 4)** — `permissions:topup-from-default-roles {--type=*} {--permission=*} {--companyId=*} {--dry-run}` → `project(types, companyIds, slugs, dryRun)`. Run after a template gains a permission, e.g. `--type=Employee --permission=Order.Read`, to propagate just that grant to all matching company roles.
+
+Both are additive and idempotent; `--dry-run` reports the delta without writing.
+
+### Company-creation propagation — `CompanyService::createRoles`
+
+Inject `RolePermissionRepositoryInterface` into `CompanyService` and, right after creating each cloned `$newRole`, copy the source template's grants:
+
+```php
+$this->rolePermissionRepository->grantMissing(
+    $newRole->Id,
+    $this->rolePermissionRepository->permissionIdsForRole($role->Id)
+);
+```
+
+This reuses the same primitive as the commands, so a freshly created company is identical to one that was created empty and then backfilled — no separate command run needed for new companies.
+
+### Exit criteria
+
+- After catalog reconciliation, re-running `PermissionSeeder` + `DefaultRolePermissionSeeder` reports no "unknown slug" warnings (`OrderLine.*` resolves).
+- `permissions:backfill-from-default-roles` grants each company role its template's baseline; a second run inserts `0` (idempotent); `--dry-run` writes nothing.
+- `permissions:topup-from-default-roles --type=X --permission=Y` adds only `Y` to Type-`X` company roles whose template holds it.
+- A newly created company's roles carry their template grants without any command run.
 
 ---
 
@@ -631,11 +718,17 @@ Once every route is moved off the two legacy middleware:
 - `app/Http/Middleware/UserHasPermission.php`
 - `database/seeders/PermissionSeeder.php`
 - `database/seeders/RolePermissionBackfillSeeder.php`
+- `database/seeders/DefaultRolePermissionSeeder.php` — DefaultRole templates + baseline grants (Phase A2).
+- `app/Services/DefaultRole/DefaultRolePermissionProjector.php` — template→company-role projector (Phase A2).
+- `app/Console/Commands/Permission/BackfillRolePermissionsFromDefaults.php` — `permissions:backfill-from-default-roles` (Phase A2).
+- `app/Console/Commands/Permission/TopUpRolePermissionsFromDefaults.php` — `permissions:topup-from-default-roles` (Phase A2).
 
 **Modified (backend):**
 - `app/Models/Office/Role.php` — add `permissions()` relation.
 - `app/Models/Office/User.php` — add `hasPermission()` helper.
+- `app/Repositories/Eloquent/Office/RolePermission/RolePermissionRepository.php` (+ interface) — `permissionIdsForRole()`, additive `grantMissing()` (Phase A2).
 - `app/Providers/{ServiceServiceProvider.php,RepositoryServiceProvider.php}` — register bindings.
+- `app/Services/Company/CompanyService.php::createRoles` — copy template `RolePermission` grants into cloned company roles (Phase A2).
 - `app/Services/Company/CompanyService.php::getAuthUserCompanies` — include `permissions[]` per company.
 - `app/Services/User/UserService.php::syncCompanyUserRoles` — flush access cache after sync.
 - `bootstrap/app.php` — register `permission` alias.
