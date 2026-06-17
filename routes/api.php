@@ -72,89 +72,200 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 });
 
 Route::middleware(['auth:api'])->group(function () {
-    // Table
-    Route::middleware(['developer'])->post('/tables', [TableController::class, 'getTables']);
-    Route::middleware(['developer'])->post('/table/details', [TableController::class, 'getDetails']);
+
+    /*
+    |----------------------------------------------------------------------
+    | Developer-only routes (platform / schema / global catalog operations)
+    |----------------------------------------------------------------------
+    */
+    Route::middleware(['role:Developer'])->group(function () {
+        // Table
+        Route::post('/tables', [TableController::class, 'getTables']);
+        Route::post('/table/details', [TableController::class, 'getDetails']);
+        Route::post('/table/delete', [TableController::class, 'delete']);
+        Route::post('/table/update', [TableController::class, 'update']);
+        Route::post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
+        Route::post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
+        Route::post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
+
+        // TableField
+        Route::post('/table-fields', [TableFieldController::class, 'getTableFields']);
+        Route::post('/table-fields-operation-sql-previews', [TableFieldController::class, 'tableFieldsOperationPreviews']);
+        Route::post('/table-fields-operations-save-without-executing', [TableFieldController::class, 'tableFieldsOperationsSaveWithoutExecuting']);
+        Route::post('/table-fields-operations-save-and-execute', [TableFieldController::class, 'tableFieldsOperationsSaveAndExecute']);
+
+        // TableIndex
+        Route::post('/table-indices', [TableIndexController::class, 'getTableIndices']);
+        Route::post('/table-indices-operation-sql-previews', [TableIndexController::class, 'tableIndicesOperationPreviews']);
+        Route::post('/table-indices-operations-save-without-executing', [TableIndexController::class, 'tableIndicesOperationsSaveWithoutExecuting']);
+        Route::post('/table-indices-operations-save-and-execute', [TableIndexController::class, 'tableIndicesOperationsSaveAndExecute']);
+
+        // Module
+        Route::post('/modules', [ModuleController::class, 'getModules']);
+        Route::post('/module/create', [ModuleController::class, 'create']);
+        Route::post('/module/update', [ModuleController::class, 'update']);
+        Route::post('/module/details', [ModuleController::class, 'details']);
+        Route::post('/module/delete', [ModuleController::class, 'delete']);
+        Route::post('/module/activate-module', [ModuleController::class, 'activateModule']);
+        Route::post('/module/deactivate-module', [ModuleController::class, 'deactivateModule']);
+        Route::post('/module/get-assignable-modules-by-application', [ModuleController::class, 'getAssignableModulesByApplication']);
+        Route::post('/module/get-assignable-modules-by-module-package', [ModuleController::class, 'getAssignableModulesByModulePackage']);
+
+        // ApplicationModule
+        Route::post('/application-module/create', [ApplicationModuleController::class, 'create']);
+        Route::post('/application-module/delete', [ApplicationModuleController::class, 'delete']);
+        Route::post('/application-module/update', [ApplicationModuleController::class, 'update']);
+
+        // ModulePackageModule
+        Route::post('/module-package-module/delete', [ModulePackageModuleController::class, 'delete']);
+        Route::post('/module-package-module/create', [ModulePackageModuleController::class, 'create']);
+
+        // ModuleSetting
+        Route::post('/module-settings', [ModuleSettingController::class, 'getModuleSettings']);
+        Route::post('/module-setting/create', [ModuleSettingController::class, 'create']);
+        Route::post('/module-setting/update', [ModuleSettingController::class, 'update']);
+        Route::post('/module-setting/delete', [ModuleSettingController::class, 'delete']);
+        Route::post('/module-setting/details', [ModuleSettingController::class, 'details']);
+
+        // Company
+        Route::post('/companies', [CompanyController::class, 'getCompanies']);
+        Route::post('/company/create', [CompanyController::class, 'create']);
+        Route::post('/company/clone-company', [CompanyController::class, 'cloneCompany']);
+        Route::post('/company/update', [CompanyController::class, 'update']);
+        Route::post('/company/details', [CompanyController::class, 'details']);
+        Route::post('/company/delete', [CompanyController::class, 'delete']);
+
+        // Application
+        Route::post('/applications', [ApplicationController::class, 'getApplications']);
+        Route::post('/application/create', [ApplicationController::class, 'create']);
+        Route::post('/application/update', [ApplicationController::class, 'update']);
+        Route::post('/application/delete', [ApplicationController::class, 'delete']);
+        Route::post('/application/details', [ApplicationController::class, 'details']);
+
+        // ModulePackage
+        Route::post('/module-packages/all', [ModulePackageController::class, 'getAllModulePackages']);
+        Route::post('/module-packages', [ModulePackageController::class, 'getModulePackages']);
+        Route::post('/module-package/create', [ModulePackageController::class, 'create']);
+        Route::post('/module-package/update', [ModulePackageController::class, 'update']);
+        Route::post('/module-package/delete', [ModulePackageController::class, 'delete']);
+        Route::post('/module-package/details', [ModulePackageController::class, 'details']);
+
+        // Language
+        Route::post('/languages/all', [LanguageController::class, 'getAllLanguages']);
+        Route::post('/languages', [LanguageController::class, 'getLanguages']);
+        Route::post('/language/create', [LanguageController::class, 'create']);
+        Route::post('/language/update', [LanguageController::class, 'update']);
+        Route::post('/language/delete', [LanguageController::class, 'delete']);
+        Route::post('/language/details', [LanguageController::class, 'details']);
+
+        // Translation
+        Route::post('/translations', [TranslationController::class, 'getTranslations']);
+        Route::post('/translation/create', [TranslationController::class, 'create']);
+        Route::post('/translation/update', [TranslationController::class, 'update']);
+        Route::post('/translation/delete', [TranslationController::class, 'delete']);
+        Route::post('/translation/details', [TranslationController::class, 'details']);
+        Route::post('/translations/sync', [TranslationController::class, 'sync']);
+
+        // EmailConfiguration
+        Route::post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);
+        Route::post('/email-configuration/create', [EmailConfigurationController::class, 'create']);
+        Route::post('/email-configuration/update', [EmailConfigurationController::class, 'update']);
+        Route::post('/email-configuration/delete', [EmailConfigurationController::class, 'delete']);
+        Route::post('/email-configuration/details', [EmailConfigurationController::class, 'details']);
+
+        // DataFilter (mutations)
+        Route::post('/data-filter/create', [DataFilterController::class, 'create']);
+        Route::post('/data-filter/update', [DataFilterController::class, 'update']);
+        Route::post('/data-filter/delete', [DataFilterController::class, 'delete']);
+
+        // Permission CRUD
+        Route::post('/permissions', [PermissionController::class, 'getPermissions']);
+        Route::post('/permission/create', [PermissionController::class, 'create']);
+        Route::post('/permission/update', [PermissionController::class, 'update']);
+        Route::post('/permission/details', [PermissionController::class, 'details']);
+        Route::post('/permission/delete', [PermissionController::class, 'delete']);
+
+        // Default (template) Role (mutations)
+        Route::post('/default-role/create', [DefaultRoleController::class, 'create']);
+        Route::post('/default-role/update', [DefaultRoleController::class, 'update']);
+        Route::post('/default-role/delete', [DefaultRoleController::class, 'delete']);
+        Route::post('/default-role/permissions/sync', [DefaultRoleController::class, 'syncToCompanyRoles']);
+        Route::post('/default-roles/permissions/sync-all', [DefaultRoleController::class, 'syncAllToCompanyRoles']);
+
+        // Theme
+        Route::post('/themes', [ThemeController::class, 'getThemes']);
+        Route::post('/themes/trigger-build/{themeId}', [ThemeController::class, 'triggerBuild']);
+        Route::post('/company-theme', [ThemeController::class, 'getCompanyTheme']);
+
+        // Email Layout (global / developer-managed)
+        Route::prefix('email-layout')->group(function () {
+            Route::post('/get-email-layouts', [EmailLayoutController::class, 'getEmailLayouts']);
+            Route::post('/create', [EmailLayoutController::class, 'create']);
+            Route::post('/details', [EmailLayoutController::class, 'details']);
+            Route::post('/update', [EmailLayoutController::class, 'update']);
+            Route::post('/delete', [EmailLayoutController::class, 'delete']);
+            Route::post('/get-data-for-preview', [EmailLayoutController::class, 'getDataForPreview']);
+            Route::post('/get-email-layout-options-by-language', [EmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
+            Route::post('/get-preview-template-object', [EmailLayoutController::class, 'getPreviewTemplateObject']);
+        });
+
+        // Email Template (global / developer-managed)
+        Route::prefix('email-template')->group(function () {
+            Route::post('/get-email-templates', [EmailTemplateController::class, 'getEmailTemplates']);
+            Route::post('/create', [EmailTemplateController::class, 'create']);
+            Route::post('/details', [EmailTemplateController::class, 'details']);
+            Route::post('/update', [EmailTemplateController::class, 'update']);
+            Route::post('/delete', [EmailTemplateController::class, 'delete']);
+            Route::post('/get-email-events', [EmailTemplateController::class, 'getEmailEvents']);
+            Route::post('/get-data-for-preview', [EmailTemplateController::class, 'getDataForPreview']);
+        });
+    });
+
+    /*
+    |----------------------------------------------------------------------
+    | Permission management (Developer or Administrator)
+    |----------------------------------------------------------------------
+    */
+    Route::middleware(['role:Developer,Administrator'])->post('/role/permissions/sync', [PermissionController::class, 'syncRolePermissions']);
+
+    /*
+    |----------------------------------------------------------------------
+    | Shared authenticated routes (no role gate)
+    |----------------------------------------------------------------------
+    */
+    // Table (shared)
     Route::post('/table/details-by-name', [TableController::class, 'getDetailsByName']);
-    Route::middleware(['developer'])->post('/table/delete', [TableController::class, 'delete']);
-    Route::middleware(['developer'])->post('/table/update', [TableController::class, 'update']);
     Route::post('/table/get-by-module', [TableController::class, 'getByModule']);
-    Route::middleware(['developer'])->post('/create-table-preview-sql', [TableController::class, 'getCreateTablePreview']);
-    Route::middleware(['developer'])->post('/create-table-save-and-execute', [TableController::class, 'createTableSaveAndExecute']);
-    Route::middleware(['developer'])->post('/create-table-save-without-executing', [TableController::class, 'createTableSaveWithoutExecuting']);
 
-    // TableField
-    Route::middleware(['developer'])->post('/table-fields', [TableFieldController::class, 'getTableFields']);
-    Route::middleware(['developer'])->post('/table-fields-operation-sql-previews', [TableFieldController::class, 'tableFieldsOperationPreviews']);
-    Route::middleware(['developer'])->post('/table-fields-operations-save-without-executing', [TableFieldController::class, 'tableFieldsOperationsSaveWithoutExecuting']);
-    Route::middleware(['developer'])->post('/table-fields-operations-save-and-execute', [TableFieldController::class, 'tableFieldsOperationsSaveAndExecute']);
-
+    // TableField (shared)
     Route::post('/general-table-fields', [TableFieldController::class, 'getGeneralTableFields']);
     Route::post('/company-specific-table-fields', [TableFieldController::class, 'getCompanySpecificTableFields']);
     Route::post('/company-all-table-fields', [TableFieldController::class, 'getCompanyAllTableFields']);
 
-    // TableIndex
-    Route::middleware(['developer'])->post('/table-indices', [TableIndexController::class, 'getTableIndices']);
-    Route::middleware(['developer'])->post('/table-indices-operation-sql-previews', [TableIndexController::class, 'tableIndicesOperationPreviews']);
-    Route::middleware(['developer'])->post('/table-indices-operations-save-without-executing', [TableIndexController::class, 'tableIndicesOperationsSaveWithoutExecuting']);
-    Route::middleware(['developer'])->post('/table-indices-operations-save-and-execute', [TableIndexController::class, 'tableIndicesOperationsSaveAndExecute']);
-
-    // Module
-    Route::middleware(['developer'])->post('/modules', [ModuleController::class, 'getModules']);
-    Route::middleware(['developer'])->post('/module/create', [ModuleController::class, 'create']);
-    Route::middleware(['developer'])->post('/module/update', [ModuleController::class, 'update']);
-    Route::middleware(['developer'])->post('/module/details', [ModuleController::class, 'details']);
-    Route::middleware(['developer'])->post('/module/delete', [ModuleController::class, 'delete']);
+    // Module (shared)
     Route::post('/module/all', [ModuleController::class, 'getAllModules']);
     Route::post('/module/get-activated-and-available-modules-by-company', [ModuleController::class, 'getActivatedAndAvailableModulesByCompany']);
     Route::post('/module/get-activated-modules-by-company', [ModuleController::class, 'getActivatedModulesByCompany']);
-    Route::middleware(['developer'])->post('/module/activate-module', [ModuleController::class, 'activateModule']);
-    Route::middleware(['developer'])->post('/module/deactivate-module', [ModuleController::class, 'deactivateModule']);
     Route::post('/module/get-by-application', [ModuleController::class, 'getModulesByApplication']);
-    Route::middleware(['developer'])->post('/module/get-assignable-modules-by-application', [ModuleController::class, 'getAssignableModulesByApplication']);
-    Route::middleware(['developer'])->post('/module/get-assignable-modules-by-module-package', [ModuleController::class, 'getAssignableModulesByModulePackage']);
 
-    // ApplicationModule
-    Route::middleware(['developer'])->post('/application-module/create', [ApplicationModuleController::class, 'create']);
-    Route::middleware(['developer'])->post('/application-module/delete', [ApplicationModuleController::class, 'delete']);
-    Route::middleware(['developer'])->post('/application-module/update', [ApplicationModuleController::class, 'update']);
-
-    // ModulePackageModule
-    Route::middleware(['developer'])->post('/module-package-module/delete', [ModulePackageModuleController::class, 'delete']);
-    Route::middleware(['developer'])->post('/module-package-module/create', [ModulePackageModuleController::class, 'create']);
-
-    // ModuleSetting
-    Route::middleware(['developer'])->post('/module-settings', [ModuleSettingController::class, 'getModuleSettings']);
-    Route::middleware(['developer'])->post('/module-setting/create', [ModuleSettingController::class, 'create']);
-    Route::middleware(['developer'])->post('/module-setting/update', [ModuleSettingController::class, 'update']);
-    Route::middleware(['developer'])->post('/module-setting/delete', [ModuleSettingController::class, 'delete']);
-    Route::middleware(['developer'])->post('/module-setting/details', [ModuleSettingController::class, 'details']);
+    // ModuleSetting (shared)
     Route::post('/module-setting/all-by-company', [ModuleSettingController::class, 'getAllModuleSettingsByCompany']);
     Route::post('/module-setting/update-by-company', [ModuleSettingController::class, 'updateModuleSettingsByCompany']);
     Route::post('/module-setting/by-name', [ModuleSettingController::class, 'getModuleSettingsByName']);
     Route::post('/module-setting/core-settings-by-name', [ModuleSettingController::class, 'getCoreModuleSettingsByName']);
 
+    // Database
     Route::post('/get-all-companies-with-db', [DatabaseController::class, 'getAllCompanies']);
     Route::post('/copy-db-to-dev', [DatabaseController::class, 'copyDBtoDev']);
 
-    // Company
-    Route::middleware(['developer'])->post('/companies', [CompanyController::class, 'getCompanies']);
-    Route::middleware(['developer'])->post('/company/create', [CompanyController::class, 'create']);
-    Route::middleware(['developer'])->post('/company/clone-company', [CompanyController::class, 'cloneCompany']);
-    Route::middleware(['developer'])->post('/company/update', [CompanyController::class, 'update']);
-    Route::middleware(['developer'])->post('/company/details', [CompanyController::class, 'details']);
-    Route::middleware(['developer'])->post('/company/delete', [CompanyController::class, 'delete']);
-
+    // Company (shared)
     Route::post('/company/all', [CompanyController::class, 'getAllCompanies']);
     Route::post('/auth-user-companies', [CompanyController::class, 'getAuthUserCompanies']);
-
     Route::post('/company/by-module-enabled', [CompanyController::class, 'getModuleEnabledCompanies']);
     Route::post('/company/assignable-companies-by-user', [CompanyController::class, 'getAssignableCompaniesByUser']);
-
     Route::post('/company/custom-domain/get', [CompanyController::class, 'getCompanyCustomDomains']);
     Route::post('/company/custom-domain/add', [CompanyController::class, 'addCompanyCustomDomain']);
     Route::post('/company/custom-domain/delete', [CompanyController::class, 'deleteCompanyCustomDomain']);
-
     Route::post('/company/postmark-server/get', [CompanyController::class, 'getPostmarkServer']);
     Route::post('/company/postmark-server/add', [CompanyController::class, 'createPostmarkServer']);
 
@@ -163,19 +274,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/table-helper/get-enum-values', [TableHelperController::class, 'getEnumValues']);
     Route::post('/table-helper/get-column-distinct-values', [TableHelperController::class, 'getColumnDistinctValues']);
 
-    // Role
-    Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
-
     // User
     Route::post('/users', [UserController::class, 'getUsers']);
     Route::post('/user/details', [UserController::class, 'details']);
     Route::post('/user/update', [UserController::class, 'update']);
     Route::post('/user/delete', [UserController::class, 'delete']);
     Route::post('/user/assign-to-company', [UserController::class, 'assignToCompany']);
-
     Route::post('/users/developers', [UserController::class, 'getDevelopers']);
     Route::post('/users/developer/tag-developer-to-all-companies', [UserController::class, 'tagDeveloperToAllCompanies']);
-
     Route::post('/users/company-users', [UserController::class, 'getCompanyUsers']);
     Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);
     Route::post('/users/company-user/update', [UserController::class, 'updateCompanyUser']);
@@ -183,155 +289,77 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/users/company-user/update-initials', [UserController::class, 'updateCompanyUserInitials']);
     Route::post('/users/company-user/delete', [UserController::class, 'deleteCompanyUser']);
     Route::post('/users/company-user/details', [UserController::class, 'companyUserDetails']);
-
     Route::post('/users/get-all-company-users', [UserController::class, 'getAllCompanyUsers']);
 
-    // Application
+    // Application (shared)
     Route::post('/applications/all', [ApplicationController::class, 'getAllApplications']);
-    Route::middleware(['developer'])->post('/applications', [ApplicationController::class, 'getApplications']);
-    Route::middleware(['developer'])->post('/application/create', [ApplicationController::class, 'create']);
-    Route::middleware(['developer'])->post('/application/update', [ApplicationController::class, 'update']);
-    Route::middleware(['developer'])->post('/application/delete', [ApplicationController::class, 'delete']);
-    Route::middleware(['developer'])->post('/application/details', [ApplicationController::class, 'details']);
 
-    // ModulePackage
-    Route::middleware(['developer'])->post('/module-packages/all', [ModulePackageController::class, 'getAllModulePackages']);
-    Route::middleware(['developer'])->post('/module-packages', [ModulePackageController::class, 'getModulePackages']);
-    Route::middleware(['developer'])->post('/module-package/create', [ModulePackageController::class, 'create']);
-    Route::middleware(['developer'])->post('/module-package/update', [ModulePackageController::class, 'update']);
-    Route::middleware(['developer'])->post('/module-package/delete', [ModulePackageController::class, 'delete']);
-    Route::middleware(['developer'])->post('/module-package/details', [ModulePackageController::class, 'details']);
-
-    // Language
-    Route::middleware(['developer'])->post('/languages/all', [LanguageController::class, 'getAllLanguages']);
-    Route::middleware(['developer'])->post('/languages', [LanguageController::class, 'getLanguages']);
-    Route::middleware(['developer'])->post('/language/create', [LanguageController::class, 'create']);
-    Route::middleware(['developer'])->post('/language/update', [LanguageController::class, 'update']);
-    Route::middleware(['developer'])->post('/language/delete', [LanguageController::class, 'delete']);
-    Route::middleware(['developer'])->post('/language/details', [LanguageController::class, 'details']);
-
-    // Translation
-    Route::middleware(['developer'])->post('/translations', [TranslationController::class, 'getTranslations']);
-    Route::middleware(['developer'])->post('/translation/create', [TranslationController::class, 'create']);
-    Route::middleware(['developer'])->post('/translation/update', [TranslationController::class, 'update']);
-    Route::middleware(['developer'])->post('/translation/delete', [TranslationController::class, 'delete']);
-    Route::middleware(['developer'])->post('/translation/details', [TranslationController::class, 'details']);
-    Route::middleware(['developer'])->post('/translations/sync', [TranslationController::class, 'sync']);
-
-    // EmailConfiguration
-    Route::middleware(['developer'])->post('/email-configurations', [EmailConfigurationController::class, 'getEmailConfigurations']);
+    // EmailConfiguration (shared)
     Route::post('/email-configurations/company-email-configurations', [EmailConfigurationController::class, 'getCompanyEmailConfigurations']);
-    Route::middleware(['developer'])->post('/email-configuration/create', [EmailConfigurationController::class, 'create']);
-    Route::middleware(['developer'])->post('/email-configuration/update', [EmailConfigurationController::class, 'update']);
-    Route::middleware(['developer'])->post('/email-configuration/delete', [EmailConfigurationController::class, 'delete']);
-    Route::middleware(['developer'])->post('/email-configuration/details', [EmailConfigurationController::class, 'details']);
 
-    // DataFilter
+    // DataFilter (shared)
     Route::post('/data-filters', [DataFilterController::class, 'getDataFilters']);
-    Route::middleware(['developer'])->post('/data-filter/create', [DataFilterController::class, 'create']);
-    Route::middleware(['developer'])->post('/data-filter/update', [DataFilterController::class, 'update']);
     Route::post('/data-filter/details', [DataFilterController::class, 'details']);
-    Route::middleware(['developer'])->post('/data-filter/delete', [DataFilterController::class, 'delete']);
-
     Route::post('/data-filters/company-data-filters', [DataFilterController::class, 'getCompanyDataFilters']);
     Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);
 
     // Role
+    Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
     Route::post('/roles/company-roles', [RoleController::class, 'getCompanyRoles']);
     Route::post('/role/create', [RoleController::class, 'create']);
     Route::post('/role/update', [RoleController::class, 'update']);
     Route::post('/role/delete', [RoleController::class, 'delete']);
     Route::post('/role/details', [RoleController::class, 'details']);
 
-    // Permission
+    // Permission (shared)
     Route::post('/permissions/list', [PermissionController::class, 'listAll']);
     Route::post('/role/permissions', [PermissionController::class, 'getRolePermissions']);
-    Route::middleware(['admin-or-developer'])->post('/role/permissions/sync', [PermissionController::class, 'syncRolePermissions']);
 
-    // Permission CRUD (developer-only)
-    Route::middleware(['developer'])->post('/permissions', [PermissionController::class, 'getPermissions']);
-    Route::middleware(['developer'])->post('/permission/create', [PermissionController::class, 'create']);
-    Route::middleware(['developer'])->post('/permission/update', [PermissionController::class, 'update']);
-    Route::middleware(['developer'])->post('/permission/details', [PermissionController::class, 'details']);
-    Route::middleware(['developer'])->post('/permission/delete', [PermissionController::class, 'delete']);
-
-    // Default (template) Role
+    // Default (template) Role (shared reads)
     Route::post('/default-roles/list', [DefaultRoleController::class, 'getDefaultRoles']);
     Route::post('/default-role/details', [DefaultRoleController::class, 'details']);
-    Route::middleware(['developer'])->post('/default-role/create', [DefaultRoleController::class, 'create']);
-    Route::middleware(['developer'])->post('/default-role/update', [DefaultRoleController::class, 'update']);
-    Route::middleware(['developer'])->post('/default-role/delete', [DefaultRoleController::class, 'delete']);
-
-    // Theme
-    Route::post('/themes', [ThemeController::class, 'getThemes']);
-    Route::post('/themes/trigger-build/{themeId}', [ThemeController::class, 'triggerBuild']);
-    // Company theme
-    Route::post('/company-theme', [ThemeController::class, 'getCompanyTheme']);
-
-    Route::prefix('email-layout')->group(function () {
-        // Email Layout
-        Route::post('/get-email-layouts', [EmailLayoutController::class, 'getEmailLayouts']);
-        Route::post('/create', [EmailLayoutController::class, 'create']);
-        Route::post('/details', [EmailLayoutController::class, 'details']);
-        Route::post('/update', [EmailLayoutController::class, 'update']);
-        Route::post('/delete', [EmailLayoutController::class, 'delete']);
-        Route::post('/get-data-for-preview', [EmailLayoutController::class, 'getDataForPreview']);
-        Route::post('/get-email-layout-options-by-language', [EmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
-        Route::post('/get-preview-template-object', [EmailLayoutController::class, 'getPreviewTemplateObject']);
-    });
-
-    Route::prefix('email-template')->group(function () {
-        // Email Template
-        Route::post('/get-email-templates', [EmailTemplateController::class, 'getEmailTemplates']);
-        Route::post('/create', [EmailTemplateController::class, 'create']);
-        Route::post('/details', [EmailTemplateController::class, 'details']);
-        Route::post('/update', [EmailTemplateController::class, 'update']);
-        Route::post('/delete', [EmailTemplateController::class, 'delete']);
-        Route::post('/get-email-events', [EmailTemplateController::class, 'getEmailEvents']);
-        Route::post('/get-data-for-preview', [EmailTemplateController::class, 'getDataForPreview']);
-    });
 
     Route::post('/cache-clear', [HomeController::class, 'cacheClear']);
 
     Route::middleware(['company'])->group(function () {
         // Order
-        Route::post('/orders', [OrderController::class, 'getOrders']);
-        Route::post('/open-orders', [OrderController::class, 'getOpenOrders']);
-        Route::post('/failed-orders', [OrderController::class, 'getFailedOrders']);
-        Route::post('/order/details', [OrderController::class, 'details']);
-        Route::post('/order/delete', [OrderController::class, 'delete']);
-        Route::post('/order/origins-get', [OrderController::class, 'getOrderOriginOptions']);
-        Route::post('/order/re-export', [OrderController::class, 'reExportOrder']);
+        Route::post('/orders', [OrderController::class, 'getOrders'])->middleware('permission:Order.Read');
+        Route::post('/open-orders', [OrderController::class, 'getOpenOrders'])->middleware('permission:Order.Read');
+        Route::post('/failed-orders', [OrderController::class, 'getFailedOrders'])->middleware('permission:Order.Read');
+        Route::post('/order/details', [OrderController::class, 'details'])->middleware('permission:Order.Read');
+        Route::post('/order/delete', [OrderController::class, 'delete'])->middleware('permission:Order.Delete');
+        Route::post('/order/origins-get', [OrderController::class, 'getOrderOriginOptions'])->middleware('permission:Order.Read');
+        Route::post('/order/re-export', [OrderController::class, 'reExportOrder'])->middleware('permission:Order.Update');
 
         // Order By Customer
-        Route::post('/customer/latest/orders', [OrderByCustomerController::class, 'latestOrdersByCustomer']);
+        Route::post('/customer/latest/orders', [OrderByCustomerController::class, 'latestOrdersByCustomer'])->middleware('permission:Order.Read');
 
         // Order By Item
-        Route::post('/item/total-sales-yearly', [OrderByItemController::class, 'totalSalesYearlyByItem']);
-        Route::post('/item/total-sales-monthly', [OrderByItemController::class, 'totalSalesMonthlyByItem']);
-        Route::post('/item/quantity-orders-yearly', [OrderByItemController::class, 'totalQuantityYearlyByItem']);
-        Route::post('/item/quantity-orders-monthly', [OrderByItemController::class, 'totalQuantityMonthlyByItem']);
+        Route::post('/item/total-sales-yearly', [OrderByItemController::class, 'totalSalesYearlyByItem'])->middleware('permission:Order.Read');
+        Route::post('/item/total-sales-monthly', [OrderByItemController::class, 'totalSalesMonthlyByItem'])->middleware('permission:Order.Read');
+        Route::post('/item/quantity-orders-yearly', [OrderByItemController::class, 'totalQuantityYearlyByItem'])->middleware('permission:Order.Read');
+        Route::post('/item/quantity-orders-monthly', [OrderByItemController::class, 'totalQuantityMonthlyByItem'])->middleware('permission:Order.Read');
 
         // Customer
-        Route::post('/customers', [CustomerController::class, 'getCustomers']);
-        Route::post('/customer/create', [CustomerController::class, 'create']);
-        Route::post('/customer/update', [CustomerController::class, 'update']);
-        Route::post('/customer/delete', [CustomerController::class, 'delete']);
-        Route::post('/customer/details', [CustomerController::class, 'details']);
+        Route::post('/customers', [CustomerController::class, 'getCustomers'])->middleware('permission:Customer.Read');
+        Route::post('/customer/create', [CustomerController::class, 'create'])->middleware('permission:Customer.Create');
+        Route::post('/customer/update', [CustomerController::class, 'update'])->middleware('permission:Customer.Update');
+        Route::post('/customer/delete', [CustomerController::class, 'delete'])->middleware('permission:Customer.Delete');
+        Route::post('/customer/details', [CustomerController::class, 'details'])->middleware('permission:Customer.Read');
 
         // Customer Visits
         Route::post('/customer-visits', [CustomerVisitController::class, 'getCustomerVisits']);
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
 
         // Items or Products
-        Route::post('/items', [ItemController::class, 'getItems']);
-        Route::post('/item/details', [ItemController::class, 'details']);
-        Route::post('/item/update', [ItemController::class, 'update']);
+        Route::post('/items', [ItemController::class, 'getItems'])->middleware('permission:Item.Read');
+        Route::post('/item/details', [ItemController::class, 'details'])->middleware('permission:Item.Read');
+        Route::post('/item/update', [ItemController::class, 'update'])->middleware('permission:Item.Update');
 
         // Item attributes
-        Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem']);
-        Route::post('/item-attributes/by-item/update', [ItemAttributeController::class, 'updateItemAttributesByItem']);
-        Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete']);
+        Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem'])->middleware('permission:ItemAttribute.Read');
+        Route::post('/item-attributes/by-item/update', [ItemAttributeController::class, 'updateItemAttributesByItem'])->middleware('permission:ItemAttribute.Update');
+        Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete'])->middleware('permission:ItemAttribute.Delete');
 
         //Webshoptext
         Route::post('/web-shop-text/get-web-shop-texts-by-item', [WebShopTextController::class, 'getByItem']);

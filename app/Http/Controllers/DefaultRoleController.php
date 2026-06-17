@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DefaultRole\Create;
 use App\Http\Requests\DefaultRole\DetailsOrDelete;
+use App\Http\Requests\DefaultRole\SyncToCompanyRoles;
 use App\Http\Requests\DefaultRole\Update;
 use App\Http\Requests\PaginatedDataRequest;
 use App\Services\DefaultRole\DefaultRoleServiceInterface;
 use App\Transformer\ApiResponseTransformer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DefaultRoleController extends Controller
 {
@@ -46,6 +48,18 @@ class DefaultRoleController extends Controller
     public function delete(DetailsOrDelete $request): JsonResponse
     {
         $response = $this->service->delete($request);
+        return ApiResponseTransformer::respond($response);
+    }
+
+    public function syncToCompanyRoles(SyncToCompanyRoles $request): JsonResponse
+    {
+        $response = $this->service->syncToCompanyRoles($request);
+        return ApiResponseTransformer::respond($response);
+    }
+
+    public function syncAllToCompanyRoles(Request $request): JsonResponse
+    {
+        $response = $this->service->syncAllToCompanyRoles($request);
         return ApiResponseTransformer::respond($response);
     }
 }

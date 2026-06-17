@@ -58,4 +58,28 @@ export default class DefaultRole {
                 });
         });
     }
+
+    static syncPermissionsToCompanyRoles(Id) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/default-role/permissions/sync', {Id})
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static syncAllPermissionsToCompanyRoles() {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/default-roles/permissions/sync-all')
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }

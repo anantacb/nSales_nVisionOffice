@@ -228,7 +228,7 @@ class CompanyService implements CompanyServiceInterface
         $authUserId = Auth::id();
         $companies = $this->companyRepository->getByAttributes([], [
             'companyUsers' => function ($query) use ($authUserId) {
-                $query->with(['roles'])->where('UserId', $authUserId);
+                $query->with(['roles.permissions:Id,Aliases'])->where('UserId', $authUserId);
             }
         ], ['Id', 'Name', 'CompanyName'], 'Name', false,
             [
@@ -240,8 +240,18 @@ class CompanyService implements CompanyServiceInterface
 
 
         $companies = $companies->map(function ($company) {
+            $roles = collect($company->companyUsers[0]->roles);
+
             $formattedCompany = collect($company)->only(['Id', 'Name', 'CompanyName'])->toArray();
-            $formattedCompany['roles'] = collect($company->companyUsers[0]->roles)->pluck('Type')->toArray();
+            $formattedCompany['roles'] = $roles->pluck('Type')->toArray();
+
+            // Developer / Administrator bypass on the frontend (recomputed from roles), so the slug
+            // list is only needed for non-bypass roles — union of their granted permission Aliases.
+            $isBypass = $roles->pluck('Type')->intersect(['Developer', 'Administrator'])->isNotEmpty();
+            $formattedCompany['permissions'] = $isBypass
+                ? []
+                : $roles->pluck('permissions')->flatten()->pluck('Aliases')->unique()->values()->toArray();
+
             return $formattedCompany;
         });
 

@@ -6,7 +6,7 @@ import useCompanyInfos from '@/composables/useCompanyInfos';
 import useCheckAccess from "@/composables/useCheckAccess";
 
 let {isModuleEnabled} = useCompanyInfos();
-let {hasRoleAccess} = useCheckAccess();
+let {hasRoleAccess, hasAnyPermission} = useCheckAccess();
 
 // Main store and Route
 const store = useTemplateStore();
@@ -120,7 +120,7 @@ function linkClicked(e, submenu) {
 <template>
     <ul :class="classContainer">
         <template v-for="(node, index) in nodes" :key="`node-${index}`">
-            <li v-if="hasRoleAccess(node.roles)"
+            <li v-if="(!node.roles || hasRoleAccess(node.roles)) && (!node.permissions || hasAnyPermission(node.permissions))"
                 :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub && node.subActivePaths ? subIsActive(node.subActivePaths) : false}">
                 <!-- Heading -->
                 {{ node.heading ? node.name : "" }}

@@ -8,12 +8,15 @@ use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUser\CompanyUserRepositoryInterface;
 use App\Repositories\Eloquent\Office\CompanyUserRole\CompanyUserRoleRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
+use App\Services\Concerns\FlushesUserAccessCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserService implements UserServiceInterface
 {
+    use FlushesUserAccessCache;
+
     protected UserRepositoryInterface $userRepository;
     protected CompanyUserRepositoryInterface $companyUserRepository;
     protected CompanyUserRoleRepositoryInterface $companyUserRoleRepository;
@@ -261,6 +264,9 @@ class UserService implements UserServiceInterface
                 'CompanyUserId' => $companyUser->Id
             ]);
         }
+
+        // The user's role/permission set changed — drop their cached access so it rebuilds at once.
+        $this->flushAccessCacheForUsers([$companyUser->UserId]);
     }
 
     public function details(Request $request): ServiceDto

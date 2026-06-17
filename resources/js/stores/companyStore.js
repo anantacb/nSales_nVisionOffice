@@ -21,6 +21,7 @@ export const useCompanyStore = defineStore('company', {
 
             const authStore = useAuthStore();
             authStore.setRoles(this.selectedCompany.roles);
+            authStore.setPermissions(this.selectedCompany.permissions ?? []);
 
             let {data} = await Module.getActivatedModulesByCompany(tempCompany.Id);
             this.selectedCompanyModules = data;

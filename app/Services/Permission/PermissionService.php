@@ -7,10 +7,13 @@ use App\Models\Office\Permission;
 use App\Models\Office\Role;
 use App\Repositories\Eloquent\Office\Permission\PermissionRepositoryInterface;
 use App\Repositories\Eloquent\Office\RolePermission\RolePermissionRepositoryInterface;
+use App\Services\Concerns\FlushesUserAccessCache;
 use Illuminate\Http\Request;
 
 class PermissionService implements PermissionServiceInterface
 {
+    use FlushesUserAccessCache;
+
     protected RolePermissionRepositoryInterface $rolePermissionRepository;
     protected PermissionRepositoryInterface $permissionRepository;
 
@@ -28,7 +31,6 @@ class PermissionService implements PermissionServiceInterface
         $permissions = Permission::query()
             ->with([
                 'module:Id,Name',
-                'application:Id,Name',
             ])
             ->whereNotNull('Aliases')
             ->where('Aliases', '<>', '')
@@ -57,6 +59,9 @@ class PermissionService implements PermissionServiceInterface
         $permissionIds = $request->input('PermissionIds', []);
 
         $this->rolePermissionRepository->syncForRole($roleId, $permissionIds);
+
+        // Affected users see the new grants immediately rather than after the 60s cache TTL.
+        $this->flushAccessCacheForRole($roleId);
 
         return new ServiceDto('Permissions updated.', 200, [
             'RoleId'        => $roleId,

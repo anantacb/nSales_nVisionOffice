@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
@@ -82,6 +83,42 @@ class User extends Authenticatable implements JWTSubject
     public function devices(): HasMany
     {
         return $this->hasMany(Device::class, 'UserId', 'Id');
+    }
+
+    /**
+     * Whether the user holds a permission slug within a given company.
+     *
+     * Mirrors the UserHasPermission middleware: Developer passes everything; Administrator passes
+     * everything except developer-only permissions; everyone else needs the explicit grant.
+     */
+    public function hasPermission(string $slug, int $companyId): bool
+    {
+        $companyUser = $this->companyUsers->firstWhere('CompanyId', $companyId);
+        if (!$companyUser) {
+            return false;
+        }
+
+        $roleTypes = $companyUser->roles->pluck('Type')->all();
+
+        if (in_array('Developer', $roleTypes, true)) {
+            return true;
+        }
+
+        $developerOnly = Cache::remember('PermissionCatalog-DeveloperOnly', 3600, function () {
+            return Permission::where('IsDeveloperOnly', 1)->pluck('Aliases')->all();
+        });
+        if (in_array($slug, $developerOnly, true)) {
+            return false;
+        }
+
+        if (in_array('Administrator', $roleTypes, true)) {
+            return true;
+        }
+
+        return $companyUser->roles
+            ->pluck('permissions')
+            ->flatten()
+            ->contains(fn ($permission) => $permission->Aliases === $slug);
     }
 
     /**

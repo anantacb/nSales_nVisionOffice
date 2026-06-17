@@ -15,11 +15,6 @@ class Permission extends BaseModel
         return $this->belongsTo(Module::class, 'ModuleId', 'Id');
     }
 
-    public function application(): BelongsTo
-    {
-        return $this->belongsTo(Application::class, 'ApplicationId', 'Id');
-    }
-
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'RolePermission', 'PermissionId', 'RoleId', 'Id', 'Id');

@@ -16,4 +16,8 @@ interface DefaultRoleServiceInterface
     public function details(Request $request): ServiceDto;
 
     public function delete(Request $request): ServiceDto;
+
+    public function syncToCompanyRoles(Request $request): ServiceDto;
+
+    public function syncAllToCompanyRoles(Request $request): ServiceDto;
 }

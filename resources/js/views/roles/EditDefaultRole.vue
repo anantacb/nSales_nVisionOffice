@@ -106,7 +106,7 @@ onMounted(async () => {
             </form>
         </BaseBlock>
 
-        <RolePermissionsBlock :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
+        <RolePermissionsBlock :is-default-role="true" :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
 
     </div>
 </template>

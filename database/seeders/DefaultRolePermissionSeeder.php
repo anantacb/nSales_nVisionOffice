@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Office\Permission;
 use App\Models\Office\Role;
+use App\Models\Office\RolePermission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -63,6 +64,9 @@ class DefaultRolePermissionSeeder extends Seeder
             'permissions' => [
                 'Order.Read',
                 'OrderLine.Read',
+                'Customer.Read',
+                'Customer.Update',
+                'Customer.Create',
                 'Item.Read',
                 'ItemAttribute.Read',
             ],
@@ -106,7 +110,6 @@ class DefaultRolePermissionSeeder extends Seeder
             'permissions' => [
                 'WebShopText.Create', 'WebShopText.Read', 'WebShopText.Update', 'WebShopText.Delete',
                 'WebShopPage.Create', 'WebShopPage.Read', 'WebShopPage.Update', 'WebShopPage.Delete',
-                'Theme.Create', 'Theme.Read', 'Theme.Update', 'Theme.Delete',
                 'CompanyEmailTemplate.Create', 'CompanyEmailTemplate.Read', 'CompanyEmailTemplate.Update', 'CompanyEmailTemplate.Delete',
                 'CompanyEmailLayout.Create', 'CompanyEmailLayout.Read', 'CompanyEmailLayout.Update', 'CompanyEmailLayout.Delete',
                 'Item.Read',
@@ -116,6 +119,8 @@ class DefaultRolePermissionSeeder extends Seeder
 
     public function run(): void
     {
+        RolePermission::truncate();
+
         // Resolve the catalog at once. Aliases are the public slugs; legacy pre-migration rows without one
         // are not part of the permission system and must be ignored.
         $permissions = Permission::query()

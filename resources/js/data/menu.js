@@ -426,6 +426,7 @@ export default {
             moduleSpecific: true,
             moduleName: 'Order',
             roles: ["Developer", "Administrator", "Employee"],
+            permissions: ['Order.Read'],
             sub: [
                 {
                     name: "Orders",
@@ -434,6 +435,7 @@ export default {
                     moduleSpecific: true,
                     moduleName: 'Order',
                     roles: ["Developer", "Administrator", "Employee"],
+                    permissions: ['Order.Read'],
                 },
                 {
                     name: "Open Orders",
@@ -442,6 +444,7 @@ export default {
                     moduleSpecific: true,
                     moduleName: 'Order',
                     roles: ["Developer", "Administrator", "Employee"],
+                    permissions: ['Order.Read'],
                 },
                 {
                     name: "Failed Orders",
@@ -450,6 +453,7 @@ export default {
                     moduleSpecific: true,
                     moduleName: 'Order',
                     roles: ["Developer", "Administrator", "Employee"],
+                    permissions: ['Order.Read'],
                 },
             ]
         },
@@ -461,6 +465,7 @@ export default {
             moduleSpecific: true,
             moduleName: 'Customer',
             roles: ["Developer", "Administrator", "Employee"],
+            permissions: ['Customer.Read'],
             sub: [
                 {
                     name: "Customers",
@@ -469,6 +474,7 @@ export default {
                     moduleSpecific: true,
                     moduleName: 'Customer',
                     roles: ["Developer", "Administrator", "Employee"],
+                    permissions: ['Customer.Read'],
                 },
                 {
                     name: "Create Customer",
@@ -477,6 +483,7 @@ export default {
                     moduleSpecific: true,
                     moduleName: 'Customer',
                     roles: ["Developer", "Administrator", "Employee"],
+                    permissions: ['Customer.Create'],
                 },
                 {
                     name: "Customer Visits",

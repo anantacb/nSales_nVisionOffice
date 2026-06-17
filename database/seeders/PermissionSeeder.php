@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Office\ApplicationModule;
 use App\Models\Office\Module;
 use App\Models\Office\Permission;
 use Illuminate\Database\Seeder;
@@ -36,6 +35,8 @@ class PermissionSeeder extends Seeder
             ['module' => 'Language', 'permissions' => ['Language', 'Translation'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'Email', 'permissions' => ['EmailLayout', 'EmailTemplate'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+            ['module' => 'DocumentApi', 'permissions' => ['DocumentApi'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
         ],
         // Role-grantable permissions (IsDeveloperOnly = 0). Administrator bypasses implicitly;
@@ -98,59 +99,13 @@ class PermissionSeeder extends Seeder
         'Read' => 'View %s records',
         'Update' => 'Modify existing %s records',
         'Delete' => 'Delete %s records',
-        'Manage' => 'Manage %s',
     ];
-
-    // One `{Module}.Manage` permission per module, grouped by Module.Type. Snapshot of the
-    // Module table (slug-safe names only; "CreateCustomer ", "Item Translation", "My Documents"
-    // are excluded as they contain spaces). ModuleId is resolved by name at run time. When new
-    // modules are added, append them to the matching list below.
-    private const array MANAGE_CORE = [        // developer-only (IsDeveloperOnly = 1)
-        'Application', 'ApplicationModule', 'Company', 'CompanySignup', 'CoreSetting', 'DataFilter',
-        'DataTypesEntity', 'DataTypesGeneric', 'Device', 'Email', 'EmailConfiguration',
-        'ImageHostAccount', 'JiraWorklog', 'Language', 'LocalResource', 'LocalText', 'Mapping',
-        'Module', 'ModulePackage', 'ModuleSetting', 'QuickBooks', 'Report', 'Role', 'Schedule',
-        'ScheduleScript', 'Script', 'ScriptConfig', 'ScriptMapping', 'Setting', 'Table', 'TableField',
-        'TableIndex', 'Text', 'Theme', 'User', 'UserInvitation',
-    ];
-    private const array MANAGE_STANDARD = [    // role-grantable (IsDeveloperOnly = 0)
-        'ActivityLog', 'Brand', 'Budget', 'BuyXY', 'Calendar', 'Campaign', 'Claim', 'Commission',
-        'CompanyEmail', 'Country', 'Customer', 'CustomerAssortment', 'CustomerSignup', 'CustomerVisit',
-        'DeliveryPeriod', 'DepositAndPackaging', 'DocumentApi', 'Dropbox', 'Flag', 'GeoRestrictions',
-        'HomeScreen', 'Inspiration', 'Item', 'Itemattribute', 'ItemDeleted', 'Itemgroup', 'ItemStock',
-        'Lead', 'Linesheet', 'Live', 'Notification', 'Order', 'Orderline', 'PaymentAltapay',
-        'PdfCatalogue', 'PIM', 'Promotion', 'Purchase', 'RepBudget', 'Retailer', 'RetailPage',
-        'RetailUser', 'SalesPlanner', 'SalesRadar', 'SalesRepBudget', 'Season', 'Showroom',
-        'Subscription', 'Survey', 'Survey2', 'TestModule', 'Translation', 'Vendor', 'VisitPlanner',
-        'WebShop', 'WebShopCustomStyling', 'WebShopTextTemp', 'WSLanguage', 'WSPage', 'WSPaymentGateway',
-        'WSPresentation', 'WSReturnOrder', 'WSSEO', 'WSShipping', 'WSSocialLogin', 'WSUser', 'WSVoucher',
-    ];
-    private const array MANAGE_EXTENSION = [   // role-grantable (IsDeveloperOnly = 0)
-        'Bex', 'BrandSelector', 'BusinessCentral', 'BusinessIntelligence', 'CameraScanner', 'Canvas',
-        'Connector', 'CRM', 'CustomData', 'CustomerAddress', 'CustomerPricing', 'CustomerPurchaseHistory',
-        'CustomerSalesRep', 'd365', 'DatabaseLog', 'Documents', 'Dropshipping', 'DynamicWeb', 'Economic',
-        'ExcelUpload', 'FAQ', 'Firebase', 'GoogleAnalytics', 'ItemAssortment', 'ItemCollection',
-        'ItemExport', 'ItemgroupTemp', 'ItemShoppingFeed', 'ItemText', 'ItemVariant',
-        'ItemVariantDescription', 'ItemVariantStock', 'ItemVariantTemp', 'Klaviyo', 'MultiOrder',
-        'OrderType', 'Payment', 'Perfion', 'Planogram', 'Plytix', 'PriceDiscountAX', 'PriceDiscountAxNav',
-        'PriceDiscountC5', 'PriceDiscountNAV', 'Pricegroup', 'Ractbeat', 'Shopify', 'StockDelivery',
-        'StripePaymentGateway', 'StructPIM', 'Supplier', 'SuppTranslationTemp', 'TemplateDesigner',
-        'Uniconta', 'WebShopItemAttribute', 'WooCommerce',
-    ];
-
-    // Modules typed 'Core' whose `{Module}.Manage` permission must nevertheless stay
-    // role-grantable (IsDeveloperOnly = 0), matching their historical CRUD catalog entries.
-    private const array MANAGE_ROLE_GRANTABLE_OVERRIDES = ['DataFilter', 'Theme'];
 
     public function run(): void
     {
+        Permission::truncate();
+
         $moduleIdsByName = Module::pluck('Id', 'Name')->all();
-        $applicationIdByModuleId = ApplicationModule::query()
-            ->select(['ModuleId', 'ApplicationId'])
-            ->get()
-            ->groupBy('ModuleId')
-            ->map(fn($rows) => $rows->first()->ApplicationId)
-            ->all();
 
         $nullModuleNames = [];
         $upserted = 0;
@@ -159,8 +114,7 @@ class PermissionSeeder extends Seeder
             string $permissionName,
             string $action,
             int    $isDeveloperOnly,
-            ?int   $moduleId,
-            ?int   $applicationId
+            ?int   $moduleId
         ) use (&$upserted): void {
             $aliases = "$permissionName.$action";
             $description = sprintf(
@@ -172,7 +126,6 @@ class PermissionSeeder extends Seeder
                 ['Aliases' => $aliases],
                 [
                     'Name' => $action,
-                    'ApplicationId' => $applicationId,
                     'ModuleId' => $moduleId,
                     'Description' => $description,
                     'IsDeveloperOnly' => $isDeveloperOnly,
@@ -190,34 +143,12 @@ class PermissionSeeder extends Seeder
                     $nullModuleNames[] = $moduleName;
                 }
                 $moduleId = $moduleName !== null ? ($moduleIdsByName[$moduleName] ?? null) : null;
-                $applicationId = $moduleId !== null ? ($applicationIdByModuleId[$moduleId] ?? null) : null;
 
                 foreach ($group['permissions'] as $permissionName) {
                     foreach ($group['actions'] as $action) {
-                        $upsert($permissionName, $action, $isDeveloperOnly, $moduleId, $applicationId);
+                        $upsert($permissionName, $action, $isDeveloperOnly, $moduleId);
                     }
                 }
-            }
-        }
-
-        // One `{Module}.Manage` permission per module, from the explicit lists above.
-        // Core => developer-only; Standard/Extension => role-grantable (with explicit overrides).
-        // ModuleId resolved by name; absent modules still seed a row with ModuleId = NULL.
-        $manageGroups = [
-            1 => self::MANAGE_CORE,                                            // developer-only
-            0 => array_merge(self::MANAGE_STANDARD, self::MANAGE_EXTENSION),   // role-grantable
-        ];
-        foreach ($manageGroups as $devOnly => $names) {
-            foreach ($names as $name) {
-                $isDeveloperOnly = in_array($name, self::MANAGE_ROLE_GRANTABLE_OVERRIDES, true)
-                    ? 0
-                    : $devOnly;
-                if (!isset($moduleIdsByName[$name])) {
-                    $nullModuleNames[] = $name;
-                }
-                $moduleId = $moduleIdsByName[$name] ?? null;
-                $applicationId = $moduleId !== null ? ($applicationIdByModuleId[$moduleId] ?? null) : null;
-                $upsert($name, 'Manage', $isDeveloperOnly, $moduleId, $applicationId);
             }
         }
 

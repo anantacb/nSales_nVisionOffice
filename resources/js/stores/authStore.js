@@ -9,7 +9,8 @@ const {cookies} = useCookies();
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : {},
-        roles: []
+        roles: [],
+        permissions: []
     }),
 
     actions: {
@@ -22,6 +23,10 @@ export const useAuthStore = defineStore('auth', {
 
         setRoles(payload) {
             this.roles = payload;
+        },
+
+        setPermissions(payload) {
+            this.permissions = payload ?? [];
         },
 
         logout() {
@@ -50,6 +55,7 @@ export const useAuthStore = defineStore('auth', {
         clearStorage() {
             this.user = {};
             this.roles = [];
+            this.permissions = [];
         }
     },
 
@@ -59,6 +65,9 @@ export const useAuthStore = defineStore('auth', {
         },
         getRoles() {
             return this.roles;
+        },
+        getPermissions() {
+            return this.permissions;
         }
     }
 });

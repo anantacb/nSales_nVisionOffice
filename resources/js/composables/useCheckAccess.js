@@ -7,7 +7,7 @@ import {useNotificationStore} from "@/stores/notificationStore";
 const {isModuleEnabled} = useCompanyInfos();
 
 export default function useCheckAccess() {
-    async function checkAccess(roles, module = null) {
+    async function checkAccess(roles, module = null, permissions = null) {
         const notificationStore = useNotificationStore()
         if (!_.isEmpty(roles) && !hasRoleAccess(roles)) {
             await router.push({
@@ -22,6 +22,13 @@ export default function useCheckAccess() {
             });
             notificationStore.showNotification(`${module} Module Not Enabled.`, "error");
         }
+
+        if (!_.isEmpty(permissions) && !hasAnyPermission(permissions)) {
+            await router.push({
+                name: 'home'
+            });
+            notificationStore.showNotification("Access Denied.", "error");
+        }
     }
 
     function hasRoleAccess(roles) {
@@ -30,5 +37,23 @@ export default function useCheckAccess() {
         return roles.some(role => authRoles.includes(role));
     }
 
-    return {hasRoleAccess, checkAccess};
+    // Developer / Administrator implicitly pass every permission gate.
+    function isBypassRole() {
+        const authStore = useAuthStore();
+        const authRoles = authStore.getRoles ?? [];
+        return authRoles.includes('Developer') || authRoles.includes('Administrator');
+    }
+
+    function hasPermission(slug) {
+        if (isBypassRole()) return true;
+        const authStore = useAuthStore();
+        return (authStore.getPermissions ?? []).includes(slug);
+    }
+
+    function hasAnyPermission(slugs) {
+        if (isBypassRole()) return true;
+        return slugs.some(slug => hasPermission(slug));
+    }
+
+    return {hasRoleAccess, checkAccess, isBypassRole, hasPermission, hasAnyPermission};
 }

@@ -801,7 +801,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Order'
+                    module: 'Order',
+                    permissions: ['Order.Read']
                 }
             },
             {
@@ -812,7 +813,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Order'
+                    module: 'Order',
+                    permissions: ['Order.Read']
                 }
             },
             {
@@ -823,7 +825,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Order'
+                    module: 'Order',
+                    permissions: ['Order.Read']
                 }
             },
             {
@@ -834,7 +837,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Order'
+                    module: 'Order',
+                    permissions: ['Order.Read']
                 },
                 beforeEnter: (to, from) => {
                     if (['orders', 'open-orders', 'failed-orders'].includes(from.name)) {
@@ -852,7 +856,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', 'Employee'],
-                    module: 'Customer'
+                    module: 'Customer',
+                    permissions: ['Customer.Read']
                 }
             },
             {
@@ -863,7 +868,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Customer'
+                    module: 'Customer',
+                    permissions: ['Customer.Create']
                 }
             },
             {
@@ -874,7 +880,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Customer'
+                    module: 'Customer',
+                    permissions: ['Customer.Read']
                 },
                 beforeEnter: (to, from) => {
                     if (['customers'].includes(from.name)) {
@@ -902,7 +909,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', 'Employee'],
-                    module: 'Item'
+                    module: 'Item',
+                    permissions: ['Item.Read']
                 }
             },
             {
@@ -913,7 +921,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', 'Employee'],
-                    module: 'Item'
+                    module: 'Item',
+                    permissions: ['Item.Read']
                 },
                 beforeEnter: (to, from) => {
                     if (['items'].includes(from.name)) {
@@ -1109,13 +1118,13 @@ router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
     const companyStore = useCompanyStore();
     const isAuthenticated = authStore.isAuthenticated();
-    const {roles, requiresAuth, module} = to.meta;
+    const {roles, requiresAuth, module, permissions} = to.meta;
     if (requiresAuth) {
         if (isAuthenticated) {
             if (_.isEmpty(companyStore.companies)) {
                 await companyStore.fill();
             }
-            await checkAccess(roles, module);
+            await checkAccess(roles, module, permissions);
             next();
         } else {
             delete axios.defaults.headers.common['Authorization'];

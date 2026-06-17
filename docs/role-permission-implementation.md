@@ -22,7 +22,7 @@ The `NVISION_OFFICE` schema described below is the **current** shape of the role
 | `CompanyUserRole` | `Id, CompanyUserId, RoleId, InsertTime/UpdateTime/DeleteTime`. |
 | `RolePermission` | `Id PK, RoleId, PermissionId, InsertTime/UpdateTime/DeleteTime`, with `UNIQUE(RoleId, PermissionId)` and indexes on `RoleId` / `PermissionId`. |
 | `RoleModule` | `Id, RoleId, ModuleId, Enabled, InsertTime/UpdateTime/DeleteTime`. Module-level access toggle, sibling concept to permissions; outside the scope of this runbook. |
-| `Permission` | `Id, Name, Aliases, ApplicationId, ModuleId, Description, IsDeveloperOnly, InsertTime/UpdateTime/DeleteTime`. `Aliases` is the slug the middleware compares against (e.g. `"Order.Create"`). `IsDeveloperOnly = 1` marks platform/schema/ops permissions where Administrator bypass does **not** apply. |
+| `Permission` | `Id, Name, Aliases, ModuleId, Description, IsDeveloperOnly, InsertTime/UpdateTime/DeleteTime`. `Aliases` is the slug the middleware compares against (e.g. `"Order.Create"`). `IsDeveloperOnly = 1` marks platform/schema/ops permissions where Administrator bypass does **not** apply. |
 
 The `Permission` table is empty today — populating its catalog (Phase A's `PermissionSeeder`) is the first executable step.
 
@@ -138,9 +138,8 @@ The `Permission` table is in the `NVISION_OFFICE` database with this shape:
 | Column | Type | Notes |
 |---|---|---|
 | `Id` | int PK | |
-| `Name` | varchar | The action verb — e.g. `Create`, `Read`, `Update`, `Delete`, `Manage` |
+| `Name` | varchar | The action verb — e.g. `Create`, `Read`, `Update`, `Delete` |
 | `Aliases` | varchar | **The slug.** Middleware and frontend compare against this value, e.g. `"Order.Create"`. Convention: `{Module.Name}.{Permission.Name}`. |
-| `ApplicationId` | int FK → `Application.Id` | Which application the permission belongs to (e.g. core office vs. webshop). |
 | `ModuleId` | int FK → `Module.Id` | Which module the permission applies to. The doc's notion of "Resource" maps to `Module.Name`. |
 | `Description` | varchar nullable | Human-readable description for the UI (added by the DDL delta above). |
 | `IsDeveloperOnly` | tinyint(1) | `1` = platform-level permission; only Developer Type can ever pass the gate. Administrator bypass does **not** apply. `0` = role-grantable permission; Administrator bypass applies and the permission can be granted to any role via `RolePermission`. Added by the DDL delta above. |
@@ -171,7 +170,7 @@ Throughout the rest of this runbook, "**slug**" means `Permission.Aliases`. The 
 
 ### New files
 
-- `database/seeders/PermissionSeeder.php` — idempotent `upsert` of the canonical permission catalog. Each seeded row is `(Name, Aliases, ApplicationId, ModuleId, Description, IsDeveloperOnly)`. `Aliases` is computed at seed time as `"{Module.Name}.{Name}"`, e.g. the row `Name='Create', ModuleId=<Order>` produces `Aliases='Order.Create'`. The upsert is keyed on `Aliases` so re-runs are no-ops. `IsDeveloperOnly` is `1` for platform/schema/ops modules listed under **Developer-only catalog** below, and `0` for everything else. The initial catalog covers every Resource currently protected by `developer` / `admin-or-developer` middleware, derived from `routes/api.php`. See **Initial catalog** at the bottom of this section.
+- `database/seeders/PermissionSeeder.php` — idempotent `upsert` of the canonical permission catalog. Each seeded row is `(Name, Aliases, ModuleId, Description, IsDeveloperOnly)`. `Aliases` is computed at seed time as `"{Module.Name}.{Name}"`, e.g. the row `Name='Create', ModuleId=<Order>` produces `Aliases='Order.Create'`. The upsert is keyed on `Aliases` so re-runs are no-ops. `IsDeveloperOnly` is `1` for platform/schema/ops modules listed under **Developer-only catalog** below, and `0` for everything else. The initial catalog covers every Resource currently protected by `developer` / `admin-or-developer` middleware, derived from `routes/api.php`. See **Initial catalog** at the bottom of this section.
 
 - `database/seeders/RolePermissionBackfillSeeder.php` — for every existing `Role` with `Type='Developer'`, grant the **full** permission set (all rows, including `IsDeveloperOnly=1`); for every `Role` with `Type='Administrator'`, grant only the role-grantable subset (`IsDeveloperOnly=0`). Developer-only grants on Administrator rows would be misleading because the middleware will refuse them anyway.
 
@@ -186,11 +185,6 @@ Throughout the rest of this runbook, "**slug**" means `Permission.Aliases`. The 
       public function module(): BelongsTo
       {
           return $this->belongsTo(Module::class, 'ModuleId', 'Id');
-      }
-
-      public function application(): BelongsTo
-      {
-          return $this->belongsTo(Application::class, 'ApplicationId', 'Id');
       }
 
       public function roles(): BelongsToMany
@@ -231,7 +225,7 @@ Administrator bypass does **not** apply to these. Only roles with `Type='Develop
 
 | Module (→ Permission.ModuleId) | Permissions (slug prefix) | Actions | Example Aliases (slug) | Rationale |
 |---|---|---|---|---|
-| `Table` | `Table`, `TableField`, `TableIndex` | Create, Read, Update, Delete, Manage | `Table.Create`, `TableField.Update`, … | Tenant-DB schema operations — mistakes corrupt customer data. |
+| `Table` | `Table`, `TableField`, `TableIndex` | Create, Read, Update, Delete | `Table.Create`, `TableField.Update`, … | Tenant-DB schema operations — mistakes corrupt customer data. |
 | `Module` | `Module`, `Application`, `ModulePackage`, `ApplicationModule`, `ModuleSetting` | Create, Read, Update, Delete | `Module.Create`, `ModuleSetting.Update`, … | The system's own catalog of modules/applications — codebase-level, not tenant business data. |
 | `Company` | `Company` | Create, Read, Update, Delete | `Company.Create`, `Company.Delete`, … | Tenant provisioning is platform-level. |
 | `Email` | `EmailLayout`, `EmailTemplate` | Create, Read, Update, Delete | `EmailLayout.Create`, `EmailTemplate.Update`, … | Global email artifacts — only Developer can author/edit. Tenant-side `CompanyEmail*` variants are role-grantable (next table). |
@@ -244,7 +238,6 @@ Administrator bypass applies; can also be granted explicitly to any custom role 
 
 | Module (→ Permission.ModuleId) | Permissions (slug prefix) | Actions | Example Aliases (slug) |
 |---|---|---|---|
-| `Role` | `Role` | Manage | `Role.Manage` |
 | `User` | `User`, `CompanyUser` | Create, Read, Update, Delete | `User.Create`, `CompanyUser.Create`, … |
 | `Language` | `Language`, `CompanyLanguage` | Create, Read, Update, Delete | `Language.Read`, `CompanyLanguage.Update`, … |
 | `Translation` | `Translation`, `CompanyTranslation` | Create, Read, Update, Delete | `Translation.Create`, `CompanyTranslation.Update`, … |
@@ -256,8 +249,6 @@ Administrator bypass applies; can also be granted explicitly to any custom role 
 | `Item` | `Item`, `ItemAttribute` | Create, Read, Update, Delete | `Item.Create`, `ItemAttribute.Update`, … |
 | `WSPage` | `WebShopText`, `WebShopPage` | Create, Read, Update, Delete | `WebShopText.Create`, `WebShopPage.Update`, … |
 | `WSUser` | `WebShopUser` | Create, Read, Update, Delete | `WebShopUser.Create`, … |
-
-`ApplicationId` is set per row based on which Application the Module belongs to (look up via the existing `ApplicationModule` pivot during seeding). If a Module has no Application linkage today, leave `ApplicationId` null or seed it under the default office Application — the middleware does not consult `ApplicationId` for permission checks.
 
 ### Exit criteria
 
@@ -361,7 +352,7 @@ This reuses the same primitive as the commands, so a freshly created company is 
 - `app/Repositories/Eloquent/Office/RolePermission/RolePermissionRepository.php` — exposes `syncForRole(int $roleId, array $permissionIds)` (single transaction, full replace).
 - `app/Services/Permission/PermissionServiceInterface.php`
 - `app/Services/Permission/PermissionService.php` — methods:
-  - `listAll(Request)` → returns the catalog with `module` and `application` eager-loaded so the UI can group rows by `Module.Name`.
+  - `listAll(Request)` → returns the catalog with `module` eager-loaded so the UI can group rows by `Module.Name`.
   - `getRolePermissions(Request)` → `{ RoleId }` → array of granted permission IDs.
   - `syncRolePermissions(Request)` → `{ RoleId, PermissionIds: int[] }`. Transactional full-replace via `RolePermissionRepository::syncForRole`.
 - `app/Http/Controllers/PermissionController.php` — three thin endpoints wrapping the service, returning `ApiResponseTransformer::success`.
@@ -650,7 +641,7 @@ When editing a role:
 
 - If the role's `Type` is `Developer`: render a read-only banner explaining that Developer has full access by default and the permission grid is disabled. (Underlying data is still seeded for consistency, just not user-editable here.)
 - If the role's `Type` is `Administrator`: render the grid in read-only mode showing all role-grantable permissions (`IsDeveloperOnly = 0`) as "granted by default", and developer-only permissions (`IsDeveloperOnly = 1`) as **locked** with a "Developer only" badge. Administrator cannot toggle either set.
-- Otherwise (custom role Type): render an editable grid sourced from `Permission.listAll()` (with `module` eager-loaded). Rows = `Module.Name` (the doc's "Resource"), columns = distinct `Permission.Name` values across the catalog (the doc's "Action": Create/Read/Update/Delete/Manage). Cells = checkboxes bound to `Permission.Id` for that `(Module, Name)` pair.
+- Otherwise (custom role Type): render an editable grid sourced from `Permission.listAll()` (with `module` eager-loaded). Rows = `Module.Name` (the doc's "Resource"), columns = distinct `Permission.Name` values across the catalog (the doc's "Action": Create/Read/Update/Delete). Cells = checkboxes bound to `Permission.Id` for that `(Module, Name)` pair.
   - Permission rows where `IsDeveloperOnly = 1` are rendered **disabled with a "Developer only" badge** — a non-developer role cannot be granted them, no matter who's editing. The backend's `SyncRolePermissions` form-request additionally validates that no developer-only permission IDs are submitted for a non-Developer role (defense in depth).
   - Cells where the permission doesn't exist in the catalog show `—`.
 - A "Save" button POSTs `{ RoleId, PermissionIds: [...] }` to `/role/permissions/sync`. Use a full-replace strategy (not incremental diff) — simpler, audit-friendly.
@@ -701,7 +692,7 @@ Once every route is moved off the two legacy middleware:
 - Delete `app/Http/Middleware/UserIsDeveloper.php` and `app/Http/Middleware/UserIsAdminOrDeveloper.php`.
 - Drop their aliases from `bootstrap/app.php`.
 - Drop the `UserCompanyWiseRoles-*` cache key (the new consolidated key supersedes it).
-- Replace the scattered `in_array('Developer', …)` checks in `HorizonServiceProvider`, `RoleService`, `UserService` with `$user->hasPermission(...)` calls or equivalent. (Horizon dashboard becomes `permission:Horizon.Manage`.)
+- Replace the scattered `in_array('Developer', …)` checks in `HorizonServiceProvider`, `RoleService`, `UserService` with `$user->hasPermission(...)` calls or equivalent. (Horizon dashboard becomes `permission:Horizon.Read`.)
 
 ---
 

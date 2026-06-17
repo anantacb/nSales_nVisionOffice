@@ -9,10 +9,15 @@ use Illuminate\Http\Request;
 class DefaultRoleService implements DefaultRoleServiceInterface
 {
     protected RoleRepositoryInterface $roleRepository;
+    protected DefaultRolePermissionProjector $projector;
 
-    public function __construct(RoleRepositoryInterface $roleRepository)
+    public function __construct(
+        RoleRepositoryInterface         $roleRepository,
+        DefaultRolePermissionProjector  $projector
+    )
     {
         $this->roleRepository = $roleRepository;
+        $this->projector = $projector;
     }
 
     public function getDefaultRoles(Request $request): ServiceDto
@@ -57,5 +62,43 @@ class DefaultRoleService implements DefaultRoleServiceInterface
     {
         $this->roleRepository->findByIdAndDelete($request->input('RoleId'));
         return new ServiceDto('Default Role Deleted Successfully.', 200);
+    }
+
+    public function syncToCompanyRoles(Request $request): ServiceDto
+    {
+        $template = $this->roleRepository->firstByAttributes([
+            ['column' => 'Id',        'operand' => '=', 'value' => $request->input('Id')],
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => null],
+        ]);
+
+        if (!$template) {
+            return new ServiceDto('Default Role not found.', 404);
+        }
+
+        $report = $this->projector->project([$template->Type], null, null, false);
+
+        return new ServiceDto($this->summarize($report, $template->Type), 200, $report);
+    }
+
+    public function syncAllToCompanyRoles(Request $request): ServiceDto
+    {
+        $report = $this->projector->project(null, null, null, false);
+
+        return new ServiceDto($this->summarize($report), 200, $report);
+    }
+
+    /**
+     * @param array{rolesProcessed:int, grantsInserted:int, skippedTypes:string[], unknownSlugs:string[]} $report
+     */
+    private function summarize(array $report, ?string $type = null): string
+    {
+        $scope = $type !== null ? "$type template" : 'All templates';
+
+        return sprintf(
+            'Synced %s: processed %d company role(s), granted %d new permission(s).',
+            $scope,
+            $report['rolesProcessed'],
+            $report['grantsInserted']
+        );
     }
 }
