@@ -98,10 +98,10 @@ class CompanyEmailTemplateService extends EmailHelperService implements CompanyE
             if (isset($emailEvent['Parent']) && isset($emailEvents[$emailEvent['Parent']])) {
                 $parentFields = $data[$emailEvent['Parent']] ?
                     $data[$emailEvent['Parent']]['templateObject'] :
-                    $this->fetchFieldsData($layoutFields, $emailEvents[$emailEvent['Parent']], $request->get("companyId"));
+                    $this->fetchFieldsData($layoutFields, $emailEvents[$emailEvent['Parent']], $request->get("CompanyId"));
             }
 
-            $fields = $this->fetchFieldsData($layoutFields, $emailEvent, $request->get("companyId"));
+            $fields = $this->fetchFieldsData($layoutFields, $emailEvent, $request->get("CompanyId"));
             // merge parent and self fields, override parent
             $mergedFields = Arr::undot(Arr::dot($fields) + Arr::dot($parentFields));
 
