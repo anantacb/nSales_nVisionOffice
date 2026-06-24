@@ -6,6 +6,7 @@ import LayoutBackend from "@/layouts/variations/Backend.vue";
 import LayoutSimple from "@/layouts/variations/Simple.vue";
 import {useAuthStore} from "@/stores/authStore";
 import {useCompanyStore} from "@/stores/companyStore";
+import {useListStateStore} from "@/stores/listStateStore";
 import useCheckAccess from "@/composables/useCheckAccess";
 
 const {checkAccess} = useCheckAccess();
@@ -138,7 +139,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: []
+                    roles: [],
+                    permissions: []
                 }
             },
             {
@@ -148,7 +150,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -158,7 +161,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -168,7 +172,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -178,7 +183,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -188,7 +194,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -198,7 +205,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -208,7 +216,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -218,7 +227,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -228,7 +238,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -238,7 +249,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -250,7 +262,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -260,7 +273,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -270,7 +284,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -280,7 +295,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -292,7 +308,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -302,7 +319,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -312,7 +330,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -324,7 +343,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -334,7 +354,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -344,7 +365,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -354,7 +376,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -364,7 +387,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -374,7 +398,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -385,7 +410,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -395,7 +421,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -405,7 +432,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -415,7 +443,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 },
                 beforeEnter: (to, from) => {
                     if (['email-configurations', 'company-email-configurations'].includes(from.name)) {
@@ -432,7 +461,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -442,7 +472,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -452,7 +483,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 },
                 beforeEnter: (to, from) => {
                     if (['data-filters', 'company-data-filters'].includes(from.name)) {
@@ -468,7 +500,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -479,7 +512,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -489,7 +523,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -499,7 +534,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -510,7 +546,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -520,7 +557,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -530,7 +568,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -541,7 +580,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -551,7 +591,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -561,7 +602,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -572,7 +614,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -582,7 +625,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -592,7 +636,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -603,7 +648,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -613,7 +659,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -623,7 +670,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -634,7 +682,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -644,7 +693,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -654,7 +704,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -665,7 +716,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -675,7 +727,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -685,7 +738,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -696,7 +750,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -706,7 +761,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -716,7 +772,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -727,7 +784,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -737,7 +795,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -747,7 +806,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -758,7 +818,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
             {
@@ -768,7 +829,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -778,7 +840,8 @@ const routes = [
                 component: Themes,
                 meta: {
                     requiresAuth: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -788,7 +851,8 @@ const routes = [
                 component: CacheClear,
                 meta: {
                     requiresAuth: true,
-                    roles: ['Developer']
+                    roles: ['Developer'],
+                    permissions: []
                 }
             },
 
@@ -800,7 +864,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer', 'Administrator', "Employee"],
+                    roles: [],
                     module: 'Order',
                     permissions: ['Order.Read']
                 }
@@ -812,7 +876,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer', 'Administrator', "Employee"],
+                    roles: [],
                     module: 'Order',
                     permissions: ['Order.Read']
                 }
@@ -824,7 +888,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer', 'Administrator', "Employee"],
+                    roles: [],
                     module: 'Order',
                     permissions: ['Order.Read']
                 }
@@ -836,7 +900,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer', 'Administrator', "Employee"],
+                    roles: [],
                     module: 'Order',
                     permissions: ['Order.Read']
                 },
@@ -855,7 +919,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer', 'Administrator', 'Employee'],
+                    roles: [],
                     module: 'Customer',
                     permissions: ['Customer.Read']
                 }
@@ -867,7 +931,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer', 'Administrator', "Employee"],
+                    roles: [],
                     module: 'Customer',
                     permissions: ['Customer.Create']
                 }
@@ -879,7 +943,7 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: false,
-                    roles: ['Developer', 'Administrator', "Employee"],
+                    roles: [],
                     module: 'Customer',
                     permissions: ['Customer.Read']
                 },
@@ -897,8 +961,9 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer', 'Administrator', 'Employee'],
-                    module: 'CustomerVisit'
+                    roles: [],
+                    module: 'CustomerVisit',
+                    permissions: ['CustomerVisit.Read']
                 }
             },
             {
@@ -940,7 +1005,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Translation'
+                    module: 'Translation',
+                    permissions: ['CompanyLanguage.Read']
                 }
             },
 
@@ -952,7 +1018,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Translation'
+                    module: 'Translation',
+                    permissions: ['CompanyTranslation.Read']
                 }
             },
             {
@@ -963,7 +1030,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Translation'
+                    module: 'Translation',
+                    permissions: ['CompanyTranslation.Create']
                 }
             },
             {
@@ -974,7 +1042,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'Translation'
+                    module: 'Translation',
+                    permissions: ['CompanyTranslation.Update']
                 }
             },
 
@@ -986,7 +1055,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailLayout.Read']
                 }
             },
             {
@@ -997,7 +1067,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailLayout.Create']
                 }
             },
             {
@@ -1008,7 +1079,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailLayout.Update']
                 }
             },
             {
@@ -1019,7 +1091,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailLayout.Update']
                 }
             },
 
@@ -1031,7 +1104,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailTemplate.Read']
                 }
             },
             {
@@ -1042,7 +1116,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailTemplate.Create']
                 }
             },
             {
@@ -1053,7 +1128,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailTemplate.Update']
                 }
             },
             {
@@ -1064,7 +1140,8 @@ const routes = [
                     requiresAuth: true,
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', "Employee"],
-                    module: 'CompanyEmail'
+                    module: 'CompanyEmail',
+                    permissions: ['CompanyEmailTemplate.Update']
                 }
             },
 
@@ -1081,7 +1158,8 @@ const routes = [
                 component: Login,
                 meta: {
                     requiresAuth: false,
-                    roles: []
+                    roles: [],
+                    permissions: []
                 }
             }
         ]
@@ -1094,7 +1172,8 @@ const routes = [
         meta: {
             requiresAuth: false,
             requiresCompany: false,
-            roles: []
+            roles: [],
+            permissions: []
         }
     }
 ];
@@ -1115,6 +1194,10 @@ const router = createRouter({
 NProgress.configure({showSpinner: true});
 
 router.beforeEach(async (to, from, next) => {
+    // Record where this navigation came from so list grids can decide whether to
+    // restore their saved state (only when returning from a detail page or on reload).
+    useListStateStore().setPreviousRoute(from);
+
     const authStore = useAuthStore();
     const companyStore = useCompanyStore();
     const isAuthenticated = authStore.isAuthenticated();
