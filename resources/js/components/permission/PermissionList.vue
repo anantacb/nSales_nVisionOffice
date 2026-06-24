@@ -9,10 +9,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -87,11 +88,11 @@ function search(query) {
 }
 
 async function getPermissions() {
-    isLoading.value = true;
-    let {data, pagination} = await Permission.getPermissions(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
-    isLoading.value = false;
+    await withLoading(async () => {
+        let {data, pagination} = await Permission.getPermissions(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deletePermission(permission, index) {
@@ -122,6 +123,7 @@ function deletePermission(permission, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

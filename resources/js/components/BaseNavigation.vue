@@ -2,11 +2,9 @@
 import {computed} from "vue";
 import {useRoute} from "vue-router";
 import {useTemplateStore} from "@/stores/templateStore";
-import useCompanyInfos from '@/composables/useCompanyInfos';
 import useCheckAccess from "@/composables/useCheckAccess";
 
-let {isModuleEnabled} = useCompanyInfos();
-let {hasRoleAccess, hasAnyPermission} = useCheckAccess();
+let {canAccessNode} = useCheckAccess();
 
 // Main store and Route
 const store = useTemplateStore();
@@ -120,14 +118,14 @@ function linkClicked(e, submenu) {
 <template>
     <ul :class="classContainer">
         <template v-for="(node, index) in nodes" :key="`node-${index}`">
-            <li v-if="(!node.roles || hasRoleAccess(node.roles)) && (!node.permissions || hasAnyPermission(node.permissions))"
+            <li v-if="canAccessNode(node)"
                 :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub && node.subActivePaths ? subIsActive(node.subActivePaths) : false}">
                 <!-- Heading -->
                 {{ node.heading ? node.name : "" }}
 
                 <!-- Normal Link -->
                 <div
-                    v-if="node.moduleSpecific && isModuleEnabled(node.moduleName) && (!node.heading && !node.sub) && hasRoleAccess(node.roles)">
+                    v-if="node.moduleSpecific && (!node.heading && !node.sub) && canAccessNode(node)">
                     <a v-if="node.directLink"
                        :href="node.to"
                        :target="node.targetBlank ? `_blank` : ``"
@@ -154,7 +152,7 @@ function linkClicked(e, submenu) {
                 <!-- END Normal Link -->
 
                 <!-- Submenu Link -->
-                <a v-else-if="node.moduleSpecific && isModuleEnabled(node.moduleName) && (!node.heading && node.sub) && hasRoleAccess(node.roles)"
+                <a v-else-if="node.moduleSpecific && (!node.heading && node.sub) && canAccessNode(node)"
                    class="nav-main-link nav-main-link-submenu"
                    href="#"
                    @click.prevent="linkClicked($event, true)">
@@ -167,7 +165,7 @@ function linkClicked(e, submenu) {
                 <!-- END Submenu Link -->
 
                 <!-- Normal Link -->
-                <div v-else-if="!node.moduleSpecific && (!node.heading && !node.sub) && hasRoleAccess(node.roles)"
+                <div v-else-if="!node.moduleSpecific && (!node.heading && !node.sub) && canAccessNode(node)"
                      @click="linkClicked($event)">
                     <a v-if="node.directLink"
                        :href="node.to"
@@ -194,7 +192,7 @@ function linkClicked(e, submenu) {
                 <!-- END Normal Link -->
 
                 <!-- Submenu Link -->
-                <a v-else-if="!node.moduleSpecific && (!node.heading && node.sub) && hasRoleAccess(node.roles)"
+                <a v-else-if="!node.moduleSpecific && (!node.heading && node.sub) && canAccessNode(node)"
                    class="nav-main-link nav-main-link-submenu"
                    href="#"
                    @click.prevent="linkClicked($event, true)">
@@ -214,104 +212,5 @@ function linkClicked(e, submenu) {
                 />
             </li>
         </template>
-
-        <!--        <li v-for="(node, index) in nodes"
-                    :key="`node-${index}`"
-                    :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub && node.subActivePaths ? subIsActive(node.subActivePaths) : false}">
-                    &lt;!&ndash; Heading &ndash;&gt;
-                    &lt;!&ndash;            {{ node.heading ? node.name : "" }}&ndash;&gt;
-                    <template v-if="hasRoleAccess(node.roles)">
-                        {{ node.heading ? node.name : "" }}
-                    </template>
-
-
-                    &lt;!&ndash; Normal Link &ndash;&gt;
-                    <div
-                        v-if="node.moduleSpecific && isModuleEnabled(node.moduleName) && (!node.heading && !node.sub) && hasRoleAccess(node.roles)">
-                        <a v-if="node.directLink"
-                           :href="node.to"
-                           :target="node.targetBlank ? `_blank` : ``"
-                           class="nav-main-link">
-                            <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                            <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
-                        </a>
-                        <RouterLink v-else
-                                    :active-class="node.to && node.to !== '#' ? 'active' : ''"
-                                    :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
-                                    class="nav-main-link"
-                        >
-                            <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                            <span v-if="node.name" class="nav-main-link-name">
-                                {{ node.name }}
-                            </span>
-                            <span v-if="node.badge"
-                                  :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
-                                  class="nav-main-link-badge badge rounded-pill">
-                                {{ node.badge }}
-                            </span>
-                        </RouterLink>
-                    </div>
-                    &lt;!&ndash; END Normal Link &ndash;&gt;
-
-                    &lt;!&ndash; Submenu Link &ndash;&gt;
-                    <a v-else-if="node.moduleSpecific && isModuleEnabled(node.moduleName) && (!node.heading && node.sub) && hasRoleAccess(node.roles)"
-                       class="nav-main-link nav-main-link-submenu"
-                       href="#"
-                       @click.prevent="linkClicked($event, true)">
-                        <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                        <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
-                        <span v-if="node.badge"
-                              :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
-                              class="nav-main-link-badge badge rounded-pill">{{ node.badge }}</span>
-                    </a>
-                    &lt;!&ndash; END Submenu Link &ndash;&gt;
-
-                    &lt;!&ndash; Normal Link &ndash;&gt;
-                    <div v-else-if="!node.moduleSpecific && (!node.heading && !node.sub) && hasRoleAccess(node.roles)"
-                         @click="linkClicked($event)">
-                        <a v-if="node.directLink"
-                           :href="node.to"
-                           :target="node.targetBlank ? `_blank` : ``"
-                           class="nav-main-link">
-                            <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                            <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
-                        </a>
-                        <RouterLink v-else
-                                    :active-class="node.to && node.to !== '#' ? 'active' : ''"
-                                    :to="node.to && node.to !== '#' ? { name: node.to } : '#'"
-                                    class="nav-main-link"
-                        >
-                            <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                            <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
-                            <span
-                                v-if="node.badge"
-                                :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
-                                class="nav-main-link-badge badge rounded-pill">
-                                            {{ node.badge }}
-                                        </span>
-                        </RouterLink>
-                    </div>
-                    &lt;!&ndash; END Normal Link &ndash;&gt;
-
-                    &lt;!&ndash; Submenu Link &ndash;&gt;
-                    <a v-else-if="!node.moduleSpecific && (!node.heading && node.sub) && hasRoleAccess(node.roles)"
-                       class="nav-main-link nav-main-link-submenu"
-                       href="#"
-                       @click.prevent="linkClicked($event, true)">
-                        <i v-if="node.icon" :class="`nav-main-link-icon ${node.icon}`"></i>
-                        <span v-if="node.name" class="nav-main-link-name">{{ node.name }}</span>
-                        <span v-if="node.badge"
-                              :class="node['badge-variant'] ? `bg-${node['badge-variant']}` : 'bg-primary'"
-                              class="nav-main-link-badge badge rounded-pill">{{ node.badge }}</span>
-                    </a>
-                    &lt;!&ndash; END Submenu Link &ndash;&gt;
-
-                    <BaseNavigation
-                        v-if="node.sub"
-                        :disable-click="props.horizontal && props.horizontalHover"
-                        :nodes="node.sub"
-                        sub-menu
-                    />
-                </li>-->
     </ul>
 </template>

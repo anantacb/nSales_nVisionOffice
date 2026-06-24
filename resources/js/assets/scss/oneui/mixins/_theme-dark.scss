@@ -454,6 +454,7 @@
         // Tables
         .table {
             --#{$variable-prefix}table-bg: #{$primary-darker};
+            --#{$variable-prefix}table-color: #{$oneui-body-bg-light};
             --#{$variable-prefix}table-striped-color: #{$oneui-body-bg-light};
             --#{$variable-prefix}table-striped-bg: #{darken($primary-darker, 1.5%)};
             --#{$variable-prefix}table-active-color: #{$oneui-body-bg-light};

@@ -279,6 +279,7 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
 <template>
     <Loader :is-loading="isLoading"></Loader>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

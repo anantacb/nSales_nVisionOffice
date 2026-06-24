@@ -14,7 +14,6 @@ const companyStore = useCompanyStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 let filterLists = ref({Account: '', Employee: '', DateStart: null});
 let {numberFormat, dateFormat} = useFormatter();
 let dateFormatStr = ref('DD-MM-YYYY');
@@ -31,6 +30,8 @@ let configForFlatPicker = ref({
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -135,9 +136,11 @@ function setFilters(filterColumn) {
 }
 
 async function getCustomerVisits() {
-    let {data, pagination} = await CustomerVisit.getCustomerVisits(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await CustomerVisit.getCustomerVisits(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 async function getDistinctValue(columnName) {
@@ -262,6 +265,7 @@ function deleteOrder(module, index) {
     <!-- Filters Block -->
 
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

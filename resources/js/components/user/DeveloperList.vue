@@ -10,10 +10,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -88,9 +89,11 @@ function search(query) {
 
 async function getDevelopers() {
     emit('startLoading');
-    let {data, pagination} = await User.getDevelopers(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await User.getDevelopers(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
     emit('endLoading');
 }
 
@@ -125,6 +128,7 @@ function tagDeveloperToAllCompanies(userId) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

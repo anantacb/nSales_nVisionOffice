@@ -12,10 +12,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -79,12 +80,14 @@ function search(query) {
 }
 
 async function getEmailTemplates() {
-    let {
-        data,
-        pagination
-    } = await CompanyEmailTemplate.getEmailTemplates(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {
+            data,
+            pagination
+        } = await CompanyEmailTemplate.getEmailTemplates(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 onMounted(async () => {
@@ -126,6 +129,7 @@ function deleteTemplate(template, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

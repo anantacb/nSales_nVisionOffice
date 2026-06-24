@@ -9,10 +9,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -104,9 +105,11 @@ function search(query) {
 }
 
 async function getTables() {
-    let {data, pagination} = await Table.getTables(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await Table.getTables(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteTable(table, index) {
@@ -138,6 +141,7 @@ function deleteTable(table, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

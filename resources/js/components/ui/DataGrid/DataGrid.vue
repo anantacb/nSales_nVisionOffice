@@ -2,8 +2,17 @@
 import {computed, onUpdated, ref, watch} from "vue";
 import DataGridFilter from "@/components/ui/DataGrid/DataGridFilter.vue";
 import DataGridPagination from "@/components/ui/DataGrid/DataGridPagination.vue";
+import Loader from "@/components/ui/Loader/Loader.vue";
 
 const props = defineProps({
+    isLoading: {
+        type: Boolean,
+        default: false
+    },
+    order: {
+        type: [Array, Object],
+        default: () => ([])
+    },
     height: {
         type: String,
         default: () => {
@@ -58,6 +67,19 @@ let gridHeaderHeight = ref("0px");
 let expandedElementIndex = ref(0);
 let searchText = ref(props.searchString);
 
+// Reflect a restored/active sort (request.order: [{column, sort}] or {}) in the headers.
+function syncSortFromOrder(order) {
+    const current = Array.isArray(order) ? order[0] : null;
+    sortBy.value = current?.column ?? "";
+    sortOrder.value = current?.sort ?? "";
+}
+
+syncSortFromOrder(props.order);
+
+watch(() => props.order, (order) => {
+    syncSortFromOrder(order);
+});
+
 const modifiedTableFields = computed(() => {
     let tableFields = [...props.tableFields];
     if (props.expandable) {
@@ -111,6 +133,7 @@ function getRowData(data, field) {
 }
 
 function sortByField(field) {
+    if (props.isLoading) return;
     if (sortBy.value !== field.sortField) {
         sortBy.value = field.sortField;
         sortOrder.value = "asc";
@@ -137,12 +160,19 @@ function toggleExpandableElement(index) {
 }
 
 function searchBy(query) {
+    if (props.isLoading) return;
     emit("search", query);
 }
 
 function goToPage(pageNo) {
+    if (props.isLoading) return;
     emit("paginate", pageNo);
     expandedElementIndex.value = 0;
+}
+
+function onPerPageChange(perPage) {
+    if (props.isLoading) return;
+    emit("perPageChange", perPage);
 }
 
 
@@ -159,6 +189,8 @@ watch(() => props.searchString, () => {
 
 <template>
     <div :style="getContainerStyle" class="data-grid-container scrollbar">
+
+        <Loader :isLoading="props.isLoading" size="ui-loader-xs"/>
 
         <div class="data-grid-filters">
             <div class="data-grid-extra-filters">
@@ -250,7 +282,7 @@ watch(() => props.searchString, () => {
         </div>
 
         <DataGridPagination v-if="props.pagination" :pagination="props.pagination" @paginate="goToPage"
-                            @perPageChange="$emit('perPageChange', $event)"/>
+                            @perPageChange="onPerPageChange"/>
     </div>
 </template>
 
@@ -258,16 +290,17 @@ watch(() => props.searchString, () => {
 .data-grid-container {
     width: 100%;
     overflow: auto;
+    position: relative;
 }
 
 .dark-mode {
     .data-grid {
         .data-grid-head-item {
-            background-color: white;
+            background-color: #2a384b; // matches dark .block-header-default (lighten($primary-darker, 6%))
 
             span,
             i {
-                color: black;
+                color: #e9ecef;
             }
         }
     }
@@ -301,11 +334,11 @@ watch(() => props.searchString, () => {
         top: 0;
         z-index: 5;
         align-items: flex-end;
-        background-color: #1f2937;
+        background-color: #f6f7f9; // matches .block-header-default (lighten($body-bg, 3.5%))
 
         span,
         i {
-            color: white;
+            color: #334155;
         }
 
         .sort-link {

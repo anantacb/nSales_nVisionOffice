@@ -12,10 +12,11 @@ const companyStore = useCompanyStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -90,9 +91,11 @@ function search(query) {
 }
 
 async function getCompanyRoles() {
-    let {data, pagination} = await Role.getCompanyRoles(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await Role.getCompanyRoles(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteRole(companyUserRole, index) {
@@ -124,6 +127,7 @@ function deleteRole(companyUserRole, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

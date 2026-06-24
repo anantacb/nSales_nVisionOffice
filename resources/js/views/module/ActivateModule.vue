@@ -284,13 +284,13 @@ function resetModules(newIndex, removeFrom = 'available') {
                     <Draggable
                         :list="availableModules"
                         :sort="false"
-                        class="list-group scrollable-65vh"
+                        class="module-chip-list scrollable-65vh"
                         group="modules"
                         itemKey="Id"
                         @add="removeModule"
                     >
                         <template #item="{ element, index }">
-                            <div :class="{'list-group-item-info' : element.HasSubModules}" class="list-group-item">
+                            <div :class="{'module-chip--sub' : element.HasSubModules}" class="module-chip">
                                 {{ element.Name }}
                             </div>
                         </template>
@@ -302,13 +302,13 @@ function resetModules(newIndex, removeFrom = 'available') {
                     <Draggable
                         :list="installedModules"
                         :sort="false"
-                        class="list-group scrollable-65vh"
+                        class="module-chip-list scrollable-65vh"
                         group="modules"
                         itemKey="Id"
                         @add="installModule"
                     >
                         <template #item="{ element, index }">
-                            <div :class="{'list-group-item-info' : element.HasSubModules}" class="list-group-item">
+                            <div :class="{'module-chip--sub' : element.HasSubModules}" class="module-chip">
                                 {{ element.Name }}
                             </div>
                         </template>
@@ -320,3 +320,70 @@ function resetModules(newIndex, removeFrom = 'available') {
     </div>
     <!-- END Page Content -->
 </template>
+
+<style scoped>
+.module-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    min-height: 6rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+}
+
+.module-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    border-radius: 50rem;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    color: #334155;
+    cursor: grab;
+    user-select: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.module-chip:hover {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: #eef2ff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.module-chip:active {
+    cursor: grabbing;
+}
+
+/* Modules that carry sub-modules get an info accent. */
+.module-chip--sub {
+    border-color: #38bdf8;
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+/* Dark mode — the theme doesn't adapt these surfaces automatically. */
+.dark-mode .module-chip-list {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .module-chip {
+    border-color: rgba(255, 255, 255, 0.18);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #e9ecef;
+}
+
+.dark-mode .module-chip:hover {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: rgba(13, 110, 253, 0.22);
+}
+
+.dark-mode .module-chip--sub {
+    border-color: #0c91cf;
+    background-color: rgba(12, 145, 207, 0.22);
+    color: #7dd3fc;
+}
+</style>

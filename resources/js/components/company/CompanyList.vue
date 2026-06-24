@@ -13,7 +13,6 @@ const templateStore = useTemplateStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const props = defineProps({
     refreshData: {
@@ -25,6 +24,8 @@ const props = defineProps({
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -105,9 +106,11 @@ function search(query) {
 }
 
 async function getCompanies() {
-    let {data, pagination} = await Company.getCompanies(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await Company.getCompanies(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteCompany(company, index) {
@@ -145,6 +148,7 @@ watch(() => props.refreshData, async (newValue) => {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

@@ -10,10 +10,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -141,9 +142,11 @@ function search(query) {
 }
 
 async function getModuleSettings() {
-    let {data, pagination} = await ModuleSetting.getModuleSettings(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await ModuleSetting.getModuleSettings(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteModuleSetting(module, index) {
@@ -175,6 +178,7 @@ function deleteModuleSetting(module, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

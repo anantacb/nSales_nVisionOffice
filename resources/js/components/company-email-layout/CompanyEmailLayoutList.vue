@@ -12,10 +12,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -81,10 +82,12 @@ function search(query) {
 }
 
 async function getEmailLayouts() {
-    let {data, pagination} = await CompanyEmailLayout.getEmailLayouts(companyStore.selectedCompany.Id, request.value);
-    // console.log(data);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await CompanyEmailLayout.getEmailLayouts(companyStore.selectedCompany.Id, request.value);
+        // console.log(data);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteLayout(layout, index) {
@@ -116,6 +119,7 @@ function deleteLayout(layout, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

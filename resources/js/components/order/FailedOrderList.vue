@@ -14,7 +14,6 @@ const emit = defineEmits(['totalOrderCounter']);
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 let orderOriginsOptions = ref();
 let {numberFormat, dateFormat} = useFormatter();
 let dateFormatStr = ref('DD-MM-YYYY');
@@ -31,6 +30,8 @@ let generalSortingOptions = ref({
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -142,10 +143,12 @@ function setFilters(filters) {
 }
 
 async function getOrders() {
-    let {data, pagination} = await Order.getFailedOrders(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
-    emit('totalOrderCounter', paginationData.value.total);
+    await withLoading(async () => {
+        let {data, pagination} = await Order.getFailedOrders(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+        emit('totalOrderCounter', paginationData.value.total);
+    });
 }
 
 async function getOrderOrigins() {
@@ -219,6 +222,7 @@ function deleteOrder(module, index) {
     <!-- Filters Block -->
 
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

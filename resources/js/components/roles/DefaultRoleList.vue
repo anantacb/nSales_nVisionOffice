@@ -9,10 +9,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -67,11 +68,11 @@ function search(query) {
 }
 
 async function getDefaultRoles() {
-    isLoading.value = true;
-    const {data, pagination} = await DefaultRole.getDefaultRoles(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
-    isLoading.value = false;
+    await withLoading(async () => {
+        const {data, pagination} = await DefaultRole.getDefaultRoles(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteDefaultRole(role, index) {
@@ -98,6 +99,7 @@ function deleteDefaultRole(role, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

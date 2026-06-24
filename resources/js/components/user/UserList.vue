@@ -8,10 +8,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -85,15 +86,18 @@ function search(query) {
 }
 
 async function getUsers() {
-    let {data, pagination} = await User.getUsers(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await User.getUsers(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 </script>
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

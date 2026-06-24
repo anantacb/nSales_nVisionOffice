@@ -12,10 +12,11 @@ const companyStore = useCompanyStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -112,12 +113,14 @@ function search(query) {
 }
 
 async function getEmailConfigurations() {
-    let {
-        data,
-        pagination
-    } = await EmailConfiguration.getCompanyEmailConfigurations(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {
+            data,
+            pagination
+        } = await EmailConfiguration.getCompanyEmailConfigurations(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteEmailConfiguration(table, index) {
@@ -170,6 +173,7 @@ function getApplyOnValue(row) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

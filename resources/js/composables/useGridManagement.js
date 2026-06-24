@@ -1,10 +1,15 @@
-import {ref} from "vue";
-import {onBeforeRouteLeave, useRoute} from "vue-router";
+import {ref, watch} from "vue";
+import {useRoute} from "vue-router";
 import {useListStateStore} from "@/stores/listStateStore";
+
+function firstPathSegment(path) {
+    return (path || "").split("/").filter(Boolean)[0] ?? null;
+}
 
 export default function useGridManagement() {
     let tableFields = ref([]);
     let bodyHeight = ref("");
+    let isLoading = ref(false);
     let request = ref({
         search_columns: [],
         //relations: [],
@@ -16,13 +21,25 @@ export default function useGridManagement() {
 
     const route = useRoute();
     const listStateStore = useListStateStore();
-    const restored = listStateStore.consume(route?.name);
-    if (restored) {
-        request.value = restored;
+
+    // Restore this list's saved state only when returning from one of its detail/edit
+    // pages (a route under the same path segment that carries an :id param), or on a hard
+    // reload of the list itself. Any other entry (menu click, cross-list nav) starts fresh.
+    const prev = listStateStore.previousRoute;
+    const backFromDetail = prev && prev.hasParam && prev.segment === firstPathSegment(route?.path);
+    const refreshReload = prev && prev.isInitial;
+    const saved = listStateStore.get(route?.name);
+    if ((backFromDetail || refreshReload) && saved) {
+        request.value = saved;
+    } else {
+        listStateStore.clear(route?.name);
     }
-    onBeforeRouteLeave((to, from) => {
-        listStateStore.save(from.name, request.value);
-    });
+
+    // Keep this list's snapshot current on every change — reliable regardless of how
+    // deeply nested the grid component is in the route's component tree.
+    watch(request, () => {
+        listStateStore.save(route?.name, request.value);
+    }, {deep: true});
 
     function setTableFields(value) {
         tableFields.value = value;
@@ -66,9 +83,21 @@ export default function useGridManagement() {
         bodyHeight.value = value;
     }
 
+    // Wraps an async data fetch so the grid loading flag is toggled on/off,
+    // resetting even if the fetch throws.
+    async function withLoading(fn) {
+        isLoading.value = true;
+        try {
+            return await fn();
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         tableFields,
         bodyHeight,
+        isLoading,
         request,
         setTableFields,
         resetRequest,
@@ -77,6 +106,7 @@ export default function useGridManagement() {
         setPerPage,
         setSortBy,
         setSearchQuery,
-        setBodyHeight
+        setBodyHeight,
+        withLoading
     }
 }

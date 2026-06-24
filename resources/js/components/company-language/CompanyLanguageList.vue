@@ -16,10 +16,11 @@ const companyStore = useCompanyStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -100,9 +101,11 @@ watch(() => companyStore.getSelectedCompany, (newSelectedCompany) => {
 });
 
 async function getCompanyLanguages() {
-    let {data, pagination} = await CompanyLanguage.getCompanyLanguages(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await CompanyLanguage.getCompanyLanguages(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteCompanyLanguage(companyLanguage, index) {
@@ -165,6 +168,7 @@ function setAsDefaultLanguage(companyLanguageId, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

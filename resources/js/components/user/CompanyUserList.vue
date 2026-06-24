@@ -11,10 +11,11 @@ const companyStore = useCompanyStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -95,9 +96,11 @@ function search(query) {
 }
 
 async function getCompanyUsers() {
-    let {data, pagination} = await User.getCompanyUsers(companyStore.selectedCompany.Id, request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await User.getCompanyUsers(companyStore.selectedCompany.Id, request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
@@ -111,6 +114,7 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"

@@ -9,10 +9,11 @@ const notificationStore = useNotificationStore();
 
 let tableData = ref([]);
 let paginationData = ref(null);
-let isLoading = ref(true);
 
 const {
     tableFields,
+    isLoading,
+    withLoading,
     bodyHeight,
     request,
     setTableFields,
@@ -80,9 +81,11 @@ function search(query) {
 }
 
 async function getLanguages() {
-    let {data, pagination} = await Language.getLanguages(request.value);
-    tableData.value = data;
-    paginationData.value = pagination;
+    await withLoading(async () => {
+        let {data, pagination} = await Language.getLanguages(request.value);
+        tableData.value = data;
+        paginationData.value = pagination;
+    });
 }
 
 function deleteLanguage(language, index) {
@@ -114,6 +117,7 @@ function deleteLanguage(language, index) {
 
 <template>
     <DataGrid
+        :order="request.order"
         :expandable="false"
         :height="bodyHeight"
         :isLoading="isLoading"
