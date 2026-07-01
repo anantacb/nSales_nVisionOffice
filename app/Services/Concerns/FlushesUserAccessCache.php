@@ -9,12 +9,25 @@ use Illuminate\Support\Facades\Cache;
  * Invalidates the per-user access caches read by the auth/permission middleware so that role or
  * permission changes take effect immediately instead of after the 60s TTL.
  *
- * Two keys are cleared:
- *  - UserCompanyWiseAccess-{UserId} — role types + permission slugs (UserHasPermission middleware).
- *  - UserCompanyWiseRoles-{UserId}  — role types only (UserHasRole middleware).
+ * Two per-user keys are cleared:
+ *  - UserCompanyWiseAccess-{UserId} — role types and permission slugs (UserHasPermission middleware).
+ *  - UserCompanyWiseRoles-{UserId} — role types only (UserHasRole middleware).
+ *
+ * Plus a global catalog key, cleared when the permission catalog itself changes:
+ *  - PermissionCatalog-DeveloperOnly — the developer-only slug list (UserHasPermission / User).
  */
 trait FlushesUserAccessCache
 {
+    /**
+     * Flush the cached developer-only permission slug list. Call after a Permission row is
+     * created/updated/deleted so IsDeveloperOnly changes take effect immediately instead of
+     * after the 1h TTL.
+     */
+    protected function flushPermissionCatalogCache(): void
+    {
+        Cache::forget('PermissionCatalog-DeveloperOnly');
+    }
+
     protected function flushAccessCacheForUsers(iterable $userIds): void
     {
         foreach ($userIds as $userId) {

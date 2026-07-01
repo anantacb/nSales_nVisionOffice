@@ -20,9 +20,9 @@ class PermissionSeeder extends Seeder
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'Application', 'permissions' => ['Application', 'ApplicationModule'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'Module', 'permissions' => ['Module'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'ModuleSetting', 'permissions' => ['ModuleSetting'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+            ['module' => 'Module', 'permissions' => ['Module'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'ModulePackage', 'permissions' => ['ModulePackage'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
@@ -38,31 +38,30 @@ class PermissionSeeder extends Seeder
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'DocumentApi', 'permissions' => ['DocumentApi'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
+            ['module' => 'Theme', 'permissions' => ['Theme'],
+                'actions' => ['Create', 'Delete']],
+            ['module' => 'Translation', 'permissions' => ['Translation'],
+                'actions' => ['Read', 'Update']],
         ],
         // Role-grantable permissions (IsDeveloperOnly = 0). Administrator bypasses implicitly;
         // other role-Types must hold the explicit grant.
         'roleGrantable' => [
-            ['module' => 'Order', 'permissions' => ['Order', 'OrderLine'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'Claim', 'permissions' => ['Claim'],
+            ['module' => '', 'permissions' => ['CompanyInformation'],
+                'actions' => ['Read', 'Update']],
+
+            ['module' => 'Order', 'permissions' => ['Order'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'Subscription', 'permissions' => ['Subscription'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+            ['module' => 'Claim', 'permissions' => ['Claim'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
             ['module' => 'Item', 'permissions' => ['Product'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
-            ['module' => 'PriceDiscountAxNav', 'permissions' => ['PriceDiscountAxNav'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'PriceDiscountC5', 'permissions' => ['PriceDiscountC5'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'Pricegroup', 'permissions' => ['Pricegroup'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'PriceDiscountAX', 'permissions' => ['PriceDiscountAX'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'PriceDiscountNAV', 'permissions' => ['PriceDiscountNAV'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'CustomerPricing', 'permissions' => ['CustomerPricing'],
+            ['module' => '', 'permissions' => ['PriceDiscount'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
             ['module' => 'Campaign', 'permissions' => ['Campaign'],
@@ -71,26 +70,87 @@ class PermissionSeeder extends Seeder
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'BuyXY', 'permissions' => ['BuyXY'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
             ['module' => 'PIM', 'permissions' => ['PIM'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
+            ['module' => 'Customer', 'permissions' => ['Customer'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'CustomerVisit', 'permissions' => ['CustomerVisit'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'CustomerAssortment', 'permissions' => ['CustomerAssortment'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'SalesPlanner', 'permissions' => ['SalesPlanner'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'Budget', 'permissions' => ['Budget'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'Lead', 'permissions' => ['Lead'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'PdfCatalogue', 'permissions' => ['PdfCatalogue'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'User', 'permissions' => ['Staff'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'Role', 'permissions' => ['Role'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+            ['module' => 'Role', 'permissions' => ['Permission'],
+                'actions' => ['Read', 'Update']],
+
+            ['module' => 'WSUser', 'permissions' => ['User'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'BrandSelector', 'permissions' => ['BrandSelector'],
+                'actions' => ['Update']],
+
+            ['module' => 'Itemgroup', 'permissions' => ['Category'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'WSShipping', 'permissions' => ['Shipping'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'WSVoucher', 'permissions' => ['Voucher'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'Inspiration', 'permissions' => ['Inspiration'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'Theme', 'permissions' => ['Theme'],
+                'actions' => ['Read', 'Update']],
+
+            ['module' => 'Translation', 'permissions' => ['CompanyLanguage'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'Translation', 'permissions' => ['CompanyTranslation'],
+                'actions' => ['Read', 'Update']],
 
             ['module' => 'CompanyEmail', 'permissions' => ['CompanyEmailLayout', 'CompanyEmailTemplate'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'Translation', 'permissions' => ['CompanyLanguage', 'CompanyTranslation'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
             ['module' => 'DataFilter', 'permissions' => ['DataFilter'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'Theme', 'permissions' => ['Theme'],
+
+            ['module' => 'Notification', 'permissions' => ['Notification'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'Customer', 'permissions' => ['Customer'],
+
+            ['module' => 'Notification', 'permissions' => ['Notification'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'Item', 'permissions' => ['Item', 'ItemAttribute'],
+
+            ['module' => 'Live', 'permissions' => ['Live'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'WSPage', 'permissions' => ['WebShopText', 'WebShopPage'],
+
+            ['module' => 'Brand', 'permissions' => ['Brand'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
-            ['module' => 'WSUser', 'permissions' => ['WebShopUser'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => '', 'permissions' => ['ImportFileData'],
+                'actions' => ['Create', 'Read']],
+
         ],
     ];
 
@@ -103,26 +163,26 @@ class PermissionSeeder extends Seeder
 
     public function run(): void
     {
-        Permission::truncate();
-
         $moduleIdsByName = Module::pluck('Id', 'Name')->all();
 
         $nullModuleNames = [];
-        $upserted = 0;
+        $inserted = 0;
 
-        $upsert = function (
+        $insert = function (
             string $permissionName,
             string $action,
             int    $isDeveloperOnly,
             ?int   $moduleId
-        ) use (&$upserted): void {
+        ) use (&$inserted): void {
             $aliases = "$permissionName.$action";
             $description = sprintf(
                 self::DESCRIPTION_TEMPLATES[$action] ?? '%s',
                 $permissionName
             );
 
-            Permission::updateOrCreate(
+            // Insert only: existing rows (matched by Aliases) are left untouched so their Ids —
+            // and the RolePermission grants that reference them — stay intact.
+            $permission = Permission::firstOrCreate(
                 ['Aliases' => $aliases],
                 [
                     'Name' => $action,
@@ -131,7 +191,10 @@ class PermissionSeeder extends Seeder
                     'IsDeveloperOnly' => $isDeveloperOnly,
                 ]
             );
-            $upserted++;
+
+            if ($permission->wasRecentlyCreated) {
+                $inserted++;
+            }
         };
 
         foreach (self::CATALOG as $devOnlyKey => $groups) {
@@ -146,13 +209,13 @@ class PermissionSeeder extends Seeder
 
                 foreach ($group['permissions'] as $permissionName) {
                     foreach ($group['actions'] as $action) {
-                        $upsert($permissionName, $action, $isDeveloperOnly, $moduleId);
+                        $insert($permissionName, $action, $isDeveloperOnly, $moduleId);
                     }
                 }
             }
         }
 
-        $this->command?->info("PermissionSeeder: upserted $upserted permission rows.");
+        $this->command?->info("PermissionSeeder: inserted $inserted new permission row(s).");
         if (!empty($nullModuleNames)) {
             $this->command?->info(
                 'PermissionSeeder: seeded with ModuleId = NULL (no matching Module row): '

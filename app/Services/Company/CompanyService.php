@@ -31,6 +31,7 @@ use App\Repositories\Eloquent\Office\ModulePackage\ModulePackageRepositoryInterf
 use App\Repositories\Eloquent\Office\ModuleSetting\ModuleSettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\PostmarkEmailServer\PostmarkEmailServerRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
+use App\Repositories\Eloquent\Office\RolePermission\RolePermissionRepositoryInterface;
 use App\Repositories\Eloquent\Office\Setting\SettingRepositoryInterface;
 use App\Repositories\Eloquent\Office\Translation\TranslationRepositoryInterface;
 use App\Repositories\Eloquent\Office\User\UserRepositoryInterface;
@@ -51,8 +52,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class CompanyService implements CompanyServiceInterface
 {
@@ -62,6 +61,7 @@ class CompanyService implements CompanyServiceInterface
     protected ModulePackageRepositoryInterface $modulePackageRepository;
     protected CompanyModuleRepositoryInterface $companyModuleRepository;
     protected RoleRepositoryInterface $roleRepository;
+    protected RolePermissionRepositoryInterface $rolePermissionRepository;
     protected CompanyUserRepositoryInterface $companyUserRepository;
     protected UserRepositoryInterface $userRepository;
     protected CompanyUserRoleRepositoryInterface $companyUserRoleRepository;
@@ -113,6 +113,7 @@ class CompanyService implements CompanyServiceInterface
         ModulePackageRepositoryInterface        $modulePackageRepository,
         CompanyModuleRepositoryInterface        $companyModuleRepository,
         RoleRepositoryInterface                 $roleRepository,
+        RolePermissionRepositoryInterface       $rolePermissionRepository,
         CompanyUserRepositoryInterface          $companyUserRepository,
         UserRepositoryInterface                 $userRepository,
         CompanyUserRoleRepositoryInterface      $companyUserRoleRepository,
@@ -147,6 +148,7 @@ class CompanyService implements CompanyServiceInterface
         $this->modulePackageRepository = $modulePackageRepository;
         $this->companyModuleRepository = $companyModuleRepository;
         $this->roleRepository = $roleRepository;
+        $this->rolePermissionRepository = $rolePermissionRepository;
         $this->companyUserRepository = $companyUserRepository;
         $this->userRepository = $userRepository;
         $this->companyUserRoleRepository = $companyUserRoleRepository;
@@ -178,8 +180,8 @@ class CompanyService implements CompanyServiceInterface
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param string $moduleName
+     * @return bool
      */
     public static function isModuleEnabled(string $moduleName): bool
     {
@@ -188,10 +190,11 @@ class CompanyService implements CompanyServiceInterface
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param string $moduleName
+     * @param string $key
+     * @return mixed|null
      */
-    public static function getSettingValue(string $moduleName, string $key)
+    public static function getSettingValue(string $moduleName, string $key): mixed
     {
         $selectedCompany = Cache::get('company_' . request()->input('CompanyId'));
         return $selectedCompany['module_settings'][$moduleName][$key] ?? null;
@@ -278,6 +281,9 @@ class CompanyService implements CompanyServiceInterface
         return new ServiceDto("Companies retrieved!!!", 200, $companies);
     }
 
+    /**
+     * @throws Exception
+     */
     public function cloneCompany(Request $request): ServiceDto
     {
         $relations = [
@@ -439,6 +445,9 @@ class CompanyService implements CompanyServiceInterface
                 'Type' => $role->Type,
                 'Description' => $role->Description
             ]);
+            // Copy the source role's permission grants (default template on creation, source-company
+            // role on clone) so the new company role is usable immediately, not just an empty shell.
+            $this->copyRolePermissions($role->Id, $newRole->Id);
             if ($newRole->Type == 'Developer') {
                 $developerRole = $newRole;
             }
@@ -450,6 +459,23 @@ class CompanyService implements CompanyServiceInterface
             $mappedRoles[] = $mappedRole;
         }
         return [$developerRole, $adminRole, $mappedRoles];
+    }
+
+    /**
+     * Copy every RolePermission grant from a source role to a target role, so the new company role
+     * is usable immediately instead of an empty shell.
+     */
+    private function copyRolePermissions($sourceRoleId, $targetRoleId): void
+    {
+        $permissionIds = $this->rolePermissionRepository->getByAttributes([
+            ['column' => 'RoleId', 'operand' => '=', 'value' => $sourceRoleId]
+        ])->pluck('PermissionId')->all();
+
+        if (empty($permissionIds)) {
+            return;
+        }
+
+        $this->rolePermissionRepository->syncForRole($targetRoleId, $permissionIds);
     }
 
     private function setUpDevelopers($company, $developerRole): void
@@ -698,6 +724,9 @@ class CompanyService implements CompanyServiceInterface
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     private function addDefaultLanguageAndRelatedContents($company): void
     {
         $language = $this->languageRepository->firstByAttributes([
@@ -963,7 +992,7 @@ class CompanyService implements CompanyServiceInterface
             ['column' => 'CompanyId', 'operand' => '=', 'value' => $sourceCompany->Id]
         ]);
 
-        // No server for current company then copy templates form default template server
+        // No server for current company then copy templates from default template server
         if (!$sourceCompanyTemplateServer) {
             $sourceCompanyTemplateServer = $this->postmarkEmailServerRepository->firstByAttributes([
                 ['column' => 'ServerName', 'operand' => '=', 'value' => 'TEMPLATE SERVER']
@@ -1181,7 +1210,7 @@ class CompanyService implements CompanyServiceInterface
 
             // Delete Image Host Account (CDN)
             if ($company->imageHostAccount) {
-                // If this CDN is associated with only one company then delete
+                // If this CDN is associated with only one company, then delete
                 // Otherwise only delete from DB and keep the Image Host Account (storage zone, cdn)
                 /*$imageHostAccounts = $this->imageHostAccountRepository->getByAttributes([
                     ['column' => 'StorageZoneId', 'operand' => '=', 'value' => $company->imageHostAccount->StorageZoneId],
@@ -1197,7 +1226,7 @@ class CompanyService implements CompanyServiceInterface
 
             // Delete Mail Server
             if ($company->postmarkEmailServer) {
-                // Delete From DB
+                // Delete it From DB
                 $this->postmarkEmailServerRepository->findByIdAndDelete($company->postmarkEmailServer->Id);
                 //TODO
                 // Delete PostMark Server

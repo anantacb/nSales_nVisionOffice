@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Office\Permission;
 use App\Models\Office\Role;
-use App\Models\Office\RolePermission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -32,94 +31,36 @@ class DefaultRolePermissionSeeder extends Seeder
             'description' => 'Administrators have access to everything in the Company Account.',
             // 'permissions' resolved dynamically: every role-grantable Permission (IsDeveloperOnly = 0).
         ],
-        'Manager' => [
-            'name' => 'Manager',
-            'description' => 'Managers have access to all employee data in the Company Account.',
-            'permissions' => [
-                'Order.Create', 'Order.Read', 'Order.Update', 'Order.Delete',
-                'OrderLine.Create', 'OrderLine.Read', 'OrderLine.Update', 'OrderLine.Delete',
-                'Customer.Create', 'Customer.Read', 'Customer.Update', 'Customer.Delete',
-                'Item.Create', 'Item.Read', 'Item.Update', 'Item.Delete',
-                'ItemAttribute.Create', 'ItemAttribute.Read', 'ItemAttribute.Update', 'ItemAttribute.Delete',
-                'DataFilter.Create', 'DataFilter.Read', 'DataFilter.Update', 'DataFilter.Delete',
-                'Theme.Read', 'Theme.Update',
-                'CompanyEmailTemplate.Create', 'CompanyEmailTemplate.Read', 'CompanyEmailTemplate.Update', 'CompanyEmailTemplate.Delete',
-                'CompanyEmailLayout.Read',
-            ],
-        ],
         'Employee' => [
             'name' => 'Employee',
-            'description' => 'Employees have access to their own data in the Company Account.',
+            'description' => 'Employees have access to their own data in the Company Account. And ',
             'permissions' => [
-                'Order.Create', 'Order.Read', 'Order.Update',
-                'OrderLine.Create', 'OrderLine.Read', 'OrderLine.Update',
-                'Customer.Read', 'Customer.Update',
-                'Item.Read',
-                'ItemAttribute.Read',
-            ],
-        ],
-        'Client' => [
-            'name' => 'Client',
-            'description' => 'Clients have restricted access to the Company Account, scoped to the linked Customer.',
-            'permissions' => [
-                'Order.Read',
-                'OrderLine.Read',
-                'Customer.Read',
-                'Customer.Update',
-                'Customer.Create',
-                'Item.Read',
-                'ItemAttribute.Read',
-            ],
-        ],
-        'Retailer' => [
-            'name' => 'Retailer',
-            'description' => 'Role of Retailer.',
-            'permissions' => [
-                'Order.Create', 'Order.Read', 'Order.Update',
-                'OrderLine.Create', 'OrderLine.Read', 'OrderLine.Update',
-                'Customer.Read',
-                'Item.Read',
-                'ItemAttribute.Read',
-            ],
-        ],
-        'WebShopViewer' => [
-            'name' => 'WebShopViewer',
-            'description' => 'Role of Webshop viewer user.',
-            'permissions' => [
-                'WebShopText.Read',
-                'WebShopPage.Read',
-                'Item.Read',
-                'ItemAttribute.Read',
-            ],
-        ],
-        'Insights' => [
-            'name' => 'Insights',
-            'description' => 'Role for Insights.',
-            'permissions' => [
-                'Order.Read',
-                'OrderLine.Read',
-                'Customer.Read',
-                'Item.Read',
-                'ItemAttribute.Read',
-                'DataFilter.Read',
-            ],
-        ],
-        'Marketing' => [
-            'name' => 'Marketing',
-            'description' => 'Role for Marketing.',
-            'permissions' => [
-                'WebShopText.Create', 'WebShopText.Read', 'WebShopText.Update', 'WebShopText.Delete',
-                'WebShopPage.Create', 'WebShopPage.Read', 'WebShopPage.Update', 'WebShopPage.Delete',
-                'CompanyEmailTemplate.Create', 'CompanyEmailTemplate.Read', 'CompanyEmailTemplate.Update', 'CompanyEmailTemplate.Delete',
-                'CompanyEmailLayout.Create', 'CompanyEmailLayout.Read', 'CompanyEmailLayout.Update', 'CompanyEmailLayout.Delete',
-                'Item.Read',
+                'CompanyInformation.Read',
+                'Order.Create', 'Order.Read', 'Order.Update', 'Order.Delete',
+                'Claim.Create', 'Claim.Read', 'Claim.Update', 'Claim.Delete',
+                'Customer.Create', 'Customer.Read', 'Customer.Update', 'Customer.Delete',
+                'CustomerVisit.Create', 'CustomerVisit.Read', 'CustomerVisit.Update',
+                'Lead.Create', 'Lead.Read', 'Lead.Update', 'Lead.Delete',
+                'PdfCatalogue.Create', 'PdfCatalogue.Read', 'PdfCatalogue.Update', 'PdfCatalogue.Delete',
+                'Product.Read',
+                'CustomerAssortment.Read',
+                'SalesPlanner.Read',
+                'Budget.Read',
+                'Category.Read',
             ],
         ],
     ];
 
     public function run(): void
     {
-        RolePermission::truncate();
+        // Reset ONLY the default-template grants (CompanyId IS NULL) before re-seeding, so per-company
+        // grants and EditRole customizations survive. Hard delete via the query builder (not Eloquent
+        // ->delete(), which soft-deletes on DeleteTime and would leave rows occupying the
+        // UNIQUE(RoleId, PermissionId) slot and block the insertOrIgnore re-seed below).
+        $templateRoleIds = Role::whereNull('CompanyId')->pluck('Id')->all();
+        if (!empty($templateRoleIds)) {
+            DB::table('RolePermission')->whereIn('RoleId', $templateRoleIds)->delete();
+        }
 
         // Resolve the catalog at once. Aliases are the public slugs; legacy pre-migration rows without one
         // are not part of the permission system and must be ignored.

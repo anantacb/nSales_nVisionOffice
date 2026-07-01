@@ -91,6 +91,8 @@ class PermissionService implements PermissionServiceInterface
             'IsDeveloperOnly' => (int) $request->input('IsDeveloperOnly'),
         ]);
 
+        $this->flushPermissionCatalogCache();
+
         return new ServiceDto('Permission Created Successfully.', 200, $permission);
     }
 
@@ -106,6 +108,8 @@ class PermissionService implements PermissionServiceInterface
                 'IsDeveloperOnly' => (int) $request->input('IsDeveloperOnly'),
             ]
         );
+
+        $this->flushPermissionCatalogCache();
 
         return new ServiceDto('Permission Updated Successfully.', 200, $permission);
     }
@@ -123,6 +127,8 @@ class PermissionService implements PermissionServiceInterface
     public function delete(Request $request): ServiceDto
     {
         $this->permissionRepository->findByIdAndDelete($request->input('Id'));
+
+        $this->flushPermissionCatalogCache();
 
         return new ServiceDto('Permission Deleted Successfully.', 200, []);
     }

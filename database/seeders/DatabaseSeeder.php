@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         $this->call(LanguageSeeder::class);
         $this->call(PermissionSeeder::class);
-        $this->call(RolePermissionBackfillSeeder::class);
-        $this->call(DefaultRolePermissionSeeder::class);
+        $this->call(DefaultRolePermissionSeeder::class);   // creates + grants the CompanyId=NULL templates
+        $this->call(RolePermissionBackfillSeeder::class);  // projects those templates onto existing company roles
     }
 }

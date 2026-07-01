@@ -3,20 +3,27 @@
 namespace App\Services\DefaultRole;
 
 use App\Contracts\ServiceDto;
+use App\Models\Office\Role;
+use App\Repositories\Eloquent\Office\Company\CompanyRepositoryInterface;
 use App\Repositories\Eloquent\Office\Role\RoleRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DefaultRoleService implements DefaultRoleServiceInterface
 {
     protected RoleRepositoryInterface $roleRepository;
+    protected CompanyRepositoryInterface $companyRepository;
     protected DefaultRolePermissionProjector $projector;
 
     public function __construct(
         RoleRepositoryInterface         $roleRepository,
+        CompanyRepositoryInterface      $companyRepository,
         DefaultRolePermissionProjector  $projector
     )
     {
         $this->roleRepository = $roleRepository;
+        $this->companyRepository = $companyRepository;
         $this->projector = $projector;
     }
 
@@ -28,13 +35,61 @@ class DefaultRoleService implements DefaultRoleServiceInterface
 
     public function create(Request $request): ServiceDto
     {
-        $role = $this->roleRepository->create([
-            'CompanyId'   => null,
-            'Name'        => $request->input('Name'),
-            'Type'        => $request->input('Type'),
-            'Description' => $request->input('Description'),
-        ]);
-        return new ServiceDto('Default Role Created Successfully.', 200, $role);
+        [$role, $companiesAdded] = DB::transaction(function () use ($request) {
+            $role = $this->roleRepository->create([
+                'CompanyId'   => null,
+                'Name'        => $request->input('Name'),
+                'Type'        => $request->input('Type'),
+                'Description' => $request->input('Description'),
+            ]);
+
+            return [$role, $this->propagateToCompanies($role)];
+        });
+
+        return new ServiceDto(
+            "Default Role Created Successfully and added to $companiesAdded company(ies).",
+            200,
+            $role
+        );
+    }
+
+    /**
+     * Fan the newly created default role out to every existing (non-deleted) company by inserting
+     * a company-specific copy (CompanyId set) — mirroring CompanyService::createRoles() which does
+     * this at company-provisioning time. Idempotent: companies that already own a role with this
+     * Name are skipped, so partial state / re-runs never create duplicates.
+     */
+    private function propagateToCompanies(Role $template): int
+    {
+        $companyIds = $this->companyRepository->getByAttributes([])->pluck('Id');
+
+        // All roles sharing this Name: the template (CompanyId NULL) plus any existing company copies.
+        // Filter out the NULL template so we're left with company IDs that already own the role.
+        $alreadyHasIds = $this->roleRepository->getByAttributes([
+            ['column' => 'Name', 'operand' => '=', 'value' => $template->Name],
+        ])->pluck('CompanyId')->filter(fn ($id) => !is_null($id));
+
+        $targetCompanyIds = $companyIds->diff($alreadyHasIds)->values();
+
+        if ($targetCompanyIds->isEmpty()) {
+            return 0;
+        }
+
+        $now = Carbon::now();
+        $rows = $targetCompanyIds->map(fn ($companyId) => [
+            'CompanyId'   => $companyId,
+            'Name'        => $template->Name,
+            'Type'        => $template->Type,
+            'Description' => $template->Description,
+            'InsertTime'  => $now,
+            'UpdateTime'  => $now,
+        ])->all();
+
+        foreach (array_chunk($rows, 500) as $chunk) {
+            $this->roleRepository->insert($chunk);
+        }
+
+        return count($rows);
     }
 
     public function update(Request $request): ServiceDto
