@@ -151,6 +151,9 @@ class PermissionSeeder extends Seeder
             ['module' => '', 'permissions' => ['ImportFileData'],
                 'actions' => ['Create', 'Read']],
 
+            ['module' => 'Shopify', 'permissions' => ['Shopify'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
         ],
     ];
 
