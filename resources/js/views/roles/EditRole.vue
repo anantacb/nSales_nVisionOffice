@@ -50,6 +50,8 @@ async function getRoleDetails() {
 
 <template>
     <div class="content">
+        <div class="row">
+            <div class="col-lg-4">
 
         <BaseBlock ref="editRoleRef" content-full title="Edit Company Role">
 
@@ -61,7 +63,7 @@ async function getRoleDetails() {
 
             <form class="space-y-4" @submit.prevent="updateRole">
                 <div class="row">
-                    <div class="col-lg-4 space-y-2">
+                    <div class="col-12 space-y-2">
                         <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="Name">
                                 Name<span class="text-danger">*</span>
@@ -118,7 +120,11 @@ async function getRoleDetails() {
 
         </BaseBlock>
 
-        <RolePermissionsBlock :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
+            </div>
+            <div class="col-lg-8">
+                <RolePermissionsBlock :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
+            </div>
+        </div>
 
     </div>
 </template>

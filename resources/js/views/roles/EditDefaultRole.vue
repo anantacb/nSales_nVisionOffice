@@ -46,6 +46,8 @@ onMounted(async () => {
 
 <template>
     <div class="content">
+        <div class="row">
+            <div class="col-lg-4">
 
         <BaseBlock ref="editDefaultRoleRef" content-full title="Edit Default Role">
 
@@ -57,7 +59,7 @@ onMounted(async () => {
 
             <form class="space-y-4" @submit.prevent="updateDefaultRole">
                 <div class="row">
-                    <div class="col-lg-4 space-y-2">
+                    <div class="col-12 space-y-2">
                         <div class="row">
                             <label class="col-sm-4 col-form-label col-form-label-sm" for="Name">
                                 Name<span class="text-danger">*</span>
@@ -106,7 +108,11 @@ onMounted(async () => {
             </form>
         </BaseBlock>
 
-        <RolePermissionsBlock :is-default-role="true" :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
+            </div>
+            <div class="col-lg-8">
+                <RolePermissionsBlock :is-default-role="true" :role-id="RoleModel.Id" :role-type="RoleModel.Type"/>
+            </div>
+        </div>
 
     </div>
 </template>
