@@ -1,5 +1,6 @@
 <script setup>
 import {onMounted, ref, watch} from "vue";
+import _ from "lodash";
 import router from "@/router";
 import {useNotificationStore} from "@/stores/notificationStore";
 import {useFormErrors} from "@/composables/useFormErrors";
@@ -17,8 +18,8 @@ const companyStore = useCompanyStore();
 let {errors, setErrors, resetErrors} = useFormErrors();
 let {isModuleEnabled} = useCompanyInfos();
 
-watch(() => companyStore.selectedCompanyModules, () => {
-    if (!isModuleEnabled('Translation')) {
+watch(() => companyStore.selectedCompanyModules, (newSelectedCompanyModules) => {
+    if (!_.isEmpty(newSelectedCompanyModules) && !isModuleEnabled('Translation')) {
         router.push({name: 'home'});
         notificationStore.showNotification('Module Not Enabled.', 'error', 15000);
     }

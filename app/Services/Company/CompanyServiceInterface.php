@@ -37,4 +37,8 @@ interface CompanyServiceInterface
 
     public function getPostmarkServer(Request $request): ServiceDto;
 
+    public function createImageHostAccount(Request $request): ServiceDto;
+
+    public function getImageHostAccount(Request $request): ServiceDto;
+
 }

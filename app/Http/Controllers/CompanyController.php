@@ -113,4 +113,16 @@ class CompanyController extends Controller
         $response = $this->service->createPostmarkServer($request);
         return ApiResponseTransformer::respond($response);
     }
+
+    public function getImageHostAccount(Request $request): JsonResponse
+    {
+        $response = $this->service->getImageHostAccount($request);
+        return ApiResponseTransformer::respond($response);
+    }
+
+    public function createImageHostAccount(Request $request): JsonResponse
+    {
+        $response = $this->service->createImageHostAccount($request);
+        return ApiResponseTransformer::respond($response);
+    }
 }

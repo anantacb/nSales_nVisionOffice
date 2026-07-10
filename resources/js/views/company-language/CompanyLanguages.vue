@@ -1,6 +1,7 @@
 <script setup>
 import CompanyLanguageList from "@/components/company-language/CompanyLanguageList.vue";
 import {onMounted, ref, watch} from "vue";
+import _ from "lodash";
 import useCompanyInfos from "@/composables/useCompanyInfos";
 import {useNotificationStore} from "@/stores/notificationStore";
 import router from "@/router";
@@ -51,8 +52,8 @@ onMounted(async () => {
     await getAllLanguages();
 });
 
-watch(() => companyStore.selectedCompanyModules, () => {
-    if (!isModuleEnabled('Translation')) {
+watch(() => companyStore.selectedCompanyModules, (newSelectedCompanyModules) => {
+    if (!_.isEmpty(newSelectedCompanyModules) && !isModuleEnabled('Translation')) {
         router.push({name: 'home'});
         notificationStore.showNotification('Module Not Enabled.', 'error', 15000);
     }

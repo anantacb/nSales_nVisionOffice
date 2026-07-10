@@ -11,11 +11,29 @@ export const useCompanyStore = defineStore('company', {
     }),
     actions: {
         async setSelectedCompanyById(companyId) {
-            let tempCompany = this.companies.filter((company) => {
+            let tempCompany = this.companies.find((company) => {
                 return company.Id === parseInt(companyId);
-            })[0];
+            });
 
-            this.selectedCompany = tempCompany;
+            // The requested Id may not exist in the current user's company list
+            // (revoked access, stale/shared-browser localStorage, or no match at all).
+            // Fall back to the first company this user actually has access to instead
+            // of leaving selectedCompany undefined, which would throw below.
+            if (!tempCompany) {
+                tempCompany = this.companies[0];
+            }
+
+            this.selectedCompany = tempCompany ?? {};
+
+            if (!this.selectedCompany.Id) {
+                // The user has no companies at all - nothing to select or persist.
+                localStorage.removeItem('selectedCompany');
+                const authStore = useAuthStore();
+                authStore.setRoles([]);
+                authStore.setPermissions([]);
+                this.selectedCompanyModules = [];
+                return;
+            }
 
             localStorage.setItem('selectedCompany', JSON.stringify(this.selectedCompany));
 
@@ -23,7 +41,7 @@ export const useCompanyStore = defineStore('company', {
             authStore.setRoles(this.selectedCompany.roles);
             authStore.setPermissions(this.selectedCompany.permissions ?? []);
 
-            let {data} = await Module.getActivatedModulesByCompany(tempCompany.Id);
+            let {data} = await Module.getActivatedModulesByCompany(this.selectedCompany.Id);
             this.selectedCompanyModules = data;
             localStorage.setItem('selectedCompanyModules', JSON.stringify(data));
         },
@@ -32,10 +50,11 @@ export const useCompanyStore = defineStore('company', {
             //let {data} = await Company.getAllCompanies();
             let {data} = await Company.getAuthUserCompanies();
             this.companies = data;
-            if (localStorage.getItem('selectedCompany')) {
-                await this.setSelectedCompanyById(JSON.parse(localStorage.getItem('selectedCompany')).Id);
+            const persistedSelectedCompany = localStorage.getItem('selectedCompany');
+            if (persistedSelectedCompany) {
+                await this.setSelectedCompanyById(JSON.parse(persistedSelectedCompany).Id);
             } else {
-                await this.setSelectedCompanyById(this.companies[0].Id);
+                await this.setSelectedCompanyById(this.companies[0]?.Id);
             }
         },
 

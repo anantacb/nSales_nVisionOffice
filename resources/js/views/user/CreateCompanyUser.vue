@@ -37,7 +37,7 @@ let SendMail = ref(1);
 const createCompanyUserRef = ref(null);
 
 async function getRoles() {
-    let {data} = await Role.getRolesByCompany(companyStore.selectedCompany.Id, true);
+    let {data} = await Role.getRolesByCompany(companyStore.selectedCompany.Id);
     RoleOptions.value = data;
 }
 

@@ -6,10 +6,10 @@
             </template>
             <p class="my-2" v-html="message"></p>
             <template #modal-footer>
-                <div class="">
+                <div class="d-flex justify-content-end gap-2">
                     <Button :label="cancelButtonLabel"
                             :title="cancelButtonLabel"
-                            classes="btn btn-outline-secondary mr-1"
+                            classes="btn btn-outline-secondary"
                             @click="cancel"
                             :disabled="disabled || isLoading"
                     />

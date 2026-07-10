@@ -67,17 +67,9 @@ const classContainer = computed(() => {
     };
 });
 
-// Checks if a submenu path is part of the URL path
-function subIsActive(paths) {
-    const activePaths = Array.isArray(paths) ? paths : [paths];
-
-    return activePaths.some((path) => {
-        let path_splits = route.path.split('/');
-        if (path_splits[1] === path) {
-            return true;
-        }
-        //return route.path.indexOf(path) === 1; // current path starts with this path string
-    });
+// Checks if this node's own submenu contains the current route
+function subIsActive(subNodes) {
+    return subNodes.some((subNode) => subNode.to === route.name);
 }
 
 // Main menu toggling and mobile functionality
@@ -119,7 +111,7 @@ function linkClicked(e, submenu) {
     <ul :class="classContainer">
         <template v-for="(node, index) in nodes" :key="`node-${index}`">
             <li v-if="canAccessNode(node)"
-                :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub && node.subActivePaths ? subIsActive(node.subActivePaths) : false}">
+                :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub ? subIsActive(node.sub) : false}">
                 <!-- Heading -->
                 {{ node.heading ? node.name : "" }}
 

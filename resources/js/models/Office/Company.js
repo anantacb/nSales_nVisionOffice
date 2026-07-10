@@ -194,4 +194,28 @@ export default class Company {
                 });
         });
     }
+
+    static createImageHostAccount(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/image-host-account/add', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
+    static getImageHostAccount(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/company/image-host-account/get', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
 }

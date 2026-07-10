@@ -32,6 +32,9 @@ export default {
     background: rgba(255, 255, 255, 0.6);
     z-index: 99;
 }
+.dark-mode .ui-loader {
+    background: rgba(31, 41, 55, 0.7);
+}
 .ui-loader .spinner {
     color: #6c757d;
 }

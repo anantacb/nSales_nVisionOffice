@@ -31,7 +31,7 @@ async function openWith(row) {
 
     loadingOptions.value = true;
     try {
-        const {data} = await Role.getRolesByCompany(row.CompanyId, true);
+        const {data} = await Role.getRolesByCompany(row.CompanyId);
         RoleOptions.value = data;
     } finally {
         loadingOptions.value = false;

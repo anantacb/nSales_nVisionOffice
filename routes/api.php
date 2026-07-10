@@ -73,6 +73,7 @@ Route::prefix('auth')->middleware(['auth:api'])->group(function () {
 
 Route::middleware(['auth:api'])->group(function () {
 
+
     /*
     |----------------------------------------------------------------------
     | Developer-only routes (platform / schema / global catalog operations)
@@ -151,7 +152,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/module-package/details', [ModulePackageController::class, 'details']);
 
         // Language
-        Route::post('/languages/all', [LanguageController::class, 'getAllLanguages']);
         Route::post('/languages', [LanguageController::class, 'getLanguages']);
         Route::post('/language/create', [LanguageController::class, 'create']);
         Route::post('/language/update', [LanguageController::class, 'update']);
@@ -221,6 +221,8 @@ Route::middleware(['auth:api'])->group(function () {
         });
     });
 
+    Route::post('/languages/all', [LanguageController::class, 'getAllLanguages']);
+
     /*
     |----------------------------------------------------------------------
     | Permission management (Developer or Administrator)
@@ -268,6 +270,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/company/custom-domain/delete', [CompanyController::class, 'deleteCompanyCustomDomain']);
     Route::post('/company/postmark-server/get', [CompanyController::class, 'getPostmarkServer']);
     Route::post('/company/postmark-server/add', [CompanyController::class, 'createPostmarkServer']);
+    Route::post('/company/image-host-account/get', [CompanyController::class, 'getImageHostAccount']);
+    Route::post('/company/image-host-account/add', [CompanyController::class, 'createImageHostAccount']);
 
     // Helpers
     Route::post('/table-helper/get-all-table-columns', [TableHelperController::class, 'getAllTableColumnNames']);
@@ -282,13 +286,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/assign-to-company', [UserController::class, 'assignToCompany']);
     Route::post('/users/developers', [UserController::class, 'getDevelopers']);
     Route::post('/users/developer/tag-developer-to-all-companies', [UserController::class, 'tagDeveloperToAllCompanies']);
-    Route::post('/users/company-users', [UserController::class, 'getCompanyUsers']);
-    Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser']);
-    Route::post('/users/company-user/update', [UserController::class, 'updateCompanyUser']);
-    Route::post('/users/company-user/update-roles', [UserController::class, 'updateCompanyUserRoles']);
-    Route::post('/users/company-user/update-initials', [UserController::class, 'updateCompanyUserInitials']);
-    Route::post('/users/company-user/delete', [UserController::class, 'deleteCompanyUser']);
-    Route::post('/users/company-user/details', [UserController::class, 'companyUserDetails']);
+    Route::post('/users/company-users', [UserController::class, 'getCompanyUsers'])->middleware('permission:Staff.Read');
+    Route::post('/users/company-user/create', [UserController::class, 'createCompanyUser'])->middleware('permission:Staff.Create');
+    Route::post('/users/company-user/update', [UserController::class, 'updateCompanyUser'])->middleware('permission:Staff.Update');
+    Route::post('/users/company-user/update-roles', [UserController::class, 'updateCompanyUserRoles'])->middleware('permission:Staff.Update');
+    Route::post('/users/company-user/update-initials', [UserController::class, 'updateCompanyUserInitials'])->middleware('permission:Staff.Update');
+    Route::post('/users/company-user/delete', [UserController::class, 'deleteCompanyUser'])->middleware('permission:Staff.Delete');
+    Route::post('/users/company-user/details', [UserController::class, 'companyUserDetails'])->middleware('permission:Staff.Read');
+    // User (shared)
     Route::post('/users/get-all-company-users', [UserController::class, 'getAllCompanyUsers']);
 
     // Application (shared)
@@ -304,16 +309,16 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);
 
     // Role
-    Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany']);
-    Route::post('/roles/company-roles', [RoleController::class, 'getCompanyRoles']);
-    Route::post('/role/create', [RoleController::class, 'create']);
-    Route::post('/role/update', [RoleController::class, 'update']);
-    Route::post('/role/delete', [RoleController::class, 'delete']);
-    Route::post('/role/details', [RoleController::class, 'details']);
+    Route::post('/roles/by-company', [RoleController::class, 'getRolesByCompany'])->middleware('permission:Role.Read');
+    Route::post('/roles/company-roles', [RoleController::class, 'getCompanyRoles'])->middleware('permission:Role.Read');
+    Route::post('/role/create', [RoleController::class, 'create'])->middleware('permission:Role.Create');
+    Route::post('/role/update', [RoleController::class, 'update'])->middleware('permission:Role.Update');
+    Route::post('/role/delete', [RoleController::class, 'delete'])->middleware('permission:Role.Delete');
+    Route::post('/role/details', [RoleController::class, 'details'])->middleware('permission:Role.Read');
 
     // Permission (shared)
-    Route::post('/permissions/list', [PermissionController::class, 'listAll']);
-    Route::post('/role/permissions', [PermissionController::class, 'getRolePermissions']);
+    Route::post('/permissions/list', [PermissionController::class, 'listAll'])->middleware('permission:Permission.Read');
+    Route::post('/role/permissions', [PermissionController::class, 'getRolePermissions'])->middleware('permission:Permission.Read');
 
     // Default (template) Role (shared reads)
     Route::post('/default-roles/list', [DefaultRoleController::class, 'getDefaultRoles']);
@@ -352,9 +357,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/customer-visits/get-distinct-value', [CustomerVisitController::class, 'getDistinctValue']);
 
         // Items or Products
-        Route::post('/items', [ItemController::class, 'getItems'])->middleware('permission:Item.Read');
-        Route::post('/item/details', [ItemController::class, 'details'])->middleware('permission:Item.Read');
-        Route::post('/item/update', [ItemController::class, 'update'])->middleware('permission:Item.Update');
+        Route::post('/items', [ItemController::class, 'getItems'])->middleware('permission:Product.Read');
+        Route::post('/item/details', [ItemController::class, 'details'])->middleware('permission:Product.Read');
+        Route::post('/item/update', [ItemController::class, 'update'])->middleware('permission:Product.Update');
 
         // Item attributes
         Route::post('/item-attributes/by-item/get', [ItemAttributeController::class, 'getItemAttributesByItem'])->middleware('permission:ItemAttribute.Read');
@@ -362,35 +367,35 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/item-attributes/delete', [ItemAttributeController::class, 'delete'])->middleware('permission:ItemAttribute.Delete');
 
         //Webshoptext
-        Route::post('/web-shop-text/get-web-shop-texts-by-item', [WebShopTextController::class, 'getByItem']);
-        Route::post('/web-shop-text/update-by-item', [WebShopTextController::class, 'updateByItem']);
+        Route::post('/web-shop-text/get-web-shop-texts-by-item', [WebShopTextController::class, 'getByItem'])->middleware('permission:WebShop.Read');
+        Route::post('/web-shop-text/update-by-item', [WebShopTextController::class, 'updateByItem'])->middleware('permission:WebShop.Update');
 
         // Company Language
-        Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages']);
-        Route::post('/company-languages', [CompanyLanguageController::class, 'getCompanyLanguages']);
-        Route::post('/company-language/delete', [CompanyLanguageController::class, 'delete']);
-        Route::post('/company-language/set-as-default-language', [CompanyLanguageController::class, 'setAsDefaultLanguage']);
-        Route::post('/company-language/add-company-language', [CompanyLanguageController::class, 'addCompanyLanguage']);
+        Route::post('/company-languages/all', [CompanyLanguageController::class, 'getAllCompanyLanguages'])->middleware('permission:CompanyLanguage.Read');
+        Route::post('/company-languages', [CompanyLanguageController::class, 'getCompanyLanguages'])->middleware('permission:CompanyLanguage.Read');
+        Route::post('/company-language/delete', [CompanyLanguageController::class, 'delete'])->middleware('permission:CompanyLanguage.Delete');
+        Route::post('/company-language/set-as-default-language', [CompanyLanguageController::class, 'setAsDefaultLanguage'])->middleware('permission:CompanyLanguage.Update');
+        Route::post('/company-language/add-company-language', [CompanyLanguageController::class, 'addCompanyLanguage'])->middleware('permission:CompanyLanguage.Create');
 
         // Company Translation
-        Route::post('/company-translations', [CompanyTranslationController::class, 'getCompanyTranslations']);
-        Route::post('/company-translations/sync', [CompanyTranslationController::class, 'syncCompanyTranslations']);
-        Route::post('/company-translation/create', [CompanyTranslationController::class, 'create']);
-        Route::post('/company-translation/update', [CompanyTranslationController::class, 'update']);
-        Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete']);
-        Route::post('/company-translation/details', [CompanyTranslationController::class, 'details']);
+        Route::post('/company-translations', [CompanyTranslationController::class, 'getCompanyTranslations'])->middleware('permission:CompanyTranslation.Read');
+        Route::post('/company-translations/sync', [CompanyTranslationController::class, 'syncCompanyTranslations'])->middleware('permission:CompanyTranslation.Update');
+        Route::post('/company-translation/create', [CompanyTranslationController::class, 'create'])->middleware('permission:CompanyTranslation.Create');
+        Route::post('/company-translation/update', [CompanyTranslationController::class, 'update'])->middleware('permission:CompanyTranslation.Update');
+        Route::post('/company-translation/delete', [CompanyTranslationController::class, 'delete'])->middleware('permission:CompanyTranslation.Delete');
+        Route::post('/company-translation/details', [CompanyTranslationController::class, 'details'])->middleware('permission:CompanyTranslation.Read');
 
         // Web Shop Language
-        Route::post('web-shop-languages/all', [WebShopLanguageController::class, 'getAllWebShopLanguages']);
+        Route::post('web-shop-languages/all', [WebShopLanguageController::class, 'getAllWebShopLanguages'])->middleware('permission:WebShop.Read');
 
         // WebShopUser
-        Route::post('/web-shop-user/details', [WebShopUserController::class, 'details']);
-        Route::post('/web-shop-user/create-test-user', [WebShopUserController::class, 'createTestUser']);
+        Route::post('/web-shop-user/details', [WebShopUserController::class, 'details'])->middleware('permission:User.Read');
+        Route::post('/web-shop-user/create-test-user', [WebShopUserController::class, 'createTestUser'])->middleware('permission:User.Create');
 
         // WebShopPage
-        Route::post('/web-shop-page/list', [WebShopPageController::class, 'list']);
-        Route::post('/web-shop-page/create-pages', [WebShopPageController::class, 'createPages']);
-        Route::post('/web-shop-page/create-pages-content-for-missing-languages', [WebShopPageController::class, 'createPagesContentForMissingLanguages']);
+        Route::post('/web-shop-page/list', [WebShopPageController::class, 'list'])->middleware('permission:WebShop.Read');
+        Route::post('/web-shop-page/create-pages', [WebShopPageController::class, 'createPages'])->middleware('permission:WebShop.Create');
+        Route::post('/web-shop-page/create-pages-content-for-missing-languages', [WebShopPageController::class, 'createPagesContentForMissingLanguages'])->middleware('permission:WebShop.Create');
 
         // B2bGqlApi
         Route::post('/b2b-gql-api/get-itemgroups-item', [B2bGqlApiController::class, 'getItemGroupsAndItem']);
@@ -411,27 +416,27 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('company-email-layout')->group(function () {
             // Email Layout
-            Route::post('/get-email-layouts', [CompanyEmailLayoutController::class, 'getEmailLayouts']);
-            Route::post('/create', [CompanyEmailLayoutController::class, 'create']);
-            Route::post('/details', [CompanyEmailLayoutController::class, 'details']);
-            Route::post('/update', [CompanyEmailLayoutController::class, 'update']);
-            Route::post('/delete', [CompanyEmailLayoutController::class, 'delete']);
-            Route::post('/get-data-for-preview', [CompanyEmailLayoutController::class, 'getDataForPreview']);
-            Route::post('/get-email-layout-options-by-language', [CompanyEmailLayoutController::class, 'getEmailLayoutOptionsByLanguage']);
-            Route::post('/get-preview-template-object', [CompanyEmailLayoutController::class, 'getPreviewTemplateObject']);
-            Route::post('/copy-layout-to-company', [CompanyEmailLayoutController::class, 'copyLayoutToCompany']);
+            Route::post('/get-email-layouts', [CompanyEmailLayoutController::class, 'getEmailLayouts'])->middleware('permission:CompanyEmailLayout.Read');
+            Route::post('/create', [CompanyEmailLayoutController::class, 'create'])->middleware('permission:CompanyEmailLayout.Create');
+            Route::post('/details', [CompanyEmailLayoutController::class, 'details'])->middleware('permission:CompanyEmailLayout.Read');
+            Route::post('/update', [CompanyEmailLayoutController::class, 'update'])->middleware('permission:CompanyEmailLayout.Update');
+            Route::post('/delete', [CompanyEmailLayoutController::class, 'delete'])->middleware('permission:CompanyEmailLayout.Delete');
+            Route::post('/get-data-for-preview', [CompanyEmailLayoutController::class, 'getDataForPreview'])->middleware('permission:CompanyEmailLayout.Read');
+            Route::post('/get-email-layout-options-by-language', [CompanyEmailLayoutController::class, 'getEmailLayoutOptionsByLanguage'])->middleware('permission:CompanyEmailLayout.Read');
+            Route::post('/get-preview-template-object', [CompanyEmailLayoutController::class, 'getPreviewTemplateObject'])->middleware('permission:CompanyEmailLayout.Read');
+            Route::post('/copy-layout-to-company', [CompanyEmailLayoutController::class, 'copyLayoutToCompany'])->middleware('permission:CompanyEmailLayout.Create');
         });
 
         Route::prefix('company-email-template')->group(function () {
             // Email Template
-            Route::post('/get-email-templates', [CompanyEmailTemplateController::class, 'getEmailTemplates']);
-            Route::post('/create', [CompanyEmailTemplateController::class, 'create']);
-            Route::post('/details', [CompanyEmailTemplateController::class, 'details']);
-            Route::post('/update', [CompanyEmailTemplateController::class, 'update']);
-            Route::post('/delete', [CompanyEmailTemplateController::class, 'delete']);
-            Route::post('/get-email-events', [CompanyEmailTemplateController::class, 'getEmailEvents']);
-            Route::post('/get-data-for-preview', [CompanyEmailTemplateController::class, 'getDataForPreview']);
-            Route::post('/copy-template-to-company', [CompanyEmailTemplateController::class, 'copyTemplateToCompany']);
+            Route::post('/get-email-templates', [CompanyEmailTemplateController::class, 'getEmailTemplates'])->middleware('permission:CompanyEmailTemplate.Read');
+            Route::post('/create', [CompanyEmailTemplateController::class, 'create'])->middleware('permission:CompanyEmailTemplate.Create');
+            Route::post('/details', [CompanyEmailTemplateController::class, 'details'])->middleware('permission:CompanyEmailTemplate.Read');
+            Route::post('/update', [CompanyEmailTemplateController::class, 'update'])->middleware('permission:CompanyEmailTemplate.Update');
+            Route::post('/delete', [CompanyEmailTemplateController::class, 'delete'])->middleware('permission:CompanyEmailTemplate.Delete');
+            Route::post('/get-email-events', [CompanyEmailTemplateController::class, 'getEmailEvents'])->middleware('permission:CompanyEmailTemplate.Read');
+            Route::post('/get-data-for-preview', [CompanyEmailTemplateController::class, 'getDataForPreview'])->middleware('permission:CompanyEmailTemplate.Read');
+            Route::post('/copy-template-to-company', [CompanyEmailTemplateController::class, 'copyTemplateToCompany'])->middleware('permission:CompanyEmailTemplate.Create');
         });
 
         Route::prefix('email-template')->group(function () {

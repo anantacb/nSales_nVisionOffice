@@ -1,6 +1,7 @@
 <script setup>
 import CompanyTranslationList from "@/components/company-translation/CompanyTranslationList.vue";
 import {watch} from "vue";
+import _ from "lodash";
 import router from "@/router";
 import useCompanyInfos from "@/composables/useCompanyInfos";
 import {useCompanyStore} from "@/stores/companyStore";
@@ -13,8 +14,8 @@ const notificationStore = useNotificationStore();
 const templateStore = useTemplateStore();
 
 let {isModuleEnabled} = useCompanyInfos();
-watch(() => companyStore.selectedCompanyModules, () => {
-    if (!isModuleEnabled('Translation')) {
+watch(() => companyStore.selectedCompanyModules, (newSelectedCompanyModules) => {
+    if (!_.isEmpty(newSelectedCompanyModules) && !isModuleEnabled('Translation')) {
         router.push({name: 'home'});
         notificationStore.showNotification('Module Not Enabled.', 'error', 15000);
     }

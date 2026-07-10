@@ -19,7 +19,6 @@ templateStore.setLayout({
 // Set various template options for this layout variation
 templateStore.headerStyle({mode: "dark"});
 templateStore.mainContent({mode: "full"});
-templateStore.darkMode({mode: "on"});
 </script>
 
 <template>

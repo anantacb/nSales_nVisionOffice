@@ -14,7 +14,9 @@ export function useFormatter() {
     }
 
     function dateFormat(date, formatter = "DD-MM-YYYY") {
-        return moment(date).format(formatter);
+        if (!date) return '-';
+        const parsed = moment(date);
+        return parsed.isValid() ? parsed.format(formatter) : '-';
     }
 
 

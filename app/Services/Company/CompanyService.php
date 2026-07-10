@@ -6,6 +6,7 @@ use App\Contracts\ServiceDto;
 use App\Helpers\DbHelpers;
 use App\Helpers\Sql\MysqlQueryGenerator;
 use App\Models\Office\Company;
+use App\Models\Office\ImageHostAccount;
 use App\Models\Office\Module;
 use App\Repositories\Eloquent\Admin\FtpUser\FtpUserRepositoryInterface;
 use App\Repositories\Eloquent\Company\CompanyEmailLayout\CompanyEmailLayoutRepositoryInterface;
@@ -524,7 +525,7 @@ class CompanyService implements CompanyServiceInterface
         ]);
     }
 
-    private function setUpImageHosting($company): void
+    private function setUpImageHosting($company): ?ImageHostAccount
     {
         $baseName = $company->DomainName;
         $attempt = 0;
@@ -537,7 +538,7 @@ class CompanyService implements CompanyServiceInterface
                 sleep(1);  // Optional: wait before retrying
             } else if ($newStorageZone["code"] == 201) {
                 $newPullZone = $this->bunnyCdnRepository->addPullZone($name, $newStorageZone['data']['Id']);
-                $this->imageHostAccountRepository->create([
+                $imageHostAccount = $this->imageHostAccountRepository->create([
                     'FTPDomainName' => $newStorageZone["data"]["StorageHostname"],
                     'FTPUserName' => $newStorageZone["data"]["Name"],
                     'FTPPassword' => $newStorageZone["data"]["Password"],
@@ -549,9 +550,10 @@ class CompanyService implements CompanyServiceInterface
                     "UserName" => $newStorageZone["data"]["Name"],
                     "UserEmail" => "mly@nsales.dk",
                 ]);
-                $attempt = $max_attempts;
+                return $imageHostAccount;
             }
         }
+        return null;
     }
 
     private function generateAlternativeStorageName($base_name, $attempt): string
@@ -1323,6 +1325,35 @@ class CompanyService implements CompanyServiceInterface
             return new ServiceDto('Postmark Server Added Successfully.', 200, $postmarkServer);
         } else {
             return new ServiceDto('Postmark Server not created.', 500, []);
+        }
+    }
+
+    public function getImageHostAccount(Request $request): ServiceDto
+    {
+        $imageHostAccount = $this->imageHostAccountRepository->firstByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
+        ]);
+        $imageHostAccount = $imageHostAccount?->only(['FTPUserName', 'Home', 'FTPDomainName', 'FTPRootPath']);
+        return new ServiceDto('Image Host Account Retrieved Successfully.', 200, $imageHostAccount ?? []);
+    }
+
+    public function createImageHostAccount(Request $request): ServiceDto
+    {
+        $existing = $this->imageHostAccountRepository->firstByAttributes([
+            ['column' => 'CompanyId', 'operand' => '=', 'value' => $request->input('CompanyId')]
+        ]);
+        if ($existing) {
+            return new ServiceDto('Image Host Account Already Exists.', 200, $existing->only(['FTPUserName', 'Home', 'FTPDomainName', 'FTPRootPath']));
+        }
+
+        $company = $this->companyRepository->firstByAttributes([
+            ['column' => 'Id', 'operand' => '=', 'value' => $request->input('CompanyId')]
+        ]);
+        $imageHostAccount = $this->setUpImageHosting($company);
+        if ($imageHostAccount) {
+            return new ServiceDto('Image Host Account Created Successfully.', 200, $imageHostAccount->only(['FTPUserName', 'Home', 'FTPDomainName', 'FTPRootPath']));
+        } else {
+            return new ServiceDto('Image Host Account not created.', 500, []);
         }
     }
 

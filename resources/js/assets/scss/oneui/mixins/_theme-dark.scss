@@ -735,6 +735,7 @@
         // Modals
         .modal-content {
             background: $primary-darker;
+            color: darken($oneui-body-bg-dark, 10%);
         }
 
         // Toasts

@@ -31,7 +31,13 @@ export const useAuthStore = defineStore('auth', {
 
         logout() {
             cookies.remove("token");
+
+            const darkMode = localStorage.getItem('darkMode');
+            const darkModeSystem = localStorage.getItem('darkModeSystem');
             localStorage.clear();
+            if (darkMode !== null) localStorage.setItem('darkMode', darkMode);
+            if (darkModeSystem !== null) localStorage.setItem('darkModeSystem', darkModeSystem);
+
             delete axios.defaults.headers.common['Authorization'];
             this.clearStorage();
             const companyStore = useCompanyStore();

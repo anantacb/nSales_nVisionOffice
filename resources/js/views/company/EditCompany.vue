@@ -11,6 +11,7 @@ import {useRoute} from "vue-router";
 import ModulePackage from "@/models/Office/ModulePackage";
 import CompanyCustomDomain from "@/components/company/CompanyCustomDomain.vue";
 import CompanyPostmarkServer from "@/components/company/CompanyPostmarkServer.vue";
+import CompanyImageHostAccount from "@/components/company/CompanyImageHostAccount.vue";
 
 const route = useRoute();
 const notificationStore = useNotificationStore();
@@ -635,6 +636,12 @@ function nameChanged() {
             <div class="col-6">
                 <CompanyPostmarkServer :CompanyId="route.params.id"
                                        :PostmarkServer="CompanyModel.postmark_email_server"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <CompanyImageHostAccount :CompanyId="route.params.id"/>
             </div>
         </div>
     </div>

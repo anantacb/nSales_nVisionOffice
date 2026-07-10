@@ -376,8 +376,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer'],
-                    permissions: []
+                    roles: [],
+                    permissions: ['Staff.Read']
                 }
             },
             {
@@ -387,8 +387,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer'],
-                    permissions: []
+                    roles: [],
+                    permissions: ['Staff.Create']
                 }
             },
             {
@@ -398,8 +398,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer'],
-                    permissions: []
+                    roles: [],
+                    permissions: ['Staff.Update']
                 }
             },
 
@@ -500,8 +500,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer'],
-                    permissions: []
+                    roles: [],
+                    permissions: ['DataFilter.Read']
                 }
             },
 
@@ -580,8 +580,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer'],
-                    permissions: []
+                    roles: [],
+                    permissions: ['Role.Read']
                 }
             },
             {
@@ -591,8 +591,8 @@ const routes = [
                 meta: {
                     requiresAuth: true,
                     requiresCompany: true,
-                    roles: ['Developer'],
-                    permissions: []
+                    roles: [],
+                    permissions: ['Role.Create']
                 }
             },
             {
@@ -601,9 +601,9 @@ const routes = [
                 component: EditRole,
                 meta: {
                     requiresAuth: true,
-                    requiresCompany: false,
-                    roles: ['Developer'],
-                    permissions: []
+                    requiresCompany: true,
+                    roles: [],
+                    permissions: ['Role.Update']
                 }
             },
 
@@ -975,7 +975,7 @@ const routes = [
                     requiresCompany: true,
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'Item',
-                    permissions: ['Item.Read']
+                    permissions: ['Product.Read']
                 }
             },
             {
@@ -987,7 +987,7 @@ const routes = [
                     requiresCompany: false,
                     roles: ['Developer', 'Administrator', 'Employee'],
                     module: 'Item',
-                    permissions: ['Item.Read']
+                    permissions: ['Product.Read']
                 },
                 beforeEnter: (to, from) => {
                     if (['items'].includes(from.name)) {
@@ -1207,8 +1207,12 @@ router.beforeEach(async (to, from, next) => {
             if (_.isEmpty(companyStore.companies)) {
                 await companyStore.fill();
             }
-            await checkAccess(roles, module, permissions);
-            next();
+            const accessGranted = await checkAccess(roles, module, permissions);
+            if (accessGranted) {
+                next();
+            } else {
+                next(false);
+            }
         } else {
             delete axios.defaults.headers.common['Authorization'];
             next({

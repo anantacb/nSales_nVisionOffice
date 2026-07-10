@@ -40,8 +40,8 @@ class PermissionSeeder extends Seeder
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
             ['module' => 'Theme', 'permissions' => ['Theme'],
                 'actions' => ['Create', 'Delete']],
-            ['module' => 'Translation', 'permissions' => ['Translation'],
-                'actions' => ['Read', 'Update']],
+            ['module' => 'Translation', 'permissions' => ['CompanyTranslation'],
+                'actions' => ['Create', 'Delete']],
         ],
         // Role-grantable permissions (IsDeveloperOnly = 0). Administrator bypasses implicitly;
         // other role-Types must hold the explicit grant.
@@ -80,7 +80,7 @@ class PermissionSeeder extends Seeder
             ['module' => 'CustomerVisit', 'permissions' => ['CustomerVisit'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
-            ['module' => 'CustomerAssortment', 'permissions' => ['CustomerAssortment'],
+            ['module' => 'ItemAssortment', 'permissions' => ['CustomerAssortment'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
             ['module' => 'SalesPlanner', 'permissions' => ['SalesPlanner'],
@@ -106,6 +106,12 @@ class PermissionSeeder extends Seeder
             ['module' => 'WSUser', 'permissions' => ['User'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
+            ['module' => 'WebShop', 'permissions' => ['WebShop'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
+            ['module' => 'CustomData', 'permissions' => ['CustomData'],
+                'actions' => ['Create', 'Read', 'Update', 'Delete']],
+
             ['module' => 'BrandSelector', 'permissions' => ['BrandSelector'],
                 'actions' => ['Update']],
 
@@ -128,15 +134,12 @@ class PermissionSeeder extends Seeder
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
             ['module' => 'Translation', 'permissions' => ['CompanyTranslation'],
-                'actions' => ['Read', 'Update']],
+                'actions' => ['Read', 'Update'],],
 
             ['module' => 'CompanyEmail', 'permissions' => ['CompanyEmailLayout', 'CompanyEmailTemplate'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
             ['module' => 'DataFilter', 'permissions' => ['DataFilter'],
-                'actions' => ['Create', 'Read', 'Update', 'Delete']],
-
-            ['module' => 'Notification', 'permissions' => ['Notification'],
                 'actions' => ['Create', 'Read', 'Update', 'Delete']],
 
             ['module' => 'Notification', 'permissions' => ['Notification'],

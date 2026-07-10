@@ -52,7 +52,7 @@ setTableFields([
         name: "IsDefault",
         title: "Default",
         formatter: (data) => {
-            return data ? "Yes" : "No";
+            return `<span class="fs-xs fw-semibold d-inline-block py-1 px-3 rounded-pill ${data ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}">${data ? 'Yes' : 'No'}</span>`;
         }
     },
     {
@@ -185,6 +185,7 @@ function setAsDefaultLanguage(companyLanguageId, index) {
     >
         <template v-slot:body-Action="props">
             <PopOverButton
+                v-if="!props.data.IsDefault"
                 btnClass="btn rounded-pill btn-alt-primary me-1"
                 content="Set As Default"
                 iconClass="fa fa-heart-circle-bolt"

@@ -15,7 +15,7 @@ export default function useCheckAccess() {
                 name: 'home'
             });
             notificationStore.showNotification(`${module} Module Not Enabled.`, "error");
-            return;
+            return false;
         }
 
         if (!hasAccess(roles, permissions)) {
@@ -23,7 +23,10 @@ export default function useCheckAccess() {
                 name: 'home'
             });
             notificationStore.showNotification("Access Denied.", "error");
+            return false;
         }
+
+        return true;
     }
 
     function hasRoleAccess(roles) {

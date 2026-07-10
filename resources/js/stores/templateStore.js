@@ -22,8 +22,8 @@ export const useTemplateStore = defineStore('template', {
         // Various of them are also set in each layout variation under layouts/variations/ folder
         settings: {
             colorTheme: "", // 'amethyst', 'city', 'flat', 'modern', 'smooth'
-            darkMode: false,
-            darkModeSystem: true,
+            darkMode: localStorage.getItem('darkMode') !== null ? JSON.parse(localStorage.getItem('darkMode')) : false,
+            darkModeSystem: localStorage.getItem('darkModeSystem') !== null ? JSON.parse(localStorage.getItem('darkModeSystem')) : true,
             sidebarLeft: true,
             sidebarMini: false,
             sidebarDark: true,
@@ -204,34 +204,34 @@ export const useTemplateStore = defineStore('template', {
             } else if (payload.mode === "toggle") {
                 this.settings.darkMode = !this.settings.darkMode;
             }
+
+            localStorage.setItem('darkMode', JSON.stringify(this.settings.darkMode));
         },
-        // Dark Mode System based
+        // Dark Mode System-based
         darkModeSystem(payload) {
             if (payload.mode === "on") {
                 this.settings.darkModeSystem = true;
 
                 // Check system preference
-                if (
-                    window.matchMedia &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                ) {
-                    this.settings.darkMode = true;
-                } else {
-                    this.settings.darkMode = false;
-                }
+                this.settings.darkMode = window.matchMedia &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+                localStorage.setItem('darkMode', JSON.stringify(this.settings.darkMode));
             } else if (payload.mode === "off") {
                 this.settings.darkModeSystem = false;
             }
+
+            localStorage.setItem('darkModeSystem', JSON.stringify(this.settings.darkModeSystem));
         },
         // Sets active color theme
         setColorTheme(payload) {
-            // Matches all classes which start with 'theme-'
+            // Matches all classes that start with 'theme-'
             let regx = new RegExp("\\btheme-[^ ]*[ ]?\\b", "g");
 
             // Set new theme
             this.settings.colorTheme = payload.theme || "";
 
-            // Remove all classes which start with 'theme-' from body element
+            // Remove all classes that start with 'theme-' from body element
             document.body.className = document.body.className.replace(regx, "");
 
             // If theme is set, add the theme class to body element
