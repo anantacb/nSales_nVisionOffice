@@ -79,6 +79,11 @@ watch(() => companyStore.getSelectedCompany, async (newSelectedCompany) => {
     <!-- Page Content -->
     <div class="content">
         <BaseBlock :title="`Data Filters (${companyStore.selectedCompany.Name})`">
+            <template #options>
+                <router-link :to="{name:'create-company-data-filter'}" class="btn btn-sm btn-outline-primary">
+                    <i class="far fa-fw fa-plus"></i> Create Data Filter
+                </router-link>
+            </template>
             <DataFilterList
                 @showFilterResultModal="showFilterResultModal"
             />

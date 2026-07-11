@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DataFilter\Create;
+use App\Http\Requests\DataFilter\CreateCompanyDataFilter;
 use App\Http\Requests\DataFilter\DetailsOrDelete;
 use App\Http\Requests\DataFilter\GetFilterResult;
 use App\Http\Requests\DataFilter\Update;
@@ -33,6 +34,12 @@ class DataFilterController extends Controller
     }
 
     public function create(Create $request): JsonResponse
+    {
+        $response = $this->service->create($request);
+        return ApiResponseTransformer::respond($response);
+    }
+
+    public function createCompanyDataFilter(CreateCompanyDataFilter $request): JsonResponse
     {
         $response = $this->service->create($request);
         return ApiResponseTransformer::respond($response);

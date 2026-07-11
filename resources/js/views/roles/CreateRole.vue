@@ -22,7 +22,7 @@ let TypeOptions = ref([]);
 
 async function getRoleTypes() {
     let {data: RoleTypeData} = await TableHelper.getEnumValues('Office', `Role`, 'Type');
-    TypeOptions.value = RoleTypeData.map((item) => {
+    TypeOptions.value = RoleTypeData.filter((item) => item !== 'Developer').map((item) => {
         return {
             label: item,
             value: item,

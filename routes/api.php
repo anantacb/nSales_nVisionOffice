@@ -306,6 +306,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/data-filters', [DataFilterController::class, 'getDataFilters']);
     Route::post('/data-filter/details', [DataFilterController::class, 'details']);
     Route::post('/data-filters/company-data-filters', [DataFilterController::class, 'getCompanyDataFilters']);
+    Route::post('/data-filters/create-company-data-filter', [DataFilterController::class, 'createCompanyDataFilter'])->middleware('permission:DataFilter.Create');
     Route::post('/data-filters/get-filter-result', [DataFilterController::class, 'getFilterResult']);
 
     // Role

@@ -318,7 +318,8 @@ export default {
         // Company Menus
         {
             name: "Company",
-            heading: true
+            heading: true,
+            dynamicCompanyName: true
         },
 
         {
@@ -545,11 +546,23 @@ export default {
         },
 
         {
-            name: "Data Filters",
+            name: "Data Filter",
             icon: "fa fa-filter-circle-dollar",
-            to: "company-data-filters",
             roles: [],
             permissions: ["DataFilter.Read"],
+            sub: [{
+                name: "Data Filters",
+                icon: "fa fa-filter-circle-dollar",
+                to: "company-data-filters",
+                roles: [],
+                permissions: ["DataFilter.Read"],
+            }, {
+                name: "Create Data Filter",
+                icon: "fa fa-plus",
+                to: "create-company-data-filter",
+                roles: [],
+                permissions: ["DataFilter.Create"],
+            }],
         },
 
         {

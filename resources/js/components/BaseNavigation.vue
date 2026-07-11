@@ -2,13 +2,22 @@
 import {computed} from "vue";
 import {useRoute} from "vue-router";
 import {useTemplateStore} from "@/stores/templateStore";
+import {useCompanyStore} from "@/stores/companyStore";
 import useCheckAccess from "@/composables/useCheckAccess";
 
 let {canAccessNode} = useCheckAccess();
 
 // Main store and Route
 const store = useTemplateStore();
+const companyStore = useCompanyStore();
 const route = useRoute();
+
+function headingLabel(node) {
+    if (node.dynamicCompanyName) {
+        return companyStore.selectedCompany?.Name || node.name;
+    }
+    return node.name;
+}
 
 // Component properties
 const props = defineProps({
@@ -113,7 +122,7 @@ function linkClicked(e, submenu) {
             <li v-if="canAccessNode(node)"
                 :class="{'nav-main-heading': node.heading, 'nav-main-item': !node.heading, open: node.sub ? subIsActive(node.sub) : false}">
                 <!-- Heading -->
-                {{ node.heading ? node.name : "" }}
+                {{ node.heading ? headingLabel(node) : "" }}
 
                 <!-- Normal Link -->
                 <div

@@ -32,6 +32,9 @@ class RoleService implements RoleServiceInterface
     public function getCompanyRoles(Request $request): ServiceDto
     {
         $request = $request->all();
+        $request['filters'] = array_merge($request['filters'] ?? [], [
+            ['column' => 'Type', 'operator' => '!=', 'values' => 'Developer'],
+        ]);
         $roles = $this->roleRepository->paginatedDataCompanyWise($request);
         return new ServiceDto("Roles retrieved!!!", 200, $roles);
     }

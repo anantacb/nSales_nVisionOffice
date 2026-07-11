@@ -57,6 +57,7 @@ const CreateApplication = () => import('@/views/application/CreateApplication.vu
 const EditApplication = () => import('@/views/application/EditApplication.vue');
 
 const CompanyDataFilters = () => import('@/views/data-filter/CompanyDataFilters.vue');
+const CreateCompanyDataFilter = () => import('@/views/data-filter/CreateCompanyDataFilter.vue');
 
 const Roles = () => import('@/views/roles/Roles.vue');
 const CreateRole = () => import('@/views/roles/CreateRole.vue');
@@ -502,6 +503,17 @@ const routes = [
                     requiresCompany: true,
                     roles: [],
                     permissions: ['DataFilter.Read']
+                }
+            },
+            {
+                path: "data-filter/company-data-filters/create",
+                name: "create-company-data-filter",
+                component: CreateCompanyDataFilter,
+                meta: {
+                    requiresAuth: true,
+                    requiresCompany: true,
+                    roles: [],
+                    permissions: ['DataFilter.Create']
                 }
             },
 

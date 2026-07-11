@@ -12,6 +12,18 @@ export default class DataFilter {
         });
     }
 
+    static createCompanyDataFilter(formData) {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/data-filters/create-company-data-filter', formData)
+                .then(({data}) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     static update(formData) {
         return new Promise((resolve, reject) => {
             axios.post('/api/data-filter/update', formData)

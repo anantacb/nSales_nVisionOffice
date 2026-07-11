@@ -31,7 +31,13 @@ class Create extends FormRequest
                 Rule::unique('Role', 'Name')
                     ->where('CompanyId', $this->request->get('CompanyId'))
             ],
-            'Type' => 'required',
+            'Type' => [
+                'required',
+                Rule::in([
+                    'Administrator', 'Manager', 'Employee',
+                    'Client', 'Retailer', 'WebShopViewer', 'Insights', 'Marketing',
+                ]),
+            ],
             'Description' => 'nullable'
         ];
     }
