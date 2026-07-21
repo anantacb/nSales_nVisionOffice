@@ -21,3 +21,10 @@ composer.lock
 /public/vendor/log-viewer/
 storage/debugbar
 docker.env
+
+# Agents
+CLAUDE.md
+/.claude
+GEMINI.md
+/.gemini
+*.skill
